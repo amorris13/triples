@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">1Triples</string>
+	<string name="pause">Pause</string>
+	<string name="cards_remaining">CARDS REMAINING</string>
+	<string name="time_elapsed">TIME ELAPSED</string>
+	<string name="games_no_items">No games played yet.\nTap + to create a new game.</string>
+	<string name="list_of_games">LIST OF GAMES</string>
+	<string name="new_game">New Game</string>
+
+</resources>

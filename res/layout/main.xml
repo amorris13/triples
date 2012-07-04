@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="#E0E0E0" >
+
+	<RelativeLayout
+		android:id="@+id/status_bar"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true" >
+
+		<View
+			android:id="@+id/separator"
+			android:layout_width="fill_parent"
+			android:layout_height="2dp"
+			android:layout_alignParentTop="true"
+			android:background="#33B5E5" />
+
+		<TextView
+			android:id="@+id/timer_value_text"
+			style="@style/status_bar_value"
+			android:singleLine="true"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_below="@id/separator" />
+
+		<TextView
+			android:id="@+id/timer_key_text"
+			style="@style/status_bar_key"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_below="@id/timer_value_text"
+			android:text="@string/time_elapsed" />
+
+		<TextView
+			android:id="@+id/cards_remaining_text"
+			style="@style/status_bar_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/separator" />
+
+		<TextView
+			android:id="@+id/cards_remaining_key_text"
+			style="@style/status_bar_key"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/cards_remaining_text"
+			android:text="@string/cards_remaining" />
+	</RelativeLayout>
+
+	<include
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_above="@id/status_bar"
+		layout="@layout/cards" />
+
+</RelativeLayout>
