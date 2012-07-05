@@ -12,10 +12,22 @@ public final class Card {
   public final int mColor;
 
   public Card(int number, int shape, int pattern, int color) {
-    Preconditions.checkArgument(number >= 0 && number < MAX_VARIABLES);
-    Preconditions.checkArgument(shape >= 0 && shape < MAX_VARIABLES);
-    Preconditions.checkArgument(pattern >= 0 && pattern < MAX_VARIABLES);
-    Preconditions.checkArgument(color >= 0 && color < MAX_VARIABLES);
+    Preconditions.checkArgument(
+        number >= 0 && number < MAX_VARIABLES,
+        "number = %d",
+        number);
+    Preconditions.checkArgument(
+        shape >= 0 && shape < MAX_VARIABLES,
+        "shape = %d",
+        shape);
+    Preconditions.checkArgument(
+        pattern >= 0 && pattern < MAX_VARIABLES,
+        "pattern = %d",
+        pattern);
+    Preconditions.checkArgument(
+        color >= 0 && color < MAX_VARIABLES,
+        "color = %d",
+        color);
 
     mNumber = number;
     mShape = shape;
@@ -39,7 +51,6 @@ public final class Card {
     }
     return false;
   }
-
 
   @Override
   public String toString() {

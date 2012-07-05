@@ -13,14 +13,13 @@
 		<View
 			android:id="@+id/separator"
 			android:layout_width="fill_parent"
-			android:layout_height="2dp"
+			android:layout_height="1sp"
 			android:layout_alignParentTop="true"
 			android:background="#33B5E5" />
 
 		<TextView
 			android:id="@+id/timer_value_text"
 			style="@style/status_bar_value"
-			android:singleLine="true"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
@@ -39,7 +38,7 @@
 			android:id="@+id/cards_remaining_text"
 			style="@style/status_bar_value"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+      android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
 			android:layout_below="@id/separator" />
 
@@ -47,7 +46,7 @@
 			android:id="@+id/cards_remaining_key_text"
 			style="@style/status_bar_key"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+      android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
 			android:layout_below="@id/cards_remaining_text"
 			android:text="@string/cards_remaining" />

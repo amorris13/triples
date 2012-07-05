@@ -20,8 +20,17 @@ import android.view.animation.TranslateAnimation;
 
 import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 
-public class CardDrawable extends Drawable {
+public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+
+  private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
+
+  interface OnAnimationFinishedListener {
+    void onAnimationFinished(boolean stillVisible);
+  }
+
+  private int mDrawOrder;
 
   private final Card mCard;
 
@@ -88,10 +97,10 @@ public class CardDrawable extends Drawable {
   @Override
   public void draw(Canvas canvas) {
     Rect bounds = mBounds;
-    if (bounds == null) {
+    Log.v("CD", "drawing with bounds = " + bounds);
+    if (bounds == null || bounds == EMPTY_RECT) {
       return;
     }
-//    Log.d("CD", "drawing in bounds: " + bounds);
     int sc = canvas.save();
     Animation anim = mAnimation;
     if (anim != null) {
@@ -154,6 +163,12 @@ public class CardDrawable extends Drawable {
     mCardBackground.setSelected(selected);
   }
 
+  @Override
+  public void setBounds(Rect bounds) {
+    Log.i("CD", "setBounds.  mBounds = " + mBounds + ", bounds = " + bounds);
+    mBounds = bounds;
+  }
+
   public void onIncorrectTriple() {
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(),
@@ -183,11 +198,19 @@ public class CardDrawable extends Drawable {
     mAnimation = shakeAnimation;
   }
 
-  public void setNewBounds(final Rect bounds) {
+  /**
+   * @return whether the card should be drawn on a top level.
+   */
+  public void setNewPosition(final Rect bounds,
+      final OnAnimationFinishedListener listener) {
+    if(bounds == mBounds) {
+      return;
+    }
     Animation transitionAnimation = null;
-    Log.d("CD", "bounds = " + bounds);
     if (mBounds == null) {
       // This CardDrawable is new.
+      Log.i("CD", "setBounds fade in.  mBounds = " + mBounds + ", bounds = "
+          + bounds);
       mBounds = bounds;
       transitionAnimation = new AlphaAnimation(0, 1);
     } else {
@@ -195,10 +218,12 @@ public class CardDrawable extends Drawable {
       if (bounds == null) {
         // This CardDrawable is being removed
         transitionAnimation = new TranslateAnimation(0, 1000, 0, 0);
+        mDrawOrder = 2;
       } else {
         // This CardDrawable is being moved to a new place
         transitionAnimation = new TranslateAnimation(0, bounds.centerX()
             - mBounds.centerX(), 0, bounds.centerY() - mBounds.centerY());
+        mDrawOrder = 1;
       }
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
@@ -210,10 +235,17 @@ public class CardDrawable extends Drawable {
       @Override
       public void onAnimationEnd(Animation animation) {
         if (bounds == null) {
+          Log.i("CD", "setBounds slide off.  mBounds = " + mBounds
+              + ", bounds = " + bounds);
           mBounds = null;
+          listener.onAnimationFinished(false);
         } else {
+          Log.i("CD", "setBounds slide to new.  mBounds = " + mBounds
+              + ", bounds = " + bounds);
           mBounds = new Rect(bounds);
+          listener.onAnimationFinished(true);
         }
+        mDrawOrder = 0;
 
         if (mAnimation == animation) {
           mAnimation = null;
@@ -230,6 +262,14 @@ public class CardDrawable extends Drawable {
 
     });
     mAnimation = transitionAnimation;
+  }
 
+  public int getDrawOrder() {
+    return mDrawOrder;
+  }
+
+  @Override
+  public int compareTo(CardDrawable another) {
+    return Ints.compare(mDrawOrder, another.mDrawOrder);
   }
 }

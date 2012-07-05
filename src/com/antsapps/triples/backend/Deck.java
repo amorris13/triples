@@ -8,17 +8,18 @@ import com.google.common.collect.Lists;
 
 class Deck {
 
-  final List<Card> mCards = Lists.newArrayList();
+  List<Card> mCards;
 
   public Deck(Random random) {
     initialize(random);
   }
 
   public Deck(List<Card> cards) {
-    Collections.copy(mCards, cards);
+    mCards = Lists.newArrayList(cards);
   }
 
   private void initialize(Random random) {
+    mCards = Lists.newArrayList();
     for (int number = 0; number < Card.MAX_VARIABLES; number++) {
       for (int shape = 0; shape < Card.MAX_VARIABLES; shape++) {
         for (int pattern = 0; pattern < Card.MAX_VARIABLES; pattern++) {
@@ -60,6 +61,6 @@ class Deck {
     for(int i = 0; i < b.length; i++) {
       cards.add(Utils.cardFromByte(b[i]));
     }
-    return null;
+    return new Deck(cards);
   }
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableList;
@@ -19,13 +20,12 @@ public class Game implements Comparable<Game> {
   }
 
   public static final int MIN_CARDS_IN_PLAY = 12;
-  public static final int MAX_CARDS_IN_PLAY = 21;
 
   public static final String ID_TAG = "game_id";
 
   private final Deck mDeck;
 
-  private final List<Card> mCardsInPlay = Lists.newArrayList();
+  private final List<Card> mCardsInPlay;
 
   private final Timer mTimer;
 
@@ -33,26 +33,50 @@ public class Game implements Comparable<Game> {
 
   private long id;
 
-  private Date mDate;
+  private final Date mDate;
 
-  private final List<OnUpdateGameStateListener> mListeners = Lists.newArrayList();
+  private final List<OnUpdateGameStateListener> mListeners = Lists
+      .newArrayList();
 
-  public Game(long seed) {
-    mRandomSeed = seed;
-    mDeck = new Deck(new Random(seed));
-    mTimer = new Timer();
+  public static Game createFromSeed(long seed) {
+    return new Game(-1, seed, Collections.<Card> emptyList(), new Deck(
+        new Random(seed)), 0, new Date());
   }
 
-  public Game(long id,
+  public Bundle saveState() {
+    Bundle bundle = new Bundle();
+    bundle.putLong("id", id);
+    bundle.putLong("elapsed_time", mTimer.getElapsed());
+    bundle.putByteArray("cards_in_play", getCardsInPlayAsByteArray());
+    bundle.putByteArray("deck", getCardsInDeckAsByteArray());
+    bundle.putLong("seed", mRandomSeed);
+    bundle.putLong("date", mDate.getTime());
+    return bundle;
+  }
+
+  public static Game createFromBundle(Bundle bundle) {
+    long id = bundle.getLong("id");
+    long elapsedTime = bundle.getLong("elapsed_time");
+    long seed = bundle.getLong("seed");
+    Date date = new Date(bundle.getLong("date"));
+    List<Card> cardsInPlay = Utils.cardListFromByteArray(bundle
+        .getByteArray("cards_in_play"));
+    Deck deck = Deck.fromByteArray(bundle.getByteArray("deck"));
+    return new Game(id, seed, cardsInPlay, deck, elapsedTime, date);
+  }
+
+  Game(long id,
       long seed,
       List<Card> cardsInPlay,
-      List<Card> cardsInDeck,
-      long timeElapsed) {
+      Deck cardsInDeck,
+      long timeElapsed,
+      Date date) {
     this.id = id;
     mRandomSeed = seed;
-    Collections.copy(mCardsInPlay, cardsInPlay);
-    mDeck = new Deck(cardsInDeck);
+    mCardsInPlay = Lists.newArrayList(cardsInPlay);
+    mDeck = cardsInDeck;
     mTimer = new Timer(timeElapsed);
+    mDate = date;
   }
 
   public void setOnTimerTickListener(OnTimerTickListener listener) {
@@ -64,12 +88,8 @@ public class Game implements Comparable<Game> {
   }
 
   public void begin() {
-    for (int i = 0; i < MIN_CARDS_IN_PLAY; i++) {
-      mCardsInPlay.add(mDeck.getNextCard());
-    }
-
     // Add more cards so there is at least one valid triple.
-    while (!checkIfAnyValidTriples()) {
+    while (mCardsInPlay.size() < MIN_CARDS_IN_PLAY || !checkIfAnyValidTriples()) {
       for (int i = 0; i < 3; i++) {
         mCardsInPlay.add(mDeck.getNextCard());
       }
@@ -213,7 +233,7 @@ public class Game implements Comparable<Game> {
   }
 
   private void dispatchGameStateUpdate() {
-    for(OnUpdateGameStateListener listener : mListeners) {
+    for (OnUpdateGameStateListener listener : mListeners) {
       listener.onUpdateGameState(this);
     }
   }

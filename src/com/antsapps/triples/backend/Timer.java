@@ -31,7 +31,7 @@ class Timer {
       public void handleMessage(Message m) {
         if (isActive()) {
           dispatchTimerTick();
-          sendMessageDelayed(Message.obtain(this, TICK_WHAT), 200);
+          sendMessageDelayed(Message.obtain(this, TICK_WHAT), 1000);
         }
       }
     };
@@ -39,7 +39,6 @@ class Timer {
 
   void start() {
     mTimeOfLastResume = System.currentTimeMillis();
-    mTimeElapsedWhenLastResumed = 0;
     update();
   }
 

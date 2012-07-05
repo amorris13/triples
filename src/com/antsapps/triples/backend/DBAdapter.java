@@ -1,6 +1,7 @@
 package com.antsapps.triples.backend;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -131,11 +132,11 @@ public class DBAdapter extends SQLiteOpenHelper {
     int state = cursor.getInt(1);
     long seed = cursor.getLong(2);
     List<Card> cardsInPlay = Utils.cardListFromByteArray(cursor.getBlob(3));
-    List<Card> cardsInDeck = Utils.cardListFromByteArray(cursor.getBlob(4));
+    Deck deck = Deck.fromByteArray(cursor.getBlob(4));
     long timeElapsed = cursor.getLong(5);
-    long date = cursor.getLong(6);
-    Game game = new Game(id, seed, cardsInPlay, cardsInDeck,
-        timeElapsed);
+    Date date = new Date(cursor.getLong(6));
+    Game game = new Game(id, seed, cardsInPlay, deck,
+        timeElapsed, date);
     return game;
   }
 

@@ -33,26 +33,20 @@ public class VerticalCardsView extends CardsView {
   @Override
   protected void updateMeasuredDimensions(final int widthMeasureSpec,
       final int heightMeasureSpec) {
-    Log.i("VCV", "uMD: gMW = " + getMeasuredWidth() + ", gMH = "
-        + getMeasuredHeight());
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
     int rows = Math.max(mRows, MIN_ROWS);
     int heightOfCards = (int) (widthOfCards / COLUMNS * HEIGHT_OVER_WIDTH * rows);
     setMeasuredDimension(
         widthOfCards,
         getDefaultSize(heightOfCards, heightMeasureSpec));
-    Log.i("VCV", "uMD: gMW = " + getMeasuredWidth() + ", gMH = "
-        + getMeasuredHeight() + " woc = " + widthOfCards + " hoc = " + heightOfCards);
   }
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right,
       int bottom) {
-    Log.i("VCV", "oL: " + ", l = " + left + ", t = " + top + ", r = " + right
-        + ", b = " + bottom);
+    Log.i("VCV", "oL changed = " + changed);
     mWidthOfCard = (right - left) / COLUMNS;
     mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
-    Log.i("VCV", "oL: mHOC = " + mHeightOfCard + ", mWOC = " + mWidthOfCard);
     updateBounds();
   }
 

@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,19 +11,36 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.antsapps.triples.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 
 public abstract class CardsView extends View implements
     OnUpdateGameStateListener {
 
+  private class CardRemovalListener implements OnAnimationFinishedListener {
+    Card mCard;
+
+    public CardRemovalListener(Card card) {
+      mCard = card;
+    }
+
+    @Override
+    public void onAnimationFinished(boolean stillVisible) {
+      if (!stillVisible && !mCards.contains(mCard)) {
+        mCardDrawables.remove(mCard);
+      }
+    }
+
+  }
+
   protected ImmutableList<Card> mCards = ImmutableList.of();
-  protected final BiMap<Card, CardDrawable> mCardDrawables = HashBiMap.create();
+  protected final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
   protected final List<Card> mCurrentlySelected = Lists.newArrayList();
   protected Game mGame;
   protected boolean mActive;
@@ -51,7 +69,6 @@ public abstract class CardsView extends View implements
       final int heightMeasureSpec) {
     Log.i("CV", "oM: wMS = " + widthMeasureSpec + ", hMS = "
         + heightMeasureSpec);
-    // updateMinimumDimensions(widthMeasureSpec, heightMeasureSpec);
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     updateMeasuredDimensions(widthMeasureSpec, heightMeasureSpec);
   }
@@ -61,15 +78,15 @@ public abstract class CardsView extends View implements
     long start = System.currentTimeMillis();
     canvas.drawColor(0xFFE0E0E0);
     if (mActive) {
-      for (CardDrawable dr : mCardDrawables.values()) {
+      for (CardDrawable dr : Ordering.natural().sortedCopy(
+          mCardDrawables.values())) {
         dr.draw(canvas);
       }
       invalidate();
     }
     long end = System.currentTimeMillis();
-    // Log.v("CardsView", "draw took " + (end - start) + ", mActive = " +
-    // mActive
-    // + ", cards drawn: " + mCardDrawables.size());
+    Log.v("CardsView", "draw took " + (end - start) + ", mActive = " + mActive
+        + ", cards drawn: " + mCardDrawables.size());
   }
 
   @Override
@@ -104,19 +121,22 @@ public abstract class CardsView extends View implements
     ImmutableList<Card> newCards = mGame.getCurrentlyInPlay();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
-        mCardDrawables.get(oldCard).setNewBounds(null);
+        mCardDrawables.get(oldCard).setNewPosition(
+            null,
+            new CardRemovalListener(oldCard));
       }
     }
 
-    for (int i = 0; i < newCards.size(); i++) {
-      Card card = newCards.get(i);
-      if (!mCardDrawables.containsKey(card)) {
-        CardDrawable cardDrawable = new CardDrawable(card);
-        cardDrawable.setNewBounds(calcBounds(i));
+    mCards = newCards;
+    for (int i = 0; i < mCards.size(); i++) {
+      Card card = mCards.get(i);
+      CardDrawable cardDrawable = mCardDrawables.get(card);
+      if (cardDrawable == null) {
+        cardDrawable = new CardDrawable(card);
         mCardDrawables.put(card, cardDrawable);
       }
+      cardDrawable.setNewPosition(calcBounds(i), new CardRemovalListener(card));
     }
-    mCards = newCards;
     Log.i("CV", "updateCards()");
     updateMeasuredDimensions(0, 0);
   }
@@ -125,7 +145,7 @@ public abstract class CardsView extends View implements
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
-      cardDrawable.setNewBounds(calcBounds(i));
+      cardDrawable.setBounds(calcBounds(i));
     }
   }
 

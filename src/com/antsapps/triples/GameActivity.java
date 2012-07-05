@@ -11,6 +11,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Game;
 
 public class GameActivity extends SherlockActivity {
+  private static final String KEY_GAME_STATE = "game_state";
   private Game mGame;
   private CardsView mCardsView;
   private boolean mPaused;
@@ -22,7 +23,18 @@ public class GameActivity extends SherlockActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
 
-    mGame = new Game(System.currentTimeMillis());
+    if (savedInstanceState == null) {
+      // We were just launched -- set up a new game
+      mGame = Game.createFromSeed(System.currentTimeMillis());
+    } else {
+      // We are being restored
+      Bundle bundle = savedInstanceState.getBundle(KEY_GAME_STATE);
+      if (bundle != null) {
+        mGame = Game.createFromBundle(bundle);
+      } else {
+        mGame = Game.createFromSeed(System.currentTimeMillis());
+      }
+    }
 
     mStatusBar = new StatusBar((TextView) findViewById(R.id.timer_value_text),
         (TextView) findViewById(R.id.cards_remaining_text));
@@ -40,6 +52,14 @@ public class GameActivity extends SherlockActivity {
   }
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    super.onPrepareOptionsMenu(menu);
+    menu.findItem(R.id.pause).setVisible(!mPaused);
+    menu.findItem(R.id.play).setVisible(mPaused);
+    return true;
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getSupportMenuInflater();
     inflater.inflate(R.menu.game, menu);
@@ -51,19 +71,10 @@ public class GameActivity extends SherlockActivity {
     // Handle item selection
     switch (item.getItemId()) {
       case R.id.pause:
-        if (mPaused) {
-          mPaused = false;
-          mGame.resume();
-          mCardsView.resume();
-          item.setIcon(R.drawable.av_pause_holo_dark);
-          item.setTitle("Pause");
-        } else {
-          mPaused = true;
-          mGame.pause();
-          mCardsView.pause();
-          item.setIcon(R.drawable.av_play_holo_dark);
-          item.setTitle("Play");
-        }
+        pause();
+        return true;
+      case R.id.play:
+        resume();
         return true;
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
@@ -74,6 +85,37 @@ public class GameActivity extends SherlockActivity {
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+
+  private void pause() {
+    mPaused = true;
+    mGame.pause();
+    mCardsView.pause();
+    invalidateOptionsMenu();
+  }
+
+  private void resume() {
+    mPaused = false;
+    mGame.resume();
+    mCardsView.resume();
+    invalidateOptionsMenu();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    pause();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    resume();
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    outState.putBundle(KEY_GAME_STATE, mGame.saveState());
   }
 
 }

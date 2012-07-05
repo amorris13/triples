@@ -1,5 +1,8 @@
 package com.antsapps.triples;
 
+import java.util.concurrent.TimeUnit;
+
+import android.text.format.DateUtils;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Game;
@@ -19,13 +22,13 @@ public class StatusBar implements OnTimerTickListener,
 
   @Override
   public void onTimerTick(final long elapsedTime) {
-//    mTimerText.post(new Runnable() {
-//      @Override
-//      public void run() {
-//        mTimerText.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS
-//            .toSeconds(elapsedTime)));
-//      }
-//    });
+    mTimerText.post(new Runnable() {
+      @Override
+      public void run() {
+        mTimerText.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS
+            .toSeconds(elapsedTime)));
+      }
+    });
   }
 
   @Override

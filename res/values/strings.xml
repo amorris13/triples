@@ -3,6 +3,7 @@
 
 	<string name="app_name">1Triples</string>
 	<string name="pause">Pause</string>
+	<string name="play">Play</string>
 	<string name="cards_remaining">CARDS REMAINING</string>
 	<string name="time_elapsed">TIME ELAPSED</string>
 	<string name="games_no_items">No games played yet.\nTap + to create a new game.</string>
