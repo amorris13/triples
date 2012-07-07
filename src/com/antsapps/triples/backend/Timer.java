@@ -38,13 +38,14 @@ class Timer {
   }
 
   void start() {
-    mTimeOfLastResume = System.currentTimeMillis();
-    update();
+    resume();
   }
 
   void pause() {
-    mTimeElapsedWhenLastResumed += System.currentTimeMillis()
-        - mTimeOfLastResume;
+    if (!isActive()) {
+      return;
+    }
+    mTimeElapsedWhenLastResumed += System.currentTimeMillis() - mTimeOfLastResume;
     mTimeOfLastResume = -1;
     update();
   }

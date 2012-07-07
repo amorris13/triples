@@ -61,7 +61,6 @@ public abstract class CardsView extends View implements
     mGame = game;
     game.addOnUpdateGameStateListener(this);
     mActive = true;
-    updateCards();
   }
 
   @Override
@@ -117,8 +116,7 @@ public abstract class CardsView extends View implements
 
   protected abstract Card getCardForPosition(int x, int y);
 
-  protected void updateCards() {
-    ImmutableList<Card> newCards = mGame.getCurrentlyInPlay();
+  protected void updateCards(ImmutableList<Card> newCards, ImmutableList<Card> oldCards, int numRemaining) {
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
         mCardDrawables.get(oldCard).setNewPosition(
@@ -179,7 +177,14 @@ public abstract class CardsView extends View implements
   }
 
   @Override
-  public void onUpdateGameState(Game game) {
-    updateCards();
+  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards, int numRemaining) {
+    updateCards(newCards, oldCards, numRemaining);
   }
+
+  @Override
+  public void onFinish() {
+
+  }
+
 }

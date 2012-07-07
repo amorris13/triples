@@ -2,22 +2,30 @@ package com.antsapps.triples;
 
 import java.util.concurrent.TimeUnit;
 
+import android.content.Context;
 import android.text.format.DateUtils;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.OnTimerTickListener;
+import com.google.common.collect.ImmutableList;
 
-public class StatusBar implements OnTimerTickListener,
+public class StatusBar extends RelativeLayout implements OnTimerTickListener,
     OnUpdateGameStateListener {
 
   private final TextView mTimerText;
   private final TextView mCardsRemainingText;
 
-  public StatusBar(TextView timerText, TextView cardsRemainingText) {
-    mTimerText = timerText;
-    mCardsRemainingText = cardsRemainingText;
+  public StatusBar(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+        .inflate(R.layout.statusbar, this);
+    mTimerText = (TextView) findViewById(R.id.timer_value_text);
+    mCardsRemainingText = (TextView) findViewById(R.id.cards_remaining_text);
   }
 
   @Override
@@ -32,8 +40,12 @@ public class StatusBar implements OnTimerTickListener,
   }
 
   @Override
-  public void onUpdateGameState(Game game) {
-    mCardsRemainingText.setText(String.valueOf(game.getCardsRemaining()));
+  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards, int numRemaining) {
+    mCardsRemainingText.setText(String.valueOf(numRemaining));
   }
 
+  @Override
+  public void onFinish() {
+  }
 }

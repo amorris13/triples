@@ -16,7 +16,10 @@ import com.google.common.collect.Lists;
 public class Game implements Comparable<Game> {
 
   public interface OnUpdateGameStateListener {
-    void onUpdateGameState(Game game);
+    void onUpdateCardsInPlay(ImmutableList<Card> newCards,
+        ImmutableList<Card> oldCards, int numRemaining);
+
+    void onFinish();
   }
 
   public static final int MIN_CARDS_IN_PLAY = 12;
@@ -95,7 +98,10 @@ public class Game implements Comparable<Game> {
       }
     }
     mTimer.start();
-    dispatchGameStateUpdate();
+    dispatchGameStateUpdate(
+        ImmutableList.copyOf(mCardsInPlay),
+        ImmutableList.<Card> of(),
+        mDeck.getCardsRemaining());
   }
 
   public void pause() {
@@ -106,59 +112,61 @@ public class Game implements Comparable<Game> {
     mTimer.resume();
   }
 
-  public ImmutableList<Card> getCurrentlyInPlay() {
-    synchronized (mCardsInPlay) {
-      return ImmutableList.copyOf(mCardsInPlay);
-    }
-  }
+//  public ImmutableList<Card> getCurrentlyInPlay() {
+//    synchronized (mCardsInPlay) {
+//      return ImmutableList.copyOf(mCardsInPlay);
+//    }
+//  }
 
   public void commitTriple(List<Card> cards) {
     commitTriple(Iterables.toArray(cards, Card.class));
   }
 
   public void commitTriple(Card... cards) {
-    synchronized (mCardsInPlay) {
-      if (!mCardsInPlay.containsAll(Lists.newArrayList(cards))) {
-        throw new IllegalArgumentException("Cards are not in the set. cards = "
-            + cards + ", mCardsInPlay = " + mCardsInPlay);
-      }
-      if (!isValidTriple(cards)) {
-        throw new IllegalArgumentException("Cards are not a valid triple");
-      }
+    ImmutableList<Card> oldCards = ImmutableList.copyOf(mCardsInPlay);
+    if (!mCardsInPlay.containsAll(Lists.newArrayList(cards))) {
+      throw new IllegalArgumentException("Cards are not in the set. cards = "
+          + cards + ", mCardsInPlay = " + mCardsInPlay);
+    }
+    if (!isValidTriple(cards)) {
+      throw new IllegalArgumentException("Cards are not a valid triple");
+    }
 
+    for (int i = 0; i < 3; i++) {
+      mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
+    }
+
+    // Add more cards up to the minimum.
+    while (numNotNull(mCardsInPlay) < MIN_CARDS_IN_PLAY) {
       for (int i = 0; i < 3; i++) {
-        mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
+        mCardsInPlay.set(mCardsInPlay.indexOf(null), mDeck.getNextCard());
       }
+    }
 
-      // Add more cards up to the minimum.
-      while (numNotNull(mCardsInPlay) < MIN_CARDS_IN_PLAY) {
-        for (int i = 0; i < 3; i++) {
-          mCardsInPlay.set(mCardsInPlay.indexOf(null), mDeck.getNextCard());
-        }
+    // Remove any null cards by replacing them with the last cards.
+    int numNotNull = numNotNull(mCardsInPlay);
+    for (int i = 0; i < numNotNull; i++) {
+      if (mCardsInPlay.get(i) == null) {
+        removeTrailingNulls(mCardsInPlay);
+        if (i == mCardsInPlay.size() - 1)
+          break;
+        mCardsInPlay.set(i, mCardsInPlay.remove(mCardsInPlay.size() - 1));
       }
+    }
+    removeTrailingNulls(mCardsInPlay);
 
-      // Remove any null cards by replacing them with the last cards.
-      int numNotNull = numNotNull(mCardsInPlay);
-      for (int i = 0; i < numNotNull; i++) {
-        if (mCardsInPlay.get(i) == null) {
-          removeTrailingNulls(mCardsInPlay);
-          if (i == mCardsInPlay.size() - 1)
-            break;
-          mCardsInPlay.set(i, mCardsInPlay.remove(mCardsInPlay.size() - 1));
-        }
-      }
-      removeTrailingNulls(mCardsInPlay);
-
-      // Add more cards until there is a valid triple.
-      while (!checkIfAnyValidTriples()) {
-        for (int i = 0; i < 3; i++) {
-          mCardsInPlay.add(mDeck.getNextCard());
-        }
+    // Add more cards until there is a valid triple.
+    while (!checkIfAnyValidTriples()) {
+      for (int i = 0; i < 3; i++) {
+        mCardsInPlay.add(mDeck.getNextCard());
       }
     }
 
     checkIfAnyValidTriples();
-    dispatchGameStateUpdate();
+    dispatchGameStateUpdate(
+        ImmutableList.copyOf(mCardsInPlay),
+        oldCards,
+        mDeck.getCardsRemaining());
   }
 
   public static boolean isValidTriple(List<Card> cards) {
@@ -232,9 +240,10 @@ public class Game implements Comparable<Game> {
     }
   }
 
-  private void dispatchGameStateUpdate() {
+  private void dispatchGameStateUpdate(ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards, int numRemaining) {
     for (OnUpdateGameStateListener listener : mListeners) {
-      listener.onUpdateGameState(this);
+      listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
     }
   }
 

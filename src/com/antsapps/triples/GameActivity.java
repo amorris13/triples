@@ -1,7 +1,6 @@
 package com.antsapps.triples;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -36,8 +35,7 @@ public class GameActivity extends SherlockActivity {
       }
     }
 
-    mStatusBar = new StatusBar((TextView) findViewById(R.id.timer_value_text),
-        (TextView) findViewById(R.id.cards_remaining_text));
+    mStatusBar = (StatusBar) findViewById(R.id.status_bar);
     mGame.setOnTimerTickListener(mStatusBar);
     mGame.addOnUpdateGameStateListener(mStatusBar);
 
