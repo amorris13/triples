@@ -68,9 +68,9 @@ class Timer {
     return (mTimeOfLastResume != -1);
   }
 
-  private void update() {
+  void update() {
+    dispatchTimerTick();
     if (isActive()) {
-      dispatchTimerTick();
       mHandler.sendMessageDelayed(Message.obtain(mHandler, TICK_WHAT), 1000);
     } else {
       mHandler.removeMessages(TICK_WHAT);

@@ -141,5 +141,4 @@ public class SymbolDrawable extends Drawable {
     mFill.setBounds(bounds);
     mOutline.setBounds(bounds);
   }
-
 }

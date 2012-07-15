@@ -31,13 +31,8 @@ public class StatusBar extends RelativeLayout implements OnTimerTickListener,
 
   @Override
   public void onTimerTick(final long elapsedTime) {
-    mTimerText.post(new Runnable() {
-      @Override
-      public void run() {
-        mTimerText.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS
-            .toSeconds(elapsedTime)));
-      }
-    });
+    mTimerText.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS
+        .toSeconds(elapsedTime)));
   }
 
   @Override

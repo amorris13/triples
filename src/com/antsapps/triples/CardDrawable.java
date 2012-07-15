@@ -213,21 +213,13 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mBounds = new Rect(bounds);
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
-      // Log.i("CD", "setBounds no change.  oldBounds = " + oldBounds +
-      // ", bounds = "
-      // + bounds);
       // No change
       return;
     } else if (oldBounds == null) {
       // This CardDrawable is new.
-      // Log.i("CD", "setBounds fade in.  oldBounds = " + oldBounds +
-      // ", bounds = "
-      // + bounds);
       mBounds = bounds;
       transitionAnimation = new AlphaAnimation(0, 1);
     } else {
-      // Log.i("CD", "setBounds move.  oldBounds = " + oldBounds + ", bounds = "
-      // + bounds);
       // This CardDrawable is old
       transitionAnimation = new TranslateAnimation(oldBounds.centerX()
           - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
@@ -271,8 +263,10 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   public void updateGameState(GameState state, boolean animate) {
     if (animate) {
-      Animation stateChangeAnimation = new AlphaAnimation(mAlpha,
+      float currentAlpha = (mAnimation == null) ? mAlpha : mTransformation.getAlpha();
+      Animation stateChangeAnimation = new AlphaAnimation(currentAlpha,
           sAlphasForGameState.get(state));
+      stateChangeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
       stateChangeAnimation.setDuration(800);
       mAnimation = stateChangeAnimation;
     }

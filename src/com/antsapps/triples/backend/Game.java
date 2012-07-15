@@ -96,14 +96,16 @@ public class Game implements Comparable<Game> {
     Preconditions.checkState(
         isGameInValidState(),
         "Game is not in a valid state");
-    if (mGameState == GameState.PAUSED) {
-      mGameState = GameState.ACTIVE;
-    }
-    mTimer.start();
     dispatchCardsInPlayUpdate(
         ImmutableList.copyOf(mCardsInPlay),
         ImmutableList.<Card> of(),
         mDeck.getCardsRemaining());
+    if (mGameState != GameState.COMPLETED) {
+      resume();
+    } else {
+      mTimer.update();
+      dispatchGameStateUpdate();
+    }
   }
 
   public void pause() {

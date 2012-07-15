@@ -60,7 +60,7 @@ public abstract class CardsView extends View implements
 
   public void setGame(Game game) {
     mGame = game;
-    mGameState = game.getGameState();
+    onUpdateGameState(game.getGameState());
   }
 
   @Override
@@ -168,9 +168,14 @@ public abstract class CardsView extends View implements
 
   @Override
   public void onUpdateGameState(GameState state) {
+    boolean animate = (mGameState != null);
     mGameState = state;
+    dispatchGameStateUpdate(animate);
+  }
+
+  private void dispatchGameStateUpdate(boolean animate) {
     for(CardDrawable drawable : mCardDrawables.values()) {
-      drawable.updateGameState(state, true);
+      drawable.updateGameState(mGameState, animate);
     }
   }
 }

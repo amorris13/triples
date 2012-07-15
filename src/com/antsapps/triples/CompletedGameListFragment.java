@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.text.format.DateUtils;
@@ -35,8 +36,10 @@ public class CompletedGameListFragment extends GameListFragment implements
 
       Game g = getItem(position);
       if (g != null) {
-        ((TextView) v.findViewById(R.id.time_elapsed)).setText(g
-            .getTimeElapsed() + " elapsed");
+        ((TextView) v.findViewById(R.id.time_elapsed)).setText(DateUtils
+            .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g
+                .getTimeElapsed()))
+            + " elapsed");
         ((TextView) v.findViewById(R.id.cards_remaining)).setText(g
             .getCardsRemaining() + " cards left");
         ((TextView) v.findViewById(R.id.when_started))
