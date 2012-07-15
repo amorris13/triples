@@ -40,9 +40,9 @@ public abstract class CardsView extends View implements
   }
 
   protected ImmutableList<Card> mCards = ImmutableList.of();
-  protected final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
-  protected final List<Card> mCurrentlySelected = Lists.newArrayList();
-  protected Game mGame;
+  private final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
+  private final List<Card> mCurrentlySelected = Lists.newArrayList();
+  private Game mGame;
   private GameState mGameState;
   protected Rect mOffScreenLocation = new Rect();
 
