@@ -19,14 +19,22 @@ public class Game implements Comparable<Game> {
     void onUpdateCardsInPlay(ImmutableList<Card> newCards,
         ImmutableList<Card> oldCards, int numRemaining);
 
-    void onFinish();
+    void onUpdateGameState(GameState state);
+  }
+
+  public enum GameState {
+    ACTIVE,
+    PAUSED,
+    COMPLETED;
   }
 
   public static final int MIN_CARDS_IN_PLAY = 12;
 
   public static final String ID_TAG = "game_id";
 
-  private boolean mCompleted;
+  private static final String TAG = "Game";
+
+  private GameState mGameState;
 
   private final Deck mDeck;
 
@@ -44,8 +52,10 @@ public class Game implements Comparable<Game> {
       .newArrayList();
 
   public static Game createFromSeed(long seed) {
-    return new Game(-1, seed, Collections.<Card> emptyList(), new Deck(
-        new Random(seed)), 0, new Date());
+    Game game = new Game(-1, seed, Collections.<Card> emptyList(), new Deck(
+        new Random(seed)), 0, new Date(), GameState.PAUSED);
+    game.init();
+    return game;
   }
 
   Game(long id,
@@ -53,13 +63,15 @@ public class Game implements Comparable<Game> {
       List<Card> cardsInPlay,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date) {
+      Date date,
+      GameState gameState) {
     this.id = id;
     mRandomSeed = seed;
     mCardsInPlay = Lists.newArrayList(cardsInPlay);
     mDeck = cardsInDeck;
     mTimer = new Timer(timeElapsed);
     mDate = date;
+    mGameState = gameState;
   }
 
   public void setOnTimerTickListener(OnTimerTickListener listener) {
@@ -70,26 +82,40 @@ public class Game implements Comparable<Game> {
     mListeners.add(listener);
   }
 
-  public void begin() {
-    // Add more cards so there is at least one valid triple.
+  private void init() {
+    Preconditions.checkState(mCardsInPlay.isEmpty());
+    // Add cards so there is at least one valid triple.
     while (mCardsInPlay.size() < MIN_CARDS_IN_PLAY || !checkIfAnyValidTriples()) {
       for (int i = 0; i < 3; i++) {
         mCardsInPlay.add(mDeck.getNextCard());
       }
     }
+  }
+
+  public void begin() {
+    Preconditions.checkState(
+        isGameInValidState(),
+        "Game is not in a valid state");
+    if (mGameState == GameState.PAUSED) {
+      mGameState = GameState.ACTIVE;
+    }
     mTimer.start();
-    dispatchGameStateUpdate(
+    dispatchCardsInPlayUpdate(
         ImmutableList.copyOf(mCardsInPlay),
         ImmutableList.<Card> of(),
         mDeck.getCardsRemaining());
   }
 
   public void pause() {
+    mGameState = GameState.PAUSED;
     mTimer.pause();
+    dispatchGameStateUpdate();
   }
 
   public void resume() {
+    mGameState = GameState.ACTIVE;
     mTimer.resume();
+    dispatchGameStateUpdate();
   }
 
   public void commitTriple(List<Card> cards) {
@@ -97,7 +123,9 @@ public class Game implements Comparable<Game> {
   }
 
   public void commitTriple(Card... cards) {
-    Preconditions.checkState(!mCompleted, "Game is already completed.");
+    Preconditions.checkState(
+        mGameState != GameState.COMPLETED,
+        "Game is already completed.");
     ImmutableList<Card> oldCards = ImmutableList.copyOf(mCardsInPlay);
     if (!mCardsInPlay.containsAll(Lists.newArrayList(cards))) {
       throw new IllegalArgumentException("Cards are not in the set. cards = "
@@ -140,7 +168,7 @@ public class Game implements Comparable<Game> {
     if (!checkIfAnyValidTriples()) {
       finish();
     } else {
-      dispatchGameStateUpdate(
+      dispatchCardsInPlayUpdate(
           ImmutableList.copyOf(mCardsInPlay),
           oldCards,
           mDeck.getCardsRemaining());
@@ -148,10 +176,14 @@ public class Game implements Comparable<Game> {
   }
 
   private void finish() {
-    mCompleted = true;
+    mGameState = GameState.COMPLETED;
     mTimer.stop();
+    dispatchGameStateUpdate();
+  }
+
+  private void dispatchGameStateUpdate() {
     for (OnUpdateGameStateListener listener : mListeners) {
-      listener.onFinish();
+      listener.onUpdateGameState(mGameState);
     }
   }
 
@@ -225,10 +257,35 @@ public class Game implements Comparable<Game> {
     }
   }
 
-  private void dispatchGameStateUpdate(ImmutableList<Card> newCards,
+  private void dispatchCardsInPlayUpdate(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
     for (OnUpdateGameStateListener listener : mListeners) {
       listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
+    }
+  }
+
+  /**
+   * A game is in a valid state if any of the following are true:
+   * <ul>
+   * <li>It is completed and there are no cards in the deck and no valid triples
+   * on the board.
+   * <li>It is not completed and there are at least {@link MIN_CARDS_IN_PLAY}
+   * cards in play and at least one valid triple.
+   * </ul>
+   */
+  private boolean isGameInValidState() {
+    switch (mGameState) {
+      case COMPLETED:
+        Log.i(TAG, "Completed");
+        return !checkIfAnyValidTriples() && mDeck.isEmpty();
+      case PAUSED:
+        Log.i(TAG, "Paused");
+      case ACTIVE:
+        Log.i(TAG, "Active");
+        return checkIfAnyValidTriples()
+            && mCardsInPlay.size() >= MIN_CARDS_IN_PLAY;
+      default:
+        return false;
     }
   }
 
@@ -269,7 +326,7 @@ public class Game implements Comparable<Game> {
     return mDate;
   }
 
-  public boolean isCompleted() {
-    return mCompleted;
+  public GameState getGameState() {
+    return mGameState;
   }
 }

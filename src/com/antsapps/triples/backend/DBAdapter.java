@@ -12,11 +12,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.antsapps.triples.backend.Game.GameState;
+
 public class DBAdapter extends SQLiteOpenHelper {
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
   /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 2;
+  private static final int DATABASE_VERSION = 3;
 
   public static final String TABLE_GAMES = "games";
 
@@ -30,7 +32,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
   private static final String CREATE_GAMES = "CREATE TABLE " + TABLE_GAMES
       + "(" + COLUMN_GAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " //
-      + COLUMN_GAME_STATE + " INTEGER, " //
+      + COLUMN_GAME_STATE + " TEXT, " //
       + COLUMN_GAME_RANDOM + " INTEGER, " //
       + COLUMN_CARDS_IN_PLAY + " BLOB, " //
       + COLUMN_CARDS_IN_DECK + " BLOB, " //
@@ -131,14 +133,14 @@ public class DBAdapter extends SQLiteOpenHelper {
 
   private static Game cursorToGame(Cursor cursor) {
     long id = cursor.getLong(0);
-    int state = cursor.getInt(1);
+    GameState state = GameState.valueOf(cursor.getString(1));
     long seed = cursor.getLong(2);
     List<Card> cardsInPlay = Utils.cardListFromByteArray(cursor.getBlob(3));
     Deck deck = Deck.fromByteArray(cursor.getBlob(4));
     long timeElapsed = cursor.getLong(5);
     Date date = new Date(cursor.getLong(6));
     Game game = new Game(id, seed, cardsInPlay, deck,
-        timeElapsed, date);
+        timeElapsed, date, state);
     return game;
   }
 
@@ -168,7 +170,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
   private ContentValues createGameValues(Game game) {
     ContentValues values = new ContentValues();
-    values.put(COLUMN_GAME_STATE, 0);
+    values.put(COLUMN_GAME_STATE, game.getGameState().name());
     values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
     values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());

@@ -1,9 +1,11 @@
 package com.antsapps.triples;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,11 +47,16 @@ public abstract class GameListFragment extends SherlockListFragment implements
       }
     });
 
+    final Vibrator vibrator = (Vibrator) getSherlockActivity()
+        .getSystemService(Context.VIBRATOR_SERVICE);
+
     lv.setOnItemLongClickListener(new OnItemLongClickListener() {
       @Override
       public boolean onItemLongClick(AdapterView<?> parent, View view,
           final int position, long id) {
-        AlertDialog alert = createDeleteAlertDialog((Game) parent.getItemAtPosition(position));
+        vibrator.vibrate(100);
+        AlertDialog alert = createDeleteAlertDialog((Game) parent
+            .getItemAtPosition(position));
         alert.show();
         return false;
       }
@@ -77,19 +84,23 @@ public abstract class GameListFragment extends SherlockListFragment implements
     builder.setCancelable(true);
     builder.setTitle(R.string.delete);
     builder.setInverseBackgroundForced(true);
-    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        mApplication.deleteGame(game);
-        dialog.dismiss();
-      }
-    });
-    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        dialog.dismiss();
-      }
-    });
+    builder.setPositiveButton(
+        R.string.yes,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            mApplication.deleteGame(game);
+            dialog.dismiss();
+          }
+        });
+    builder.setNegativeButton(
+        R.string.no,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+          }
+        });
     AlertDialog alert = builder.create();
     return alert;
   }

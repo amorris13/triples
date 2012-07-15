@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import java.util.List;
+import java.util.Map;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -18,12 +19,22 @@ import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.Game.GameState;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
+
+  private static final Map<GameState, Float> sAlphasForGameState = Maps
+      .newEnumMap(GameState.class);
+  static {
+    sAlphasForGameState.put(GameState.ACTIVE, 1f);
+    sAlphasForGameState.put(GameState.COMPLETED, 0.5f);
+    sAlphasForGameState.put(GameState.PAUSED, 0f);
+  }
 
   interface OnAnimationFinishedListener {
     void onAnimationFinished();
@@ -44,6 +55,8 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private final Transformation mTransformation = new Transformation();
 
   private final OnAnimationFinishedListener mListener;
+
+  private float mAlpha;
 
   public CardDrawable(Card card, OnAnimationFinishedListener listener) {
     mCard = card;
@@ -137,6 +150,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   @Override
   public void setAlpha(int alpha) {
+    mAlpha = (float) alpha / 255;
     mSymbol.setAlpha(alpha);
     mCardBackground.setAlpha(alpha);
   }
@@ -199,19 +213,21 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mBounds = new Rect(bounds);
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
-//      Log.i("CD", "setBounds no change.  oldBounds = " + oldBounds + ", bounds = "
-//          + bounds);
+      // Log.i("CD", "setBounds no change.  oldBounds = " + oldBounds +
+      // ", bounds = "
+      // + bounds);
       // No change
       return;
     } else if (oldBounds == null) {
       // This CardDrawable is new.
-//      Log.i("CD", "setBounds fade in.  oldBounds = " + oldBounds + ", bounds = "
-//          + bounds);
+      // Log.i("CD", "setBounds fade in.  oldBounds = " + oldBounds +
+      // ", bounds = "
+      // + bounds);
       mBounds = bounds;
       transitionAnimation = new AlphaAnimation(0, 1);
     } else {
-//      Log.i("CD", "setBounds move.  oldBounds = " + oldBounds + ", bounds = "
-//          + bounds);
+      // Log.i("CD", "setBounds move.  oldBounds = " + oldBounds + ", bounds = "
+      // + bounds);
       // This CardDrawable is old
       transitionAnimation = new TranslateAnimation(oldBounds.centerX()
           - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
@@ -251,5 +267,15 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   @Override
   public int compareTo(CardDrawable another) {
     return Ints.compare(mDrawOrder, another.mDrawOrder);
+  }
+
+  public void updateGameState(GameState state, boolean animate) {
+    if (animate) {
+      Animation stateChangeAnimation = new AlphaAnimation(mAlpha,
+          sAlphasForGameState.get(state));
+      stateChangeAnimation.setDuration(800);
+      mAnimation = stateChangeAnimation;
+    }
+    setAlpha(Math.round(sAlphasForGameState.get(state) * 255));
   }
 }

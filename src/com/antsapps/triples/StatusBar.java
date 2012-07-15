@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.google.common.collect.ImmutableList;
@@ -46,6 +47,8 @@ public class StatusBar extends RelativeLayout implements OnTimerTickListener,
   }
 
   @Override
-  public void onFinish() {
+  public void onUpdateGameState(GameState state) {
+    // TODO Auto-generated method stub
+
   }
 }

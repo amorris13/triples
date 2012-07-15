@@ -14,6 +14,7 @@ import android.view.View;
 import com.antsapps.triples.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -36,14 +37,13 @@ public abstract class CardsView extends View implements
         mCardDrawables.remove(mCard);
       }
     }
-
   }
 
   protected ImmutableList<Card> mCards = ImmutableList.of();
   protected final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
   protected final List<Card> mCurrentlySelected = Lists.newArrayList();
   protected Game mGame;
-  protected boolean mActive;
+  private GameState mGameState;
   protected Rect mOffScreenLocation = new Rect();
 
   public CardsView(Context context) {
@@ -60,8 +60,7 @@ public abstract class CardsView extends View implements
 
   public void setGame(Game game) {
     mGame = game;
-    game.addOnUpdateGameStateListener(this);
-    mActive = true;
+    mGameState = game.getGameState();
   }
 
   @Override
@@ -75,13 +74,11 @@ public abstract class CardsView extends View implements
   protected void onDraw(Canvas canvas) {
     long start = System.currentTimeMillis();
     canvas.drawColor(0xFFE0E0E0);
-    if (mActive) {
-      for (CardDrawable dr : Ordering.natural().sortedCopy(
-          mCardDrawables.values())) {
-        dr.draw(canvas);
-      }
-      invalidate();
+    for (CardDrawable dr : Ordering.natural().sortedCopy(
+        mCardDrawables.values())) {
+      dr.draw(canvas);
     }
+    invalidate();
     long end = System.currentTimeMillis();
 //    Log.v("CardsView", "draw took " + (end - start) + ", mActive = " + mActive
 //        + ", cards drawn: " + mCardDrawables.size());
@@ -89,7 +86,7 @@ public abstract class CardsView extends View implements
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    if (mActive) {
+    if (mGameState == GameState.ACTIVE) {
       Log.i("CardsView", "onTouchEvent");
       if (event.getAction() == MotionEvent.ACTION_DOWN) {
         Card tappedCard = getCardForPosition(
@@ -163,16 +160,6 @@ public abstract class CardsView extends View implements
     }
   }
 
-  public void pause() {
-    mActive = false;
-    invalidate();
-  }
-
-  public void resume() {
-    mActive = true;
-    invalidate();
-  }
-
   @Override
   public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
@@ -180,7 +167,10 @@ public abstract class CardsView extends View implements
   }
 
   @Override
-  public void onFinish() {
-    mActive = false;
+  public void onUpdateGameState(GameState state) {
+    mGameState = state;
+    for(CardDrawable drawable : mCardDrawables.values()) {
+      drawable.updateGameState(state, true);
+    }
   }
 }

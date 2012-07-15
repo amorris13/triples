@@ -9,13 +9,17 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.Game.GameState;
+import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
+import com.google.common.collect.ImmutableList;
 
-public class GameActivity extends SherlockActivity {
-  private static final String KEY_GAME_STATE = "game_state";
+public class GameActivity extends SherlockActivity implements
+    OnUpdateGameStateListener {
   private Game mGame;
   private CardsView mCardsView;
-  private boolean mPaused;
+  private GameState mGameState;
   private StatusBar mStatusBar;
   private Application mApplication;
 
@@ -26,7 +30,7 @@ public class GameActivity extends SherlockActivity {
     setContentView(R.layout.main);
     mApplication = Application.getInstance(getApplication());
 
-    if (getIntent().hasExtra(Game.ID_TAG)){
+    if (getIntent().hasExtra(Game.ID_TAG)) {
       // We are being created from the game list.
       mGame = mApplication.getGame(getIntent().getLongExtra(Game.ID_TAG, 0));
     } else if (savedInstanceState != null) {
@@ -37,25 +41,28 @@ public class GameActivity extends SherlockActivity {
           "No savedInstanceState or intent containing key");
     }
 
+    mGame.addOnUpdateGameStateListener(this);
+    mGameState = mGame.getGameState();
+
     mStatusBar = (StatusBar) findViewById(R.id.status_bar);
     mGame.setOnTimerTickListener(mStatusBar);
     mGame.addOnUpdateGameStateListener(mStatusBar);
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mCardsView.setGame(mGame);
+    mGame.addOnUpdateGameStateListener(mCardsView);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     mGame.begin();
-    mPaused = false;
   }
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
-    menu.findItem(R.id.pause).setVisible(!mPaused);
-    menu.findItem(R.id.play).setVisible(mPaused);
+    menu.findItem(R.id.pause).setVisible(mGameState == GameState.ACTIVE);
+    menu.findItem(R.id.play).setVisible(mGameState == GameState.PAUSED);
     return true;
   }
 
@@ -71,10 +78,10 @@ public class GameActivity extends SherlockActivity {
     // Handle item selection
     switch (item.getItemId()) {
       case R.id.pause:
-        pause();
+        mGame.pause();
         return true;
       case R.id.play:
-        resume();
+        mGame.resume();
         return true;
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
@@ -88,35 +95,33 @@ public class GameActivity extends SherlockActivity {
     }
   }
 
-  private void pause() {
-    mPaused = true;
-    mGame.pause();
-    mCardsView.pause();
-    invalidateOptionsMenu();
-  }
-
-  private void resume() {
-    mPaused = false;
-    mGame.resume();
-    mCardsView.resume();
-    invalidateOptionsMenu();
-  }
-
   @Override
   protected void onPause() {
     super.onPause();
     mApplication.saveGame(mGame);
-    pause();
+    mGame.pause();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-    resume();
+    mGame.resume();
   }
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     outState.putLong(Game.ID_TAG, mGame.getId());
+  }
+
+  @Override
+  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards, int numRemaining) {
+    // Do Nothing
+  }
+
+  @Override
+  public void onUpdateGameState(GameState state) {
+    mGameState = state;
+    invalidateOptionsMenu();
   }
 }
