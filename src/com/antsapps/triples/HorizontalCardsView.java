@@ -45,6 +45,9 @@ public class HorizontalCardsView extends CardsView {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right,
       int bottom) {
+    if (!changed) {
+      return;
+    }
     Log.i("HCV", "oL: " + ", l = " + left + ", t = " + top + ", r = " + right
         + ", b = " + bottom);
     mHeightOfCard = (bottom - top) / ROWS;

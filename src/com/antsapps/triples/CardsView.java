@@ -47,6 +47,8 @@ public abstract class CardsView extends View implements
 
   private static final String TAG = "CardsView";
 
+  private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
+
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
   private final List<Card> mCurrentlySelected = Lists.newArrayList();
@@ -156,7 +158,9 @@ public abstract class CardsView extends View implements
         cardDrawable = new CardDrawable(card, new CardRemovalListener(card));
         mCardDrawables.put(card, cardDrawable);
       }
-      cardDrawable.updateBounds(calcBounds(i), mHandler);
+      if (!calcBounds(i).equals(EMPTY_RECT)) {
+        cardDrawable.updateBounds(calcBounds(i), mHandler);
+      }
     }
     updateMeasuredDimensions(0, 0);
     invalidate();
@@ -198,12 +202,12 @@ public abstract class CardsView extends View implements
   @Override
   public void onUpdateGameState(GameState state) {
     mGameState = state;
-    dispatchGameStateUpdate(true);
+    dispatchGameStateUpdate();
   }
 
-  private void dispatchGameStateUpdate(boolean animate) {
+  private void dispatchGameStateUpdate() {
     for (CardDrawable drawable : mCardDrawables.values()) {
-      drawable.updateGameState(mGameState, animate, mHandler);
+      drawable.updateGameState(mGameState, mHandler);
     }
     invalidate();
   }

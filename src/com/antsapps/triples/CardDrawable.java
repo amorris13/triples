@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -54,11 +55,11 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
   }
 
-  private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
-
   private static final Map<GameState, Float> sAlphasForGameState = Maps
       .newEnumMap(GameState.class);
+
   static {
+    sAlphasForGameState.put(GameState.STARTING, 0f);
     sAlphasForGameState.put(GameState.ACTIVE, 1f);
     sAlphasForGameState.put(GameState.COMPLETED, 0.5f);
     sAlphasForGameState.put(GameState.PAUSED, 0f);
@@ -67,6 +68,8 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   interface OnAnimationFinishedListener {
     void onAnimationFinished();
   }
+
+  private static final String TAG = "CardDrawable";
 
   private int mDrawOrder;
 
@@ -86,7 +89,10 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private float mAlpha;
 
-  public CardDrawable(Card card, OnAnimationFinishedListener listener) {
+  private boolean mShouldSlideIn;
+
+  public CardDrawable(Card card,
+      OnAnimationFinishedListener listener) {
     mCard = card;
     mListener = listener;
 
@@ -140,7 +146,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   @Override
   public void draw(Canvas canvas) {
     Rect bounds = mBounds;
-    if (bounds == null || bounds == EMPTY_RECT) {
+    if (bounds == null) {
       return;
     }
     int sc = canvas.save();
@@ -222,13 +228,20 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   public void updateBounds(Rect bounds, final Handler handler) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
+    Log.i(TAG, "mBounds = " + mBounds);
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
       // No change
       return;
     } else if (oldBounds == null) {
       // This CardDrawable is new.
-      transitionAnimation = new AlphaAnimation(0, 1);
+      if (mShouldSlideIn) {
+        transitionAnimation = new TranslateAnimation(0 - bounds.centerX(), 0,
+            0 - bounds.centerY(), 0);
+        mShouldSlideIn = false;
+      } else {
+        transitionAnimation = new AlphaAnimation(0, mAlpha);
+      }
     } else {
       // This CardDrawable is old
       transitionAnimation = new TranslateAnimation(oldBounds.centerX()
@@ -267,18 +280,17 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     return Ints.compare(mDrawOrder, another.mDrawOrder);
   }
 
-  public void
-      updateGameState(GameState state, boolean animate, Handler handler) {
-    if (animate) {
-      float currentAlpha = mAlpha;
-      Animation stateChangeAnimation = new AlphaAnimation(currentAlpha,
-          sAlphasForGameState.get(state));
-      stateChangeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
-      stateChangeAnimation.setDuration(800);
-      stateChangeAnimation.setAnimationListener(new BaseAnimationListener(
-          handler));
-      updateAnimation(handler, stateChangeAnimation);
+  public void updateGameState(GameState state, Handler handler) {
+    if (state == GameState.STARTING) {
+      mShouldSlideIn = true;
     }
+    Animation stateChangeAnimation = new AlphaAnimation(mAlpha,
+        sAlphasForGameState.get(state));
+    stateChangeAnimation.setDuration(800);
+    stateChangeAnimation
+        .setAnimationListener(new BaseAnimationListener(handler));
+    updateAnimation(handler, stateChangeAnimation);
+
     setAlpha(Math.round(sAlphasForGameState.get(state) * 255));
   }
 }

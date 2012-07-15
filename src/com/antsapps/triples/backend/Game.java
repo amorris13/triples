@@ -23,6 +23,7 @@ public class Game implements Comparable<Game> {
   }
 
   public enum GameState {
+    STARTING,
     ACTIVE,
     PAUSED,
     COMPLETED;
@@ -53,7 +54,7 @@ public class Game implements Comparable<Game> {
 
   public static Game createFromSeed(long seed) {
     Game game = new Game(-1, seed, Collections.<Card> emptyList(), new Deck(
-        new Random(seed)), 0, new Date(), GameState.PAUSED);
+        new Random(seed)), 0, new Date(), GameState.STARTING);
     game.init();
     return game;
   }
@@ -100,11 +101,20 @@ public class Game implements Comparable<Game> {
         ImmutableList.copyOf(mCardsInPlay),
         ImmutableList.<Card> of(),
         mDeck.getCardsRemaining());
-    if (mGameState != GameState.COMPLETED) {
-      resume();
-    } else {
-      mTimer.update();
-      dispatchGameStateUpdate();
+    switch(mGameState) {
+      case STARTING:
+        mTimer.start();
+        dispatchGameStateUpdate();
+        mGameState = GameState.ACTIVE;
+        break;
+      case ACTIVE:
+      case PAUSED:
+        resume();
+        break;
+      case COMPLETED:
+        mTimer.update();
+        dispatchGameStateUpdate();
+        break;
     }
   }
 
@@ -284,12 +294,10 @@ public class Game implements Comparable<Game> {
   private boolean isGameInValidState() {
     switch (mGameState) {
       case COMPLETED:
-        Log.i(TAG, "Completed");
         return !checkIfAnyValidTriples() && mDeck.isEmpty();
       case PAUSED:
-        Log.i(TAG, "Paused");
       case ACTIVE:
-        Log.i(TAG, "Active");
+      case STARTING:
         return checkIfAnyValidTriples()
             && mCardsInPlay.size() >= MIN_CARDS_IN_PLAY;
       default:
