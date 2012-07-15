@@ -1,76 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical" >
 
-   <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp" >
+	<RelativeLayout
+		android:layout_width="fill_parent"
+		android:layout_height="0dip"
+		android:layout_weight="1"
+		android:orientation="horizontal" >
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
+		<TextView
+			android:id="@+id/time_elapsed"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:gravity="right"
+			android:paddingLeft="5dp"
+			android:singleLine="true"
+			android:textSize="@dimen/game_list_time_elapsed_text_size" />
 
-            <TextView
-                android:id="@+id/team1wins"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="right"
-                android:paddingLeft="5dp"
-                android:singleLine="true"
-                android:textSize="@dimen/game_list_team_wins_text_size" />
+		<TextView
+			android:id="@+id/cards_remaining"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@id/time_elapsed"
+			android:gravity="left"
+			android:singleLine="true"
+			android:textSize="@dimen/game_list_cards_remaining_text_size" />
+	</RelativeLayout>
 
-            <TextView
-                android:id="@+id/team1name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/team1wins"
-                android:gravity="left"
-                android:singleLine="true"
-                android:textSize="@dimen/game_list_team_name_text_size" />
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/team2wins"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:gravity="left"
-                android:paddingRight="5dp"
-                android:singleLine="true"
-                android:textSize="@dimen/game_list_team_wins_text_size" />
-
-            <TextView
-                android:id="@+id/team2name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/team2wins"
-                android:gravity="right"
-                android:singleLine="true"
-                android:textSize="@dimen/game_list_team_name_text_size" />
-        </RelativeLayout>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/lastplayed"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right"
-        android:paddingRight="5dp"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="@dimen/game_list_last_played_text_size" />
+	<TextView
+		android:id="@+id/when_started"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="right"
+		android:paddingRight="5dp"
+		android:textColor="@android:color/darker_gray"
+		android:textSize="@dimen/game_list_when_started_text_size" />
 
 </LinearLayout>

@@ -7,7 +7,6 @@ import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -27,7 +26,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
 
   interface OnAnimationFinishedListener {
-    void onAnimationFinished(boolean stillVisible);
+    void onAnimationFinished();
   }
 
   private int mDrawOrder;
@@ -44,8 +43,11 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
 
-  public CardDrawable(Card card) {
+  private final OnAnimationFinishedListener mListener;
+
+  public CardDrawable(Card card, OnAnimationFinishedListener listener) {
     mCard = card;
+    mListener = listener;
 
     mSymbol = new SymbolDrawable(mCard);
     mCardBackground = new CardBackgroundDrawable();
@@ -97,7 +99,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   @Override
   public void draw(Canvas canvas) {
     Rect bounds = mBounds;
-    Log.v("CD", "drawing with bounds = " + bounds);
     if (bounds == null || bounds == EMPTY_RECT) {
       return;
     }
@@ -163,12 +164,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mCardBackground.setSelected(selected);
   }
 
-  @Override
-  public void setBounds(Rect bounds) {
-    Log.i("CD", "setBounds.  mBounds = " + mBounds + ", bounds = " + bounds);
-    mBounds = bounds;
-  }
-
   public void onIncorrectTriple() {
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(),
@@ -198,53 +193,38 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mAnimation = shakeAnimation;
   }
 
-  /**
-   * @return whether the card should be drawn on a top level.
-   */
-  public void setNewPosition(final Rect bounds,
-      final OnAnimationFinishedListener listener) {
-    if(bounds == mBounds) {
-      return;
-    }
+  @Override
+  public void setBounds(Rect bounds) {
+    Rect oldBounds = mBounds;
+    mBounds = new Rect(bounds);
     Animation transitionAnimation = null;
-    if (mBounds == null) {
+    if (bounds.equals(oldBounds)) {
+//      Log.i("CD", "setBounds no change.  oldBounds = " + oldBounds + ", bounds = "
+//          + bounds);
+      // No change
+      return;
+    } else if (oldBounds == null) {
       // This CardDrawable is new.
-      Log.i("CD", "setBounds fade in.  mBounds = " + mBounds + ", bounds = "
-          + bounds);
+//      Log.i("CD", "setBounds fade in.  oldBounds = " + oldBounds + ", bounds = "
+//          + bounds);
       mBounds = bounds;
       transitionAnimation = new AlphaAnimation(0, 1);
     } else {
+//      Log.i("CD", "setBounds move.  oldBounds = " + oldBounds + ", bounds = "
+//          + bounds);
       // This CardDrawable is old
-      if (bounds == null) {
-        // This CardDrawable is being removed
-        transitionAnimation = new TranslateAnimation(0, 1000, 0, 0);
-        mDrawOrder = 2;
-      } else {
-        // This CardDrawable is being moved to a new place
-        transitionAnimation = new TranslateAnimation(0, bounds.centerX()
-            - mBounds.centerX(), 0, bounds.centerY() - mBounds.centerY());
-        mDrawOrder = 1;
-      }
+      transitionAnimation = new TranslateAnimation(oldBounds.centerX()
+          - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
+      mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
     transitionAnimation.setDuration(800);
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
     transitionAnimation.setAnimationListener(new AnimationListener() {
-
       @Override
       public void onAnimationEnd(Animation animation) {
-        if (bounds == null) {
-          Log.i("CD", "setBounds slide off.  mBounds = " + mBounds
-              + ", bounds = " + bounds);
-          mBounds = null;
-          listener.onAnimationFinished(false);
-        } else {
-          Log.i("CD", "setBounds slide to new.  mBounds = " + mBounds
-              + ", bounds = " + bounds);
-          mBounds = new Rect(bounds);
-          listener.onAnimationFinished(true);
-        }
+        mListener.onAnimationFinished();
         mDrawOrder = 0;
 
         if (mAnimation == animation) {

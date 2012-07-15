@@ -16,7 +16,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
   /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 1;
+  private static final int DATABASE_VERSION = 2;
 
   public static final String TABLE_GAMES = "games";
 
@@ -38,6 +38,7 @@ public class DBAdapter extends SQLiteOpenHelper {
       + COLUMN_DATE + " INTEGER)";
   private static final String DROP_GAMES = "DROP TABLE IF EXISTS "
       + TABLE_GAMES;
+  private static final String TAG = "DBAdapter";
 
   /** Constructor */
   public DBAdapter(Context context) {
@@ -119,6 +120,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     gamesCursor.moveToFirst();
     while (!gamesCursor.isAfterLast()) {
       Game game = cursorToGame(gamesCursor);
+      Log.i(TAG, "retrieved game with seed = " + game.getRandomSeed());
       games.add(game);
       gamesCursor.moveToNext();
     }
@@ -141,6 +143,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   }
 
   public long addGame(Game game) {
+    Log.i(TAG, "adding game with seed = " + game.getRandomSeed());
     return getWritableDatabase().insert(
         TABLE_GAMES,
         null,
@@ -165,7 +168,6 @@ public class DBAdapter extends SQLiteOpenHelper {
 
   private ContentValues createGameValues(Game game) {
     ContentValues values = new ContentValues();
-    values.put(COLUMN_GAME_ID, game.getId());
     values.put(COLUMN_GAME_STATE, 0);
     values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());

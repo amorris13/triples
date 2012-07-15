@@ -9,5 +9,12 @@
 	<string name="games_no_items">No games played yet.\nTap + to create a new game.</string>
 	<string name="list_of_games">LIST OF GAMES</string>
 	<string name="new_game">New Game</string>
+	<string name="no_current_games">No Current Games.\nTo start a new game, click +.</string>
+	<string name="current">CURRENT</string>
+	<string name="completed">COMPLETED</string>
+	<string name="delete">Delete?</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="no_completed_games">You haven\'t finished any games.</string>
 
 </resources>

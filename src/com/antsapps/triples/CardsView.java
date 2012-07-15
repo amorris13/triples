@@ -31,8 +31,8 @@ public abstract class CardsView extends View implements
     }
 
     @Override
-    public void onAnimationFinished(boolean stillVisible) {
-      if (!stillVisible && !mCards.contains(mCard)) {
+    public void onAnimationFinished() {
+      if (!mCards.contains(mCard)) {
         mCardDrawables.remove(mCard);
       }
     }
@@ -44,6 +44,7 @@ public abstract class CardsView extends View implements
   protected final List<Card> mCurrentlySelected = Lists.newArrayList();
   protected Game mGame;
   protected boolean mActive;
+  protected Rect mOffScreenLocation = new Rect();
 
   public CardsView(Context context) {
     super(context);
@@ -66,8 +67,6 @@ public abstract class CardsView extends View implements
   @Override
   protected void onMeasure(final int widthMeasureSpec,
       final int heightMeasureSpec) {
-    Log.i("CV", "oM: wMS = " + widthMeasureSpec + ", hMS = "
-        + heightMeasureSpec);
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     updateMeasuredDimensions(widthMeasureSpec, heightMeasureSpec);
   }
@@ -84,8 +83,8 @@ public abstract class CardsView extends View implements
       invalidate();
     }
     long end = System.currentTimeMillis();
-    Log.v("CardsView", "draw took " + (end - start) + ", mActive = " + mActive
-        + ", cards drawn: " + mCardDrawables.size());
+//    Log.v("CardsView", "draw took " + (end - start) + ", mActive = " + mActive
+//        + ", cards drawn: " + mCardDrawables.size());
   }
 
   @Override
@@ -119,9 +118,7 @@ public abstract class CardsView extends View implements
   protected void updateCards(ImmutableList<Card> newCards, ImmutableList<Card> oldCards, int numRemaining) {
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
-        mCardDrawables.get(oldCard).setNewPosition(
-            null,
-            new CardRemovalListener(oldCard));
+        mCardDrawables.get(oldCard).setBounds(mOffScreenLocation);
       }
     }
 
@@ -130,10 +127,10 @@ public abstract class CardsView extends View implements
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
       if (cardDrawable == null) {
-        cardDrawable = new CardDrawable(card);
+        cardDrawable = new CardDrawable(card, new CardRemovalListener(card));
         mCardDrawables.put(card, cardDrawable);
       }
-      cardDrawable.setNewPosition(calcBounds(i), new CardRemovalListener(card));
+      cardDrawable.setBounds(calcBounds(i));
     }
     Log.i("CV", "updateCards()");
     updateMeasuredDimensions(0, 0);

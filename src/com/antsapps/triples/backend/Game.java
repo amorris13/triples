@@ -112,12 +112,6 @@ public class Game implements Comparable<Game> {
     mTimer.resume();
   }
 
-//  public ImmutableList<Card> getCurrentlyInPlay() {
-//    synchronized (mCardsInPlay) {
-//      return ImmutableList.copyOf(mCardsInPlay);
-//    }
-//  }
-
   public void commitTriple(List<Card> cards) {
     commitTriple(Iterables.toArray(cards, Card.class));
   }
@@ -272,12 +266,15 @@ public class Game implements Comparable<Game> {
     return (int) Utils.compareTo(mDate, id, another.mDate, another.id);
   }
 
-  long getRandomSeed() {
+  public long getRandomSeed() {
     return mRandomSeed;
   }
 
-  long getTimeElapsed() {
-    // TODO Auto-generated method stub
+  public long getTimeElapsed() {
     return mTimer.getElapsed();
+  }
+
+  public Date getDateStarted() {
+    return mDate;
   }
 }

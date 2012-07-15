@@ -49,6 +49,7 @@ public class HorizontalCardsView extends CardsView {
         + ", b = " + bottom);
     mHeightOfCard = (bottom - top) / ROWS;
     mWidthOfCard = (int) (mHeightOfCard * WIDTH_OVER_HEIGHT);
+    mOffScreenLocation.set(right, bottom, right + mWidthOfCard, bottom + mHeightOfCard);
     Log.i("HCV", "oL: mHOC = " + mHeightOfCard + ", mWOC = " + mWidthOfCard);
     updateBounds();
   }

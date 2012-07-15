@@ -1,5 +1,6 @@
 package com.antsapps.triples;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -7,6 +8,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 
 public class GameActivity extends SherlockActivity {
@@ -15,24 +17,24 @@ public class GameActivity extends SherlockActivity {
   private CardsView mCardsView;
   private boolean mPaused;
   private StatusBar mStatusBar;
+  private Application mApplication;
 
   /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
+    mApplication = Application.getInstance(getApplication());
 
-    if (savedInstanceState == null) {
-      // We were just launched -- set up a new game
-      mGame = Game.createFromSeed(System.currentTimeMillis());
-    } else {
+    if (getIntent().hasExtra(Game.ID_TAG)){
+      // We are being created from the game list.
+      mGame = mApplication.getGame(getIntent().getLongExtra(Game.ID_TAG, 0));
+    } else if (savedInstanceState != null) {
       // We are being restored
-      Bundle bundle = savedInstanceState.getBundle(KEY_GAME_STATE);
-      if (bundle != null) {
-        mGame = Game.createFromBundle(bundle);
-      } else {
-        mGame = Game.createFromSeed(System.currentTimeMillis());
-      }
+      mGame = mApplication.getGame(savedInstanceState.getLong(Game.ID_TAG));
+    } else {
+      throw new IllegalArgumentException(
+          "No savedInstanceState or intent containing key");
     }
 
     mStatusBar = (StatusBar) findViewById(R.id.status_bar);
@@ -76,9 +78,8 @@ public class GameActivity extends SherlockActivity {
         return true;
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
-        // Intent intent = new Intent(this, RoundList.class);
-        // intent.putExtra(Match.ID_TAG, mRound.getMatch().getId());
-        // startActivity(intent);
+        Intent intent = new Intent(this, GameListActivity.class);
+        startActivity(intent);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -102,6 +103,7 @@ public class GameActivity extends SherlockActivity {
   @Override
   protected void onPause() {
     super.onPause();
+    mApplication.saveGame(mGame);
     pause();
   }
 
@@ -113,7 +115,6 @@ public class GameActivity extends SherlockActivity {
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
-    outState.putBundle(KEY_GAME_STATE, mGame.saveState());
+    outState.putLong(Game.ID_TAG, mGame.getId());
   }
-
 }

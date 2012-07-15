@@ -3,7 +3,6 @@ package com.antsapps.triples;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
@@ -44,9 +43,12 @@ public class VerticalCardsView extends CardsView {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right,
       int bottom) {
-    Log.i("VCV", "oL changed = " + changed);
+    if (!changed) {
+      return;
+    }
     mWidthOfCard = (right - left) / COLUMNS;
     mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
+    mOffScreenLocation.set(right, bottom, right + mWidthOfCard, bottom + mHeightOfCard);
     updateBounds();
   }
 
