@@ -6,6 +6,9 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -39,23 +42,47 @@ public abstract class CardsView extends View implements
     }
   }
 
+  static final int WHAT_INCREMENT = 0;
+  static final int WHAT_DECREMENT = 1;
+
+  private static final String TAG = "CardsView";
+
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
   private final List<Card> mCurrentlySelected = Lists.newArrayList();
   private Game mGame;
   private GameState mGameState;
+  private final Vibrator mVibrator;
+
   protected Rect mOffScreenLocation = new Rect();
 
+  private final Handler mHandler;
+  private int mNumAnimating;
+
   public CardsView(Context context) {
-    super(context);
+    this(context, null);
   }
 
   public CardsView(Context context, AttributeSet attrs) {
-    super(context, attrs);
+    this(context, attrs, 0);
   }
 
   public CardsView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    mHandler = new Handler() {
+      @Override
+      public void handleMessage(Message m) {
+        switch (m.what) {
+          case WHAT_INCREMENT:
+            incrementNumAnimating();
+            break;
+          case WHAT_DECREMENT:
+            decrementNumAnimating();
+            break;
+        }
+      }
+    };
+    mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
   }
 
   public void setGame(Game game) {
@@ -78,16 +105,17 @@ public abstract class CardsView extends View implements
         mCardDrawables.values())) {
       dr.draw(canvas);
     }
-    invalidate();
+    if (mNumAnimating > 0) {
+      invalidate();
+    }
     long end = System.currentTimeMillis();
-//    Log.v("CardsView", "draw took " + (end - start) + ", mActive = " + mActive
-//        + ", cards drawn: " + mCardDrawables.size());
+    Log.v("CardsView", "draw took " + (end - start) + ", cards drawn: "
+        + mCardDrawables.size());
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
     if (mGameState == GameState.ACTIVE) {
-      Log.i("CardsView", "onTouchEvent");
       if (event.getAction() == MotionEvent.ACTION_DOWN) {
         Card tappedCard = getCardForPosition(
             (int) event.getX(),
@@ -96,14 +124,14 @@ public abstract class CardsView extends View implements
           return true;
         }
         CardDrawable tappedCardDrawable = mCardDrawables.get(tappedCard);
-        tappedCardDrawable.onTap();
-        if (mCurrentlySelected.contains(tappedCard)) {
-          mCurrentlySelected.remove(tappedCard);
-        } else {
+        if (tappedCardDrawable.onTap()) {
           mCurrentlySelected.add(tappedCard);
+        } else {
+          mCurrentlySelected.remove(tappedCard);
         }
 
         checkSelectedCards();
+        invalidate();
       }
     }
 
@@ -112,10 +140,11 @@ public abstract class CardsView extends View implements
 
   protected abstract Card getCardForPosition(int x, int y);
 
-  protected void updateCards(ImmutableList<Card> newCards, ImmutableList<Card> oldCards, int numRemaining) {
+  protected void updateCards(ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards, int numRemaining) {
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
-        mCardDrawables.get(oldCard).setBounds(mOffScreenLocation);
+        mCardDrawables.get(oldCard).updateBounds(mOffScreenLocation, mHandler);
       }
     }
 
@@ -127,18 +156,19 @@ public abstract class CardsView extends View implements
         cardDrawable = new CardDrawable(card, new CardRemovalListener(card));
         mCardDrawables.put(card, cardDrawable);
       }
-      cardDrawable.setBounds(calcBounds(i));
+      cardDrawable.updateBounds(calcBounds(i), mHandler);
     }
-    Log.i("CV", "updateCards()");
     updateMeasuredDimensions(0, 0);
+    invalidate();
   }
 
   protected void updateBounds() {
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
-      cardDrawable.setBounds(calcBounds(i));
+      cardDrawable.updateBounds(calcBounds(i), mHandler);
     }
+    invalidate();
   }
 
   protected abstract void updateMeasuredDimensions(final int widthMeasureSpec,
@@ -146,17 +176,16 @@ public abstract class CardsView extends View implements
 
   protected abstract Rect calcBounds(int i);
 
-  void checkSelectedCards() {
+  private void checkSelectedCards() {
     if (mCurrentlySelected.size() == 3) {
       if (Game.isValidTriple(mCurrentlySelected)) {
         mGame.commitTriple(mCurrentlySelected);
       } else {
         for (Card card : mCurrentlySelected) {
-          mCardDrawables.get(card).onIncorrectTriple();
+          mCardDrawables.get(card).onIncorrectTriple(mHandler);
         }
       }
       mCurrentlySelected.clear();
-      invalidate();
     }
   }
 
@@ -168,14 +197,26 @@ public abstract class CardsView extends View implements
 
   @Override
   public void onUpdateGameState(GameState state) {
-    boolean animate = (mGameState != null);
     mGameState = state;
-    dispatchGameStateUpdate(animate);
+    dispatchGameStateUpdate(true);
   }
 
   private void dispatchGameStateUpdate(boolean animate) {
-    for(CardDrawable drawable : mCardDrawables.values()) {
-      drawable.updateGameState(mGameState, animate);
+    for (CardDrawable drawable : mCardDrawables.values()) {
+      drawable.updateGameState(mGameState, animate, mHandler);
     }
+    invalidate();
+  }
+
+  synchronized void incrementNumAnimating() {
+    mNumAnimating++;
+    Log.i(TAG, "increment with mNumAnimating = " + mNumAnimating);
+    if (mNumAnimating > 0) {
+      invalidate();
+    }
+  }
+
+  synchronized void decrementNumAnimating() {
+    mNumAnimating--;
   }
 }

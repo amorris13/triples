@@ -8,6 +8,8 @@ import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -25,6 +27,32 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+
+  private class BaseAnimationListener implements AnimationListener {
+
+    private final Handler mHandler;
+
+    BaseAnimationListener(Handler handler) {
+      mHandler = handler;
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+      mHandler.sendMessage(Message.obtain(mHandler, CardsView.WHAT_INCREMENT));
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+      mHandler.sendMessage(Message.obtain(mHandler, CardsView.WHAT_DECREMENT));
+      if (mAnimation == animation) {
+        mAnimation = null;
+      }
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+    }
+  }
 
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
 
@@ -123,8 +151,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
           mTransformation);
 
       canvas.concat(mTransformation.getMatrix());
-      mCardBackground.setAlpha((int) (mTransformation.getAlpha() * 255));
-      mSymbol.setAlpha((int) (mTransformation.getAlpha() * 255));
+      setAlpha((int) (mTransformation.getAlpha() * 255));
 
       if (!anim.isInitialized()) {
         anim.initialize(bounds.width(), bounds.height(), 0, 0);
@@ -161,16 +188,13 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mCardBackground.setColorFilter(cf);
   }
 
-  public Card getCard() {
-    return mCard;
-  }
-
-  public void onTap() {
+  public boolean onTap() {
     if (mSelected) {
       setSelected(false);
     } else {
       setSelected(true);
     }
+    return mSelected;
   }
 
   private void setSelected(boolean selected) {
@@ -178,37 +202,24 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mCardBackground.setSelected(selected);
   }
 
-  public void onIncorrectTriple() {
+  public void onIncorrectTriple(final Handler handler) {
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(),
         mBounds.centerY());
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
     shakeAnimation.setDuration(800);
     shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
-    shakeAnimation.setAnimationListener(new AnimationListener() {
-
+    shakeAnimation.setAnimationListener(new BaseAnimationListener(handler) {
       @Override
       public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
         setSelected(false);
-        if (mAnimation == animation) {
-          mAnimation = null;
-        }
       }
-
-      @Override
-      public void onAnimationRepeat(Animation animation) {
-      }
-
-      @Override
-      public void onAnimationStart(Animation animation) {
-      }
-
     });
-    mAnimation = shakeAnimation;
+    updateAnimation(handler, shakeAnimation);
   }
 
-  @Override
-  public void setBounds(Rect bounds) {
+  public void updateBounds(Rect bounds, final Handler handler) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Animation transitionAnimation = null;
@@ -217,7 +228,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       return;
     } else if (oldBounds == null) {
       // This CardDrawable is new.
-      mBounds = bounds;
       transitionAnimation = new AlphaAnimation(0, 1);
     } else {
       // This CardDrawable is old
@@ -229,27 +239,23 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     transitionAnimation.setDuration(800);
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
-    transitionAnimation.setAnimationListener(new AnimationListener() {
-      @Override
-      public void onAnimationEnd(Animation animation) {
-        mListener.onAnimationFinished();
-        mDrawOrder = 0;
+    transitionAnimation
+        .setAnimationListener(new BaseAnimationListener(handler) {
+          @Override
+          public void onAnimationEnd(Animation animation) {
+            super.onAnimationEnd(animation);
+            mListener.onAnimationFinished();
+            mDrawOrder = 0;
+          }
+        });
+    updateAnimation(handler, transitionAnimation);
+  }
 
-        if (mAnimation == animation) {
-          mAnimation = null;
-        }
-      }
-
-      @Override
-      public void onAnimationRepeat(Animation animation) {
-      }
-
-      @Override
-      public void onAnimationStart(Animation animation) {
-      }
-
-    });
-    mAnimation = transitionAnimation;
+  private void updateAnimation(final Handler handler, Animation animation) {
+    if (mAnimation != null) {
+      mAnimation.cancel();
+    }
+    mAnimation = animation;
   }
 
   public int getDrawOrder() {
@@ -261,14 +267,17 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     return Ints.compare(mDrawOrder, another.mDrawOrder);
   }
 
-  public void updateGameState(GameState state, boolean animate) {
+  public void
+      updateGameState(GameState state, boolean animate, Handler handler) {
     if (animate) {
-      float currentAlpha = (mAnimation == null) ? mAlpha : mTransformation.getAlpha();
+      float currentAlpha = mAlpha;
       Animation stateChangeAnimation = new AlphaAnimation(currentAlpha,
           sAlphasForGameState.get(state));
       stateChangeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
       stateChangeAnimation.setDuration(800);
-      mAnimation = stateChangeAnimation;
+      stateChangeAnimation.setAnimationListener(new BaseAnimationListener(
+          handler));
+      updateAnimation(handler, stateChangeAnimation);
     }
     setAlpha(Math.round(sAlphasForGameState.get(state) * 255));
   }
