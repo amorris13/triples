@@ -20,8 +20,6 @@ public class VerticalCardsView extends CardsView {
 
   private int mHeightOfCard;
 
-  int mRows;
-
   public VerticalCardsView(Context context) {
     this(context, null);
   }
@@ -34,7 +32,7 @@ public class VerticalCardsView extends CardsView {
   protected void updateMeasuredDimensions(final int widthMeasureSpec,
       final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
-    int rows = Math.max(mRows, MIN_ROWS);
+    int rows = Math.max(mCards.size() / COLUMNS, MIN_ROWS);
     int heightOfCards = (int) (widthOfCards / COLUMNS * HEIGHT_OVER_WIDTH * rows);
     setMeasuredDimension(
         widthOfCards,

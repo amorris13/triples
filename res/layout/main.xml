@@ -10,13 +10,6 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true" />
 
-<!-- 	<include -->
-<!-- 		android:id="@+id/status_bar_ref" -->
-<!-- 		android:layout_width="fill_parent" -->
-<!-- 		android:layout_height="wrap_content" -->
-<!-- 		android:layout_alignParentBottom="true" -->
-<!-- 		layout="@layout/statusbar" /> -->
-
 	<include
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
