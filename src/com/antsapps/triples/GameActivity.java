@@ -98,14 +98,18 @@ public class GameActivity extends SherlockActivity implements
   @Override
   protected void onPause() {
     super.onPause();
-    mApplication.saveGame(mGame);
-    mGame.pause();
+    if (mGameState != GameState.COMPLETED) {
+      mApplication.saveGame(mGame);
+      mGame.pause();
+    }
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-    mGame.resume();
+    if (mGameState != GameState.COMPLETED) {
+      mGame.resume();
+    }
   }
 
   @Override

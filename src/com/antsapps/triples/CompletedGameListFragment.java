@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnStateChangedListener;
+import com.google.common.collect.Lists;
 
 public class CompletedGameListFragment extends GameListFragment implements
     OnStateChangedListener {
@@ -34,7 +34,6 @@ public class CompletedGameListFragment extends GameListFragment implements
       }
 
       Game g = getItem(position);
-      Log.i("GLF", "getting game with seed = " + g.getRandomSeed());
       if (g != null) {
         ((TextView) v.findViewById(R.id.time_elapsed)).setText(g
             .getTimeElapsed() + " elapsed");
@@ -59,6 +58,15 @@ public class CompletedGameListFragment extends GameListFragment implements
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
     return new CurrentGamesArrayAdapter(getSherlockActivity(),
-        mApplication.getCompletedGames());
+        Lists.newArrayList(mApplication.getCompletedGames()));
+  }
+
+  @Override
+  protected void updateDataSet() {
+    mAdapter.clear();
+    for(Game game : mApplication.getCompletedGames()) {
+      mAdapter.add(game);
+    }
+    mAdapter.notifyDataSetChanged();
   }
 }

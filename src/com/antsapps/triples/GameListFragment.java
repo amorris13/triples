@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,7 +22,7 @@ public abstract class GameListFragment extends SherlockListFragment implements
     OnStateChangedListener {
 
   protected Application mApplication;
-  private ArrayAdapter<Game> mAdapter;
+  protected ArrayAdapter<Game> mAdapter;
 
   /** Called when the activity is first created. */
   @Override
@@ -107,7 +106,8 @@ public abstract class GameListFragment extends SherlockListFragment implements
 
   @Override
   public void onStateChanged() {
-    Log.i("GLF", "NotifyDataSetChanged");
-    mAdapter.notifyDataSetChanged();
+    updateDataSet();
   }
+
+  protected abstract void updateDataSet();
 }

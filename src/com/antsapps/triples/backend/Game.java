@@ -107,12 +107,18 @@ public class Game implements Comparable<Game> {
   }
 
   public void pause() {
+    if (mGameState == GameState.COMPLETED) {
+      return;
+    }
     mGameState = GameState.PAUSED;
     mTimer.pause();
     dispatchGameStateUpdate();
   }
 
   public void resume() {
+    if (mGameState == GameState.COMPLETED) {
+      return;
+    }
     mGameState = GameState.ACTIVE;
     mTimer.resume();
     dispatchGameStateUpdate();
@@ -165,13 +171,13 @@ public class Game implements Comparable<Game> {
       }
     }
 
+    dispatchCardsInPlayUpdate(
+        ImmutableList.copyOf(mCardsInPlay),
+        oldCards,
+        mDeck.getCardsRemaining());
+
     if (!checkIfAnyValidTriples()) {
       finish();
-    } else {
-      dispatchCardsInPlayUpdate(
-          ImmutableList.copyOf(mCardsInPlay),
-          oldCards,
-          mDeck.getCardsRemaining());
     }
   }
 
@@ -305,7 +311,7 @@ public class Game implements Comparable<Game> {
     return id;
   }
 
-  public void setId(long id) {
+  void setId(long id) {
     this.id = id;
   }
 

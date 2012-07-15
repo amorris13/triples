@@ -5,6 +5,9 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 
+import com.antsapps.triples.backend.Game.GameState;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class Application extends OnStateChangedReporter {
@@ -28,7 +31,8 @@ public class Application extends OnStateChangedReporter {
     if (INSTANCE == null) {
       INSTANCE = new Application(context);
     }
-    return INSTANCE;  }
+    return INSTANCE;
+  }
 
   private void init() {
     database.initialize(mGames);
@@ -57,19 +61,30 @@ public class Application extends OnStateChangedReporter {
   }
 
   public Game getGame(long id) {
-    for(Game game : mGames){
-      if(game.getId() == id){
+    for (Game game : mGames) {
+      if (game.getId() == id) {
         return game;
       }
     }
     return null;
   }
 
-  public List<Game> getCurrentGames() {
-    return mGames;
+  public Iterable<Game> getCurrentGames() {
+    return Iterables.filter(mGames, new Predicate<Game>() {
+      @Override
+      public boolean apply(Game game) {
+        return game.getGameState() == GameState.PAUSED
+            || game.getGameState() == GameState.ACTIVE;
+      }
+    });
   }
 
-  public List<Game> getCompletedGames() {
-    return mGames;
+  public Iterable<Game> getCompletedGames() {
+    return Iterables.filter(mGames, new Predicate<Game>() {
+      @Override
+      public boolean apply(Game game) {
+        return game.getGameState() == GameState.COMPLETED;
+      }
+    });
   }
 }
