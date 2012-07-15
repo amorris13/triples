@@ -55,6 +55,10 @@ class Timer {
     update();
   }
 
+  void stop() {
+    pause();
+  }
+
   long getElapsed() {
     return mTimeElapsedWhenLastResumed
         + (isActive() ? (System.currentTimeMillis() - mTimeOfLastResume) : 0);

@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import android.os.Bundle;
 import android.util.Log;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -25,6 +25,8 @@ public class Game implements Comparable<Game> {
   public static final int MIN_CARDS_IN_PLAY = 12;
 
   public static final String ID_TAG = "game_id";
+
+  private boolean mCompleted;
 
   private final Deck mDeck;
 
@@ -44,28 +46,6 @@ public class Game implements Comparable<Game> {
   public static Game createFromSeed(long seed) {
     return new Game(-1, seed, Collections.<Card> emptyList(), new Deck(
         new Random(seed)), 0, new Date());
-  }
-
-  public Bundle saveState() {
-    Bundle bundle = new Bundle();
-    bundle.putLong("id", id);
-    bundle.putLong("elapsed_time", mTimer.getElapsed());
-    bundle.putByteArray("cards_in_play", getCardsInPlayAsByteArray());
-    bundle.putByteArray("deck", getCardsInDeckAsByteArray());
-    bundle.putLong("seed", mRandomSeed);
-    bundle.putLong("date", mDate.getTime());
-    return bundle;
-  }
-
-  public static Game createFromBundle(Bundle bundle) {
-    long id = bundle.getLong("id");
-    long elapsedTime = bundle.getLong("elapsed_time");
-    long seed = bundle.getLong("seed");
-    Date date = new Date(bundle.getLong("date"));
-    List<Card> cardsInPlay = Utils.cardListFromByteArray(bundle
-        .getByteArray("cards_in_play"));
-    Deck deck = Deck.fromByteArray(bundle.getByteArray("deck"));
-    return new Game(id, seed, cardsInPlay, deck, elapsedTime, date);
   }
 
   Game(long id,
@@ -117,6 +97,7 @@ public class Game implements Comparable<Game> {
   }
 
   public void commitTriple(Card... cards) {
+    Preconditions.checkState(!mCompleted, "Game is already completed.");
     ImmutableList<Card> oldCards = ImmutableList.copyOf(mCardsInPlay);
     if (!mCardsInPlay.containsAll(Lists.newArrayList(cards))) {
       throw new IllegalArgumentException("Cards are not in the set. cards = "
@@ -131,7 +112,7 @@ public class Game implements Comparable<Game> {
     }
 
     // Add more cards up to the minimum.
-    while (numNotNull(mCardsInPlay) < MIN_CARDS_IN_PLAY) {
+    while (numNotNull(mCardsInPlay) < MIN_CARDS_IN_PLAY && !mDeck.isEmpty()) {
       for (int i = 0; i < 3; i++) {
         mCardsInPlay.set(mCardsInPlay.indexOf(null), mDeck.getNextCard());
       }
@@ -150,17 +131,28 @@ public class Game implements Comparable<Game> {
     removeTrailingNulls(mCardsInPlay);
 
     // Add more cards until there is a valid triple.
-    while (!checkIfAnyValidTriples()) {
+    while (!checkIfAnyValidTriples() && !mDeck.isEmpty()) {
       for (int i = 0; i < 3; i++) {
         mCardsInPlay.add(mDeck.getNextCard());
       }
     }
 
-    checkIfAnyValidTriples();
-    dispatchGameStateUpdate(
-        ImmutableList.copyOf(mCardsInPlay),
-        oldCards,
-        mDeck.getCardsRemaining());
+    if (!checkIfAnyValidTriples()) {
+      finish();
+    } else {
+      dispatchGameStateUpdate(
+          ImmutableList.copyOf(mCardsInPlay),
+          oldCards,
+          mDeck.getCardsRemaining());
+    }
+  }
+
+  private void finish() {
+    mCompleted = true;
+    mTimer.stop();
+    for (OnUpdateGameStateListener listener : mListeners) {
+      listener.onFinish();
+    }
   }
 
   public static boolean isValidTriple(List<Card> cards) {
@@ -219,7 +211,6 @@ public class Game implements Comparable<Game> {
       if (card != null)
         countNotNull++;
     }
-    Log.i("Game", "countNotNull = " + countNotNull);
     return countNotNull;
   }
 
@@ -276,5 +267,9 @@ public class Game implements Comparable<Game> {
 
   public Date getDateStarted() {
     return mDate;
+  }
+
+  public boolean isCompleted() {
+    return mCompleted;
   }
 }

@@ -79,7 +79,9 @@ public class GameActivity extends SherlockActivity {
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
         Intent intent = new Intent(this, GameListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
         return true;
       default:
         return super.onOptionsItemSelected(item);

@@ -181,7 +181,6 @@ public abstract class CardsView extends View implements
 
   @Override
   public void onFinish() {
-
+    mActive = false;
   }
-
 }

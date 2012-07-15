@@ -173,7 +173,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
     values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
-    values.put(COLUMN_DATE, 0);
+    values.put(COLUMN_DATE, game.getDateStarted().getTime());
     return values;
   }
 }
