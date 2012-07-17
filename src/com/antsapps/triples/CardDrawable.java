@@ -95,6 +95,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       OnAnimationFinishedListener listener) {
     mCard = card;
     mListener = listener;
+    mAlpha = 1;
 
     mSymbol = new SymbolDrawable(mCard);
     mCardBackground = new CardBackgroundDrawable();

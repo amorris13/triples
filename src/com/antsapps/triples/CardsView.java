@@ -50,7 +50,7 @@ public abstract class CardsView extends View implements
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
 
   protected ImmutableList<Card> mCards = ImmutableList.of();
-  private final Map<Card, CardDrawable> mCardDrawables = Maps.newHashMap();
+  private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
   private final List<Card> mCurrentlySelected = Lists.newArrayList();
   private Game mGame;
   private GameState mGameState;
