@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical" >
+
+	<RelativeLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/timer_key_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			android:paddingLeft="5dp"
+			android:singleLine="true"
+			android:text="@string/time_elapsed"
+			android:textColor="#33B5E5"
+			android:textStyle="bold" />
+
+		<TextView
+			android:id="@+id/cards_remaining_key_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true"
+			android:paddingRight="5dp"
+			android:singleLine="true"
+			android:text="@string/cards_remaining"
+			android:textColor="#33B5E5"
+			android:textStyle="bold" />
+	</RelativeLayout>
+
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:background="#33B5E5" />
+
+	<ListView
+		android:id="@+id/android:list"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" />
+
+	<TextView
+		android:id="@+id/android:empty"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:gravity="center_horizontal" />
+
+</LinearLayout>

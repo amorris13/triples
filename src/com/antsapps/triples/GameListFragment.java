@@ -14,6 +14,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.antsapps.triples.backend.Application;
@@ -25,17 +26,12 @@ public abstract class GameListFragment extends SherlockListFragment implements
 
   protected Application mApplication;
   protected ArrayAdapter<Game> mAdapter;
-  private View mHeaderView;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    // Get the list header - to be added later in the lifecycle
-    // during onActivityCreated()
-    mHeaderView = inflater.inflate(R.layout.list_header, null);
-
     // TODO Auto-generated method stub
-    return super.onCreateView(inflater, container, savedInstanceState);
+    return inflater.inflate(R.layout.game_list_fragment, null);
   }
 
   /** Called when the activity is first created. */
@@ -44,13 +40,10 @@ public abstract class GameListFragment extends SherlockListFragment implements
     super.onCreate(savedInstanceState);
     mApplication = Application.getInstance(getSherlockActivity());
 
-    if (mHeaderView != null) {
-      this.getListView().addHeaderView(mHeaderView);
-    }
-
     mAdapter = createArrayAdapter();
     setListAdapter(mAdapter);
-    setEmptyText(getEmptyText());
+    ((TextView) getView().findViewById(android.R.id.empty))
+        .setText(getEmptyText());
 
     ListView lv = getListView();
     lv.setOnItemClickListener(new OnItemClickListener() {

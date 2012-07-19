@@ -30,7 +30,7 @@ public class GameListActivity extends SherlockFragmentActivity {
     super.onCreate(savedInstanceState);
     mApplication = Application.getInstance(getApplication());
 
-    setContentView(R.layout.game_list);
+    setContentView(R.layout.game_overview);
     final ActionBar bar = getSupportActionBar();
     bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
