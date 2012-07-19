@@ -16,5 +16,7 @@
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 	<string name="no_completed_games">You haven\'t finished any games.</string>
+	<string name="game_over">Game Over!</string>
+	<string name="paused">PAUSED</string>
 
 </resources>

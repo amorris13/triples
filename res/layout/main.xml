@@ -24,11 +24,28 @@
 		android:layout_above="@id/status_bar"
 		android:background="#33B5E5" />
 
-	<include
+	<ViewSwitcher
+		android:id="@+id/view_switcher"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
+		android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out"
 		android:layout_above="@id/bottom_separator"
-		android:layout_below="@id/top_separator"
-		layout="@layout/cards" />
+		android:layout_below="@id/top_separator" >
+
+		<include
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			layout="@layout/cards" />
+
+		<TextView
+			android:id="@+id/paused"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:gravity="center"
+			android:text="@string/paused"
+			android:textColor="#33B5E5"
+			android:textSize="@dimen/game_paused_text_size" />
+	</ViewSwitcher>
 
 </RelativeLayout>

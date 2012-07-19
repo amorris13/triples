@@ -2,6 +2,8 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -18,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 public class GameActivity extends SherlockActivity implements
     OnUpdateGameStateListener {
   private Game mGame;
+  private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
   private GameState mGameState;
   private StatusBar mStatusBar;
@@ -51,6 +54,9 @@ public class GameActivity extends SherlockActivity implements
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mCardsView.setGame(mGame);
     mGame.addOnUpdateGameStateListener(mCardsView);
+
+    mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
+    mViewSwitcher.setDisplayedChild(mGameState == GameState.PAUSED ? 1 : 0);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -126,6 +132,18 @@ public class GameActivity extends SherlockActivity implements
   @Override
   public void onUpdateGameState(GameState state) {
     mGameState = state;
+    switch(mGameState) {
+      case COMPLETED:
+        Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
+        break;
+      case PAUSED:
+        mViewSwitcher.setDisplayedChild(1);
+        break;
+      case ACTIVE:
+      case STARTING:
+        mViewSwitcher.setDisplayedChild(0);
+        break;
+    }
     invalidateOptionsMenu();
   }
 }
