@@ -4,16 +4,31 @@
 	android:layout_height="fill_parent"
 	android:background="#E0E0E0" >
 
+	<View
+		android:id="@+id/top_separator"
+		android:layout_width="fill_parent"
+		android:layout_height="1sp"
+		android:layout_alignParentTop="true"
+		android:background="#33B5E5" />
+
 	<com.antsapps.triples.StatusBar
 		android:id="@+id/status_bar"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true" />
 
+	<View
+		android:id="@+id/bottom_separator"
+		android:layout_width="fill_parent"
+		android:layout_height="1sp"
+		android:layout_above="@id/status_bar"
+		android:background="#33B5E5" />
+
 	<include
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:layout_above="@+id/status_bar"
+		android:layout_above="@id/bottom_separator"
+		android:layout_below="@id/top_separator"
 		layout="@layout/cards" />
 
 </RelativeLayout>

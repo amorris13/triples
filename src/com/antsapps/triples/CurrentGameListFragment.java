@@ -38,14 +38,11 @@ public class CurrentGameListFragment extends GameListFragment implements
       if (g != null) {
         ((TextView) v.findViewById(R.id.time_elapsed)).setText(DateUtils
             .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g
-                .getTimeElapsed()))
-            + " elapsed");
-        ((TextView) v.findViewById(R.id.cards_remaining)).setText(g
-            .getCardsRemaining() + " cards left");
-        ((TextView) v.findViewById(R.id.when_started))
-            .setText("Started: "
-                + DateUtils.getRelativeTimeSpanString(g
-                    .getDateStarted().getTime()));
+                .getTimeElapsed())));
+        ((TextView) v.findViewById(R.id.cards_remaining)).setText(String
+            .valueOf(g.getCardsRemaining()));
+        ((TextView) v.findViewById(R.id.when_started)).setText(DateUtils
+            .getRelativeTimeSpanString(g.getDateStarted().getTime()));
       }
 
       return v;

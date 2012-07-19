@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -23,12 +25,28 @@ public abstract class GameListFragment extends SherlockListFragment implements
 
   protected Application mApplication;
   protected ArrayAdapter<Game> mAdapter;
+  private View mHeaderView;
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    // Get the list header - to be added later in the lifecycle
+    // during onActivityCreated()
+    mHeaderView = inflater.inflate(R.layout.list_header, null);
+
+    // TODO Auto-generated method stub
+    return super.onCreateView(inflater, container, savedInstanceState);
+  }
 
   /** Called when the activity is first created. */
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mApplication = Application.getInstance(getSherlockActivity());
+
+    if (mHeaderView != null) {
+      this.getListView().addHeaderView(mHeaderView);
+    }
 
     mAdapter = createArrayAdapter();
     setListAdapter(mAdapter);
@@ -40,9 +58,11 @@ public abstract class GameListFragment extends SherlockListFragment implements
       public void onItemClick(AdapterView<?> parent, View view, int position,
           long id) {
         Game game = (Game) parent.getItemAtPosition(position);
-        Intent intent = new Intent(view.getContext(), GameActivity.class);
-        intent.putExtra(Game.ID_TAG, game.getId());
-        startActivity(intent);
+        if (game != null) {
+          Intent intent = new Intent(view.getContext(), GameActivity.class);
+          intent.putExtra(Game.ID_TAG, game.getId());
+          startActivity(intent);
+        }
       }
     });
 

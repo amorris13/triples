@@ -100,7 +100,7 @@ public class Game implements Comparable<Game> {
     dispatchCardsInPlayUpdate(
         ImmutableList.copyOf(mCardsInPlay),
         ImmutableList.<Card> of(),
-        mDeck.getCardsRemaining());
+        getCardsRemaining());
     switch(mGameState) {
       case STARTING:
         mTimer.start();
@@ -186,7 +186,7 @@ public class Game implements Comparable<Game> {
     dispatchCardsInPlayUpdate(
         ImmutableList.copyOf(mCardsInPlay),
         oldCards,
-        mDeck.getCardsRemaining());
+        getCardsRemaining());
 
     if (!checkIfAnyValidTriples()) {
       finish();
@@ -306,7 +306,7 @@ public class Game implements Comparable<Game> {
   }
 
   public int getCardsRemaining() {
-    return mDeck.getCardsRemaining();
+    return mDeck.getCardsRemaining() + mCardsInPlay.size();
   }
 
   byte[] getCardsInPlayAsByteArray() {

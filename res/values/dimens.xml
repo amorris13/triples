@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<dimen name="game_list_time_elapsed_text_size">20sp</dimen>
-	<dimen name="game_list_cards_remaining_text_size">20sp</dimen>
+	<dimen name="game_list_time_elapsed_text_size">24sp</dimen>
+	<dimen name="game_list_cards_remaining_text_size">24sp</dimen>
 	<dimen name="game_list_when_started_text_size">14sp</dimen>
 
 </resources>
