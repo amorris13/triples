@@ -67,9 +67,13 @@ public class GameListActivity extends SherlockFragmentActivity {
       case R.id.new_game:
         Game game = Game.createFromSeed(System.currentTimeMillis());
         mApplication.addGame(game);
-        Intent intent = new Intent(getBaseContext(), GameActivity.class);
-        intent.putExtra(Game.ID_TAG, game.getId());
-        startActivity(intent);
+        Intent newGameIntent = new Intent(getBaseContext(), GameActivity.class);
+        newGameIntent.putExtra(Game.ID_TAG, game.getId());
+        startActivity(newGameIntent);
+        return true;
+      case R.id.help:
+        Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+        startActivity(helpIntent);
         return true;
       default:
         return super.onOptionsItemSelected(item);

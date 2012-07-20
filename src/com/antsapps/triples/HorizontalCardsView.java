@@ -8,7 +8,7 @@ import android.util.Log;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 
-public class HorizontalCardsView extends CardsView {
+public class HorizontalCardsView extends GameCardsView {
 
   private static final float WIDTH_OVER_HEIGHT = (float) ((Math.sqrt(5) + 1) / 2);
 

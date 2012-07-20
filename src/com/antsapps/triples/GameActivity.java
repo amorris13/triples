@@ -21,7 +21,7 @@ public class GameActivity extends SherlockActivity implements
     OnUpdateGameStateListener {
   private Game mGame;
   private ViewSwitcher mViewSwitcher;
-  private CardsView mCardsView;
+  private GameCardsView mCardsView;
   private GameState mGameState;
   private StatusBar mStatusBar;
   private Application mApplication;
@@ -51,7 +51,7 @@ public class GameActivity extends SherlockActivity implements
     mGame.setOnTimerTickListener(mStatusBar);
     mGame.addOnUpdateGameStateListener(mStatusBar);
 
-    mCardsView = (CardsView) findViewById(R.id.cards_view);
+    mCardsView = (GameCardsView) findViewById(R.id.cards_view);
     mCardsView.setGame(mGame);
     mGame.addOnUpdateGameStateListener(mCardsView);
 

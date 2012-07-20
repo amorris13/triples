@@ -1,6 +1,5 @@
 package com.antsapps.triples;
 
-import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -8,26 +7,21 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.antsapps.triples.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.Game.GameState;
-import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
-public abstract class CardsView extends View implements
-    OnUpdateGameStateListener {
+public abstract class CardsView extends View {
 
-  private class CardRemovalListener implements OnAnimationFinishedListener {
+  private static final String TAG = "CardsView";
+
+  class CardRemovalListener implements OnAnimationFinishedListener {
     Card mCard;
 
     public CardRemovalListener(Card card) {
@@ -42,24 +36,15 @@ public abstract class CardsView extends View implements
     }
   }
 
-  static final int WHAT_INCREMENT = 0;
-  static final int WHAT_DECREMENT = 1;
-
-  private static final String TAG = "CardsView";
-
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
-
+  protected static final int WHAT_INCREMENT = 0;
+  protected static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
-  private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
-  private final List<Card> mCurrentlySelected = Lists.newArrayList();
-  private Game mGame;
-  private GameState mGameState;
-  private final Vibrator mVibrator;
-
+  protected final Map<Card, CardDrawable> mCardDrawables = Maps
+      .newConcurrentMap();
   protected Rect mOffScreenLocation = new Rect();
-
-  private final Handler mHandler;
-  private int mNumAnimating;
+  protected final Handler mHandler;
+  protected int mNumAnimating;
 
   public CardsView(Context context) {
     this(context, null);
@@ -84,12 +69,6 @@ public abstract class CardsView extends View implements
         }
       }
     };
-    mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-  }
-
-  public void setGame(Game game) {
-    mGame = game;
-    onUpdateGameState(game.getGameState());
   }
 
   @Override
@@ -111,36 +90,9 @@ public abstract class CardsView extends View implements
       invalidate();
     }
     long end = System.currentTimeMillis();
-    Log.v("CardsView", "draw took " + (end - start) + ", cards drawn: "
+    Log.v(TAG, "draw took " + (end - start) + ", cards drawn: "
         + mCardDrawables.size());
   }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    if (mGameState == GameState.ACTIVE) {
-      if (event.getAction() == MotionEvent.ACTION_DOWN) {
-        Card tappedCard = getCardForPosition(
-            (int) event.getX(),
-            (int) event.getY());
-        if (tappedCard == null) {
-          return true;
-        }
-        CardDrawable tappedCardDrawable = mCardDrawables.get(tappedCard);
-        if (tappedCardDrawable.onTap()) {
-          mCurrentlySelected.add(tappedCard);
-        } else {
-          mCurrentlySelected.remove(tappedCard);
-        }
-
-        checkSelectedCards();
-        invalidate();
-      }
-    }
-
-    return true;
-  }
-
-  protected abstract Card getCardForPosition(int x, int y);
 
   protected void updateCards(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
@@ -180,36 +132,9 @@ public abstract class CardsView extends View implements
 
   protected abstract Rect calcBounds(int i);
 
-  private void checkSelectedCards() {
-    if (mCurrentlySelected.size() == 3) {
-      if (Game.isValidTriple(mCurrentlySelected)) {
-        mGame.commitTriple(mCurrentlySelected);
-      } else {
-        for (Card card : mCurrentlySelected) {
-          mCardDrawables.get(card).onIncorrectTriple(mHandler);
-        }
-      }
-      mCurrentlySelected.clear();
-    }
-  }
-
-  @Override
   public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
     updateCards(newCards, oldCards, numRemaining);
-  }
-
-  @Override
-  public void onUpdateGameState(GameState state) {
-    mGameState = state;
-    dispatchGameStateUpdate();
-  }
-
-  private void dispatchGameStateUpdate() {
-    for (CardDrawable drawable : mCardDrawables.values()) {
-      drawable.updateGameState(mGameState, mHandler);
-    }
-    invalidate();
   }
 
   synchronized void incrementNumAnimating() {
@@ -223,4 +148,5 @@ public abstract class CardsView extends View implements
   synchronized void decrementNumAnimating() {
     mNumAnimating--;
   }
+
 }

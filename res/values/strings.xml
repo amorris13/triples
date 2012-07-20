@@ -18,5 +18,20 @@
 	<string name="no_completed_games">You haven\'t finished any games.</string>
 	<string name="game_over">Game Over!</string>
 	<string name="paused">PAUSED</string>
+	<string name="sort">Sort</string>
+	<string name="sort_by">Sort by:</string>
+	<string name="ascending">Ascending</string>
+	<string name="descending">Descending</string>
+	<string name="rules_title">RULES</string>
+	<string name="example">EXAMPLE</string>
+	<string name="rules_text">Each card has four properties: number, shape, pattern and colour.  The aim of the game is to select a valid triple.  A valid triple is three cards where each property is either the same for all three cards or different for all three cards.</string>
+	<string name="show_me_another">Show me another</string>
+	<string name="help">Help</string>
+	<string name="number">Number:</string>
+	<string name="shape">Shape:</string>
+	<string name="pattern">Pattern:</string>
+	<string name="colour">Colour:</string>
+	<string name="all_same">all same.</string>
+	<string name="all_different">all different.</string>
 
 </resources>
