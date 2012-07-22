@@ -27,4 +27,13 @@
 		<item name="android:windowNoTitle">true</item>
 	</style>
 
+	<style name="Theme.Sherlock.Light.DarkActionBar.TabColor" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+		<item name="android:actionBarStyle">@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse.LightTabs</item>
+	</style>
+
+	<style name="Widget.Sherlock.Light.ActionBar.Solid.Inverse.LightTabs" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+		<item name="backgroundStacked">@drawable/ab_stacked_solid_light_tabs</item>
+		<item name="android:backgroundStacked">@drawable/ab_stacked_solid_light_tabs</item>
+	</style>
+
 </resources>
