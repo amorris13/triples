@@ -1,0 +1,5 @@
+Triples is very similar to the classic card game Set, except you don't need to carry a deck of special cards with you everywhere!  The rules of the game are very simple: find triples of three cards where each property is either the same for all three cards or different for all three cards.
+
+Extra care has been taken to provide a simple, beautiful and fluid experience.
+
+The game currently features timekeeping and records of all previous games as well an interactive description of the rules.  Further releases will feature the ability to customise the card symbols and more!
