@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="action_bar_background">#101010</color>
+    <color name="action_bar_stacked_background">#202020</color>
+
+</resources>

@@ -32,8 +32,10 @@
 	</style>
 
 	<style name="Widget.Sherlock.Light.ActionBar.Solid.Inverse.LightTabs" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-		<item name="backgroundStacked">@drawable/ab_stacked_solid_light_tabs</item>
-		<item name="android:backgroundStacked">@drawable/ab_stacked_solid_light_tabs</item>
+		<item name="background">@color/action_bar_background</item>
+		<item name="backgroundStacked">@color/action_bar_stacked_background</item>
+		<item name="android:background">@color/action_bar_background</item>
+		<item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
 	</style>
 
 </resources>
