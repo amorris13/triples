@@ -252,7 +252,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         mState = CardState.NORMAL;
       }
     });
-    updateAnimation(handler, shakeAnimation);
+    updateAnimation(shakeAnimation);
   }
 
   public void updateBounds(Rect bounds, final Handler handler) {
@@ -295,10 +295,10 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
             mDrawOrder = 0;
           }
         });
-    updateAnimation(handler, transitionAnimation);
+    updateAnimation(transitionAnimation);
   }
 
-  private void updateAnimation(final Handler handler, Animation animation) {
+  private void updateAnimation(Animation animation) {
     if (mAnimation != null) {
       mAnimation.cancel();
     }
