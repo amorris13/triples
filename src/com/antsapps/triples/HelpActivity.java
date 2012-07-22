@@ -5,18 +5,16 @@ import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 import java.lang.reflect.Field;
 import java.util.Random;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Card;
 import com.google.common.collect.ImmutableList;
 
-public class HelpActivity extends SherlockActivity {
+public class HelpActivity extends Activity {
 
   private HelpCardsView mHelpCardsView;
   private ImmutableList<Card> mCardsShown;
@@ -31,6 +29,8 @@ public class HelpActivity extends SherlockActivity {
 
     setContentView(R.layout.help);
 
+    getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
     mHelpCardsView = (HelpCardsView) findViewById(R.id.cards_view);
 
     mNumberExplanation = (TextView) findViewById(R.id.number_explanation);
@@ -42,25 +42,6 @@ public class HelpActivity extends SherlockActivity {
     mHelpCardsView.onUpdateCardsInPlay(newCards, ImmutableList.<Card> of(), 0);
     mCardsShown = newCards;
     updateTextExplanation();
-
-    ActionBar actionBar = getSupportActionBar();
-    actionBar.setDisplayHomeAsUpEnabled(true);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle item selection
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        // app icon in action bar clicked; go up one level
-        Intent intent = new Intent(this, GameListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
-    }
   }
 
   public void showAnother(View view) {

@@ -27,6 +27,7 @@
 			android:label="@string/app_name" />
 		<activity
 			android:name=".HelpActivity"
+			android:theme="@style/HelpDialog"
 			android:label="@string/app_name" />
 	</application>
 
