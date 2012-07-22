@@ -3,10 +3,14 @@ package com.antsapps.triples;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -22,7 +26,6 @@ import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.Game.GameState;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
@@ -55,15 +58,13 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
   }
 
-  private static final Map<GameState, Float> sAlphasForGameState = Maps
-      .newEnumMap(GameState.class);
-
-  static {
-    sAlphasForGameState.put(GameState.STARTING, 0f);
-    sAlphasForGameState.put(GameState.ACTIVE, 1f);
-    sAlphasForGameState.put(GameState.COMPLETED, 1f);
-    sAlphasForGameState.put(GameState.PAUSED, 1f);
+  enum CardState {
+    SELECTED,
+    NORMAL;
   }
+
+  private final Map<CardState, BitmapDrawable> mDrawableForCardState = Maps
+      .newEnumMap(CardState.class);
 
   interface OnAnimationFinishedListener {
     void onAnimationFinished();
@@ -80,7 +81,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private Rect mBounds;
 
-  private boolean mSelected;
+  private CardState mState;
 
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
@@ -91,7 +92,14 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private boolean mShouldSlideIn;
 
-  public CardDrawable(Card card, OnAnimationFinishedListener listener) {
+  private final Context mContext;
+
+  public CardDrawable(Context context,
+      Card card,
+      OnAnimationFinishedListener listener) {
+    mContext = context;
+    mState = CardState.NORMAL;
+
     mCard = card;
     mListener = listener;
     mAlpha = 1;
@@ -103,30 +111,32 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
     List<Rect> rects = Lists.newArrayList();
 
-    int halfSideLength = bounds.width() / 10;
+    int width = bounds.width();
+    int height = bounds.height();
+    int halfSideLength = width / 10;
     int gap = halfSideLength / 2;
     switch (id) {
       case 0:
         rects.add(squareFromCenterAndRadius(
-            bounds.centerX(),
-            bounds.centerY(),
+            width / 2,
+            height / 2,
             halfSideLength));
         break;
       case 1:
-        rects.add(squareFromCenterAndRadius(bounds.centerX() - gap / 2
-            - halfSideLength, bounds.centerY(), halfSideLength));
-        rects.add(squareFromCenterAndRadius(bounds.centerX() + gap / 2
-            + halfSideLength, bounds.centerY(), halfSideLength));
+        rects.add(squareFromCenterAndRadius(width / 2 - gap / 2
+            - halfSideLength, height / 2, halfSideLength));
+        rects.add(squareFromCenterAndRadius(width / 2 + gap / 2
+            + halfSideLength, height / 2, halfSideLength));
         break;
       case 2:
-        rects.add(squareFromCenterAndRadius(bounds.centerX() - gap
-            - halfSideLength * 2, bounds.centerY(), halfSideLength));
+        rects.add(squareFromCenterAndRadius(width / 2 - gap - halfSideLength
+            * 2, height / 2, halfSideLength));
         rects.add(squareFromCenterAndRadius(
-            bounds.centerX(),
-            bounds.centerY(),
+            width / 2,
+            height / 2,
             halfSideLength));
-        rects.add(squareFromCenterAndRadius(bounds.centerX() + gap
-            + halfSideLength * 2, bounds.centerY(), halfSideLength));
+        rects.add(squareFromCenterAndRadius(width / 2 + gap + halfSideLength
+            * 2, height / 2, halfSideLength));
         break;
     }
     return rects;
@@ -168,11 +178,35 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   private void drawInternal(Canvas canvas, Rect bounds) {
-    mCardBackground.setBounds(bounds);
-    mCardBackground.draw(canvas);
-    for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
-      mSymbol.setBounds(rect);
-      mSymbol.draw(canvas);
+    CardState state = mState;
+    BitmapDrawable drawable = mDrawableForCardState.get(state);
+    if (drawable == null) {
+      return;
+    }
+    drawable.setBounds(bounds);
+    drawable.draw(canvas);
+  }
+
+  private void regenerateBitmapDrawables() {
+    Rect normBounds = new Rect(mBounds);
+    normBounds.offsetTo(0, 0);
+    for (CardState state : CardState.values()) {
+      Bitmap bitmap = Bitmap.createBitmap(
+          normBounds.width(),
+          normBounds.height(),
+          Config.ARGB_8888);
+      Canvas tmpCanvas = new Canvas(bitmap);
+      mCardBackground.setBounds(normBounds);
+      mCardBackground.setCardState(state);
+      mCardBackground.draw(tmpCanvas);
+      for (Rect rect : getBoundsForNumId(
+          mCard.mNumber,
+          normBounds)) {
+        mSymbol.setBounds(rect);
+        mSymbol.draw(tmpCanvas);
+      }
+      BitmapDrawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+      mDrawableForCardState.put(state, drawable);
     }
   }
 
@@ -194,18 +228,14 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mCardBackground.setColorFilter(cf);
   }
 
+  /** Returns true if the card is now selected, false otherwise. */
   public boolean onTap() {
-    if (mSelected) {
-      setSelected(false);
+    if (mState == CardState.SELECTED) {
+      mState = CardState.NORMAL;
     } else {
-      setSelected(true);
+      mState = CardState.SELECTED;
     }
-    return mSelected;
-  }
-
-  private void setSelected(boolean selected) {
-    mSelected = selected;
-    mCardBackground.setSelected(selected);
+    return mState == CardState.SELECTED;
   }
 
   public void onIncorrectTriple(final Handler handler) {
@@ -219,7 +249,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       @Override
       public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        setSelected(false);
+        mState = CardState.NORMAL;
       }
     });
     updateAnimation(handler, shakeAnimation);
@@ -229,6 +259,10 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
+    if (oldBounds == null || oldBounds.width() != mBounds.width()
+        || oldBounds.height() != mBounds.height()) {
+      regenerateBitmapDrawables();
+    }
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
       // No change
@@ -282,5 +316,21 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   public void setShouldSlideIn() {
     mShouldSlideIn = true;
+  }
+
+  public static Bitmap drawableToBitmap(Drawable drawable) {
+    if (drawable instanceof BitmapDrawable) {
+      return ((BitmapDrawable) drawable).getBitmap();
+    }
+
+    Bitmap bitmap = Bitmap.createBitmap(
+        drawable.getIntrinsicWidth(),
+        drawable.getIntrinsicHeight(),
+        Config.ARGB_8888);
+    Canvas canvas = new Canvas(bitmap);
+    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+    drawable.draw(canvas);
+
+    return bitmap;
   }
 }

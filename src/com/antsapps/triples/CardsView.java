@@ -18,7 +18,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
-public abstract class CardsView extends View implements OnUpdateCardsInPlayListener {
+public abstract class CardsView extends View implements
+    OnUpdateCardsInPlayListener {
 
   private static final String TAG = "CardsView";
 
@@ -108,7 +109,8 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
       if (cardDrawable == null) {
-        cardDrawable = new CardDrawable(card, new CardRemovalListener(card));
+        cardDrawable = new CardDrawable(getContext(), card,
+            new CardRemovalListener(card));
         mCardDrawables.put(card, cardDrawable);
       }
       if (!calcBounds(i).equals(EMPTY_RECT)) {
@@ -133,6 +135,7 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
 
   protected abstract Rect calcBounds(int i);
 
+  @Override
   public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
     updateCards(newCards, oldCards, numRemaining);

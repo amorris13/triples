@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 
+import com.antsapps.triples.CardDrawable.CardState;
+
 public class CardBackgroundDrawable extends Drawable {
 
   private static final int SHADOW_OFFSET_VERTICAL = 4;
@@ -30,7 +32,7 @@ public class CardBackgroundDrawable extends Drawable {
 
   private final ShapeDrawable mOutline;
 
-  private boolean mSelected;
+  private CardState mCardState;
 
   public CardBackgroundDrawable() {
     float[] outerR = new float[8];
@@ -53,7 +55,7 @@ public class CardBackgroundDrawable extends Drawable {
   public void draw(Canvas canvas) {
     mShadow.draw(canvas);
     mBackground.draw(canvas);
-    if (mSelected) {
+    if (mCardState == CardState.SELECTED) {
       mOutline.draw(canvas);
     }
   }
@@ -77,8 +79,8 @@ public class CardBackgroundDrawable extends Drawable {
     mShadow.setColorFilter(cf);
   }
 
-  public void setSelected(boolean selected) {
-    mSelected = selected;
+  public void setCardState(CardState state) {
+    mCardState = state;
   }
 
   @Override
