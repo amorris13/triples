@@ -97,6 +97,7 @@ public abstract class GameListFragment extends SherlockListFragment implements
   public void onStart() {
     super.onStart();
     mApplication.addOnStateChangedListener(this);
+    updateDataSet();
   }
 
   @Override
