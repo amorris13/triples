@@ -83,7 +83,6 @@ public abstract class CardsView extends View implements
   @Override
   protected void onDraw(Canvas canvas) {
     long start = System.currentTimeMillis();
-    canvas.drawColor(0xFFE0E0E0);
     for (CardDrawable dr : Ordering.natural().sortedCopy(
         mCardDrawables.values())) {
       dr.draw(canvas);
@@ -98,6 +97,7 @@ public abstract class CardsView extends View implements
 
   protected void updateCards(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
+    long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
         mCardDrawables.get(oldCard).updateBounds(mOffScreenLocation, mHandler);
@@ -119,15 +119,20 @@ public abstract class CardsView extends View implements
     }
     updateMeasuredDimensions(0, 0);
     invalidate();
+    long end = System.currentTimeMillis();
+    Log.i(TAG, "updateCards took " + (end - start));
   }
 
   protected void updateBounds() {
+    long start = System.currentTimeMillis();
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
       cardDrawable.updateBounds(calcBounds(i), mHandler);
     }
     invalidate();
+    long end = System.currentTimeMillis();
+    Log.i(TAG, "updateBounds took " + (end - start));
   }
 
   protected abstract void updateMeasuredDimensions(final int widthMeasureSpec,

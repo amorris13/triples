@@ -85,18 +85,23 @@ public class HelpActivity extends Activity {
 
   public static ImmutableList<Card> createValidTriple() {
     Random random = new Random();
-    Card card0 = new Card(random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES), random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES));
-    Card card1 = new Card(random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES), random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES));
+    Card card0 = createRandomCard(random);
+    Card card1 = createRandomCard(random);
+    while (card1.equals(card0)) {
+      card1 = createRandomCard(random);
+    }
     Card card2 = new Card(getValidProperty(card0.mNumber, card1.mNumber),
         getValidProperty(card0.mShape, card1.mShape), getValidProperty(
             card0.mPattern,
             card1.mPattern), getValidProperty(card0.mColor, card1.mColor));
 
     return ImmutableList.of(card0, card1, card2);
+  }
+
+  private static Card createRandomCard(Random random) {
+    return new Card(random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES), random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES));
   }
 
   public static int getValidProperty(int card0, int card1) {

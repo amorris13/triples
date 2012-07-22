@@ -1,5 +1,7 @@
 package com.antsapps.triples;
 
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +29,6 @@ import android.view.animation.TranslateAnimation;
 
 import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
@@ -63,8 +64,8 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     NORMAL;
   }
 
-  private final Map<CardState, BitmapDrawable> mDrawableForCardState = Maps
-      .newEnumMap(CardState.class);
+  private final Map<CardState, BitmapDrawable> mDrawableForCardState = Collections
+      .synchronizedMap(new EnumMap<CardState, BitmapDrawable>(CardState.class));
 
   interface OnAnimationFinishedListener {
     void onAnimationFinished();
@@ -102,7 +103,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
     mCard = card;
     mListener = listener;
-    mAlpha = 1;
 
     mSymbol = new SymbolDrawable(mCard);
     mCardBackground = new CardBackgroundDrawable();
@@ -162,16 +162,16 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     int sc = canvas.save();
     Animation anim = mAnimation;
     if (anim != null) {
+      if (!anim.isInitialized()) {
+        anim.initialize(bounds.width(), bounds.height(), 0, 0);
+      }
+
       anim.getTransformation(
           AnimationUtils.currentAnimationTimeMillis(),
           mTransformation);
 
       canvas.concat(mTransformation.getMatrix());
       setAlpha((int) (mTransformation.getAlpha() * 255));
-
-      if (!anim.isInitialized()) {
-        anim.initialize(bounds.width(), bounds.height(), 0, 0);
-      }
     }
     drawInternal(canvas, bounds);
     canvas.restoreToCount(sc);
@@ -187,21 +187,21 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     drawable.draw(canvas);
   }
 
-  private void regenerateBitmapDrawables() {
-    Rect normBounds = new Rect(mBounds);
-    normBounds.offsetTo(0, 0);
+  private void regenerateBitmapDrawables(Rect bounds) {
+    Log.i(TAG, "regen drawables for mCard = " + mCard);
+    bounds.offsetTo(0, 0);
     for (CardState state : CardState.values()) {
       Bitmap bitmap = Bitmap.createBitmap(
-          normBounds.width(),
-          normBounds.height(),
+          bounds.width(),
+          bounds.height(),
           Config.ARGB_8888);
       Canvas tmpCanvas = new Canvas(bitmap);
-      mCardBackground.setBounds(normBounds);
+      mCardBackground.setBounds(bounds);
       mCardBackground.setCardState(state);
       mCardBackground.draw(tmpCanvas);
       for (Rect rect : getBoundsForNumId(
           mCard.mNumber,
-          normBounds)) {
+          bounds)) {
         mSymbol.setBounds(rect);
         mSymbol.draw(tmpCanvas);
       }
@@ -218,8 +218,9 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   @Override
   public void setAlpha(int alpha) {
     mAlpha = (float) alpha / 255;
-    mSymbol.setAlpha(alpha);
-    mCardBackground.setAlpha(alpha);
+    for(BitmapDrawable drawable : mDrawableForCardState.values()) {
+      drawable.setAlpha(alpha);
+    }
   }
 
   @Override
@@ -261,7 +262,12 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     Log.i(TAG, "mBounds = " + mBounds);
     if (oldBounds == null || oldBounds.width() != mBounds.width()
         || oldBounds.height() != mBounds.height()) {
-      regenerateBitmapDrawables();
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          regenerateBitmapDrawables(new Rect(mBounds));
+        }
+      }).start();
     }
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
@@ -274,7 +280,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
             0 - bounds.centerY(), 0);
         mShouldSlideIn = false;
       } else {
-        transitionAnimation = new AlphaAnimation(0, mAlpha);
+        transitionAnimation = new AlphaAnimation(mAlpha, 1);
       }
     } else {
       // This CardDrawable is old
