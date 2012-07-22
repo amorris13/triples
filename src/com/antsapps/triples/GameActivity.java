@@ -88,6 +88,10 @@ public class GameActivity extends SherlockActivity implements
       case R.id.play:
         mGame.resume();
         return true;
+      case R.id.help:
+        Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+        startActivity(helpIntent);
+        return true;
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
         Intent intent = new Intent(this, GameListActivity.class);

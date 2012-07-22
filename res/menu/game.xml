@@ -11,5 +11,10 @@
 		android:icon="@drawable/av_play_holo_dark"
 		android:showAsAction="always"
 		android:title="@string/play"/>
+	<item
+		android:id="@+id/help"
+		android:icon="@drawable/action_help_holo_dark"
+		android:showAsAction="ifRoom|withText"
+		android:title="@string/help"/>
 
 </menu>
