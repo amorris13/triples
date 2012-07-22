@@ -2,8 +2,6 @@ package com.antsapps.triples.backend;
 
 import java.util.Collection;
 
-import android.util.Log;
-
 import com.google.common.collect.Sets;
 
 public abstract class OnStateChangedReporter {
@@ -11,8 +9,6 @@ public abstract class OnStateChangedReporter {
       .newHashSet();
 
   public void addOnStateChangedListener(OnStateChangedListener listener) {
-    Log.i("OSCR", "StateChangedListener " + listener.getClass().getSimpleName()
-        + " added to " + this.getClass().getSimpleName());
     onStateChangedListeners.add(listener);
   }
 
@@ -25,9 +21,6 @@ public abstract class OnStateChangedReporter {
    */
   protected void notifyStateChanged() {
     for (OnStateChangedListener listener : onStateChangedListeners) {
-      Log.i("OSCR", "onStateChanged called from "
-          + this.getClass().getSimpleName() + " to "
-          + listener.getClass().getSimpleName());
       listener.onStateChanged();
     }
   }
