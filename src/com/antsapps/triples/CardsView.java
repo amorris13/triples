@@ -13,11 +13,12 @@ import android.view.View;
 
 import com.antsapps.triples.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
-public abstract class CardsView extends View {
+public abstract class CardsView extends View implements OnUpdateCardsInPlayListener {
 
   private static final String TAG = "CardsView";
 

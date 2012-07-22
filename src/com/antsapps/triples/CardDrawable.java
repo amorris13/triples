@@ -61,7 +61,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   static {
     sAlphasForGameState.put(GameState.STARTING, 0f);
     sAlphasForGameState.put(GameState.ACTIVE, 1f);
-    sAlphasForGameState.put(GameState.COMPLETED, 0.5f);
+    sAlphasForGameState.put(GameState.COMPLETED, 1f);
     sAlphasForGameState.put(GameState.PAUSED, 1f);
   }
 
@@ -280,23 +280,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     return Ints.compare(mDrawOrder, another.mDrawOrder);
   }
 
-  public void updateGameState(GameState state, Handler handler) {
-    switch (state) {
-      case STARTING:
-        mShouldSlideIn = true;
-        break;
-      case COMPLETED:
-        Animation stateChangeAnimation = new AlphaAnimation(mAlpha,
-            sAlphasForGameState.get(state));
-        stateChangeAnimation.setDuration(800);
-        stateChangeAnimation.setAnimationListener(new BaseAnimationListener(
-            handler));
-        updateAnimation(handler, stateChangeAnimation);
-        break;
-      default:
-        break;
-    }
-
-    setAlpha(Math.round(sAlphasForGameState.get(state) * 255));
+  public void setShouldSlideIn() {
+    mShouldSlideIn = true;
   }
 }

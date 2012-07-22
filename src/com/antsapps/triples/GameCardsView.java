@@ -12,8 +12,7 @@ import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.google.common.collect.Lists;
 
-public abstract class GameCardsView extends CardsView implements
-    OnUpdateGameStateListener {
+public abstract class GameCardsView extends CardsView implements OnUpdateGameStateListener {
 
   private static final String TAG = "GameCardsView";
 
@@ -59,7 +58,6 @@ public abstract class GameCardsView extends CardsView implements
         invalidate();
       }
     }
-
     return true;
   }
 
@@ -81,14 +79,10 @@ public abstract class GameCardsView extends CardsView implements
   @Override
   public void onUpdateGameState(GameState state) {
     mGameState = state;
-    dispatchGameStateUpdate();
-  }
-
-  private void dispatchGameStateUpdate() {
-    for (CardDrawable drawable : mCardDrawables.values()) {
-      drawable.updateGameState(mGameState, mHandler);
+    if(mGameState == GameState.STARTING) {
+      for(CardDrawable cardDrawable : mCardDrawables.values()) {
+        cardDrawable.setShouldSlideIn();
+      }
     }
-    invalidate();
   }
-
 }

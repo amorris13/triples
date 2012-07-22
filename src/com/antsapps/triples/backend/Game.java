@@ -46,10 +46,12 @@ public class Game implements Comparable<Game> {
   }
 
   public interface OnUpdateGameStateListener {
+    void onUpdateGameState(GameState state);
+  }
+
+  public interface OnUpdateCardsInPlayListener {
     void onUpdateCardsInPlay(ImmutableList<Card> newCards,
         ImmutableList<Card> oldCards, int numRemaining);
-
-    void onUpdateGameState(GameState state);
   }
 
   public enum GameState {
@@ -79,7 +81,10 @@ public class Game implements Comparable<Game> {
 
   private final Date mDate;
 
-  private final List<OnUpdateGameStateListener> mListeners = Lists
+  private final List<OnUpdateGameStateListener> mGameStateListeners = Lists
+      .newArrayList();
+
+  private final List<OnUpdateCardsInPlayListener> mCardsInPlayListeners = Lists
       .newArrayList();
 
   public static Game createFromSeed(long seed) {
@@ -110,7 +115,11 @@ public class Game implements Comparable<Game> {
   }
 
   public void addOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
-    mListeners.add(listener);
+    mGameStateListeners.add(listener);
+  }
+
+  public void addOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
+    mCardsInPlayListeners.add(listener);
   }
 
   private void init() {
@@ -230,7 +239,7 @@ public class Game implements Comparable<Game> {
   }
 
   private void dispatchGameStateUpdate() {
-    for (OnUpdateGameStateListener listener : mListeners) {
+    for (OnUpdateGameStateListener listener : mGameStateListeners) {
       listener.onUpdateGameState(mGameState);
     }
   }
@@ -307,7 +316,7 @@ public class Game implements Comparable<Game> {
 
   private void dispatchCardsInPlayUpdate(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
-    for (OnUpdateGameStateListener listener : mListeners) {
+    for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
       listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
     }
   }

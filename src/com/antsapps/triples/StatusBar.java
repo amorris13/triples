@@ -10,13 +10,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.Game.GameState;
-import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
+import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.google.common.collect.ImmutableList;
 
 public class StatusBar extends RelativeLayout implements OnTimerTickListener,
-    OnUpdateGameStateListener {
+    OnUpdateCardsInPlayListener {
 
   private final TextView mTimerText;
   private final TextView mCardsRemainingText;
@@ -39,11 +38,5 @@ public class StatusBar extends RelativeLayout implements OnTimerTickListener,
   public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
     mCardsRemainingText.setText(String.valueOf(numRemaining));
-  }
-
-  @Override
-  public void onUpdateGameState(GameState state) {
-    // TODO Auto-generated method stub
-
   }
 }

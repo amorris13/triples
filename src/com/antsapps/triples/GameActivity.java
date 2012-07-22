@@ -11,11 +11,9 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
-import com.google.common.collect.ImmutableList;
 
 public class GameActivity extends SherlockActivity implements
     OnUpdateGameStateListener {
@@ -49,10 +47,11 @@ public class GameActivity extends SherlockActivity implements
 
     mStatusBar = (StatusBar) findViewById(R.id.status_bar);
     mGame.setOnTimerTickListener(mStatusBar);
-    mGame.addOnUpdateGameStateListener(mStatusBar);
+    mGame.addOnUpdateCardsInPlayListener(mStatusBar);
 
     mCardsView = (GameCardsView) findViewById(R.id.cards_view);
     mCardsView.setGame(mGame);
+    mGame.addOnUpdateCardsInPlayListener(mCardsView);
     mGame.addOnUpdateGameStateListener(mCardsView);
 
     mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
@@ -124,16 +123,11 @@ public class GameActivity extends SherlockActivity implements
   }
 
   @Override
-  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards, int numRemaining) {
-    // Do Nothing
-  }
-
-  @Override
   public void onUpdateGameState(GameState state) {
     mGameState = state;
     switch(mGameState) {
       case COMPLETED:
+        mCardsView.setAlpha(0.5f);
         Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
         break;
       case PAUSED:
