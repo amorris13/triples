@@ -4,6 +4,7 @@ import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
@@ -46,7 +47,7 @@ public abstract class CardsView extends View implements
       .newConcurrentMap();
   protected Rect mOffScreenLocation = new Rect();
   protected final Handler mHandler;
-  protected int mNumAnimating;
+  protected volatile int mNumAnimating;
 
   /**
    * This is a value from 0 to 1, where 0 means the view is completely
@@ -89,23 +90,21 @@ public abstract class CardsView extends View implements
   @Override
   protected void onDraw(Canvas canvas) {
     long start = System.currentTimeMillis();
-    canvas.saveLayerAlpha(
-        0,
-        0,
-        canvas.getWidth(),
-        canvas.getHeight(),
-        Math.round(mAlpha * 255),
-        Canvas.HAS_ALPHA_LAYER_SAVE_FLAG);
     for (CardDrawable dr : Ordering.natural().sortedCopy(
         mCardDrawables.values())) {
       dr.draw(canvas);
     }
+    if (mAlpha != 1) {
+      canvas.drawColor(Color.argb((int) ((1 - mAlpha) * 255), 0xF3, 0xF3, 0xF3));
+    }
+    boolean invalidated = false;
     if (mNumAnimating > 0) {
       invalidate();
+      invalidated = true;
     }
     long end = System.currentTimeMillis();
     Log.v(TAG, "draw took " + (end - start) + ", cards drawn: "
-        + mCardDrawables.size());
+        + mCardDrawables.size() + ", invalidated = " + invalidated);
   }
 
   protected void updateCards(ImmutableList<Card> newCards,
@@ -159,7 +158,7 @@ public abstract class CardsView extends View implements
     updateCards(newCards, oldCards, numRemaining);
   }
 
-  synchronized void incrementNumAnimating() {
+  void incrementNumAnimating() {
     mNumAnimating++;
     Log.i(TAG, "increment with mNumAnimating = " + mNumAnimating);
     if (mNumAnimating > 0) {
@@ -167,7 +166,8 @@ public abstract class CardsView extends View implements
     }
   }
 
-  synchronized void decrementNumAnimating() {
+  void decrementNumAnimating() {
+    Log.i(TAG, "decrement with mNumAnimating = " + mNumAnimating);
     mNumAnimating--;
   }
 
