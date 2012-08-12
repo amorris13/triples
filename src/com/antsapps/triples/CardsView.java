@@ -48,6 +48,12 @@ public abstract class CardsView extends View implements
   protected final Handler mHandler;
   protected int mNumAnimating;
 
+  /**
+   * This is a value from 0 to 1, where 0 means the view is completely
+   * transparent and 1 means the view is completely opaque.
+   */
+  private float mAlpha;
+
   public CardsView(Context context) {
     this(context, null);
   }
@@ -83,6 +89,13 @@ public abstract class CardsView extends View implements
   @Override
   protected void onDraw(Canvas canvas) {
     long start = System.currentTimeMillis();
+    canvas.saveLayerAlpha(
+        0,
+        0,
+        canvas.getWidth(),
+        canvas.getHeight(),
+        Math.round(mAlpha * 255),
+        Canvas.HAS_ALPHA_LAYER_SAVE_FLAG);
     for (CardDrawable dr : Ordering.natural().sortedCopy(
         mCardDrawables.values())) {
       dr.draw(canvas);
@@ -158,4 +171,9 @@ public abstract class CardsView extends View implements
     mNumAnimating--;
   }
 
+  @Override
+  public void setAlpha(float opacity) {
+    mAlpha = opacity;
+    invalidate();
+  }
 }
