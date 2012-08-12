@@ -52,7 +52,7 @@ public abstract class CardsView extends View implements
    * This is a value from 0 to 1, where 0 means the view is completely
    * transparent and 1 means the view is completely opaque.
    */
-  private float mAlpha;
+  private float mAlpha = 1;
 
   public CardsView(Context context) {
     this(context, null);
