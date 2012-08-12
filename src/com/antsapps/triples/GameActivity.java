@@ -64,6 +64,19 @@ public class GameActivity extends SherlockActivity implements
   }
 
   @Override
+  protected void onDestroy() {
+    mGame.removeOnUpdateGameStateListener(mCardsView);
+    mGame.removeOnUpdateCardsInPlayListener(mCardsView);
+
+    mGame.removeOnUpdateCardsInPlayListener(mStatusBar);
+    mGame.setOnTimerTickListener(null);
+
+    mGame.removeOnUpdateGameStateListener(this);
+
+    super.onDestroy();
+  }
+
+  @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.pause).setVisible(mGameState == GameState.ACTIVE);

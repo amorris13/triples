@@ -118,8 +118,16 @@ public class Game implements Comparable<Game> {
     mGameStateListeners.add(listener);
   }
 
+  public void removeOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
+    mGameStateListeners.remove(listener);
+  }
+
   public void addOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
     mCardsInPlayListeners.add(listener);
+  }
+
+  public void removeOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
+    mCardsInPlayListeners.remove(listener);
   }
 
   private void init() {
