@@ -135,7 +135,7 @@ public class Game implements Comparable<Game> {
   public void begin() {
     Preconditions.checkState(
         isGameInValidState(),
-        "Game is not in a valid state");
+        "Game is not in a valid state. Game state = " + mGameState);
     dispatchCardsInPlayUpdate(
         ImmutableList.copyOf(mCardsInPlay),
         ImmutableList.<Card> of(),
@@ -338,7 +338,7 @@ public class Game implements Comparable<Game> {
       case ACTIVE:
       case STARTING:
         return checkIfAnyValidTriples()
-            && mCardsInPlay.size() >= MIN_CARDS_IN_PLAY;
+            && (mCardsInPlay.size() >= MIN_CARDS_IN_PLAY || mDeck.isEmpty());
       default:
         return false;
     }
