@@ -71,6 +71,10 @@ public class GameListActivity extends SherlockFragmentActivity {
         newGameIntent.putExtra(Game.ID_TAG, game.getId());
         startActivity(newGameIntent);
         return true;
+      case R.id.stats:
+        Intent statsIntent = new Intent(getBaseContext(), StatisticsActivity.class);
+        startActivity(statsIntent);
+        return true;
       case R.id.help:
         Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
         startActivity(helpIntent);

@@ -33,5 +33,12 @@
 	<string name="colour">Colour:</string>
 	<string name="all_same">all the same.</string>
 	<string name="all_different">all different.</string>
+	<string name="graph">GRAPH</string>
+	<string name="summary">SUMMARY</string>
+	<string name="number_completed">"Number finished:"</string>
+	<string name="fastest_time">Fastest time:</string>
+	<string name="average_time">Average time:</string>
+	<string name="period">Period:</string>
+	<string name="statistics">Statistics</string>
 
 </resources>

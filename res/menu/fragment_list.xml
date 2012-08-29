@@ -4,7 +4,7 @@
 	<item
 		android:id="@+id/sort"
 		android:icon="@drawable/collections_sort_by_size_holo_dark"
-		android:showAsAction="ifRoom|withText"
+		android:showAsAction="never"
 		android:title="@string/sort"/>
 
 </menu>

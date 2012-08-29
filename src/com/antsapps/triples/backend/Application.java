@@ -87,4 +87,8 @@ public class Application extends OnStateChangedReporter {
       }
     });
   }
+
+  public Statistics getStatistics(Period period) {
+    return new Statistics(getCompletedGames(), period);
+  }
 }
