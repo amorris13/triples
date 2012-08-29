@@ -40,5 +40,15 @@
 	<string name="average_time">Average time:</string>
 	<string name="period">Period:</string>
 	<string name="statistics">Statistics</string>
+	<string name="all_time">All Time</string>
+	<string name="past_day">Past Day</string>
+	<string name="past_week">Past Week</string>
+	<string name="past_month">Past Month</string>
+	<string name="past_3_months">Past 3 Months</string>
+	<string name="past_6_months">Past 6 Months</string>
+	<string name="past_year">Past Year</string>
+	<string name="past_10_games">Past 10 games</string>
+	<string name="past_50_games">Past 50 games</string>
+	<string name="statistics_for">STATISTICS FOR</string>
 
 </resources>

@@ -20,7 +20,7 @@ public final class NumGamesPeriod implements Period {
       return Collections.<Game> emptyList();
     } else {
       Collections.sort(copy, new Game.DateGameComparator());
-      return copy.subList(Math.max(0, copy.size() - mNumber), copy.size() - 1);
+      return copy.subList(Math.max(0, copy.size() - mNumber), copy.size());
     }
   }
 }
