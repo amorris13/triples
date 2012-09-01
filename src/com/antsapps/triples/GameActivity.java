@@ -61,7 +61,6 @@ public class GameActivity extends SherlockActivity implements
     mGame.addOnUpdateGameStateListener(mCardsView);
 
     mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
-    mViewSwitcher.setDisplayedChild(mGameState == GameState.PAUSED ? 1 : 0);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -118,9 +117,7 @@ public class GameActivity extends SherlockActivity implements
   @Override
   protected void onResume() {
     super.onResume();
-    if (mGameState != GameState.COMPLETED) {
-      mGame.resume();
-    }
+    mGame.resumeFromLifecycle();
 
     SharedPreferences sharedPref = PreferenceManager
         .getDefaultSharedPreferences(this);
@@ -146,9 +143,7 @@ public class GameActivity extends SherlockActivity implements
   protected void onPause() {
     super.onPause();
     mApplication.saveGame(mGame);
-    if (mGameState != GameState.COMPLETED) {
-      mGame.pause();
-    }
+    mGame.pauseFromLifecycle();
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
   }
 
@@ -173,19 +168,27 @@ public class GameActivity extends SherlockActivity implements
   @Override
   public void onUpdateGameState(GameState state) {
     mGameState = state;
+
+    int childToDisplay = 0;
     switch (mGameState) {
-      case COMPLETED:
-        mCardsView.setAlpha(0.5f);
-        Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
-        break;
       case PAUSED:
-        mViewSwitcher.setDisplayedChild(1);
+        childToDisplay = 1;
         break;
+      case COMPLETED:
       case ACTIVE:
       case STARTING:
-        mViewSwitcher.setDisplayedChild(0);
+        childToDisplay = 0;
         break;
     }
+    if (mViewSwitcher.getDisplayedChild() != childToDisplay) {
+      mViewSwitcher.setDisplayedChild(childToDisplay);
+    }
+
+    if (mGameState == GameState.COMPLETED) {
+      mCardsView.setAlpha(0.5f);
+      Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
+    }
+
     invalidateOptionsMenu();
   }
 }

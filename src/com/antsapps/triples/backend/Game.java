@@ -69,8 +69,6 @@ public class Game implements Comparable<Game> {
 
   public static final String ID_TAG = "game_id";
 
-  private static final String TAG = "Game";
-
   private GameState mGameState;
 
   private boolean mActivitiyLifecycleActive;
@@ -124,15 +122,18 @@ public class Game implements Comparable<Game> {
     mGameStateListeners.add(listener);
   }
 
-  public void removeOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
+  public void
+      removeOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
     mGameStateListeners.remove(listener);
   }
 
-  public void addOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
+  public void addOnUpdateCardsInPlayListener(
+      OnUpdateCardsInPlayListener listener) {
     mCardsInPlayListeners.add(listener);
   }
 
-  public void removeOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
+  public void removeOnUpdateCardsInPlayListener(
+      OnUpdateCardsInPlayListener listener) {
     mCardsInPlayListeners.remove(listener);
   }
 
@@ -154,30 +155,11 @@ public class Game implements Comparable<Game> {
         ImmutableList.copyOf(mCardsInPlay),
         ImmutableList.<Card> of(),
         getCardsRemaining());
-    switch (mGameState) {
-      case STARTING:
-        mTimer.start();
-        dispatchGameStateUpdate();
-        mGameState = GameState.ACTIVE;
-        break;
-      case ACTIVE:
-      case PAUSED:
-        resume();
-        break;
-      case COMPLETED:
-        mTimer.update();
-        dispatchGameStateUpdate();
-        break;
-    }
-  }
-
-  public void pause() {
-    if (mGameState == GameState.COMPLETED) {
-      return;
-    }
-    mGameState = GameState.PAUSED;
-    mTimer.pause();
     dispatchGameStateUpdate();
+    updateTimer();
+    if(mGameState == GameState.STARTING) {
+      mGameState = GameState.ACTIVE;
+    }
   }
 
   public void resume() {
@@ -185,8 +167,36 @@ public class Game implements Comparable<Game> {
       return;
     }
     mGameState = GameState.ACTIVE;
-    mTimer.resume();
+    updateTimer();
     dispatchGameStateUpdate();
+  }
+
+  public void resumeFromLifecycle() {
+    mActivitiyLifecycleActive = true;
+    updateTimer();
+  }
+
+  public void pauseFromLifecycle() {
+    mActivitiyLifecycleActive = false;
+    updateTimer();
+  }
+
+  public void pause() {
+    if (mGameState == GameState.COMPLETED) {
+      return;
+    }
+    mGameState = GameState.PAUSED;
+    updateTimer();
+    dispatchGameStateUpdate();
+  }
+
+  private void updateTimer() {
+    if ((mGameState == GameState.ACTIVE || mGameState == GameState.STARTING)
+        && mActivitiyLifecycleActive) {
+      mTimer.resume();
+    } else {
+      mTimer.pause();
+    }
   }
 
   public void commitTriple(List<Card> cards) {
@@ -248,7 +258,7 @@ public class Game implements Comparable<Game> {
 
   private void finish() {
     mGameState = GameState.COMPLETED;
-    mTimer.stop();
+    updateTimer();
     dispatchGameStateUpdate();
   }
 
@@ -397,5 +407,9 @@ public class Game implements Comparable<Game> {
 
   public GameState getGameState() {
     return mGameState;
+  }
+
+  public boolean getActivityLifecycleActive() {
+    return mActivitiyLifecycleActive;
   }
 }
