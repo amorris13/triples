@@ -23,6 +23,13 @@ public class SettingsActivity extends PreferenceActivity implements
   }
 
   @Override
+  protected void onDestroy() {
+    mSharedPref.unregisterOnSharedPreferenceChangeListener(this);
+
+    super.onDestroy();
+  }
+
+  @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
       String key) {
     if (key.equals(getString(R.string.pref_orientation))) {
