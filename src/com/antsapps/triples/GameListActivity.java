@@ -75,6 +75,11 @@ public class GameListActivity extends SherlockFragmentActivity {
         Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
         startActivity(helpIntent);
         return true;
+      case R.id.settings:
+        Intent settingsIntent = new Intent(getBaseContext(),
+            SettingsActivity.class);
+        startActivity(settingsIntent);
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }

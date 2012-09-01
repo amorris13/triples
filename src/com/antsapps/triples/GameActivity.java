@@ -1,7 +1,12 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.preference.PreferenceManager;
+import android.view.WindowManager;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -23,6 +28,7 @@ public class GameActivity extends SherlockActivity implements
   private GameState mGameState;
   private StatusBar mStatusBar;
   private Application mApplication;
+  private PowerManager.WakeLock mWakeLock;
 
   /** Called when the activity is first created. */
   @Override
@@ -64,19 +70,6 @@ public class GameActivity extends SherlockActivity implements
   }
 
   @Override
-  protected void onDestroy() {
-    mGame.removeOnUpdateGameStateListener(mCardsView);
-    mGame.removeOnUpdateCardsInPlayListener(mCardsView);
-
-    mGame.removeOnUpdateCardsInPlayListener(mStatusBar);
-    mGame.setOnTimerTickListener(null);
-
-    mGame.removeOnUpdateGameStateListener(this);
-
-    super.onDestroy();
-  }
-
-  @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.pause).setVisible(mGameState == GameState.ACTIVE);
@@ -105,6 +98,11 @@ public class GameActivity extends SherlockActivity implements
         Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
         startActivity(helpIntent);
         return true;
+      case R.id.settings:
+        Intent settingsIntent = new Intent(getBaseContext(),
+            SettingsActivity.class);
+        startActivity(settingsIntent);
+        return true;
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
         Intent intent = new Intent(this, GameListActivity.class);
@@ -118,20 +116,40 @@ public class GameActivity extends SherlockActivity implements
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    if (mGameState != GameState.COMPLETED) {
+      mGame.resume();
+    }
+
+    SharedPreferences sharedPref = PreferenceManager
+        .getDefaultSharedPreferences(this);
+    if (sharedPref.getBoolean(getString(R.string.pref_screen_lock), true)) {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    if (sharedPref.getBoolean(getString(R.string.pref_orientation_lock), false)) {
+      String orientation = sharedPref.getString(
+          getString(R.string.pref_orientation),
+          "portrait");
+      if (orientation.equals("portrait")) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+      } else if (orientation.equals("landscape")) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+      }
+    } else {
+      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+  }
+
+  @Override
   protected void onPause() {
     super.onPause();
     mApplication.saveGame(mGame);
     if (mGameState != GameState.COMPLETED) {
       mGame.pause();
     }
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    if (mGameState != GameState.COMPLETED) {
-      mGame.resume();
-    }
+    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
   }
 
   @Override
@@ -140,9 +158,22 @@ public class GameActivity extends SherlockActivity implements
   }
 
   @Override
+  protected void onDestroy() {
+    mGame.removeOnUpdateGameStateListener(mCardsView);
+    mGame.removeOnUpdateCardsInPlayListener(mCardsView);
+
+    mGame.removeOnUpdateCardsInPlayListener(mStatusBar);
+    mGame.setOnTimerTickListener(null);
+
+    mGame.removeOnUpdateGameStateListener(this);
+
+    super.onDestroy();
+  }
+
+  @Override
   public void onUpdateGameState(GameState state) {
     mGameState = state;
-    switch(mGameState) {
+    switch (mGameState) {
       case COMPLETED:
         mCardsView.setAlpha(0.5f);
         Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
