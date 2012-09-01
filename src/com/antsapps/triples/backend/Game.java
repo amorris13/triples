@@ -54,6 +54,10 @@ public class Game implements Comparable<Game> {
         ImmutableList<Card> oldCards, int numRemaining);
   }
 
+  /**
+   * This reflects the game state as controlled by the user. This is orthogonal
+   * to that controlled by Android's activity lifecycle.
+   */
   public enum GameState {
     STARTING,
     ACTIVE,
@@ -68,6 +72,8 @@ public class Game implements Comparable<Game> {
   private static final String TAG = "Game";
 
   private GameState mGameState;
+
+  private boolean mActivitiyLifecycleActive;
 
   private final Deck mDeck;
 
