@@ -33,6 +33,9 @@
       android:name=".StatisticsActivity"
       android:label="@string/app_name"
       android:theme="@style/HelpDialog" />
+    <activity
+      android:name=".SettingsActivity"
+      android:label="@string/app_name" />
   </application>
 
 </manifest>

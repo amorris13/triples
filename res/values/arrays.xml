@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!-- Used in app/menu examples -->
+  <string-array name="entries_orientation_pref">
+    <item>Portrait</item>
+    <item>Landscape</item>
+  </string-array>
+
+  <!-- Used in app/menu examples -->
+  <string-array name="entryvalues_orientation_pref">
+    <item>portrait</item>
+    <item>landscape</item>
+  </string-array>
+
+</resources>

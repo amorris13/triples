@@ -37,26 +37,17 @@ class Timer {
     };
   }
 
-  void start() {
-    resume();
-  }
-
-  void pause() {
-    if (!isActive()) {
-      return;
-    }
-    mTimeElapsedWhenLastResumed += System.currentTimeMillis() - mTimeOfLastResume;
-    mTimeOfLastResume = -1;
-    update();
-  }
-
   void resume() {
     mTimeOfLastResume = System.currentTimeMillis();
     update();
   }
 
-  void stop() {
-    pause();
+  void pause() {
+    if (isActive()) {
+      mTimeElapsedWhenLastResumed += System.currentTimeMillis() - mTimeOfLastResume;
+      mTimeOfLastResume = -1;
+    }
+    update();
   }
 
   long getElapsed() {
@@ -68,7 +59,7 @@ class Timer {
     return (mTimeOfLastResume != -1);
   }
 
-  void update() {
+  private void update() {
     dispatchTimerTick();
     if (isActive()) {
       mHandler.sendMessageDelayed(Message.obtain(mHandler, TICK_WHAT), 1000);

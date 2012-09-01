@@ -50,5 +50,6 @@
 	<string name="past_10_games">Past 10 games</string>
 	<string name="past_50_games">Past 50 games</string>
 	<string name="statistics_for">STATISTICS FOR</string>
+	<string name="settings">Settings</string>
 
 </resources>
