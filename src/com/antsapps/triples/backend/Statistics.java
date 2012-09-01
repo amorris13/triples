@@ -3,6 +3,8 @@ package com.antsapps.triples.backend;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class Statistics {
 
   private final List<Game> mGamesInPeriod;
@@ -58,7 +60,7 @@ public class Statistics {
 
     mFastTime = fastTime;
     mSlowTime = slowTime;
-    mAverageTime = sumTime / getNumGames();
+    mAverageTime = getNumGames() != 0 ? sumTime / getNumGames() : 0;
     mStartDate = startDate;
     mFinishDate = finishDate;
     mFastDate = fastDate;
@@ -93,17 +95,7 @@ public class Statistics {
     return mSlowDate;
   }
 
-  public long[][] getData() {
-    final int X = 0;
-    final int Y = 1;
-    long[][] data = new long[getNumGames()][2];
-
-    int i = 0;
-    for (Game game : mGamesInPeriod) {
-      data[i][X] = game.getDateStarted().getTime();
-      data[i][Y] = game.getTimeElapsed();
-      i++;
-    }
-    return data;
+  public List<Game> getData() {
+    return Lists.newArrayList(mGamesInPeriod);
   }
 }

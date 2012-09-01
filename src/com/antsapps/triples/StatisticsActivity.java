@@ -35,7 +35,7 @@ public class StatisticsActivity extends Activity {
   private TextView mFastestTime;
   private TextView mAverageTime;
 
-  private GraphView mGraphView;
+  private HistogramView mGraphView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class StatisticsActivity extends Activity {
 
     getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-    mGraphView = (GraphView) findViewById(R.id.graph);
+    mGraphView = (HistogramView) findViewById(R.id.graph);
 
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
     mFastestTime = (TextView) findViewById(R.id.fastest_time);
@@ -118,11 +118,19 @@ public class StatisticsActivity extends Activity {
 
     int numGames = statistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
-    mFastestTime.setText(numGames != 0 ? DateUtils
-        .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(statistics
-            .getFastestTime())) : "-");
-    mAverageTime.setText(numGames != 0 ? DateUtils
-        .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(statistics
-            .getAverageTime())) : "-");
+    mFastestTime.setText(numGames == 0 ? "-" : convertTimeToString(statistics
+        .getFastestTime())
+        + " ("
+        + convertDateToString(statistics.getFastestDate()) + ")");
+    mAverageTime.setText(numGames != 0 ? convertTimeToString(statistics
+        .getAverageTime()) : "-");
+  }
+
+  private String convertTimeToString(long timeMS) {
+    return DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(timeMS));
+  }
+
+  private String convertDateToString(long dateMS) {
+    return DateUtils.formatDateTime(getBaseContext(), dateMS, 0);
   }
 }
