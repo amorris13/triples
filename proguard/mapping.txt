@@ -7109,6 +7109,7 @@ com.antsapps.triples.ScatterPlotView -> com.antsapps.triples.ScatterPlotView:
 com.antsapps.triples.SettingsActivity -> com.antsapps.triples.SettingsActivity:
     android.content.SharedPreferences mSharedPref -> a
     void onCreate(android.os.Bundle) -> onCreate
+    boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem) -> onOptionsItemSelected
     void onDestroy() -> onDestroy
     void onSharedPreferenceChanged(android.content.SharedPreferences,java.lang.String) -> onSharedPreferenceChanged
     void updateOrientationSummary() -> a
