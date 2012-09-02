@@ -157,9 +157,10 @@ public class Game implements Comparable<Game> {
         getCardsRemaining());
     dispatchGameStateUpdate();
     updateTimer();
-    if(mGameState == GameState.STARTING) {
+    if (mGameState == GameState.STARTING) {
       mGameState = GameState.ACTIVE;
     }
+    dispatchGameStateUpdate();
   }
 
   public void resume() {
