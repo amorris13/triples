@@ -27,15 +27,15 @@
       android:label="@string/app_name" />
     <activity
       android:name=".HelpActivity"
-      android:label="@string/app_name"
+      android:label="@string/help"
       android:theme="@style/HelpDialog" />
     <activity
       android:name=".StatisticsActivity"
-      android:label="@string/app_name"
+      android:label="@string/statistics"
       android:theme="@style/HelpDialog" />
     <activity
       android:name=".SettingsActivity"
-      android:label="@string/app_name" />
+      android:label="@string/settings" />
   </application>
 
 </manifest>

@@ -4,10 +4,13 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
-public class SettingsActivity extends PreferenceActivity implements
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
+
+public class SettingsActivity extends SherlockPreferenceActivity implements
     OnSharedPreferenceChangeListener {
   private SharedPreferences mSharedPref;
 
@@ -19,7 +22,23 @@ public class SettingsActivity extends PreferenceActivity implements
     mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     mSharedPref.registerOnSharedPreferenceChangeListener(this);
 
+    ActionBar actionBar = getSupportActionBar();
+    actionBar.setDisplayHomeAsUpEnabled(true);
+
     updateOrientationSummary();
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle item selection
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        // app icon in action bar clicked; go back
+        finish();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 
   @Override
