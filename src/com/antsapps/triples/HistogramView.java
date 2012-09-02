@@ -170,7 +170,7 @@ public class HistogramView extends View {
   }
 
   private void drawLabels(Canvas canvas) {
-    // Y Axis Labels (times)
+    // Y Axis Labels (number)
     Paint yTextPaint = new Paint(TEXT_PAINT);
     yTextPaint.setTextAlign(Paint.Align.RIGHT);
     for (int i = 0; i <= NUM_GRIDLINES; i++) {
@@ -182,7 +182,7 @@ public class HistogramView extends View {
           yTextPaint);
     }
 
-    // X Axis Labels (dates)
+    // X Axis Labels (minutes)
     Paint xTextPaint = new Paint(TEXT_PAINT);
     xTextPaint.setTextAlign(Paint.Align.CENTER);
     for (int i = 0; i <= NUM_TIME_LABELS; i++) {
@@ -193,9 +193,18 @@ public class HistogramView extends View {
           getHeight() - getXTitleHeight(),
           xTextPaint);
     }
+    if (mMaxMinutes == MAX_TIME) {
+      // Draw a + for the last label.
+      xTextPaint.setTextAlign(Align.RIGHT);
+      canvas.drawText(
+          "+",
+          calcXForMinutes(MAX_TIME + 1),
+          getHeight() - getXTitleHeight(),
+          xTextPaint);
+    }
   }
 
-  private float calcXForMinutes(int minutes) {
+  private float calcXForMinutes(float minutes) {
     return mYLabelWidth + BUFFER + mGraphWidth / (mMaxMinutes + 1) * minutes;
   }
 
