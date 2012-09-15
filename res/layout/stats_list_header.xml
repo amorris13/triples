@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical" >
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:singleLine="true"
+    android:text="@string/list_of_games"
+    android:textColor="#33B5E5"
+    android:textStyle="bold" />
+
+  <View
+    android:layout_width="fill_parent"
+    android:layout_height="1dp"
+    android:background="#33B5E5" />
+
+  <RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <TextView
+      android:id="@+id/date_header"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentLeft="true"
+      android:layout_alignParentTop="true"
+      android:singleLine="true"
+      android:text="@string/date_played"
+      android:textColor="#A0A0A0"
+      android:textSize="@dimen/heading_text_size"
+      android:textStyle="bold" />
+
+    <TextView
+      android:id="@+id/time_header"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentRight="true"
+      android:layout_alignParentTop="true"
+      android:singleLine="true"
+      android:text="@string/time_taken"
+      android:textColor="#A0A0A0"
+      android:textSize="@dimen/heading_text_size"
+      android:textStyle="bold" />
+  </RelativeLayout>
+
+  <View
+    android:layout_width="fill_parent"
+    android:layout_height="1dp"
+    android:background="#CCCCCC" />
+
+</LinearLayout>

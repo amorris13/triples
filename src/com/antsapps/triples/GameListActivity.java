@@ -45,7 +45,7 @@ public class GameListActivity extends SherlockFragmentActivity {
         null);
     mTabsAdapter.addTab(
         bar.newTab().setText(R.string.completed),
-        CompletedGameListFragment.class,
+        StatisticsFragment.class,
         null);
 
     if (savedInstanceState != null) {

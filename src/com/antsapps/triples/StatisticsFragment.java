@@ -1,0 +1,119 @@
+package com.antsapps.triples;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.text.format.DateUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.Statistics;
+import com.google.common.collect.Lists;
+
+public class StatisticsFragment extends SherlockListFragment implements
+    OnStatisticsChangeListener, OnComparatorChangeListener<Game> {
+
+  protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
+
+    public StatisticsGamesArrayAdapter(Context context, List<Game> games) {
+      super(context, R.layout.stats_game_list_item, games);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      View v = convertView;
+      if (v == null) {
+        LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
+            Context.LAYOUT_INFLATER_SERVICE);
+        v = vi.inflate(R.layout.stats_game_list_item, null);
+      }
+
+      Game g = getItem(position);
+      if (g != null) {
+        ((TextView) v.findViewById(R.id.time_taken)).setText(DateUtils
+            .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g
+                .getTimeElapsed())));
+        ((TextView) v.findViewById(R.id.date_played)).setText(DateUtils
+            .formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
+      }
+
+      return v;
+    }
+  }
+
+  protected Application mApplication;
+  protected ArrayAdapter<Game> mAdapter;
+  private Comparator<Game> mComparator = new Game.TimeElapsedGameComparator();
+  private StatisticsSelectorView mSelectorView;
+  private StatisticsGraphView mGraphView;
+  private StatisticsSummaryView mSummaryView;
+  private StatisticsListHeaderView mListHeaderView;
+
+  protected ArrayAdapter<Game> createArrayAdapter() {
+    return new StatisticsGamesArrayAdapter(getSherlockActivity(),
+        Lists.<Game> newArrayList());
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    // TODO Auto-generated method stub
+    ListView listView = (ListView) inflater.inflate(
+        R.layout.stats_fragment,
+        null);
+
+    mSelectorView = new StatisticsSelectorView(getSherlockActivity());
+    mSelectorView.setOnStatisticsChangeListener(this);
+    listView.addHeaderView(mSelectorView);
+
+    mGraphView = new StatisticsGraphView(getSherlockActivity());
+    listView.addHeaderView(mGraphView);
+
+    mSummaryView = new StatisticsSummaryView(getSherlockActivity());
+    listView.addHeaderView(mSummaryView);
+
+    mListHeaderView = new StatisticsListHeaderView(getSherlockActivity());
+    mListHeaderView.setOnComparatorChangeListener(this);
+    listView.addHeaderView(mListHeaderView);
+
+    return listView;
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mApplication = Application.getInstance(getSherlockActivity());
+
+    mAdapter = createArrayAdapter();
+    setListAdapter(mAdapter);
+  }
+
+  @Override
+  public void onStatisticsChange(Statistics statistics) {
+    mGraphView.onStatisticsChange(statistics);
+    mSummaryView.onStatisticsChange(statistics);
+
+    mAdapter.clear();
+    for (Game game : statistics.getData()) {
+      mAdapter.add(game);
+    }
+    mAdapter.notifyDataSetChanged();
+    mAdapter.sort(mComparator);
+  }
+
+  @Override
+  public void onComparatorChange(Comparator<Game> comparator) {
+    mComparator = comparator;
+    mAdapter.sort(mComparator);
+  }
+}
