@@ -137,6 +137,7 @@ public class GameActivity extends SherlockActivity implements
     } else {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
+    updateViewSwitcher();
   }
 
   @Override
@@ -145,6 +146,7 @@ public class GameActivity extends SherlockActivity implements
     mApplication.saveGame(mGame);
     mGame.pauseFromLifecycle();
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    updateViewSwitcher();
   }
 
   @Override
@@ -169,20 +171,7 @@ public class GameActivity extends SherlockActivity implements
   public void onUpdateGameState(GameState state) {
     mGameState = state;
 
-    int childToDisplay = 0;
-    switch (mGameState) {
-      case PAUSED:
-        childToDisplay = 1;
-        break;
-      case COMPLETED:
-      case ACTIVE:
-      case STARTING:
-        childToDisplay = 0;
-        break;
-    }
-    if (mViewSwitcher.getDisplayedChild() != childToDisplay) {
-      mViewSwitcher.setDisplayedChild(childToDisplay);
-    }
+    updateViewSwitcher();
 
     if (mGameState == GameState.COMPLETED) {
       mCardsView.setAlpha(0.5f);
@@ -190,5 +179,17 @@ public class GameActivity extends SherlockActivity implements
     }
 
     invalidateOptionsMenu();
+  }
+
+  private void updateViewSwitcher() {
+    int childToDisplay = 0;
+    if(mGameState == GameState.PAUSED || !mGame.getActivityLifecycleActive()) {
+      childToDisplay = 1;
+    } else {
+      childToDisplay = 0;
+    }
+    if (mViewSwitcher.getDisplayedChild() != childToDisplay) {
+      mViewSwitcher.setDisplayedChild(childToDisplay);
+    }
   }
 }
