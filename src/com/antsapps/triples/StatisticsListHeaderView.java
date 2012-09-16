@@ -1,11 +1,8 @@
 package com.antsapps.triples;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
@@ -19,6 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.GameProperty;
+import com.antsapps.triples.backend.ReversableComparator;
 import com.google.common.collect.Maps;
 
 public class StatisticsListHeaderView extends FrameLayout {
@@ -55,35 +54,32 @@ public class StatisticsListHeaderView extends FrameLayout {
     UNSELECTED_SHAPE = new PathShape(path, size, size);
   }
 
+  private static final int LEFT = 0;
+  private static final int RIGHT = 1;
+
   private class ComparatorChangeOnClickListener implements OnClickListener {
 
-    private Comparator<Game> mComparator;
+    private final ReversableComparator<Game> mComparator;
 
-    private ComparatorChangeOnClickListener(Comparator<Game> comparator) {
+    private ComparatorChangeOnClickListener(ReversableComparator<Game> comparator) {
       mComparator = comparator;
     }
 
     @Override
     public void onClick(View v) {
-      TextView textView = (TextView) v;
-      if (textView == mHeaderInUse) {
-        mComparator = Collections.reverseOrder(mComparator);
-        mAscendingMap.put(textView, !mAscendingMap.get(textView));
+      if (mComparator == mCurrentComparator) {
+        mComparator.reverse();
       }
 
-      mHeaderInUse = textView;
-      if (mComparatorChangeListener != null) {
-        mComparatorChangeListener.onComparatorChange(mComparator);
-      }
-      updateDrawableForViews();
+      setComparator(mComparator);
     }
   }
 
   private OnComparatorChangeListener<Game> mComparatorChangeListener;
-  private final Map<TextView, Boolean> mAscendingMap = Maps.newHashMap();
-  private final TextView mDateHeader;
-  private final TextView mTimeHeader;
-  private TextView mHeaderInUse;
+  private final Map<TextView, ReversableComparator<Game>> mComparatorsMap = Maps
+      .newHashMap();
+  private final Map<TextView, Integer> mPositionsMap = Maps.newHashMap();
+  private ReversableComparator<Game> mCurrentComparator;
 
   public StatisticsListHeaderView(Context context) {
     this(context, null);
@@ -102,54 +98,59 @@ public class StatisticsListHeaderView extends FrameLayout {
         Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.stats_list_header, this);
 
-    mDateHeader = (TextView) v.findViewById(R.id.date_header);
-    mDateHeader.setOnClickListener(new ComparatorChangeOnClickListener(
-        new Game.DateGameComparator()));
-    initHeader(mDateHeader);
+    TextView dateHeader = (TextView) v.findViewById(R.id.date_header);
+    initHeader(dateHeader, GameProperty.DATE, RIGHT);
 
-    mTimeHeader = (TextView) v.findViewById(R.id.time_header);
-    mTimeHeader.setOnClickListener(new ComparatorChangeOnClickListener(
-        new Game.TimeElapsedGameComparator()));
-    initHeader(mTimeHeader);
+    TextView timeHeader = (TextView) v.findViewById(R.id.time_header);
+    initHeader(timeHeader, GameProperty.TIME_ELAPSED, LEFT);
+
+    setComparator(mComparatorsMap.get(timeHeader));
   }
 
-  private void initHeader(TextView header) {
+  private void initHeader(TextView header, GameProperty property, int position) {
+    ReversableComparator<Game> reversableComparator = property
+        .createReversableComparator();
+    mComparatorsMap.put(header, reversableComparator);
+    mPositionsMap.put(header, position);
     header.setCompoundDrawablePadding(5);
-    setDrawableForView(header, createDrawableFromShape(UNSELECTED_SHAPE));
-    mAscendingMap.put(header, true);
+    header.setOnClickListener(new ComparatorChangeOnClickListener(
+        reversableComparator));
   }
 
   public void setOnComparatorChangeListener(
       OnComparatorChangeListener<Game> listener) {
     mComparatorChangeListener = listener;
+    mComparatorChangeListener.onComparatorChange(mCurrentComparator);
   }
 
   private void styleDrawable(ShapeDrawable dr) {
-    dr.getPaint().setColor(Color.GRAY);
+    dr.getPaint().setColor(getResources().getColor(android.R.color.darker_gray));
     dr.getPaint().setStyle(Style.FILL_AND_STROKE);
   }
 
   private void updateDrawableForViews() {
-    updateDrawableForView(mDateHeader);
-    updateDrawableForView(mTimeHeader);
+    for (TextView view : mComparatorsMap.keySet()) {
+      updateDrawableForView(view);
+    }
   }
 
   private void updateDrawableForView(TextView view) {
-    if (view == mHeaderInUse) {
-      setDrawableForView(
-          view,
-          createDrawableFromShape(mAscendingMap.get(view) ? UP_SHAPE
-              : DOWN_SHAPE));
+    if (mComparatorsMap.get(view) == mCurrentComparator) {
+      setDrawableForView(view, createDrawableFromShape(mComparatorsMap
+          .get(view).isAscending() ? UP_SHAPE : DOWN_SHAPE));
     } else {
       setDrawableForView(view, createDrawableFromShape(UNSELECTED_SHAPE));
     }
   }
 
   private void setDrawableForView(TextView view, Drawable dr) {
-    if (view == mDateHeader) {
-      view.setCompoundDrawables(null, null, dr, null);
-    } else if (view == mTimeHeader) {
-      view.setCompoundDrawables(dr, null, null, null);
+    switch (mPositionsMap.get(view)) {
+      case LEFT:
+        view.setCompoundDrawables(dr, null, null, null);
+        break;
+      case RIGHT:
+        view.setCompoundDrawables(null, null, dr, null);
+        break;
     }
   }
 
@@ -164,5 +165,13 @@ public class StatisticsListHeaderView extends FrameLayout {
         (int) (sizePx * 0.9),
         (int) (sizePx * 0.9));
     return dr;
+  }
+
+  private void setComparator(ReversableComparator<Game> comparator) {
+    mCurrentComparator = comparator;
+    if (mComparatorChangeListener != null) {
+      mComparatorChangeListener.onComparatorChange(comparator);
+    }
+    updateDrawableForViews();
   }
 }

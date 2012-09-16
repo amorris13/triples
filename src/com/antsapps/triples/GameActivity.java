@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -28,7 +27,6 @@ public class GameActivity extends SherlockActivity implements
   private GameState mGameState;
   private StatusBar mStatusBar;
   private Application mApplication;
-  private PowerManager.WakeLock mWakeLock;
 
   /** Called when the activity is first created. */
   @Override

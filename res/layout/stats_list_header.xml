@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="wrap_content"
+  android:paddingTop="10dp"
   android:orientation="vertical" >
 
   <TextView
@@ -23,27 +24,21 @@
 
     <TextView
       android:id="@+id/date_header"
+      style="@style/stats_list_header"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentLeft="true"
       android:layout_alignParentTop="true"
-      android:singleLine="true"
-      android:text="@string/date_played"
-      android:textColor="#A0A0A0"
-      android:textSize="@dimen/heading_text_size"
-      android:textStyle="bold" />
+      android:text="@string/date_played" />
 
     <TextView
       android:id="@+id/time_header"
+      style="@style/stats_list_header"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentRight="true"
       android:layout_alignParentTop="true"
-      android:singleLine="true"
-      android:text="@string/time_taken"
-      android:textColor="#A0A0A0"
-      android:textSize="@dimen/heading_text_size"
-      android:textStyle="bold" />
+      android:text="@string/time_taken" />
   </RelativeLayout>
 
   <View

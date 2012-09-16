@@ -14,13 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
 import com.google.common.collect.Lists;
 
-public class StatisticsFragment extends SherlockListFragment implements
+public class StatisticsFragment extends GameListFragment implements
     OnStatisticsChangeListener, OnComparatorChangeListener<Game> {
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
@@ -51,14 +50,14 @@ public class StatisticsFragment extends SherlockListFragment implements
     }
   }
 
-  protected Application mApplication;
-  protected ArrayAdapter<Game> mAdapter;
-  private Comparator<Game> mComparator = new Game.TimeElapsedGameComparator();
+  private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED
+      .createReversableComparator();
   private StatisticsSelectorView mSelectorView;
   private StatisticsGraphView mGraphView;
   private StatisticsSummaryView mSummaryView;
   private StatisticsListHeaderView mListHeaderView;
 
+  @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
     return new StatisticsGamesArrayAdapter(getSherlockActivity(),
         Lists.<Game> newArrayList());
@@ -90,15 +89,6 @@ public class StatisticsFragment extends SherlockListFragment implements
   }
 
   @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    mApplication = Application.getInstance(getSherlockActivity());
-
-    mAdapter = createArrayAdapter();
-    setListAdapter(mAdapter);
-  }
-
-  @Override
   public void onStatisticsChange(Statistics statistics) {
     mGraphView.onStatisticsChange(statistics);
     mSummaryView.onStatisticsChange(statistics);
@@ -114,6 +104,13 @@ public class StatisticsFragment extends SherlockListFragment implements
   @Override
   public void onComparatorChange(Comparator<Game> comparator) {
     mComparator = comparator;
-    mAdapter.sort(mComparator);
+    if (mAdapter != null) {
+      mAdapter.sort(mComparator);
+    }
+  }
+
+  @Override
+  protected void updateDataSet() {
+    // Don't think anything needs to be done here.
   }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,8 +51,14 @@ public class CurrentGameListFragment extends GameListFragment implements
   }
 
   @Override
-  protected String getEmptyText() {
-    return getSherlockActivity().getString(R.string.no_current_games);
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    // TODO Auto-generated method stub
+    View view = inflater.inflate(R.layout.game_list_fragment, null);
+
+    ((TextView) view.findViewById(android.R.id.empty))
+        .setText(R.string.no_current_games);
+    return view;
   }
 
   @Override
