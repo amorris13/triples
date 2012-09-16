@@ -1,9 +1,18 @@
 package com.antsapps.triples.backend;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class ClassicGame extends Game {
+
+  public static Game createFromSeed(long seed) {
+    Game game = new ClassicGame(-1, seed, Collections.<Card> emptyList(), new Deck(
+        new Random(seed)), 0, new Date(), GameState.STARTING);
+    game.init();
+    return game;
+  }
 
   ClassicGame(long id,
       long seed,

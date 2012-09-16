@@ -1,10 +1,8 @@
 package com.antsapps.triples.backend;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import android.util.Log;
 
@@ -61,13 +59,6 @@ public abstract class Game implements Comparable<Game> {
   private final List<OnUpdateCardsInPlayListener> mCardsInPlayListeners = Lists
       .newArrayList();
 
-  public static Game createFromSeed(long seed) {
-    Game game = new Game(-1, seed, Collections.<Card> emptyList(), new Deck(
-        new Random(seed)), 0, new Date(), GameState.STARTING);
-    game.init();
-    return game;
-  }
-
   Game(long id,
       long seed,
       List<Card> cardsInPlay,
@@ -107,7 +98,7 @@ public abstract class Game implements Comparable<Game> {
     mCardsInPlayListeners.remove(listener);
   }
 
-  private void init() {
+  protected void init() {
     Preconditions.checkState(mCardsInPlay.isEmpty());
     // Add cards so there is at least one valid triple.
     while (mCardsInPlay.size() < MIN_CARDS_IN_PLAY || !checkIfAnyValidTriples()) {
