@@ -19,7 +19,7 @@ public final class NumGamesPeriod implements Period {
     if (copy.isEmpty()) {
       return Collections.<Game> emptyList();
     } else {
-      Collections.sort(copy, new Game.DateGameComparator());
+      Collections.sort(copy, GameProperty.DATE.createReversableComparator());
       return copy.subList(Math.max(0, copy.size() - mNumber), copy.size());
     }
   }
