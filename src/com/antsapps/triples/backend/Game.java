@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
-public class Game implements Comparable<Game> {
+public abstract class Game implements Comparable<Game> {
 
   public static class CardsRemainingGameComparator implements Comparator<Game> {
 
@@ -69,13 +69,13 @@ public class Game implements Comparable<Game> {
 
   public static final String ID_TAG = "game_id";
 
-  private GameState mGameState;
+  protected GameState mGameState;
 
   private boolean mActivitiyLifecycleActive;
 
-  private final Deck mDeck;
+  protected final Deck mDeck;
 
-  private final List<Card> mCardsInPlay;
+  protected final List<Card> mCardsInPlay;
 
   private final Timer mTimer;
 
@@ -161,6 +161,11 @@ public class Game implements Comparable<Game> {
       mGameState = GameState.ACTIVE;
     }
     dispatchGameStateUpdate();
+  }
+
+  private boolean isGameInValidState() {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   public void resume() {
@@ -294,7 +299,7 @@ public class Game implements Comparable<Game> {
         && (cards[1] != cards[2]);
   }
 
-  private boolean checkIfAnyValidTriples() {
+  protected boolean checkIfAnyValidTriples() {
     for (int i = 0; i < mCardsInPlay.size(); i++) {
       Card c0 = mCardsInPlay.get(i);
       if (c0 == null)
@@ -343,29 +348,6 @@ public class Game implements Comparable<Game> {
       ImmutableList<Card> oldCards, int numRemaining) {
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
       listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
-    }
-  }
-
-  /**
-   * A game is in a valid state if any of the following are true:
-   * <ul>
-   * <li>It is completed and there are no cards in the deck and no valid triples
-   * on the board.
-   * <li>It is not completed and there are at least {@link MIN_CARDS_IN_PLAY}
-   * cards in play and at least one valid triple.
-   * </ul>
-   */
-  private boolean isGameInValidState() {
-    switch (mGameState) {
-      case COMPLETED:
-        return !checkIfAnyValidTriples() && mDeck.isEmpty();
-      case PAUSED:
-      case ACTIVE:
-      case STARTING:
-        return checkIfAnyValidTriples()
-            && (mCardsInPlay.size() >= MIN_CARDS_IN_PLAY || mDeck.isEmpty());
-      default:
-        return false;
     }
   }
 
