@@ -1,6 +1,5 @@
 package com.antsapps.triples.backend;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -18,7 +17,6 @@ public class Statistics {
 
   Statistics(Iterable<Game> iterable, Period period) {
     mGamesInPeriod = period.filter(iterable);
-    Collections.sort(mGamesInPeriod, new Game.DateGameComparator());
     precalcStatistics();
   }
 

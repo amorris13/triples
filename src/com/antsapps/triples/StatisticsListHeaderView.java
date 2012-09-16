@@ -124,7 +124,9 @@ public class StatisticsListHeaderView extends FrameLayout {
   }
 
   private void styleDrawable(ShapeDrawable dr) {
-    dr.getPaint().setColor(getResources().getColor(android.R.color.darker_gray));
+    dr
+        .getPaint().setColor(
+            getResources().getColor(android.R.color.darker_gray));
     dr.getPaint().setStyle(Style.FILL_AND_STROKE);
   }
 
