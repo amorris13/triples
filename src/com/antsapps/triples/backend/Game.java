@@ -1,7 +1,6 @@
 package com.antsapps.triples.backend;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -13,37 +12,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
 
 public abstract class Game implements Comparable<Game> {
-
-  public static class CardsRemainingGameComparator implements Comparator<Game> {
-
-    @Override
-    public int compare(Game lhs, Game rhs) {
-      return Ints.compare(lhs.getCardsRemaining(), rhs.getCardsRemaining());
-    }
-
-  }
-
-  public static class TimeElapsedGameComparator implements Comparator<Game> {
-
-    @Override
-    public int compare(Game lhs, Game rhs) {
-      return Longs.compare(lhs.getTimeElapsed(), rhs.getTimeElapsed());
-    }
-
-  }
-
-  public static class DateGameComparator implements Comparator<Game> {
-
-    @Override
-    public int compare(Game lhs, Game rhs) {
-      return lhs.mDate.compareTo(rhs.mDate);
-    }
-
-  }
 
   public interface OnUpdateGameStateListener {
     void onUpdateGameState(GameState state);
