@@ -8,7 +8,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.FloatMath;
+import android.util.TypedValue;
 import android.view.View;
 
 import com.antsapps.triples.backend.Game;
@@ -16,23 +18,27 @@ import com.antsapps.triples.backend.Statistics;
 
 public class HistogramView extends View {
 
-  private static final int COLUMN_PADDING = 2;
   private static final int MAX_TIME = 30;
   private static final int NUM_TIME_LABELS = 5;
   private static final int NUM_GRIDLINES = 4;
 
-  private static final float TEXT_HEIGHT = 24f;
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
   private static final String X_AXIS_TITLE = "Time (minutes)";
   private Statistics mStatistics;
   private float mYLabelWidth;
 
   private static final Paint TEXT_PAINT = new Paint();
-  static {
-    TEXT_PAINT.setTextSize(TEXT_HEIGHT);
-  }
 
-  private static final float BUFFER = 8;
+  private static final int BUFFER_DP = 4;
+  private final float mBufferPx;
+
+  private static final int COLUMN_PADDING_DP = 1;
+  private final float mColumnPaddingPx;
+
+  private static final int TEXT_HEIGHT_SP = 12;
+  private final float mTextHeightPx;
+
+  private final int mVertSpacePx;
 
   private final int[] mBins = new int[MAX_TIME + 1];
   private int mMaxMinutes;
@@ -41,11 +47,20 @@ public class HistogramView extends View {
   private float mGraphHeight;
 
   public HistogramView(Context context) {
-    super(context);
+    this(context, null);
   }
 
   public HistogramView(Context context, AttributeSet attrs) {
     super(context, attrs);
+
+    DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    mBufferPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, BUFFER_DP, dm);
+    mColumnPaddingPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, COLUMN_PADDING_DP, dm);
+    mTextHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, TEXT_HEIGHT_SP, dm);
+
+    mVertSpacePx = context.getResources().getDimensionPixelSize(R.dimen.stats_vert_padding);
+
+    TEXT_PAINT.setTextSize(mTextHeightPx);
   }
 
   public void setStatistics(Statistics statistics) {
@@ -119,19 +134,14 @@ public class HistogramView extends View {
   }
 
   private void calcDimens() {
-    generateLabels();
     mYLabelWidth = 0;
     for (int i = 0; i <= NUM_GRIDLINES; i++) {
       mYLabelWidth = Math.max(
           mYLabelWidth,
           TEXT_PAINT.measureText(String.valueOf(calcNumForGridline(i))));
     }
-    mGraphWidth = getWidth() - getYLabelWidth() - BUFFER;
-    mGraphHeight = getHeight() - getXLabelHeight() - getXTitleHeight() - BUFFER;
-  }
-
-  private void generateLabels() {
-
+    mGraphWidth = getWidth() - getYLabelWidth() - mBufferPx;
+    mGraphHeight = getHeight() - getXLabelHeight() - getXTitleHeight() - mBufferPx - 2 * mVertSpacePx;
   }
 
   private void drawAxes(Canvas canvas) {
@@ -148,15 +158,15 @@ public class HistogramView extends View {
   }
 
   private float getXTitleHeight() {
-    return TEXT_HEIGHT + BUFFER;
+    return mTextHeightPx + mBufferPx;
   }
 
   private float getXLabelHeight() {
-    return TEXT_PAINT.getTextSize() + BUFFER;
+    return mTextHeightPx + mBufferPx;
   }
 
   private float getYLabelWidth() {
-    return BUFFER + mYLabelWidth;
+    return mBufferPx + mYLabelWidth;
   }
 
   private void drawAxesTitles(Canvas canvas) {
@@ -164,8 +174,8 @@ public class HistogramView extends View {
     xTitlePaint.setTextAlign(Paint.Align.CENTER);
     canvas.drawText(
         X_AXIS_TITLE,
-        mYLabelWidth + BUFFER + mGraphWidth / 2,
-        getHeight(),
+        mYLabelWidth + mBufferPx + mGraphWidth / 2,
+        getHeight() - mVertSpacePx,
         xTitlePaint);
   }
 
@@ -178,7 +188,7 @@ public class HistogramView extends View {
       canvas.drawText(
           String.valueOf(number),
           mYLabelWidth,
-          calcYForNumber(number) + TEXT_HEIGHT / 3,
+          calcYForNumber(number) + mTextHeightPx / 3,
           yTextPaint);
     }
 
@@ -190,7 +200,7 @@ public class HistogramView extends View {
       canvas.drawText(
           String.valueOf(minutes),
           calcXForMinutes(minutes),
-          getHeight() - getXTitleHeight(),
+          getHeight() - getXTitleHeight() - mVertSpacePx,
           xTextPaint);
     }
     if (mMaxMinutes == MAX_TIME) {
@@ -205,7 +215,7 @@ public class HistogramView extends View {
   }
 
   private float calcXForMinutes(float minutes) {
-    return mYLabelWidth + BUFFER + mGraphWidth / (mMaxMinutes + 1) * minutes;
+    return mYLabelWidth + mBufferPx + mGraphWidth / (mMaxMinutes + 1) * minutes;
   }
 
   private void drawGridlines(Canvas canvas) {
@@ -230,14 +240,14 @@ public class HistogramView extends View {
 
   private void drawPlot(Canvas canvas) {
     Paint columnPaint = new Paint();
-    columnPaint.setColor(0xFF33B5E5);
+    columnPaint.setColor(getResources().getColor(android.R.color.holo_blue_light));
     columnPaint.setStrokeWidth(2);
     columnPaint.setStyle(Paint.Style.FILL);
     for (int i = 0; i <= mMaxMinutes; i++) {
       canvas.drawRect(
-          calcXForMinutes(i) + COLUMN_PADDING,
+          calcXForMinutes(i) + mColumnPaddingPx,
           calcYForNumber(mBins[i]),
-          calcXForMinutes(i + 1) - COLUMN_PADDING,
+          calcXForMinutes(i + 1) - mColumnPaddingPx,
           calcYForNumber(0),
           columnPaint);
     }
@@ -245,7 +255,7 @@ public class HistogramView extends View {
 
   private float calcYForNumber(int number) {
     return getHeight()
-        - (getXLabelHeight() + getXTitleHeight() + mGraphHeight / mMaxBinSize
+        - (getXLabelHeight() + getXTitleHeight() + mVertSpacePx + mGraphHeight / mMaxBinSize
             * number);
   }
 }

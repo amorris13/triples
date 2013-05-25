@@ -53,7 +53,6 @@ public class StatisticsFragment extends GameListFragment implements
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED
       .createReversableComparator();
   private StatisticsSelectorView mSelectorView;
-  private StatisticsGraphView mGraphView;
   private StatisticsSummaryView mSummaryView;
   private StatisticsListHeaderView mListHeaderView;
 
@@ -73,24 +72,20 @@ public class StatisticsFragment extends GameListFragment implements
 
     mSelectorView = new StatisticsSelectorView(getSherlockActivity());
     mSelectorView.setOnStatisticsChangeListener(this);
-    listView.addHeaderView(mSelectorView);
-
-    mGraphView = new StatisticsGraphView(getSherlockActivity());
-    listView.addHeaderView(mGraphView);
+    listView.addHeaderView(mSelectorView, null, false);
 
     mSummaryView = new StatisticsSummaryView(getSherlockActivity());
-    listView.addHeaderView(mSummaryView);
+    listView.addHeaderView(mSummaryView, null, false);
 
     mListHeaderView = new StatisticsListHeaderView(getSherlockActivity());
     mListHeaderView.setOnComparatorChangeListener(this);
-    listView.addHeaderView(mListHeaderView);
+    listView.addHeaderView(mListHeaderView, null, false);
 
     return listView;
   }
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
-    mGraphView.onStatisticsChange(statistics);
     mSummaryView.onStatisticsChange(statistics);
 
     mAdapter.clear();

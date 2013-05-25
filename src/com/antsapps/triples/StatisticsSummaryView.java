@@ -15,6 +15,8 @@ import com.antsapps.triples.backend.Statistics;
 public class StatisticsSummaryView extends FrameLayout implements
     OnStatisticsChangeListener {
 
+  private final HistogramView mGraphView;
+
   private final TextView mNumberOfGames;
   private final TextView mFastestTime;
   private final TextView mAverageTime;
@@ -34,6 +36,7 @@ public class StatisticsSummaryView extends FrameLayout implements
         Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.stats_summary, this);
 
+    mGraphView = (HistogramView) findViewById(R.id.graph);
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
     mFastestTime = (TextView) findViewById(R.id.fastest_time);
     mAverageTime = (TextView) findViewById(R.id.average_time);
@@ -41,6 +44,8 @@ public class StatisticsSummaryView extends FrameLayout implements
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
+    mGraphView.setStatistics(statistics);
+
     int numGames = statistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
     mFastestTime.setText(numGames == 0 ? "-" : convertTimeToString(statistics
