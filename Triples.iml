@@ -23,6 +23,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="libs" level="project" />
     <orderEntry type="module" module-name="com_actionbarsherlock" />
+    <orderEntry type="module" module-name="google-play-services_lib" />
   </component>
 </module>
 
