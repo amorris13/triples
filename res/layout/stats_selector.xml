@@ -4,7 +4,7 @@
   android:layout_height="48dp"
   android:paddingLeft="@dimen/stats_side_padding"
   android:paddingRight="@dimen/stats_side_padding"
-  android:gravity="center_horizontal" >
+  android:gravity="center_horizontal">
 
   <TextView
     android:layout_width="wrap_content"
@@ -12,11 +12,13 @@
     android:singleLine="true"
     android:text="@string/statistics_for"
     android:textColor="#33B5E5"
-    android:textStyle="bold" android:layout_gravity="center_vertical"/>
+    android:textStyle="bold"
+    android:layout_gravity="center_vertical" />
 
   <Spinner
     android:id="@+id/period_spinner"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" android:layout_gravity="center_vertical"/>
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical" />
 
 </LinearLayout>

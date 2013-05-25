@@ -7,7 +7,7 @@
   android:paddingRight="@dimen/stats_side_padding"
   android:paddingTop="2dp"
   android:paddingBottom="2dp"
-  android:orientation="horizontal" >
+  android:orientation="horizontal">
 
   <TextView
     android:id="@+id/date_played"

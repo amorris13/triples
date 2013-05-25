@@ -4,27 +4,29 @@
   android:layout_height="wrap_content"
   android:paddingLeft="@dimen/stats_side_padding"
   android:paddingRight="@dimen/stats_side_padding"
-  android:orientation="vertical" >
+  android:orientation="vertical">
 
   <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:singleLine="true"
-          android:text="@string/summary"
-          android:textColor="#33B5E5"
-          android:textStyle="bold" android:paddingTop="@dimen/stats_vert_padding"
-          android:paddingBottom="@dimen/stats_vert_padding"/>
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:singleLine="true"
+    android:text="@string/summary"
+    android:textColor="#33B5E5"
+    android:textStyle="bold"
+    android:paddingTop="@dimen/stats_vert_padding"
+    android:paddingBottom="@dimen/stats_vert_padding" />
 
   <View
-          android:layout_width="fill_parent"
-          android:layout_height="1dp"
-          android:background="#33B5E5" />
+    android:layout_width="fill_parent"
+    android:layout_height="1dp"
+    android:background="#33B5E5" />
 
   <com.antsapps.triples.HistogramView
-          android:id="@+id/graph"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:paddingTop="@dimen/stats_vert_padding" android:paddingBottom="@dimen/stats_vert_padding"/>
+    android:id="@+id/graph"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/stats_vert_padding"
+    android:paddingBottom="@dimen/stats_vert_padding" />
 
   <View
     android:layout_width="fill_parent"
@@ -33,12 +35,13 @@
 
   <TableLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" android:paddingTop="@dimen/stats_vert_padding"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/stats_vert_padding"
     android:paddingBottom="@dimen/stats_vert_padding">
 
     <TableRow
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content" >
+      android:layout_height="wrap_content">
 
       <TextView
         android:layout_width="wrap_content"
@@ -54,7 +57,7 @@
 
     <TableRow
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content" >
+      android:layout_height="wrap_content">
 
       <TextView
         android:layout_width="wrap_content"
@@ -70,7 +73,7 @@
 
     <TableRow
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content" >
+      android:layout_height="wrap_content">
 
       <TextView
         android:layout_width="wrap_content"
