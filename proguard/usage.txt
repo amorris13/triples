@@ -88,7 +88,7 @@ com.antsapps.triples.backend.DatePeriod:
 com.antsapps.triples.backend.Game:
     public static final int MIN_CARDS_IN_PLAY
     public static final java.lang.String ID_TAG
-    413:413:public boolean getActivityLifecycleActive()
+    414:414:public boolean getActivityLifecycleActive()
 com.antsapps.triples.backend.Statistics:
     95:95:public long getSlowestDate()
 com.antsapps.triples.backend.Timer:
