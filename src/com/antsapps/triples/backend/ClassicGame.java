@@ -22,7 +22,6 @@ public class ClassicGame extends Game {
       Date date,
       GameState gameState) {
     super(id, seed, cardsInPlay, cardsInDeck, timeElapsed, date, gameState);
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -34,7 +33,8 @@ public class ClassicGame extends Game {
    * cards in play and at least one valid triple.
    * </ul>
    */
-  private boolean isGameInValidState() {
+  @Override
+  protected boolean isGameInValidState() {
     switch (mGameState) {
       case COMPLETED:
         return !checkIfAnyValidTriples() && mDeck.isEmpty();
@@ -45,6 +45,15 @@ public class ClassicGame extends Game {
             && (mCardsInPlay.size() >= MIN_CARDS_IN_PLAY || mDeck.isEmpty());
       default:
         return false;
+    }
+  }
+
+  @Override
+  public void commitTriple(Card... cards) {
+    super.commitTriple(cards);
+
+    if (!checkIfAnyValidTriples()) {
+      finish();
     }
   }
 

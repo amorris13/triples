@@ -20,7 +20,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   /** The version of the database that this class understands. */
   private static final int DATABASE_VERSION = 3;
 
-  public static final String TABLE_GAMES = "games";
+  public static final String TABLE_CLASSIC_GAMES = "games";
 
   public static final String COLUMN_GAME_ID = "game_id";
   public static final String COLUMN_GAME_STATE = "game_state";
@@ -30,7 +30,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_TIME_ELAPSED = "time_elapsed";
   public static final String COLUMN_DATE = "date";
 
-  private static final String CREATE_GAMES = "CREATE TABLE " + TABLE_GAMES
+  private static final String CREATE_CLASSIC_GAMES = "CREATE TABLE " + TABLE_CLASSIC_GAMES
       + "(" + COLUMN_GAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " //
       + COLUMN_GAME_STATE + " TEXT, " //
       + COLUMN_GAME_RANDOM + " INTEGER, " //
@@ -39,7 +39,7 @@ public class DBAdapter extends SQLiteOpenHelper {
       + COLUMN_TIME_ELAPSED + " INTEGER, " //
       + COLUMN_DATE + " INTEGER)";
   private static final String DROP_GAMES = "DROP TABLE IF EXISTS "
-      + TABLE_GAMES;
+      + TABLE_CLASSIC_GAMES;
   private static final String TAG = "DBAdapter";
 
   /** Constructor */
@@ -67,7 +67,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     Log.i("DBAdaptor", "onCreate");
-    String[] sql = new String[] { CREATE_GAMES };
+    String[] sql = new String[] { CREATE_CLASSIC_GAMES };
     db.beginTransaction();
     try {
       // Create tables & test data
@@ -103,14 +103,14 @@ public class DBAdapter extends SQLiteOpenHelper {
     onCreate(db);
   }
 
-  public void initialize(List<Game> games) {
+  public void initialize(List<ClassicGame> classicGames) {
     Log.i("DBAdapter", "initialize");
     // Clear everything
-    games.clear();
+    classicGames.clear();
 
-    // Do players first.
-    Cursor gamesCursor = getWritableDatabase().query(
-        TABLE_GAMES,
+    // Do classic games first.
+    Cursor classicGamesCursor = getWritableDatabase().query(
+        TABLE_CLASSIC_GAMES,
         new String[] { COLUMN_GAME_ID, COLUMN_GAME_STATE, COLUMN_GAME_RANDOM,
             COLUMN_CARDS_IN_PLAY, COLUMN_CARDS_IN_DECK, COLUMN_TIME_ELAPSED,
             COLUMN_DATE },
@@ -119,19 +119,18 @@ public class DBAdapter extends SQLiteOpenHelper {
         null,
         null,
         null);
-    gamesCursor.moveToFirst();
-    while (!gamesCursor.isAfterLast()) {
-      Game game = cursorToGame(gamesCursor);
-      Log.i(TAG, "retrieved game with seed = " + game.getRandomSeed());
-      games.add(game);
-      gamesCursor.moveToNext();
+    classicGamesCursor.moveToFirst();
+    while (!classicGamesCursor.isAfterLast()) {
+      ClassicGame game = cursorToClassicGame(classicGamesCursor);
+      classicGames.add(game);
+      classicGamesCursor.moveToNext();
     }
-    gamesCursor.close();
+    classicGamesCursor.close();
 
-    Collections.sort(games);
+    Collections.sort(classicGames);
   }
 
-  private static Game cursorToGame(Cursor cursor) {
+  private static ClassicGame cursorToClassicGame(Cursor cursor) {
     long id = cursor.getLong(0);
     GameState state = GameState.valueOf(cursor.getString(1));
     long seed = cursor.getLong(2);
@@ -139,36 +138,36 @@ public class DBAdapter extends SQLiteOpenHelper {
     Deck deck = Deck.fromByteArray(cursor.getBlob(4));
     long timeElapsed = cursor.getLong(5);
     Date date = new Date(cursor.getLong(6));
-    Game game = new Game(id, seed, cardsInPlay, deck,
+    ClassicGame game = new ClassicGame(id, seed, cardsInPlay, deck,
         timeElapsed, date, state);
     return game;
   }
 
-  public long addGame(Game game) {
+  public long addClassicGame(ClassicGame game) {
     Log.i(TAG, "adding game with seed = " + game.getRandomSeed());
     return getWritableDatabase().insert(
-        TABLE_GAMES,
+        TABLE_CLASSIC_GAMES,
         null,
-        createGameValues(game));
+        createClassicGameValues(game));
   }
 
-  public void updateGame(Game game) {
+  public void updateClassicGame(ClassicGame game) {
     getWritableDatabase().update(
-        TABLE_GAMES,
-        createGameValues(game),
+        TABLE_CLASSIC_GAMES,
+        createClassicGameValues(game),
         COLUMN_GAME_ID + " = " + game.getId(),
         null);
   }
 
-  public void removeGame(Game game) {
+  public void removeClassicGame(ClassicGame game) {
     getWritableDatabase().delete(
-        TABLE_GAMES,
+        TABLE_CLASSIC_GAMES,
         COLUMN_GAME_ID + " = " + game.getId(),
         null);
   }
 
 
-  private ContentValues createGameValues(Game game) {
+  private ContentValues createClassicGameValues(ClassicGame game) {
     ContentValues values = new ContentValues();
     values.put(COLUMN_GAME_STATE, game.getGameState().name());
     values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());

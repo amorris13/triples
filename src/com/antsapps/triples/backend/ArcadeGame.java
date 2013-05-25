@@ -3,7 +3,9 @@ package com.antsapps.triples.backend;
 import java.util.Date;
 import java.util.List;
 
-public class ArcadeGame extends Game {
+public class ArcadeGame extends Game implements OnTimerTickListener {
+
+  private static final long TIME_LIMIT_MS = 1 * 60 * 1000;
 
   ArcadeGame(long id,
       long seed,
@@ -13,30 +15,41 @@ public class ArcadeGame extends Game {
       Date date,
       GameState gameState) {
     super(id, seed, cardsInPlay, cardsInDeck, timeElapsed, date, gameState);
-    // TODO Auto-generated constructor stub
+    mTimer.addOnTimerTickListener(this);
   }
 
   /**
    * A game is in a valid state if any of the following are true:
    * <ul>
-   * <li>It is completed and there are no cards in the deck and no valid triples
-   * on the board.
-   * <li>It is not completed and there are at least {@link MIN_CARDS_IN_PLAY}
-   * cards in play and at least one valid triple.
+   * <li>It is completed and the time has been exceeded.
+   * <li>It is not completed and the time has not been exceeded.
    * </ul>
    */
-  private boolean isGameInValidState() {
+  @Override
+  protected boolean isGameInValidState() {
     switch (mGameState) {
       case COMPLETED:
-        return !checkIfAnyValidTriples() && mDeck.isEmpty();
+        return mTimer.getElapsed() > TIME_LIMIT_MS;
       case PAUSED:
       case ACTIVE:
       case STARTING:
-        return checkIfAnyValidTriples()
-            && (mCardsInPlay.size() >= MIN_CARDS_IN_PLAY || mDeck.isEmpty());
+        return mTimer.getElapsed() <= TIME_LIMIT_MS;
       default:
         return false;
     }
   }
 
+  @Override
+  public void commitTriple(Card... cards) {
+    super.commitTriple(cards);
+
+    mDeck.readdCards(cards);
+  }
+
+  @Override
+  public void onTimerTick(long elapsedTime) {
+    if (elapsedTime > TIME_LIMIT_MS) {
+      finish();
+    }
+  }
 }

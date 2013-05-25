@@ -95,7 +95,7 @@ public abstract class GameListFragment extends SherlockListFragment implements
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mApplication.deleteGame(game);
+            mApplication.deleteClassicGame(game);
             dialog.dismiss();
           }
         });

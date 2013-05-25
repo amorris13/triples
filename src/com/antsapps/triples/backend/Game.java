@@ -19,7 +19,7 @@ public abstract class Game implements Comparable<Game> {
 
   public interface OnUpdateCardsInPlayListener {
     void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-        ImmutableList<Card> oldCards, int numRemaining);
+        ImmutableList<Card> oldCards, int numRemaining, int numTriplesFound);
   }
 
   /**
@@ -41,11 +41,13 @@ public abstract class Game implements Comparable<Game> {
 
   private boolean mActivitiyLifecycleActive;
 
+  private int mNumTriplesFound;
+
   protected final Deck mDeck;
 
   protected final List<Card> mCardsInPlay;
 
-  private final Timer mTimer;
+  protected final Timer mTimer;
 
   private final long mRandomSeed;
 
@@ -76,7 +78,7 @@ public abstract class Game implements Comparable<Game> {
   }
 
   public void setOnTimerTickListener(OnTimerTickListener listener) {
-    mTimer.setOnTimerTickListener(listener);
+    mTimer.addOnTimerTickListener(listener);
   }
 
   public void addOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
@@ -112,10 +114,7 @@ public abstract class Game implements Comparable<Game> {
     Preconditions.checkState(
         isGameInValidState(),
         "Game is not in a valid state. Game state = " + mGameState);
-    dispatchCardsInPlayUpdate(
-        ImmutableList.copyOf(mCardsInPlay),
-        ImmutableList.<Card> of(),
-        getCardsRemaining());
+    dispatchCardsInPlayUpdate(ImmutableList.<Card> of());
     dispatchGameStateUpdate();
     updateTimer();
     if (mGameState == GameState.STARTING) {
@@ -124,10 +123,7 @@ public abstract class Game implements Comparable<Game> {
     dispatchGameStateUpdate();
   }
 
-  private boolean isGameInValidState() {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  protected abstract boolean isGameInValidState();
 
   public void resume() {
     if (mGameState == GameState.COMPLETED) {
@@ -183,6 +179,8 @@ public abstract class Game implements Comparable<Game> {
       throw new IllegalArgumentException("Cards are not a valid triple");
     }
 
+    mNumTriplesFound++;
+
     for (int i = 0; i < 3; i++) {
       mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
     }
@@ -213,17 +211,10 @@ public abstract class Game implements Comparable<Game> {
       }
     }
 
-    dispatchCardsInPlayUpdate(
-        ImmutableList.copyOf(mCardsInPlay),
-        oldCards,
-        getCardsRemaining());
-
-    if (!checkIfAnyValidTriples()) {
-      finish();
-    }
+    dispatchCardsInPlayUpdate(oldCards);
   }
 
-  private void finish() {
+  protected void finish() {
     mGameState = GameState.COMPLETED;
     updateTimer();
     dispatchGameStateUpdate();
@@ -305,10 +296,13 @@ public abstract class Game implements Comparable<Game> {
     }
   }
 
-  private void dispatchCardsInPlayUpdate(ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards, int numRemaining) {
+  private void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
+      listener.onUpdateCardsInPlay(
+          ImmutableList.copyOf(mCardsInPlay),
+          oldCards,
+          getCardsRemaining(),
+          mNumTriplesFound);
     }
   }
 

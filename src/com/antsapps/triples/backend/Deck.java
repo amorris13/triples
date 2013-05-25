@@ -33,7 +33,7 @@ class Deck {
   }
 
   public Card getNextCard() {
-    if (mCards.isEmpty()){
+    if (mCards.isEmpty()) {
       return null;
     } else {
       return mCards.remove(0);
@@ -50,7 +50,7 @@ class Deck {
 
   public byte[] toByteArray() {
     byte[] b = new byte[mCards.size()];
-    for(int i = 0; i < mCards.size(); i++) {
+    for (int i = 0; i < mCards.size(); i++) {
       b[i] = Utils.cardToByte(mCards.get(i));
     }
     return b;
@@ -58,9 +58,18 @@ class Deck {
 
   public static Deck fromByteArray(byte[] b) {
     List<Card> cards = Lists.newArrayList();
-    for(int i = 0; i < b.length; i++) {
+    for (int i = 0; i < b.length; i++) {
       cards.add(Utils.cardFromByte(b[i]));
     }
     return new Deck(cards);
+  }
+
+  /**
+   * To take cards from in play and re-add them to the deck.
+   */
+  public void readdCards(Card... cards) {
+    for (Card card : cards) {
+      mCards.add(card);
+    }
   }
 }

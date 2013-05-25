@@ -16,13 +16,13 @@ public class Application extends OnStateChangedReporter {
   private static Application INSTANCE;
 
   /** Should remain sorted */
-  private final List<Game> mGames;
+  private final List<ClassicGame> mClassicGames;
 
   public final DBAdapter database;
 
   private Application(Context context) {
     super();
-    mGames = Lists.newArrayList();
+    mClassicGames = Lists.newArrayList();
     database = new DBAdapter(context);
     init();
   }
@@ -35,33 +35,33 @@ public class Application extends OnStateChangedReporter {
   }
 
   private void init() {
-    database.initialize(mGames);
+    database.initialize(mClassicGames);
   }
 
-  public void addGame(Game game) {
-    game.setId(database.addGame(game));
-    mGames.add(game);
-    Log.i(TAG, "addGame. now mGames = " + mGames);
+  public void addClassicGame(ClassicGame game) {
+    game.setId(database.addClassicGame(game));
+    mClassicGames.add(game);
+    Log.i(TAG, "addGame. now mClassicGames = " + mClassicGames);
     notifyStateChanged();
   }
 
-  public void saveGame(Game game) {
-    database.updateGame(game);
+  public void saveClassicGame(ClassicGame game) {
+    database.updateClassicGame(game);
     notifyStateChanged();
   }
 
-  public void deleteGame(Game game) {
-    mGames.remove(game);
-    database.removeGame(game);
+  public void deleteClassicGame(ClassicGame game) {
+    mClassicGames.remove(game);
+    database.removeClassicGame(game);
     notifyStateChanged();
   }
 
   public List<Game> getAllGames() {
-    return mGames;
+    return mClassicGames;
   }
 
   public Game getGame(long id) {
-    for (Game game : mGames) {
+    for (Game game : mClassicGames) {
       if (game.getId() == id) {
         return game;
       }
@@ -70,7 +70,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public Iterable<Game> getCurrentGames() {
-    return Iterables.filter(mGames, new Predicate<Game>() {
+    return Iterables.filter(mClassicGames, new Predicate<Game>() {
       @Override
       public boolean apply(Game game) {
         return game.getGameState() == GameState.PAUSED
@@ -80,7 +80,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public Iterable<Game> getCompletedGames() {
-    return Iterables.filter(mGames, new Predicate<Game>() {
+    return Iterables.filter(mClassicGames, new Predicate<Game>() {
       @Override
       public boolean apply(Game game) {
         return game.getGameState() == GameState.COMPLETED;

@@ -141,7 +141,7 @@ public class GameActivity extends SherlockActivity implements
   @Override
   protected void onPause() {
     super.onPause();
-    mApplication.saveGame(mGame);
+    mApplication.saveClassicGame(mGame);
     mGame.pauseFromLifecycle();
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     updateViewSwitcher();
