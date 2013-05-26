@@ -18,15 +18,21 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
+import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
+import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 
 public class GameActivity extends SherlockActivity implements
-    OnUpdateGameStateListener {
+    OnUpdateGameStateListener, GameHelper.GameHelperListener {
   private Game mGame;
   private ViewSwitcher mViewSwitcher;
   private GameCardsView mCardsView;
   private GameState mGameState;
   private StatusBar mStatusBar;
   private Application mApplication;
+
+  private GameHelper mHelper;
 
   /** Called when the activity is first created. */
   @Override
@@ -64,7 +70,23 @@ public class GameActivity extends SherlockActivity implements
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     mGame.begin();
+
+    mHelper = new GameHelper(this);
+    mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
   }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mHelper.onStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mHelper.onStop();
+  }
+
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
@@ -173,10 +195,33 @@ public class GameActivity extends SherlockActivity implements
 
     if (mGameState == GameState.COMPLETED) {
       mCardsView.setAlpha(0.5f);
-      Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
     }
 
     invalidateOptionsMenu();
+  }
+
+  @Override
+  public void gameFinished() {
+    Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
+    mHelper.getGamesClient().submitScoreImmediate(new OnScoreSubmittedListener() {
+      @Override
+      public void onScoreSubmitted(int i, SubmitScoreResult submitScoreResult) {
+        if (i != GamesClient.STATUS_OK) {
+          return;
+        }
+        String message = null;
+        if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME).newBest) {
+          message = "Congratulations! That's your best score ever.";
+        } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY).newBest) {
+          message = "Well Done! That's your best score this week.";
+        } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
+          message = "Nice! That's your best score today.";
+        }
+        if (message != null) {
+          Toast.makeText(GameActivity.this, message, Toast.LENGTH_LONG).show();
+        }
+      }
+    }, GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed());
   }
 
   private void updateViewSwitcher() {
@@ -189,5 +234,15 @@ public class GameActivity extends SherlockActivity implements
     if (mViewSwitcher.getDisplayedChild() != childToDisplay) {
       mViewSwitcher.setDisplayedChild(childToDisplay);
     }
+  }
+
+  @Override
+  public void onSignInFailed() {
+
+  }
+
+  @Override
+  public void onSignInSucceeded() {
+
   }
 }

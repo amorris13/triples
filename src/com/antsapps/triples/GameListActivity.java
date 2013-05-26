@@ -1,9 +1,11 @@
 package com.antsapps.triples;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,12 +20,21 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.Period;
+import com.antsapps.triples.backend.Statistics;
+import com.google.common.collect.Lists;
 
-public class GameListActivity extends SherlockFragmentActivity {
+public class GameListActivity extends SherlockFragmentActivity implements GameHelper.GameHelperListener {
   private static final String TAB_NUMBER = "tab";
+  public static final String SIGNIN_PREFS = "signin_prefs";
+  public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
   private ViewPager mViewPager;
   private TabsAdapter mTabsAdapter;
   private Application mApplication;
+
+  private GameHelper mHelper;
+
+  private GameHelper.GameHelperListener mGameHelperListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +62,31 @@ public class GameListActivity extends SherlockFragmentActivity {
     if (savedInstanceState != null) {
       bar.setSelectedNavigationItem(savedInstanceState.getInt(TAB_NUMBER, 0));
     }
+
+    mHelper = new GameHelper(this);
+    mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mHelper.onStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mHelper.onStop();
+  }
+
+  @Override
+  protected void onActivityResult(int request, int response, Intent data) {
+    super.onActivityResult(request, response, data);
+    mHelper.onActivityResult(request, response, data);
+  }
+
+  GameHelper getGameHelper() {
+    return mHelper;
   }
 
   @Override
@@ -90,6 +126,60 @@ public class GameListActivity extends SherlockFragmentActivity {
     super.onSaveInstanceState(outState);
     outState.putInt(TAB_NUMBER, getSupportActionBar()
         .getSelectedNavigationIndex());
+  }
+
+  @Override
+  public void onSignInFailed() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignInFailed();
+    }
+  }
+
+  @Override
+  public void onSignInSucceeded() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignInSucceeded();
+    }
+    if (isFirstTimeSignedIn()) {
+      uploadAchievements();
+      uploadTopScores();
+    }
+
+  }
+
+  private boolean isFirstTimeSignedIn() {
+    SharedPreferences settings = getSharedPreferences(SIGNIN_PREFS, 0);
+    if (settings.getBoolean(SIGNED_IN_PREVIOUSLY, false)) {
+      // We need an Editor object to make preference changes.
+      // All objects are from android.context.Context
+      SharedPreferences.Editor editor = settings.edit();
+      editor.putBoolean(SIGNED_IN_PREVIOUSLY, true);
+
+      // Commit the edits!
+      editor.commit();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private void uploadTopScores() {
+    Statistics stats = mApplication.getStatistics(new Period() {
+      @Override
+      public List<Game> filter(Iterable<Game> games) {
+        return Lists.newArrayList(games);
+      }
+    });
+
+    mHelper.getGamesClient().submitScore(GamesServices.Leaderboard.CLASSIC, stats.getFastestTime());
+  }
+
+  private void uploadAchievements() {
+
+  }
+
+  public void setGameHelperListener(GameHelper.GameHelperListener listener) {
+    mGameHelperListener = listener;
   }
 
   /**

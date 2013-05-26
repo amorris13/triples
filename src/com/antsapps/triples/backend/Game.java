@@ -17,6 +17,8 @@ public class Game implements Comparable<Game> {
 
   public interface OnUpdateGameStateListener {
     void onUpdateGameState(GameState state);
+
+    void gameFinished();
   }
 
   public interface OnUpdateCardsInPlayListener {
@@ -231,6 +233,9 @@ public class Game implements Comparable<Game> {
     mGameState = GameState.COMPLETED;
     updateTimer();
     dispatchGameStateUpdate();
+    for (OnUpdateGameStateListener listener : mGameStateListeners) {
+      listener.gameFinished();
+    }
   }
 
   private void dispatchGameStateUpdate() {

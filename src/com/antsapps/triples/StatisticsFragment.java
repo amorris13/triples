@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -50,8 +51,12 @@ public class StatisticsFragment extends GameListFragment implements
     }
   }
 
+  private GameListActivity mGameListActivity;
+
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED
       .createReversableComparator();
+
+  private StatisticsGamesServicesView mGameServicesView;
   private StatisticsSelectorView mSelectorView;
   private StatisticsSummaryView mSummaryView;
   private StatisticsListHeaderView mListHeaderView;
@@ -59,16 +64,26 @@ public class StatisticsFragment extends GameListFragment implements
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
     return new StatisticsGamesArrayAdapter(getSherlockActivity(),
-        Lists.<Game> newArrayList());
+        Lists.<Game>newArrayList());
+  }
+
+  @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mGameListActivity = (GameListActivity) activity;
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstanceState) {
-    // TODO Auto-generated method stub
+                           Bundle savedInstanceState) {
     ListView listView = (ListView) inflater.inflate(
         R.layout.stats_fragment,
         null);
+
+    mGameServicesView = new StatisticsGamesServicesView(getSherlockActivity());
+    mGameServicesView.setGameHelper(mGameListActivity.getGameHelper());
+    mGameListActivity.setGameHelperListener(mGameServicesView);
+    listView.addHeaderView(mGameServicesView, null, false);
 
     mSelectorView = new StatisticsSelectorView(getSherlockActivity());
     mSelectorView.setOnStatisticsChangeListener(this);

@@ -85,4 +85,8 @@ public abstract class GameCardsView extends CardsView implements OnUpdateGameSta
       }
     }
   }
+
+  @Override
+  public void gameFinished() {
+  }
 }
