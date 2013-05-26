@@ -1,7 +1,6 @@
 package com.antsapps.triples;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,12 +21,12 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.backend.Statistics;
-import com.google.common.collect.Lists;
 
 public class GameListActivity extends SherlockFragmentActivity implements GameHelper.GameHelperListener {
   private static final String TAB_NUMBER = "tab";
   public static final String SIGNIN_PREFS = "signin_prefs";
   public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
+  public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score";
   private ViewPager mViewPager;
   private TabsAdapter mTabsAdapter;
   private Application mApplication;
@@ -140,42 +139,24 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
     if (mGameHelperListener != null) {
       mGameHelperListener.onSignInSucceeded();
     }
-    if (isFirstTimeSignedIn()) {
-      uploadAchievements();
-      uploadTopScores();
-    }
-
+    uploadExistingTopScoresIfNecessary();
   }
 
-  private boolean isFirstTimeSignedIn() {
+  private void uploadExistingTopScoresIfNecessary() {
     SharedPreferences settings = getSharedPreferences(SIGNIN_PREFS, 0);
-    if (settings.getBoolean(SIGNED_IN_PREVIOUSLY, false)) {
-      // We need an Editor object to make preference changes.
-      // All objects are from android.context.Context
-      SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean(SIGNED_IN_PREVIOUSLY, true);
-
-      // Commit the edits!
-      editor.commit();
-      return true;
-    } else {
-      return false;
+    if (settings.getBoolean(UPLOADED_EXISTING_TOP_SCORE, false)) {
+      return;
     }
-  }
 
-  private void uploadTopScores() {
-    Statistics stats = mApplication.getStatistics(new Period() {
-      @Override
-      public List<Game> filter(Iterable<Game> games) {
-        return Lists.newArrayList(games);
-      }
-    });
-
+    Statistics stats = mApplication.getStatistics(Period.ALL_TIME);
     mHelper.getGamesClient().submitScore(GamesServices.Leaderboard.CLASSIC, stats.getFastestTime());
-  }
 
-  private void uploadAchievements() {
-
+    // We need an Editor object to make preference changes.
+    // All objects are from android.context.Context
+    SharedPreferences.Editor editor = settings.edit();
+    editor.putBoolean(UPLOADED_EXISTING_TOP_SCORE, true);
+    // Commit the edits!
+    editor.commit();
   }
 
   public void setGameHelperListener(GameHelper.GameHelperListener listener) {
