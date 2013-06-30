@@ -42,7 +42,7 @@
       android:layout_height="1dp"
       android:background="#33B5E5" />
 
-    <com.antsapps.triples.VerticalCardsView
+    <com.antsapps.triples.cardsview.VerticalCardsView
       android:id="@+id/cards_view"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content" />

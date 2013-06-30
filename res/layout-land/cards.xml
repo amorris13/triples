@@ -4,7 +4,7 @@
   android:layout_height="fill_parent"
   android:fillViewport="true">
 
-  <com.antsapps.triples.HorizontalCardsView
+  <com.antsapps.triples.cardsview.HorizontalCardsView
     android:id="@+id/cards_view"
     android:layout_width="wrap_content"
     android:layout_height="fill_parent" />

@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.cardsview;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.antsapps.triples.CardDrawable.OnAnimationFinishedListener;
+import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
@@ -45,16 +45,16 @@ public abstract class CardsView extends View implements
   }
 
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
-  protected static final int WHAT_INCREMENT = 0;
-  protected static final int WHAT_DECREMENT = 1;
+  static final int WHAT_INCREMENT = 0;
+  static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
-  protected final Map<Card, CardDrawable> mCardDrawables = Maps
+  private final Map<Card, CardDrawable> mCardDrawables = Maps
       .newConcurrentMap();
   private final List<Card> mCurrentlySelected = Lists.newArrayList();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
-  protected final Handler mHandler;
-  protected volatile int mNumAnimating;
+  private final Handler mHandler;
+  private volatile int mNumAnimating;
 
   /**
    * This is a value from 0 to 1, where 0 means the view is completely
@@ -114,7 +114,7 @@ public abstract class CardsView extends View implements
         + mCardDrawables.size() + ", invalidated = " + invalidated);
   }
 
-  protected void updateCards(ImmutableList<Card> newCards,
+  private void updateCards(ImmutableList<Card> newCards,
       ImmutableList<Card> oldCards, int numRemaining) {
     long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
@@ -145,7 +145,7 @@ public abstract class CardsView extends View implements
 
   protected abstract void logValidTriple();
 
-  protected void updateBounds() {
+  void updateBounds() {
     long start = System.currentTimeMillis();
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
@@ -168,7 +168,7 @@ public abstract class CardsView extends View implements
     updateCards(newCards, oldCards, numRemaining);
   }
 
-  void incrementNumAnimating() {
+  private void incrementNumAnimating() {
     mNumAnimating++;
     Log.i(TAG, "increment with mNumAnimating = " + mNumAnimating);
     if (mNumAnimating > 0) {
@@ -176,7 +176,7 @@ public abstract class CardsView extends View implements
     }
   }
 
-  void decrementNumAnimating() {
+  private void decrementNumAnimating() {
     Log.i(TAG, "decrement with mNumAnimating = " + mNumAnimating);
     mNumAnimating--;
   }

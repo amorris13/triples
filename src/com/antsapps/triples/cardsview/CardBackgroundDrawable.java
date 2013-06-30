@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.cardsview;
 
 import java.util.Arrays;
 
@@ -11,8 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
-
-import com.antsapps.triples.CardDrawable.CardState;
 
 public class CardBackgroundDrawable extends Drawable {
 
@@ -32,9 +30,9 @@ public class CardBackgroundDrawable extends Drawable {
 
   private final ShapeDrawable mOutline;
 
-  private CardState mCardState;
+  private CardDrawable.CardState mCardState;
 
-  public CardBackgroundDrawable() {
+  CardBackgroundDrawable() {
     float[] outerR = new float[8];
     Arrays.fill(outerR, CORNER_RADIUS);
     mCardShape = new RoundRectShape(outerR, null, null);
@@ -55,7 +53,7 @@ public class CardBackgroundDrawable extends Drawable {
   public void draw(Canvas canvas) {
     mShadow.draw(canvas);
     mBackground.draw(canvas);
-    if (mCardState == CardState.SELECTED) {
+    if (mCardState == CardDrawable.CardState.SELECTED) {
       mOutline.draw(canvas);
     }
   }
@@ -79,7 +77,7 @@ public class CardBackgroundDrawable extends Drawable {
     mShadow.setColorFilter(cf);
   }
 
-  public void setCardState(CardState state) {
+  void setCardState(CardDrawable.CardState state) {
     mCardState = state;
   }
 

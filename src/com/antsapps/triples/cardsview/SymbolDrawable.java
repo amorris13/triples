@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.cardsview;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -26,7 +26,7 @@ public class SymbolDrawable extends Drawable {
   private final ShapeDrawable mOutline;
   private final ShapeDrawable mFill;
 
-  public SymbolDrawable(Card card) {
+  SymbolDrawable(Card card) {
     mCard = card;
     mOutline = getOutlineForCard(card);
     mFill = getFillForCard(card);
@@ -100,18 +100,6 @@ public class SymbolDrawable extends Drawable {
     }
     return 0;
   }
-
-  // private static int getStrokeColorForId(int id) {
-  // switch (id) {
-  // case 0:
-  // return Color.parseColor("#0099CC"); // Holo Dark Blue
-  // case 1:
-  // return Color.parseColor("#FF8800"); // Holo Dark Orange
-  // case 2:
-  // return Color.parseColor("#CC0000"); // Holo Dark Red
-  // }
-  // return 0;
-  // }
 
   @Override
   public void draw(Canvas canvas) {

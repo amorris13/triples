@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.cardsview;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -95,7 +95,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private final Context mContext;
 
-  public CardDrawable(Context context,
+  CardDrawable(Context context,
       Card card,
       OnAnimationFinishedListener listener) {
     mContext = context;
@@ -148,7 +148,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         centerY + radius);
   }
 
-  public boolean isAnimating() {
+  boolean isAnimating() {
     return mAnimation != null && mAnimation.hasStarted()
         && !mAnimation.hasEnded();
   }
@@ -230,7 +230,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   /** Returns true if the card is now selected, false otherwise. */
-  public boolean onTap() {
+  boolean onTap() {
     if (mState == CardState.SELECTED) {
       mState = CardState.NORMAL;
     } else {
@@ -239,7 +239,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     return mState == CardState.SELECTED;
   }
 
-  public void onIncorrectTriple(final Handler handler) {
+  void onIncorrectTriple(final Handler handler) {
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(),
         mBounds.centerY());
@@ -256,7 +256,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     updateAnimation(shakeAnimation);
   }
 
-  public void updateBounds(Rect bounds, final Handler handler) {
+  void updateBounds(Rect bounds, final Handler handler) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
@@ -311,7 +311,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mAnimation = animation;
   }
 
-  public int getDrawOrder() {
+  int getDrawOrder() {
     return mDrawOrder;
   }
 
@@ -320,11 +320,11 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     return Ints.compare(mDrawOrder, another.mDrawOrder);
   }
 
-  public void setShouldSlideIn() {
+  void setShouldSlideIn() {
     mShouldSlideIn = true;
   }
 
-  public static Bitmap drawableToBitmap(Drawable drawable) {
+  private static Bitmap drawableToBitmap(Drawable drawable) {
     if (drawable instanceof BitmapDrawable) {
       return ((BitmapDrawable) drawable).getBitmap();
     }

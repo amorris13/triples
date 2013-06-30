@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
+import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
 
 public class HelpActivity extends Activity implements OnValidTripleSelectedListener {

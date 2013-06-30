@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.cardsview;
 
 import java.util.List;
 
