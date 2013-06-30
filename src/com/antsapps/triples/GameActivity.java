@@ -237,7 +237,6 @@ public class GameActivity extends SherlockFragmentActivity implements
   @Override
   public void gameFinished() {
     Log.i("GameActivity", "game finished");
-    Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
     if (mHelper.isSignedIn()) {
       submitScore();
     } else {
