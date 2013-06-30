@@ -19,7 +19,7 @@ import android.graphics.drawable.shapes.Shape;
 
 import com.antsapps.triples.backend.Card;
 
-public class SymbolDrawable extends Drawable {
+class SymbolDrawable extends Drawable {
 
   private final Card mCard;
 

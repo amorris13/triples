@@ -31,7 +31,7 @@ import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
-public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private class BaseAnimationListener implements AnimationListener {
 

@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 
-public class CardBackgroundDrawable extends Drawable {
+class CardBackgroundDrawable extends Drawable {
 
   private static final int SHADOW_OFFSET_VERTICAL = 4;
 
