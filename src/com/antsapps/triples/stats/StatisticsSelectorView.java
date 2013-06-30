@@ -29,6 +29,7 @@ class StatisticsSelectorView extends FrameLayout {
 
   private static final Map<String, Period> PERIODS = Maps.newLinkedHashMap();
   private Spinner mSpinner;
+  private Period mCurrentPeriod;
 
   private OnStatisticsChangeListener mOnStatisticsChangeListener;
 
@@ -70,7 +71,8 @@ class StatisticsSelectorView extends FrameLayout {
       public void onItemSelected(AdapterView<?> parent, View view, int pos,
           long id) {
         String string = (String) parent.getItemAtPosition(pos);
-        updatePeriod(PERIODS.get(string));
+        mCurrentPeriod = PERIODS.get(string);
+        updateStatistics();
       }
 
       @Override
@@ -117,9 +119,13 @@ class StatisticsSelectorView extends FrameLayout {
     mOnStatisticsChangeListener = listener;
   }
 
-  private void updatePeriod(Period period) {
+  public void regenerateStatistics() {
+    updateStatistics();
+  }
+
+  private void updateStatistics() {
     Statistics statistics = Application
-        .getInstance(getContext()).getStatistics(period);
+        .getInstance(getContext()).getStatistics(mCurrentPeriod);
     if (mOnStatisticsChangeListener != null) {
       mOnStatisticsChangeListener.onStatisticsChange(statistics);
     }

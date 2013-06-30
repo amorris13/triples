@@ -124,6 +124,10 @@ public class StatisticsFragment extends GameListFragment implements
 
   @Override
   protected void updateDataSet() {
-    // Don't think anything needs to be done here.
+    mAdapter.clear();
+    for (Game game : mApplication.getCurrentGames()) {
+      mAdapter.add(game);
+    }
+    mAdapter.notifyDataSetChanged();
   }
 }
