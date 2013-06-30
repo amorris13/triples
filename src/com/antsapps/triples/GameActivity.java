@@ -1,16 +1,22 @@
 package com.antsapps.triples;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -23,8 +29,33 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
 import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 
-public class GameActivity extends SherlockActivity implements
+public class GameActivity extends SherlockFragmentActivity implements
     OnUpdateGameStateListener, GameHelper.GameHelperListener {
+
+  public class SignInDialogFragment extends DialogFragment {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+      // Use the Builder class for convenient dialog construction
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      // Get the layout inflater
+      LayoutInflater inflater = getActivity().getLayoutInflater();
+
+      // Inflate and set the layout for the dialog
+      // Pass null as the parent view because its going in the dialog layout
+      View view = inflater.inflate(R.layout.signin_dialog, null);
+      view.findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          mHelper.beginUserInitiatedSignIn();
+          SignInDialogFragment.this.dismiss();
+        }
+      });
+      builder.setView(view);
+      // Create the AlertDialog object and return it
+      return builder.create();
+    }
+  }
+
   private Game mGame;
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
@@ -204,24 +235,42 @@ public class GameActivity extends SherlockActivity implements
 
   @Override
   public void gameFinished() {
+    Log.i("GameActivity", "game finished");
     Toast.makeText(this, R.string.game_over, Toast.LENGTH_LONG).show();
+    if (mHelper.isSignedIn()) {
+      submitScore();
+    } else {
+      DialogFragment dialog = new SignInDialogFragment();
+      dialog.show(getSupportFragmentManager(), "SignInDialogFragment");
+    }
+  }
+
+  private void submitScore() {
+    if (mGameState != GameState.COMPLETED) {
+      return;
+    }
     mHelper.getGamesClient().submitScoreImmediate(new OnScoreSubmittedListener() {
       @Override
-      public void onScoreSubmitted(int i, SubmitScoreResult submitScoreResult) {
-        if (i != GamesClient.STATUS_OK) {
-          return;
-        }
+      public void onScoreSubmitted(int status, SubmitScoreResult submitScoreResult) {
         String message = null;
-        if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME).newBest) {
-          message = "Congratulations! That's your best score ever.";
-        } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY).newBest) {
-          message = "Well Done! That's your best score this week.";
-        } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
-          message = "Nice! That's your best score today.";
+        switch (status) {
+          case GamesClient.STATUS_OK:
+            if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME).newBest) {
+              message = "Congratulations! That's your best score ever.";
+            } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY).newBest) {
+              message = "Well Done! That's your best score this week.";
+            } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
+              message = "Nice! That's your best score today.";
+            } else {
+              message = "You've done better before - keep trying!";
+            }
+            break;
+          case GamesClient.STATUS_NETWORK_ERROR_OPERATION_DEFERRED :
+            message = "Score will be submitted when next connected.";
+          default:
+            message = "Score could not be submitted";
         }
-        if (message != null) {
-          Toast.makeText(GameActivity.this, message, Toast.LENGTH_LONG).show();
-        }
+        Toast.makeText(GameActivity.this, message, Toast.LENGTH_LONG).show();
       }
     }, GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed());
   }
@@ -245,6 +294,8 @@ public class GameActivity extends SherlockActivity implements
 
   @Override
   public void onSignInSucceeded() {
-
+    if (mGameState == GameState.COMPLETED) {
+      submitScore();
+    }
   }
 }

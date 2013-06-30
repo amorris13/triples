@@ -57,6 +57,8 @@
   <string name="date_played">DATE PLAYED</string>
   <string name="time_taken">TIME TAKEN</string>
   <string name="sign_in_why">Sign in with Google to share your scores with your friends.</string>
-  <string name="app_id">434215387101</string><string name="achievements">Achievements</string><string name="leaderboards">Leaderboards</string>
+  <string name="app_id">434215387101</string>
+  <string name="achievements">Achievements</string>
+  <string name="leaderboards">Leaderboards</string>
 
 </resources>
