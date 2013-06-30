@@ -1,0 +1,24 @@
+# I use Google Guava in my app
+# see http://code.google.com/p/guava-libraries/wiki/UsingProGuardWithGuava
+-libraryjars libs/guava-14.0.1.jar
+-libraryjars libs/jsr305-2.0.1.jar
+-dontwarn sun.misc.Unsafe
+-dontwarn com.google.common.collect.MinMaxPriorityQueue
+-dontwarn com.google.common.util.concurrent.ServiceManager
+
+## For Action Bar Sherlock & Compatibility
+-dontwarn android.support.v4.**
+-keep class android.support.v4.** { *; }
+-keep interface android.support.v4.** { *; }
+-keep class com.actionbarsherlock.** { *; }
+-keep interface com.actionbarsherlock.** { *; }
+
+## Remove logging
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int i(...);
+    public static int w(...);
+    public static int d(...);
+    public static int e(...);
+}
