@@ -1,11 +1,14 @@
 package com.antsapps.triples;
 
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.Game;
 
 public class VerticalCardsView extends CardsView {
 
@@ -28,6 +31,20 @@ public class VerticalCardsView extends CardsView {
 
   public VerticalCardsView(Context context, AttributeSet attrs) {
     super(context, attrs);
+  }
+
+  @Override
+  protected void logValidTriple() {
+    Log.v("ValidTriples", "valid positions:");
+    List<Integer> validPositions = Game.getValidTriplePositions(mCards);
+    for (int r = 0; r < mCards.size() / COLUMNS; r++) {
+      StringBuilder sb = new StringBuilder();
+      for (int c = 0; c < COLUMNS; c++) {
+        sb.append(validPositions.contains(r * COLUMNS + c) ? "X" : ".");
+        sb.append(" ");
+      }
+      Log.v("ValidTriples", sb.toString());
+    }
   }
 
   @Override

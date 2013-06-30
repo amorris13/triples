@@ -138,9 +138,12 @@ public abstract class CardsView extends View implements
     }
     updateMeasuredDimensions(0, 0);
     invalidate();
+    logValidTriple();
     long end = System.currentTimeMillis();
     Log.i(TAG, "updateCards took " + (end - start));
   }
+
+  protected abstract void logValidTriple();
 
   protected void updateBounds() {
     long start = System.currentTimeMillis();

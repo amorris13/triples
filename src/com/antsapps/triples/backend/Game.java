@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import android.util.Log;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -283,15 +281,28 @@ public class Game implements Comparable<Game>, OnValidTripleSelectedListener {
           if (c2 == null)
             continue;
           if (isValidTriple(c0, c1, c2)) {
-            Log.i(
-                "Game",
-                String.format("Valid triple for positions %d %d %d", i, j, k));
             return true;
           }
         }
       }
     }
     return false;
+  }
+
+  public static List<Integer> getValidTriplePositions(List<Card> cardsInPlay) {
+    for (int i = 0; i < cardsInPlay.size(); i++) {
+      Card c0 = cardsInPlay.get(i);
+      for (int j = i + 1; j < cardsInPlay.size(); j++) {
+        Card c1 = cardsInPlay.get(j);
+        for (int k = j + 1; k < cardsInPlay.size(); k++) {
+          Card c2 = cardsInPlay.get(k);
+          if (isValidTriple(c0, c1, c2)) {
+            return ImmutableList.of(i, j, k);
+          }
+        }
+      }
+    }
+    return ImmutableList.of();
   }
 
   private static int numNotNull(Iterable<Card> cards) {
