@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class Game implements Comparable<Game> {
+public class Game implements Comparable<Game>, OnValidTripleSelectedListener {
 
   public interface OnUpdateGameStateListener {
     void onUpdateGameState(GameState state);
@@ -172,7 +172,7 @@ public class Game implements Comparable<Game> {
     }
   }
 
-  public void commitTriple(List<Card> cards) {
+  public void onValidTripleSelected(List<Card> cards) {
     commitTriple(Iterables.toArray(cards, Card.class));
   }
 
@@ -326,7 +326,7 @@ public class Game implements Comparable<Game> {
    * <ul>
    * <li>It is completed and there are no cards in the deck and no valid triples
    * on the board.
-   * <li>It is not completed and there are at least {@link MIN_CARDS_IN_PLAY}
+   * <li>It is not completed and there are at least {@link #MIN_CARDS_IN_PLAY}
    * cards in play and at least one valid triple.
    * </ul>
    */

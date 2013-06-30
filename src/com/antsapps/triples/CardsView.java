@@ -1,5 +1,6 @@
 package com.antsapps.triples;
 
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -10,12 +11,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.antsapps.triples.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
+import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
@@ -45,6 +50,8 @@ public abstract class CardsView extends View implements
   protected ImmutableList<Card> mCards = ImmutableList.of();
   protected final Map<Card, CardDrawable> mCardDrawables = Maps
       .newConcurrentMap();
+  private final List<Card> mCurrentlySelected = Lists.newArrayList();
+  private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
   protected final Handler mHandler;
   protected volatile int mNumAnimating;
@@ -175,5 +182,52 @@ public abstract class CardsView extends View implements
   public void setAlpha(float opacity) {
     mAlpha = opacity;
     invalidate();
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      Card tappedCard = getCardForPosition(
+          (int) event.getX(),
+          (int) event.getY());
+      if (tappedCard == null) {
+        return true;
+      }
+      CardDrawable tappedCardDrawable = mCardDrawables.get(tappedCard);
+      if (tappedCardDrawable.onTap()) {
+        mCurrentlySelected.add(tappedCard);
+      } else {
+        mCurrentlySelected.remove(tappedCard);
+      }
+
+      checkSelectedCards();
+      invalidate();
+    }
+    return true;
+  }
+
+  protected abstract Card getCardForPosition(int x, int y);
+
+  private void checkSelectedCards() {
+    if (mCurrentlySelected.size() == 3) {
+      if (Game.isValidTriple(mCurrentlySelected)) {
+        mOnValidTripleSelectedListener.onValidTripleSelected(mCurrentlySelected);
+      } else {
+        for (Card card : mCurrentlySelected) {
+          mCardDrawables.get(card).onIncorrectTriple(mHandler);
+        }
+      }
+      mCurrentlySelected.clear();
+    }
+  }
+
+  public void shouldSlideIn() {
+    for(CardDrawable cardDrawable : mCardDrawables.values()) {
+      cardDrawable.setShouldSlideIn();
+    }
+  }
+
+  public void setOnValidTripleSelectedListener(OnValidTripleSelectedListener listener) {
+    mOnValidTripleSelectedListener = listener;
   }
 }

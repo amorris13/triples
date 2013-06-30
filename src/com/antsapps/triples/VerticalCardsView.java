@@ -6,19 +6,21 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.Game;
 
-public class VerticalCardsView extends GameCardsView {
+public class VerticalCardsView extends CardsView {
+
+  private static final int HORIZONTAL = 0;
+  private static final int VERTICAL = 1;
 
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
   public static final int COLUMNS = 3;
 
-  private static final int MIN_ROWS = Game.MIN_CARDS_IN_PLAY / COLUMNS;
-
   private int mWidthOfCard;
 
   private int mHeightOfCard;
+
+  private int mOrientation;
 
   public VerticalCardsView(Context context) {
     this(context, null);
@@ -32,7 +34,7 @@ public class VerticalCardsView extends GameCardsView {
   protected void updateMeasuredDimensions(final int widthMeasureSpec,
       final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
-    int rows = Math.max(mCards.size() / COLUMNS, MIN_ROWS);
+    int rows = mCards.size() / COLUMNS;
     int heightOfCards = (int) (widthOfCards / COLUMNS * HEIGHT_OVER_WIDTH * rows);
     setMeasuredDimension(
         widthOfCards,

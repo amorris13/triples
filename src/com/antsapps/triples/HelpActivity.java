@@ -3,6 +3,7 @@ package com.antsapps.triples;
 import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Random;
 
 import android.app.Activity;
@@ -12,11 +13,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.google.common.collect.ImmutableList;
 
-public class HelpActivity extends Activity {
+public class HelpActivity extends Activity implements OnValidTripleSelectedListener {
 
-  private HelpCardsView mHelpCardsView;
+  private CardsView mHelpCardsView;
   private ImmutableList<Card> mCardsShown;
   private TextView mNumberExplanation;
   private TextView mShapeExplanation;
@@ -31,7 +33,8 @@ public class HelpActivity extends Activity {
 
     getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-    mHelpCardsView = (HelpCardsView) findViewById(R.id.cards_view);
+    mHelpCardsView = (CardsView) findViewById(R.id.cards_view);
+    mHelpCardsView.setOnValidTripleSelectedListener(this);
 
     mNumberExplanation = (TextView) findViewById(R.id.number_explanation);
     mShapeExplanation = (TextView) findViewById(R.id.shape_explanation);
@@ -44,7 +47,16 @@ public class HelpActivity extends Activity {
     updateTextExplanation();
   }
 
+  @Override
+  public void onValidTripleSelected(List<Card> validTriple) {
+    showAnotherTriple();
+  }
+
   public void showAnother(View view) {
+    showAnotherTriple();
+  }
+
+  private void showAnotherTriple() {
     ImmutableList<Card> newCards = createValidTriple();
     mHelpCardsView.onUpdateCardsInPlay(newCards, mCardsShown, 0);
     mCardsShown = newCards;

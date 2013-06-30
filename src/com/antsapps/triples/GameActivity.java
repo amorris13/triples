@@ -27,7 +27,7 @@ public class GameActivity extends SherlockActivity implements
     OnUpdateGameStateListener, GameHelper.GameHelperListener {
   private Game mGame;
   private ViewSwitcher mViewSwitcher;
-  private GameCardsView mCardsView;
+  private CardsView mCardsView;
   private GameState mGameState;
   private StatusBar mStatusBar;
   private Application mApplication;
@@ -53,16 +53,15 @@ public class GameActivity extends SherlockActivity implements
     }
 
     mGame.addOnUpdateGameStateListener(this);
-    mGameState = mGame.getGameState();
+    GameState originalGameState = mGame.getGameState();
 
     mStatusBar = (StatusBar) findViewById(R.id.status_bar);
     mGame.setOnTimerTickListener(mStatusBar);
     mGame.addOnUpdateCardsInPlayListener(mStatusBar);
 
-    mCardsView = (GameCardsView) findViewById(R.id.cards_view);
-    mCardsView.setGame(mGame);
+    mCardsView = (CardsView) findViewById(R.id.cards_view);
+    mCardsView.setOnValidTripleSelectedListener(mGame);
     mGame.addOnUpdateCardsInPlayListener(mCardsView);
-    mGame.addOnUpdateGameStateListener(mCardsView);
 
     mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
 
@@ -70,6 +69,10 @@ public class GameActivity extends SherlockActivity implements
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     mGame.begin();
+
+    if (originalGameState == GameState.STARTING) {
+      mCardsView.shouldSlideIn();
+    }
 
     mHelper = new GameHelper(this);
     mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
@@ -176,7 +179,6 @@ public class GameActivity extends SherlockActivity implements
 
   @Override
   protected void onDestroy() {
-    mGame.removeOnUpdateGameStateListener(mCardsView);
     mGame.removeOnUpdateCardsInPlayListener(mCardsView);
 
     mGame.removeOnUpdateCardsInPlayListener(mStatusBar);
