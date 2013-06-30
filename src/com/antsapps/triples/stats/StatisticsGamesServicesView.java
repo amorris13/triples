@@ -68,6 +68,11 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
     updateSignedInState();
   }
 
+  @Override
+  public void onSignOut() {
+    updateSignedInState();
+  }
+
   private void updateSignedInState() {
     if (mHelper == null || !mHelper.isSignedIn()) {
       mSignInBar.setVisibility(View.VISIBLE);

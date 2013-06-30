@@ -125,7 +125,6 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
         return true;
       case R.id.signout:
         mHelper.signOut();
-        invalidateOptionsMenu();
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -153,6 +152,14 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
     }
     invalidateOptionsMenu();
     uploadExistingTopScoresIfNecessary();
+  }
+
+  @Override
+  public void onSignOut() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignOut();
+    }
+    invalidateOptionsMenu();
   }
 
   private void uploadExistingTopScoresIfNecessary() {

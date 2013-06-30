@@ -298,4 +298,9 @@ public class GameActivity extends SherlockFragmentActivity implements
       submitScore();
     }
   }
+
+  @Override
+  public void onSignOut() {
+
+  }
 }
