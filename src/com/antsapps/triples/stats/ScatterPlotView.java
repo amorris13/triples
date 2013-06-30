@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +14,7 @@ import android.view.View;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
 
-public class ScatterPlotView extends View {
+class ScatterPlotView extends View {
 
   private static final float TEXT_HEIGHT = 24f;
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
@@ -43,7 +43,7 @@ public class ScatterPlotView extends View {
     super(context, attrs);
   }
 
-  public void setStatistics(Statistics statistics) {
+  void setStatistics(Statistics statistics) {
     mStatistics = statistics;
     invalidate();
   }

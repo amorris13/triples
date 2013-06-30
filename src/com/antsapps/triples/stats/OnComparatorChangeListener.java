@@ -1,7 +1,7 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import java.util.Comparator;
 
-public interface OnComparatorChangeListener<T> {
+interface OnComparatorChangeListener<T> {
   void onComparatorChange(Comparator<T> comparator);
 }

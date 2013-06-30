@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,7 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public class StatisticsGamesServicesView extends FrameLayout implements View.OnClickListener, GameHelper.GameHelperListener {
+import com.antsapps.triples.GameHelper;
+import com.antsapps.triples.GamesServices;
+import com.antsapps.triples.R;
+
+class StatisticsGamesServicesView extends FrameLayout implements View.OnClickListener, GameHelper.GameHelperListener {
 
   private GameHelper mHelper;
   private View mSignInBar;
@@ -38,7 +42,7 @@ public class StatisticsGamesServicesView extends FrameLayout implements View.OnC
     updateSignedInState();
   }
 
-  public void setGameHelper(GameHelper helper) {
+  void setGameHelper(GameHelper helper) {
     mHelper = helper;
   }
 

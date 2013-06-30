@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.Game;
@@ -22,7 +23,7 @@ import com.antsapps.triples.backend.Statistics;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class StatisticsSelectorView extends FrameLayout {
+class StatisticsSelectorView extends FrameLayout {
 
   private static final long MS_PER_DAY = (long) 24 * 60 * 60 * 1000;
 

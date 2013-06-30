@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import java.util.concurrent.TimeUnit;
 
@@ -10,9 +10,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Statistics;
 
-public class StatisticsSummaryView extends FrameLayout implements
+class StatisticsSummaryView extends FrameLayout implements
     OnStatisticsChangeListener {
 
   private final HistogramView mGraphView;

@@ -1,7 +1,7 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import com.antsapps.triples.backend.Statistics;
 
-public interface OnStatisticsChangeListener {
+interface OnStatisticsChangeListener {
   void onStatisticsChange(Statistics statistics);
 }

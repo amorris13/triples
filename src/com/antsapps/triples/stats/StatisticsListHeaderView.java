@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import java.util.Map;
 
@@ -15,12 +15,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.ReversableComparator;
 import com.google.common.collect.Maps;
 
-public class StatisticsListHeaderView extends FrameLayout {
+class StatisticsListHeaderView extends FrameLayout {
 
   private static final Shape DOWN_SHAPE;
   private static final Shape UP_SHAPE;
@@ -117,7 +118,7 @@ public class StatisticsListHeaderView extends FrameLayout {
         reversableComparator));
   }
 
-  public void setOnComparatorChangeListener(
+  void setOnComparatorChangeListener(
       OnComparatorChangeListener<Game> listener) {
     mComparatorChangeListener = listener;
     mComparatorChangeListener.onComparatorChange(mCurrentComparator);

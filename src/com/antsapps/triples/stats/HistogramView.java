@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import java.util.Arrays;
 
@@ -13,10 +13,11 @@ import android.util.FloatMath;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
 
-public class HistogramView extends View {
+class HistogramView extends View {
 
   private static final int MAX_TIME = 30;
   private static final int NUM_TIME_LABELS = 5;
@@ -63,7 +64,7 @@ public class HistogramView extends View {
     TEXT_PAINT.setTextSize(mTextHeightPx);
   }
 
-  public void setStatistics(Statistics statistics) {
+  void setStatistics(Statistics statistics) {
     mStatistics = statistics;
     calcBins();
     invalidate();

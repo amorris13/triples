@@ -21,6 +21,7 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.backend.Statistics;
+import com.antsapps.triples.stats.StatisticsFragment;
 
 public class GameListActivity extends SherlockFragmentActivity implements GameHelper.GameHelperListener {
   private static final String TAB_NUMBER = "tab";
@@ -84,7 +85,7 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
     mHelper.onActivityResult(request, response, data);
   }
 
-  GameHelper getGameHelper() {
+  public GameHelper getGameHelper() {
     return mHelper;
   }
 
