@@ -1,6 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -16,11 +15,9 @@ import android.widget.Spinner;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DatePeriod;
-import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.NumGamesPeriod;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.backend.Statistics;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 class StatisticsSelectorView extends FrameLayout {
@@ -82,12 +79,7 @@ class StatisticsSelectorView extends FrameLayout {
   }
 
   private void initPeriodsMap() {
-    PERIODS.put(getContext().getString(R.string.all_time), new Period() {
-      @Override
-      public List<Game> filter(Iterable<Game> games) {
-        return Lists.newArrayList(games);
-      }
-    });
+    PERIODS.put(getContext().getString(R.string.all_time),Period.ALL_TIME);
     PERIODS.put(
         getContext().getString(R.string.past_day),
         DatePeriod.fromTimePeriod(1 * MS_PER_DAY));
