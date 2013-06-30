@@ -96,6 +96,13 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
   }
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    super.onPrepareOptionsMenu(menu);
+    menu.findItem(R.id.signout).setVisible(mHelper.isSignedIn());
+    return true;
+  }
+
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle item selection
     switch (item.getItemId()) {
@@ -114,6 +121,10 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
         Intent settingsIntent = new Intent(getBaseContext(),
             SettingsActivity.class);
         startActivity(settingsIntent);
+        return true;
+      case R.id.signout:
+        mHelper.signOut();
+        invalidateOptionsMenu();
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -139,6 +150,7 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
     if (mGameHelperListener != null) {
       mGameHelperListener.onSignInSucceeded();
     }
+    invalidateOptionsMenu();
     uploadExistingTopScoresIfNecessary();
   }
 

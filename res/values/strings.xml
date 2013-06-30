@@ -60,5 +60,6 @@
   <string name="app_id">434215387101</string>
   <string name="achievements">Achievements</string>
   <string name="leaderboards">Leaderboards</string>
+  <string name="signout">Sign Out</string>
 
 </resources>
