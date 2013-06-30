@@ -14,7 +14,8 @@
     android:background="#f0f0f0"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="10dp">
+    android:padding="10dp"
+    >
 
     <com.google.android.gms.common.SignInButton
       android:id="@+id/sign_in_button"
@@ -34,6 +35,7 @@
   <LinearLayout
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:paddingTop="@dimen/stats_vert_padding"
     android:orientation="vertical"
     android:id="@+id/games_services_bar">
 
@@ -65,7 +67,7 @@
       <View
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="#33B5E5"
+        android:background="@android:color/darker_gray"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
