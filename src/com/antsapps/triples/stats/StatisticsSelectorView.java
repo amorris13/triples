@@ -76,6 +76,7 @@ class StatisticsSelectorView extends FrameLayout {
       public void onNothingSelected(AdapterView<?> arg0) {
       }
     });
+    mCurrentPeriod = PERIODS.get(mSpinner.getSelectedItem().toString());
   }
 
   private void initPeriodsMap() {
