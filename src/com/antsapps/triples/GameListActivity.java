@@ -27,7 +27,7 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
   private static final String TAB_NUMBER = "tab";
   public static final String SIGNIN_PREFS = "signin_prefs";
   public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
-  public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score";
+  public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score_2";
   private ViewPager mViewPager;
   private TabsAdapter mTabsAdapter;
   private Application mApplication;
