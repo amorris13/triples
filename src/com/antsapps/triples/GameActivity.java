@@ -262,13 +262,15 @@ public class GameActivity extends SherlockFragmentActivity implements
             } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
               message = "Nice! That's your best score today.";
             } else {
-              message = "You've done better before - keep trying!";
+              message = "You've done better today - keep trying!";
             }
             break;
           case GamesClient.STATUS_NETWORK_ERROR_OPERATION_DEFERRED :
             message = "Score will be submitted when next connected.";
+            break;
           default:
             message = "Score could not be submitted";
+            break;
         }
         Toast.makeText(GameActivity.this, message, Toast.LENGTH_LONG).show();
       }
