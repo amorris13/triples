@@ -39,48 +39,22 @@
     android:orientation="vertical"
     android:id="@+id/games_services_bar">
 
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:gravity="center"
+    <Button
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/leaderboards"
+      android:id="@+id/leaderboards"
       android:drawableLeft="@drawable/games_controller_green"
       android:drawablePadding="8dp"
-      android:textSize="16sp"
-      android:text="Google Play Games"
-      android:textColor="@android:color/black"
-      android:textIsSelectable="false"/>
+      android:singleLine="false"
+      android:layout_weight="1"
+      style="@style/Widget.Sherlock.ActionButton"
+      android:layout_gravity="center"/>
 
-    <LinearLayout
+    <View
       android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:orientation="horizontal">
-
-      <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/achievements"
-        android:id="@+id/achievements"
-        android:layout_weight="1"
-        style="@style/Widget.Sherlock.ActionButton"/>
-
-      <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@android:color/darker_gray"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
-
-      <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/leaderboards"
-        android:id="@+id/leaderboards"
-        android:singleLine="false"
-        android:layout_weight="1"
-        style="@style/Widget.Sherlock.ActionButton"/>
-    </LinearLayout>
-
+      android:layout_height="1dp"
+      android:background="@android:color/darker_gray" />
 
   </LinearLayout>
 

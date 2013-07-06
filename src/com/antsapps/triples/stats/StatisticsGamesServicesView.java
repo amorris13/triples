@@ -36,7 +36,6 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
     mGamesServicesBar = v.findViewById(R.id.games_services_bar);
 
     v.findViewById(R.id.sign_in_button).setOnClickListener(this);
-    v.findViewById(R.id.achievements).setOnClickListener(this);
     v.findViewById(R.id.leaderboards).setOnClickListener(this);
 
     updateSignedInState();
@@ -51,8 +50,6 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
     if (view.getId() == R.id.sign_in_button) {
       // start the asynchronous sign in flow
       mHelper.beginUserInitiatedSignIn();
-    } else if (view.getId() == R.id.achievements) {
-      ((Activity) getContext()).startActivityForResult(mHelper.getGamesClient().getAchievementsIntent(), 25);
     } else if (view.getId() == R.id.leaderboards) {
       ((Activity) getContext()).startActivityForResult(mHelper.getGamesClient().getLeaderboardIntent(GamesServices.Leaderboard.CLASSIC), 26);
     }
