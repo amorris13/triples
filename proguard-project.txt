@@ -50,6 +50,7 @@
 
 ## For Action Bar Sherlock & Compatibility
 -dontwarn android.support.v4.**
+-keepattributes *Annotation*
 -keep class android.support.v4.** { *; }
 -keep interface android.support.v4.** { *; }
 -keep class com.actionbarsherlock.** { *; }
