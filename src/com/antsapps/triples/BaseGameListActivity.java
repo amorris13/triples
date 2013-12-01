@@ -43,7 +43,7 @@ public abstract class BaseGameListActivity extends Activity
 
     String[] gameModes = new String[] {"Classic", "Arcade"};
     mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-    ListView drawerList = (ListView) findViewById(R.id.left_drawer);
+    ListView drawerList = (ListView) findViewById(R.id.mode_list);
 
     // Set the adapter for the list view
     drawerList.setAdapter(new ArrayAdapter<String>(this,
@@ -71,18 +71,7 @@ public abstract class BaseGameListActivity extends Activity
         R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
         R.string.drawer_open,  /* "open drawer" description */
         R.string.drawer_close  /* "close drawer" description */
-    ) {
-
-      /** Called when a drawer has settled in a completely closed state. */
-      public void onDrawerClosed(View view) {
-//        getActionBar().setTitle(mTitle);
-      }
-
-      /** Called when a drawer has settled in a completely open state. */
-      public void onDrawerOpened(View drawerView) {
-//        getActionBar().setTitle(mDrawerTitle);
-      }
-    };
+    );
 
     // Set the drawer toggle as the DrawerListener
     mDrawerLayout.setDrawerListener(mDrawerToggle);

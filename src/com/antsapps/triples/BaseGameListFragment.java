@@ -47,7 +47,7 @@ public abstract class BaseGameListFragment extends ListFragment implements
         AlertDialog alert = createDeleteAlertDialog((Game) parent
             .getItemAtPosition(position));
         alert.show();
-        return false;
+        return true;
       }
     });
   }

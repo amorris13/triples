@@ -9,19 +9,48 @@
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.v4.view.ViewPager
-       android:id="@+id/pager"
-       android:layout_width="fill_parent"
-       android:layout_height="fill_parent" />
+      android:id="@+id/pager"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"/>
   </FrameLayout>
   <!-- The navigation drawer -->
-  <ListView android:id="@+id/left_drawer"
-            android:layout_width="240dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:background="#111"/>
+  <LinearLayout
+    android:id="@+id/left_drawer"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#003749"
+
+    android:layout_gravity="start">
+
+    <TextView
+      android:id="@+id/header"
+      android:paddingTop="5dp"
+      android:paddingStart="5dp"
+      android:paddingBottom="5dp"
+      android:singleLine="true"
+      android:textColor="@android:color/darker_gray"
+      android:textSize="@dimen/heading_text_size"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="GAME MODES"/>
+
+    <View
+      android:layout_width="fill_parent"
+      android:layout_height="1dp"
+      android:background="@android:color/darker_gray"/>
+
+    <ListView
+      android:id="@+id/mode_list"
+      android:layout_width="240dp"
+      android:layout_height="match_parent"
+      android:layout_gravity="start"
+      android:choiceMode="singleChoice"
+      android:divider="@android:color/transparent"
+      android:dividerHeight="0dp"/>
+  </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
 
