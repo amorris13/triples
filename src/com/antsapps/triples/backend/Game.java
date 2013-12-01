@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class Game implements Comparable<Game> {
+public abstract class Game implements Comparable<Game> {
 
   public interface OnUpdateGameStateListener {
     void onUpdateGameState(GameState state);
@@ -314,31 +314,11 @@ public class Game implements Comparable<Game> {
 
   private void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
-    }
-  }
-
-  /**
-   * A game is in a valid state if any of the following are true:
-   * <ul>
-   * <li>It is completed and there are no cards in the deck and no valid triples
-   * on the board.
-   * <li>It is not completed and there are at least {@link MIN_CARDS_IN_PLAY}
-   * cards in play and at least one valid triple.
-   * </ul>
-   */
-  private boolean isGameInValidState() {
-    switch (mGameState) {
-      case COMPLETED:
-        return !checkIfAnyValidTriples() && mDeck.isEmpty();
-      case PAUSED:
-      case ACTIVE:
-      case STARTING:
-        return checkIfAnyValidTriples()
-            && (mCardsInPlay.size() >= MIN_CARDS_IN_PLAY || mDeck.isEmpty());
-      default:
-        return false;
-    }
+      listener.onUpdateCardsInPlay(
+          ImmutableList.copyOf(mCardsInPlay),
+          oldCards,
+          getCardsRemaining(),
+          mNumTriplesFound);    }
   }
 
   public int getCardsRemaining() {
