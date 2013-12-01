@@ -3,5 +3,4 @@
   android:id="@+id/android:list"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:padding="5dp"
   android:headerDividersEnabled="false" />

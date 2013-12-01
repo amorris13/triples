@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -48,6 +50,24 @@ public class CurrentGameListFragment extends GameListFragment implements
 
       return v;
     }
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position,
+                              long id) {
+        Game game = (Game) parent.getItemAtPosition(position);
+        if (game != null) {
+          Intent intent = new Intent(view.getContext(), GameActivity.class);
+          intent.putExtra(Game.ID_TAG, game.getId());
+          startActivity(intent);
+        }
+      }
+    });
   }
 
   @Override

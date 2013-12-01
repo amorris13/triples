@@ -4,17 +4,17 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import android.util.Log;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public abstract class Game implements Comparable<Game> {
+public class Game implements Comparable<Game> {
 
   public interface OnUpdateGameStateListener {
     void onUpdateGameState(GameState state);
+
+    void gameFinished();
   }
 
   public interface OnUpdateCardsInPlayListener {
@@ -162,7 +162,7 @@ public abstract class Game implements Comparable<Game> {
     }
   }
 
-  public void commitTriple(List<Card> cards) {
+  public void onValidTripleSelected(List<Card> cards) {
     commitTriple(Iterables.toArray(cards, Card.class));
   }
 
@@ -218,6 +218,9 @@ public abstract class Game implements Comparable<Game> {
     mGameState = GameState.COMPLETED;
     updateTimer();
     dispatchGameStateUpdate();
+    for (OnUpdateGameStateListener listener : mGameStateListeners) {
+      listener.gameFinished();
+    }
   }
 
   private void dispatchGameStateUpdate() {
@@ -265,15 +268,28 @@ public abstract class Game implements Comparable<Game> {
           if (c2 == null)
             continue;
           if (isValidTriple(c0, c1, c2)) {
-            Log.i(
-                "Game",
-                String.format("Valid triple for positions %d %d %d", i, j, k));
             return true;
           }
         }
       }
     }
     return false;
+  }
+
+  public static List<Integer> getValidTriplePositions(List<Card> cardsInPlay) {
+    for (int i = 0; i < cardsInPlay.size(); i++) {
+      Card c0 = cardsInPlay.get(i);
+      for (int j = i + 1; j < cardsInPlay.size(); j++) {
+        Card c1 = cardsInPlay.get(j);
+        for (int k = j + 1; k < cardsInPlay.size(); k++) {
+          Card c2 = cardsInPlay.get(k);
+          if (isValidTriple(c0, c1, c2)) {
+            return ImmutableList.of(i, j, k);
+          }
+        }
+      }
+    }
+    return ImmutableList.of();
   }
 
   private static int numNotNull(Iterable<Card> cards) {
@@ -298,11 +314,30 @@ public abstract class Game implements Comparable<Game> {
 
   private void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.onUpdateCardsInPlay(
-          ImmutableList.copyOf(mCardsInPlay),
-          oldCards,
-          getCardsRemaining(),
-          mNumTriplesFound);
+      listener.onUpdateCardsInPlay(newCards, oldCards, numRemaining);
+    }
+  }
+
+  /**
+   * A game is in a valid state if any of the following are true:
+   * <ul>
+   * <li>It is completed and there are no cards in the deck and no valid triples
+   * on the board.
+   * <li>It is not completed and there are at least {@link MIN_CARDS_IN_PLAY}
+   * cards in play and at least one valid triple.
+   * </ul>
+   */
+  private boolean isGameInValidState() {
+    switch (mGameState) {
+      case COMPLETED:
+        return !checkIfAnyValidTriples() && mDeck.isEmpty();
+      case PAUSED:
+      case ACTIVE:
+      case STARTING:
+        return checkIfAnyValidTriples()
+            && (mCardsInPlay.size() >= MIN_CARDS_IN_PLAY || mDeck.isEmpty());
+      default:
+        return false;
     }
   }
 

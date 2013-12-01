@@ -8,4 +8,6 @@
   <dimen name="game_list_when_started_text_size">14sp</dimen>
   <dimen name="game_paused_text_size">30sp</dimen>
 
+  <dimen name="stats_side_padding">16dp</dimen>
+  <dimen name="stats_vert_padding">8dp</dimen>
 </resources>

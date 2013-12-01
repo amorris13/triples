@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,12 +19,22 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.Period;
+import com.antsapps.triples.backend.Statistics;
+import com.antsapps.triples.stats.StatisticsFragment;
 
-public class GameListActivity extends SherlockFragmentActivity {
+public class GameListActivity extends SherlockFragmentActivity implements GameHelper.GameHelperListener {
   private static final String TAB_NUMBER = "tab";
+  public static final String SIGNIN_PREFS = "signin_prefs";
+  public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
+  public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score_2";
   private ViewPager mViewPager;
   private TabsAdapter mTabsAdapter;
   private Application mApplication;
+
+  private GameHelper mHelper;
+
+  private GameHelper.GameHelperListener mGameHelperListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +62,31 @@ public class GameListActivity extends SherlockFragmentActivity {
     if (savedInstanceState != null) {
       bar.setSelectedNavigationItem(savedInstanceState.getInt(TAB_NUMBER, 0));
     }
+
+    mHelper = new GameHelper(this);
+    mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mHelper.onStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mHelper.onStop();
+  }
+
+  @Override
+  protected void onActivityResult(int request, int response, Intent data) {
+    super.onActivityResult(request, response, data);
+    mHelper.onActivityResult(request, response, data);
+  }
+
+  public GameHelper getGameHelper() {
+    return mHelper;
   }
 
   @Override
@@ -58,6 +94,13 @@ public class GameListActivity extends SherlockFragmentActivity {
     MenuInflater inflater = getSupportMenuInflater();
     inflater.inflate(R.menu.game_list, menu);
     return super.onCreateOptionsMenu(menu);
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    super.onPrepareOptionsMenu(menu);
+    menu.findItem(R.id.signout).setVisible(mHelper.isSignedIn());
+    return true;
   }
 
   @Override
@@ -80,6 +123,9 @@ public class GameListActivity extends SherlockFragmentActivity {
             SettingsActivity.class);
         startActivity(settingsIntent);
         return true;
+      case R.id.signout:
+        mHelper.signOut();
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -90,6 +136,51 @@ public class GameListActivity extends SherlockFragmentActivity {
     super.onSaveInstanceState(outState);
     outState.putInt(TAB_NUMBER, getSupportActionBar()
         .getSelectedNavigationIndex());
+  }
+
+  @Override
+  public void onSignInFailed() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignInFailed();
+    }
+  }
+
+  @Override
+  public void onSignInSucceeded() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignInSucceeded();
+    }
+    invalidateOptionsMenu();
+    uploadExistingTopScoresIfNecessary();
+  }
+
+  @Override
+  public void onSignOut() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignOut();
+    }
+    invalidateOptionsMenu();
+  }
+
+  private void uploadExistingTopScoresIfNecessary() {
+    SharedPreferences settings = getSharedPreferences(SIGNIN_PREFS, 0);
+    if (settings.getBoolean(UPLOADED_EXISTING_TOP_SCORE, false)) {
+      return;
+    }
+
+    Statistics stats = mApplication.getStatistics(Period.ALL_TIME);
+    mHelper.getGamesClient().submitScore(GamesServices.Leaderboard.CLASSIC, stats.getFastestTime());
+
+    // We need an Editor object to make preference changes.
+    // All objects are from android.context.Context
+    SharedPreferences.Editor editor = settings.edit();
+    editor.putBoolean(UPLOADED_EXISTING_TOP_SCORE, true);
+    // Commit the edits!
+    editor.commit();
+  }
+
+  public void setGameHelperListener(GameHelper.GameHelperListener listener) {
+    mGameHelperListener = listener;
   }
 
   /**
