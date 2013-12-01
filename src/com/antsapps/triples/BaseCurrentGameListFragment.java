@@ -14,18 +14,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnStateChangedListener;
 import com.google.common.collect.Lists;
 
-public class CurrentGameListFragment extends GameListFragment implements
+public abstract class BaseCurrentGameListFragment extends BaseGameListFragment implements
     OnStateChangedListener {
-  public final static String TAG = "CurrentGameListFragment";
+  public final static String TAG = "BaseCurrentGameListFragment";
 
-  protected static class CurrentGamesArrayAdapter extends ArrayAdapter<ClassicGame> {
+  protected static class CurrentGamesArrayAdapter extends ArrayAdapter<Game> {
 
-    public CurrentGamesArrayAdapter(Context context, List<ClassicGame> games) {
+    public CurrentGamesArrayAdapter(Context context, List<Game> games) {
       super(context, R.layout.game_list_item, games);
     }
 
@@ -63,13 +62,15 @@ public class CurrentGameListFragment extends GameListFragment implements
                               long id) {
         Game game = (Game) parent.getItemAtPosition(position);
         if (game != null) {
-          Intent intent = new Intent(view.getContext(), ClassicGameActivity.class);
+          Intent intent = new Intent(view.getContext(), getGameActivityClass());
           intent.putExtra(Game.ID_TAG, game.getId());
           startActivity(intent);
         }
       }
     });
   }
+
+  protected abstract Class<? extends BaseGameActivity> getGameActivityClass();
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,15 +83,17 @@ public class CurrentGameListFragment extends GameListFragment implements
   }
 
   @Override
-  protected ArrayAdapter<ClassicGame> createArrayAdapter() {
+  protected ArrayAdapter<Game> createArrayAdapter() {
     return new CurrentGamesArrayAdapter(getSherlockActivity(),
-        Lists.newArrayList(mApplication.getCurrentClassicGames()));
+        Lists.<Game>newArrayList(getCurrentGames()));
   }
+
+  protected abstract Iterable<? extends Game> getCurrentGames();
 
   @Override
   protected void updateDataSet() {
     mAdapter.clear();
-    for (ClassicGame game : mApplication.getCurrentClassicGames()) {
+    for (Game game : getCurrentGames()) {
       mAdapter.add(game);
     }
     mAdapter.notifyDataSetChanged();

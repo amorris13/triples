@@ -41,7 +41,7 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
     stub.setLayoutResource(R.layout.arcade_statusbar);
     stub.inflate();
-    mGame.setOnTimerTickListener(this);
+    mGame.addOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
   }
 
@@ -57,7 +57,8 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
 
   @Override
   protected void onDestroy() {
-    getGame().removeOnUpdateCardsInPlayListener(this);
+    mGame.removeOnUpdateCardsInPlayListener(this);
+    mGame.removeOnTimerTickListener(this);
     super.onDestroy();
   }
 
@@ -66,7 +67,7 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
     TextView timer = (TextView) findViewById(R.id.timer_value_text);
     timer.setText(DateUtils.formatElapsedTime(TimeUnit
         .MILLISECONDS
-        .toSeconds(elapsedTime)));
+        .toSeconds(ArcadeGame.TIME_LIMIT_MS - elapsedTime)));
   }
 
   @Override
@@ -74,8 +75,8 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
                                   ImmutableList<Card> oldCards,
                                   int numRemaining,
                                   int numTriplesFound) {
-    TextView numRemainingText = (TextView) findViewById(R.id.cards_remaining_text);
-    numRemainingText.setText(String.valueOf(numRemaining));
+    TextView triplesFound = (TextView) findViewById(R.id.triples_found_text);
+    triplesFound.setText(String.valueOf(numTriplesFound));
   }
 
   protected Class<? extends BaseGameListActivity> getParentClass() {

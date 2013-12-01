@@ -1,17 +1,17 @@
 package com.antsapps.triples.backend;
 
-import java.util.List;
+import java.util.Set;
 
 import android.os.Handler;
 import android.os.Message;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 class Timer {
 
   private static final int TICK_WHAT = 1;
 
-  private final List<OnTimerTickListener> mListeners = Lists.newLinkedList();
+  private final Set<OnTimerTickListener> mListeners = Sets.newHashSet();
 
   private long mTimeElapsedWhenLastResumed;
 
@@ -21,6 +21,10 @@ class Timer {
 
   public void addOnTimerTickListener(OnTimerTickListener listener) {
     mListeners.add(listener);
+  }
+
+  public void removeOnTimerTickListener(OnTimerTickListener listener) {
+    mListeners.remove(listener);
   }
 
   public Timer() {
@@ -42,16 +46,18 @@ class Timer {
   }
 
   void resume() {
-    mTimeOfLastResume = System.currentTimeMillis();
-    update();
+    if (!isActive()) {
+      mTimeOfLastResume = System.currentTimeMillis();
+      update();
+    }
   }
 
   void pause() {
     if (isActive()) {
       mTimeElapsedWhenLastResumed += System.currentTimeMillis() - mTimeOfLastResume;
       mTimeOfLastResume = -1;
+      update();
     }
-    update();
   }
 
   long getElapsed() {

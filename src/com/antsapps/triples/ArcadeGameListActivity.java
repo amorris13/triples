@@ -24,8 +24,8 @@ public class ArcadeGameListActivity extends BaseGameListActivity {
   }
 
   @Override
-  protected Class<CurrentGameListFragment> getCurrentGamesFragment() {
-    return CurrentGameListFragment.class;
+  protected Class<? extends BaseCurrentGameListFragment> getCurrentGamesFragment() {
+    return ArcadeCurrentGameListFragment.class;
   }
 
   @Override

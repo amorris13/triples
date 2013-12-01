@@ -41,7 +41,7 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
     stub.setLayoutResource(R.layout.classic_statusbar);
     stub.inflate();
-    mGame.setOnTimerTickListener(this);
+    mGame.addOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
   }
 
@@ -57,7 +57,8 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
 
   @Override
   protected void onDestroy() {
-    getGame().removeOnUpdateCardsInPlayListener(this);
+    mGame.removeOnUpdateCardsInPlayListener(this);
+    mGame.removeOnTimerTickListener(this);
     super.onDestroy();
   }
 

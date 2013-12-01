@@ -208,8 +208,6 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
   @Override
   protected void onDestroy() {
     getGame().removeOnUpdateCardsInPlayListener(mCardsView);
-    getGame().setOnTimerTickListener(null);
-
     getGame().removeOnUpdateGameStateListener(this);
 
     super.onDestroy();

@@ -12,19 +12,18 @@ import android.widget.ArrayAdapter;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnStateChangedListener;
 
-public abstract class GameListFragment extends SherlockListFragment implements
+public abstract class BaseGameListFragment extends SherlockListFragment implements
     OnStateChangedListener {
 
   protected Application mApplication;
-  protected ArrayAdapter<ClassicGame> mAdapter;
+  protected ArrayAdapter<Game> mAdapter;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     setHasOptionsMenu(true);
-    // TODO Auto-generated method stub
     super.onCreate(savedInstanceState);
   }
 
@@ -45,7 +44,7 @@ public abstract class GameListFragment extends SherlockListFragment implements
       public boolean onItemLongClick(AdapterView<?> parent, View view,
           final int position, long id) {
         vibrator.vibrate(50);
-        AlertDialog alert = createDeleteAlertDialog((ClassicGame) parent
+        AlertDialog alert = createDeleteAlertDialog((Game) parent
             .getItemAtPosition(position));
         alert.show();
         return false;
@@ -66,9 +65,9 @@ public abstract class GameListFragment extends SherlockListFragment implements
     mApplication.removeOnStateChangedListener(this);
   }
 
-  protected abstract ArrayAdapter<ClassicGame> createArrayAdapter();
+  protected abstract ArrayAdapter<Game> createArrayAdapter();
 
-  private AlertDialog createDeleteAlertDialog(final ClassicGame game) {
+  private AlertDialog createDeleteAlertDialog(final Game game) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
     builder.setCancelable(true);
     builder.setTitle(R.string.delete);
@@ -78,7 +77,7 @@ public abstract class GameListFragment extends SherlockListFragment implements
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mApplication.deleteClassicGame(game);
+            deleteGame(game);
             dialog.dismiss();
           }
         });
@@ -93,6 +92,8 @@ public abstract class GameListFragment extends SherlockListFragment implements
     AlertDialog alert = builder.create();
     return alert;
   }
+
+  protected abstract void deleteGame(Game game);
 
   @Override
   public void onStateChanged() {

@@ -56,7 +56,7 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
 
   protected abstract Class<StatisticsFragment> getStatisticsFragmentClass();
 
-  protected abstract Class<CurrentGameListFragment> getCurrentGamesFragment();
+  protected abstract Class<? extends BaseCurrentGameListFragment> getCurrentGamesFragment();
 
   @Override
   protected void onStart() {

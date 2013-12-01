@@ -16,7 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.antsapps.triples.BaseGameListActivity;
-import com.antsapps.triples.GameListFragment;
+import com.antsapps.triples.BaseGameListFragment;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
@@ -24,12 +24,16 @@ import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
 import com.google.common.collect.Lists;
 
-public class StatisticsFragment extends GameListFragment implements
+public class StatisticsFragment extends BaseGameListFragment implements
     OnStatisticsChangeListener, OnComparatorChangeListener<Game> {
 
-  protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<ClassicGame> {
+  protected void deleteGame(Game game) {
+    mApplication.deleteClassicGame((ClassicGame) game);
+  }
 
-    public StatisticsGamesArrayAdapter(Context context, List<ClassicGame> games) {
+  protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
+
+    public StatisticsGamesArrayAdapter(Context context, List<Game> games) {
       super(context, R.layout.stats_game_list_item, games);
     }
 
@@ -66,9 +70,9 @@ public class StatisticsFragment extends GameListFragment implements
   private StatisticsListHeaderView mListHeaderView;
 
   @Override
-  protected ArrayAdapter<ClassicGame> createArrayAdapter() {
+  protected ArrayAdapter<Game> createArrayAdapter() {
     return new StatisticsGamesArrayAdapter(getSherlockActivity(),
-        Lists.<ClassicGame>newArrayList());
+        Lists.<Game>newArrayList());
   }
 
   @Override

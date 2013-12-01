@@ -27,8 +27,8 @@ public class ClassicGameListActivity extends BaseGameListActivity {
   }
 
   @Override
-  protected Class<CurrentGameListFragment> getCurrentGamesFragment() {
-    return CurrentGameListFragment.class;
+  protected Class<? extends BaseCurrentGameListFragment> getCurrentGamesFragment() {
+    return ClassicCurrentGameListFragment.class;
   }
 
   @Override

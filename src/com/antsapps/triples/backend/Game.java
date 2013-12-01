@@ -77,8 +77,12 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     mGameState = gameState;
   }
 
-  public void setOnTimerTickListener(OnTimerTickListener listener) {
+  public void addOnTimerTickListener(OnTimerTickListener listener) {
     mTimer.addOnTimerTickListener(listener);
+  }
+
+  public void removeOnTimerTickListener(OnTimerTickListener listener) {
+    mTimer.removeOnTimerTickListener(listener);
   }
 
   public void addOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
