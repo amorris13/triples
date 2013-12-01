@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.antsapps.triples.GameListActivity;
+import com.antsapps.triples.BaseGameListActivity;
 import com.antsapps.triples.GameListFragment;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
@@ -55,7 +55,7 @@ public class StatisticsFragment extends GameListFragment implements
     }
   }
 
-  private GameListActivity mGameListActivity;
+  private BaseGameListActivity mGameListActivity;
 
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED
       .createReversableComparator();
@@ -74,7 +74,7 @@ public class StatisticsFragment extends GameListFragment implements
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mGameListActivity = (GameListActivity) activity;
+    mGameListActivity = (BaseGameListActivity) activity;
   }
 
   @Override

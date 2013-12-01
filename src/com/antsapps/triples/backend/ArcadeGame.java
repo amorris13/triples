@@ -1,13 +1,22 @@
 package com.antsapps.triples.backend;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class ArcadeGame extends Game implements OnTimerTickListener {
 
   public static final long TIME_LIMIT_MS = 1 * 60 * 1000;
 
   private int mNumTriplesFound;
+
+  public static ArcadeGame createFromSeed(long seed) {
+    ArcadeGame game = new ArcadeGame(-1, seed, Collections.<Card> emptyList(), new Deck(
+        new Random(seed)), 0, new Date(), GameState.STARTING, 0);
+    game.init();
+    return game;
+  }
 
   ArcadeGame(long id,
       long seed,

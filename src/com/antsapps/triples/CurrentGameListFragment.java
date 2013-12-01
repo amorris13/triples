@@ -74,7 +74,6 @@ public class CurrentGameListFragment extends GameListFragment implements
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    // TODO Auto-generated method stub
     View view = inflater.inflate(R.layout.game_list_fragment, null);
 
     ((TextView) view.findViewById(android.R.id.empty))

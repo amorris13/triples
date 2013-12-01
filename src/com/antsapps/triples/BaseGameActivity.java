@@ -151,7 +151,7 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
         return true;
       case android.R.id.home:
         // app icon in action bar clicked; go up one level
-        Intent intent = new Intent(this, GameListActivity.class);
+        Intent intent = new Intent(this, getParentClass());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
@@ -160,6 +160,8 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
         return super.onOptionsItemSelected(item);
     }
   }
+
+  protected abstract Class<? extends BaseGameListActivity> getParentClass();
 
   @Override
   protected void onResume() {

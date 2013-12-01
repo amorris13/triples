@@ -18,7 +18,7 @@
       android:value="@string/app_id" />
 
     <activity
-      android:name=".GameListActivity"
+      android:name=".ClassicGameListActivity"
       android:label="@string/app_name">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -28,6 +28,12 @@
     </activity>
     <activity
       android:name=".ClassicGameActivity"
+      android:label="@string/app_name" />
+    <activity
+      android:name=".ArcadeGameActivity"
+      android:label="@string/app_name" />
+    <activity
+      android:name=".ArcadeGameListActivity"
       android:label="@string/app_name" />
     <activity
       android:name=".HelpActivity"

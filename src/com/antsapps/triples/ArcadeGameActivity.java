@@ -78,4 +78,7 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
     numRemainingText.setText(String.valueOf(numRemaining));
   }
 
+  protected Class<? extends BaseGameListActivity> getParentClass() {
+    return ClassicGameListActivity.class;
+  }
 }

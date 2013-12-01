@@ -78,4 +78,7 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
     numRemainingText.setText(String.valueOf(numRemaining));
   }
 
+  protected Class<? extends BaseGameListActivity> getParentClass() {
+    return ClassicGameListActivity.class;
+  }
 }
