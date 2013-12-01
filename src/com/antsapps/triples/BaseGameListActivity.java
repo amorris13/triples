@@ -9,7 +9,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.antsapps.triples.stats.StatisticsFragment;
+import com.antsapps.triples.stats.BaseStatisticsFragment;
 
 /**
  * Created by anthony on 1/12/13.
@@ -54,7 +54,7 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
     mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
   }
 
-  protected abstract Class<StatisticsFragment> getStatisticsFragmentClass();
+  protected abstract Class<? extends BaseStatisticsFragment> getStatisticsFragmentClass();
 
   protected abstract Class<? extends BaseCurrentGameListFragment> getCurrentGamesFragment();
 

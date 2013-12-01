@@ -1,6 +1,7 @@
 package com.antsapps.triples.stats;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -13,22 +14,24 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 import com.antsapps.triples.R;
-import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.NumGamesPeriod;
 import com.antsapps.triples.backend.Period;
-import com.antsapps.triples.backend.Statistics;
 import com.google.common.collect.Maps;
 
 class StatisticsSelectorView extends FrameLayout {
 
-  private static final long MS_PER_DAY = (long) 24 * 60 * 60 * 1000;
+  interface OnPeriodChangeListener {
+    void onPeriodChange(Period period);
+  }
+
+  private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
   private static final Map<String, Period> PERIODS = Maps.newLinkedHashMap();
   private Spinner mSpinner;
   private Period mCurrentPeriod;
 
-  private OnStatisticsChangeListener mOnStatisticsChangeListener;
+  private OnPeriodChangeListener mOnPeriodChangeListener;
 
   public StatisticsSelectorView(Context context) {
     this(context, null);
@@ -69,7 +72,9 @@ class StatisticsSelectorView extends FrameLayout {
           long id) {
         String string = (String) parent.getItemAtPosition(pos);
         mCurrentPeriod = PERIODS.get(string);
-        updateStatistics();
+        if (mOnPeriodChangeListener != null) {
+          mOnPeriodChangeListener.onPeriodChange(mCurrentPeriod);
+        }
       }
 
       @Override
@@ -107,20 +112,11 @@ class StatisticsSelectorView extends FrameLayout {
         new NumGamesPeriod(50));
   }
 
-  public void
-      setOnStatisticsChangeListener(OnStatisticsChangeListener listener) {
-    mOnStatisticsChangeListener = listener;
+  public void setOnPeriodChangeListener(OnPeriodChangeListener listener) {
+    mOnPeriodChangeListener = listener;
   }
 
-  public void regenerateStatistics() {
-    updateStatistics();
-  }
-
-  private void updateStatistics() {
-    Statistics statistics = Application
-        .getInstance(getContext()).getClassicStatistics(mCurrentPeriod);
-    if (mOnStatisticsChangeListener != null) {
-      mOnStatisticsChangeListener.onStatisticsChange(statistics);
-    }
+  public Period getPeriod() {
+    return mCurrentPeriod;
   }
 }

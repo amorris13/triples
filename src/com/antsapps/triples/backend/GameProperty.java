@@ -26,6 +26,18 @@ public enum GameProperty {
     public int compare(Game lhs, Game rhs) {
       return Ints.compare(lhs.getCardsRemaining(), rhs.getCardsRemaining());
     }
+  }),
+
+  NUM_TRIPLES_FOUND(new Comparator<Game>() {
+    @Override
+    public int compare(Game lhs, Game rhs) {
+      if (lhs instanceof ArcadeGame && rhs instanceof ArcadeGame) {
+        return Ints.compare(((ArcadeGame) lhs).getNumTriplesFound(),
+            ((ArcadeGame) rhs).getNumTriplesFound());
+      } else {
+        return 0;
+      }
+    }
   });
 
   private GameProperty(Comparator<Game> comparator) {

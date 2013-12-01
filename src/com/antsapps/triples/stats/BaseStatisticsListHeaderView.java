@@ -21,7 +21,7 @@ import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.ReversableComparator;
 import com.google.common.collect.Maps;
 
-class StatisticsListHeaderView extends FrameLayout {
+abstract class BaseStatisticsListHeaderView extends FrameLayout {
 
   private static final Shape DOWN_SHAPE;
   private static final Shape UP_SHAPE;
@@ -55,8 +55,8 @@ class StatisticsListHeaderView extends FrameLayout {
     UNSELECTED_SHAPE = new PathShape(path, size, size);
   }
 
-  private static final int LEFT = 0;
-  private static final int RIGHT = 1;
+  protected static final int LEFT = 0;
+  protected static final int RIGHT = 1;
 
   private class ComparatorChangeOnClickListener implements OnClickListener {
 
@@ -82,33 +82,31 @@ class StatisticsListHeaderView extends FrameLayout {
   private final Map<TextView, Integer> mPositionsMap = Maps.newHashMap();
   private ReversableComparator<Game> mCurrentComparator;
 
-  public StatisticsListHeaderView(Context context) {
+  public BaseStatisticsListHeaderView(Context context) {
     this(context, null);
   }
 
-  public StatisticsListHeaderView(Context context, AttributeSet attrs) {
+  public BaseStatisticsListHeaderView(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
   }
 
-  public StatisticsListHeaderView(Context context,
-      AttributeSet attrs,
-      int defStyle) {
+  public BaseStatisticsListHeaderView(Context context,
+                                      AttributeSet attrs,
+                                      int defStyle) {
     super(context, attrs, defStyle);
 
     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
         Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.stats_list_header, this);
 
-    TextView dateHeader = (TextView) v.findViewById(R.id.date_header);
-    initHeader(dateHeader, GameProperty.DATE, RIGHT);
+    TextView resultHeader = initHeaders(v);
 
-    TextView timeHeader = (TextView) v.findViewById(R.id.time_header);
-    initHeader(timeHeader, GameProperty.TIME_ELAPSED, LEFT);
-
-    setComparator(mComparatorsMap.get(timeHeader));
+    setComparator(mComparatorsMap.get(resultHeader));
   }
 
-  private void initHeader(TextView header, GameProperty property, int position) {
+  protected abstract TextView initHeaders(View container);
+
+  protected void initHeader(TextView header, GameProperty property, int position) {
     ReversableComparator<Game> reversableComparator = property
         .createReversableComparator();
     mComparatorsMap.put(header, reversableComparator);
@@ -125,8 +123,7 @@ class StatisticsListHeaderView extends FrameLayout {
   }
 
   private void styleDrawable(ShapeDrawable dr) {
-    dr
-        .getPaint().setColor(
+    dr.getPaint().setColor(
             getResources().getColor(android.R.color.darker_gray));
     dr.getPaint().setStyle(Style.FILL_AND_STROKE);
   }

@@ -1,79 +1,34 @@
 package com.antsapps.triples.stats;
 
 import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.antsapps.triples.BaseGameListActivity;
 import com.antsapps.triples.BaseGameListFragment;
 import com.antsapps.triples.R;
-import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
-import com.google.common.collect.Lists;
 
-public class StatisticsFragment extends BaseGameListFragment implements
-    OnStatisticsChangeListener, OnComparatorChangeListener<Game> {
-
-  protected void deleteGame(Game game) {
-    mApplication.deleteClassicGame((ClassicGame) game);
-  }
-
-  protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
-
-    public StatisticsGamesArrayAdapter(Context context, List<Game> games) {
-      super(context, R.layout.stats_game_list_item, games);
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      View v = convertView;
-      if (v == null) {
-        LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
-        v = vi.inflate(R.layout.stats_game_list_item, null);
-      }
-
-      Game g = getItem(position);
-      if (g != null) {
-        ((TextView) v.findViewById(R.id.time_taken)).setText(DateUtils
-            .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g
-                .getTimeElapsed())));
-        ((TextView) v.findViewById(R.id.date_played)).setText(DateUtils
-            .formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
-      }
-
-      return v;
-    }
-  }
-
+/**
+ * Created by anthony on 1/12/13.
+ */
+public abstract class BaseStatisticsFragment extends BaseGameListFragment
+    implements OnStatisticsChangeListener, OnComparatorChangeListener<Game>,
+    StatisticsSelectorView.OnPeriodChangeListener {
   private BaseGameListActivity mGameListActivity;
-
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED
       .createReversableComparator();
-
   private StatisticsGamesServicesView mGameServicesView;
-  private StatisticsSelectorView mSelectorView;
+  protected StatisticsSelectorView mSelectorView;
   private StatisticsSummaryView mSummaryView;
-  private StatisticsListHeaderView mListHeaderView;
-
-  @Override
-  protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getSherlockActivity(),
-        Lists.<Game>newArrayList());
-  }
+  private BaseStatisticsListHeaderView mListHeaderView;
 
   @Override
   public void onAttach(Activity activity) {
@@ -88,24 +43,28 @@ public class StatisticsFragment extends BaseGameListFragment implements
         R.layout.stats_fragment,
         null);
 
-    mGameServicesView = new StatisticsGamesServicesView(getSherlockActivity());
+    mGameServicesView = new StatisticsGamesServicesView(getSherlockActivity(), getLeaderboardId());
     mGameServicesView.setGameHelper(mGameListActivity.getGameHelper());
     mGameListActivity.setGameHelperListener(mGameServicesView);
     listView.addHeaderView(mGameServicesView, null, false);
 
     mSelectorView = new StatisticsSelectorView(getSherlockActivity());
-    mSelectorView.setOnStatisticsChangeListener(this);
+    mSelectorView.setOnPeriodChangeListener(this);
     listView.addHeaderView(mSelectorView, null, false);
 
     mSummaryView = new StatisticsSummaryView(getSherlockActivity());
     listView.addHeaderView(mSummaryView, null, false);
 
-    mListHeaderView = new StatisticsListHeaderView(getSherlockActivity());
+    mListHeaderView = createStatisticsListHeaderView();
     mListHeaderView.setOnComparatorChangeListener(this);
     listView.addHeaderView(mListHeaderView, null, false);
 
     return listView;
   }
+
+  protected abstract String getLeaderboardId();
+
+  protected abstract BaseStatisticsListHeaderView createStatisticsListHeaderView();
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
@@ -113,7 +72,7 @@ public class StatisticsFragment extends BaseGameListFragment implements
 
     mAdapter.clear();
     for (Game game : statistics.getData()) {
-      mAdapter.add((ClassicGame) game);
+      mAdapter.add(game);
     }
     mAdapter.notifyDataSetChanged();
     mAdapter.sort(mComparator);
@@ -125,10 +84,5 @@ public class StatisticsFragment extends BaseGameListFragment implements
     if (mAdapter != null) {
       mAdapter.sort(mComparator);
     }
-  }
-
-  @Override
-  protected void updateDataSet() {
-    mSelectorView.regenerateStatistics();
   }
 }

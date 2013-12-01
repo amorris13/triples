@@ -6,7 +6,8 @@ import android.os.Bundle;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.stats.StatisticsFragment;
+import com.antsapps.triples.stats.ArcadeStatisticsFragment;
+import com.antsapps.triples.stats.BaseStatisticsFragment;
 
 public class ArcadeGameListActivity extends BaseGameListActivity {
 
@@ -19,8 +20,8 @@ public class ArcadeGameListActivity extends BaseGameListActivity {
   }
 
   @Override
-  protected Class<StatisticsFragment> getStatisticsFragmentClass() {
-    return StatisticsFragment.class;
+  protected Class<? extends BaseStatisticsFragment> getStatisticsFragmentClass() {
+    return ArcadeStatisticsFragment.class;
   }
 
   @Override

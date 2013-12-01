@@ -9,7 +9,8 @@ import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.backend.Statistics;
-import com.antsapps.triples.stats.StatisticsFragment;
+import com.antsapps.triples.stats.BaseStatisticsFragment;
+import com.antsapps.triples.stats.ClassicStatisticsFragment;
 
 public class ClassicGameListActivity extends BaseGameListActivity {
 
@@ -22,8 +23,8 @@ public class ClassicGameListActivity extends BaseGameListActivity {
   }
 
   @Override
-  protected Class<StatisticsFragment> getStatisticsFragmentClass() {
-    return StatisticsFragment.class;
+  protected Class<? extends BaseStatisticsFragment> getStatisticsFragmentClass() {
+    return ClassicStatisticsFragment.class;
   }
 
   @Override
