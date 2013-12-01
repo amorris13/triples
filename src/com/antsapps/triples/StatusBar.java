@@ -1,44 +1,27 @@
 package com.antsapps.triples;
 
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.google.common.collect.ImmutableList;
 
-public class StatusBar extends RelativeLayout implements OnTimerTickListener,
-    OnUpdateCardsInPlayListener {
-
-  private final TextView mTimerText;
-  private final TextView mCardsRemainingText;
-
-  public StatusBar(Context context, AttributeSet attrs) {
-    super(context, attrs);
-    ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-        .inflate(R.layout.statusbar, this);
-    mTimerText = (TextView) findViewById(R.id.timer_value_text);
-    mCardsRemainingText = (TextView) findViewById(R.id.cards_remaining_text);
-  }
+/**
+ * Created by anthony on 1/12/13.
+ */
+public abstract class StatusBar extends RelativeLayout
+    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener {
+  public StatusBar(Context context, AttributeSet attrs) {super(context, attrs);}
 
   @Override
-  public void onTimerTick(final long elapsedTime) {
-    mTimerText.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS
-        .toSeconds(elapsedTime)));
-  }
+  public abstract void onTimerTick(long elapsedTime);
 
   @Override
-  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-                                  ImmutableList<Card> oldCards,
-                                  int numRemaining,
-                                  int numTriplesFound) {
-    mCardsRemainingText.setText(String.valueOf(numRemaining));
-  }
+  public abstract void onUpdateCardsInPlay(ImmutableList<Card> newCards,
+                                           ImmutableList<Card> oldCards,
+                                           int numRemaining,
+                                           int numTriplesFound);
 }

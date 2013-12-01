@@ -63,7 +63,7 @@ public class CurrentGameListFragment extends GameListFragment implements
                               long id) {
         Game game = (Game) parent.getItemAtPosition(position);
         if (game != null) {
-          Intent intent = new Intent(view.getContext(), GameActivity.class);
+          Intent intent = new Intent(view.getContext(), BaseGameActivity.class);
           intent.putExtra(Game.ID_TAG, game.getId());
           startActivity(intent);
         }

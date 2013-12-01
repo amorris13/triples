@@ -60,5 +60,7 @@
   <string name="app_id">434215387101</string>
   <string name="leaderboards">Google Play Leaderboards</string>
   <string name="signout">Sign Out</string>
+  <string name="time_remaining">TIME REMAINING</string>
+  <string name="triples_found">TRIPLES FOUND</string>
 
 </resources>

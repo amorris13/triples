@@ -20,8 +20,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
@@ -31,7 +29,7 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
 import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 
-public class GameActivity extends SherlockFragmentActivity implements
+public abstract class BaseGameActivity extends SherlockFragmentActivity implements
     OnUpdateGameStateListener, GameHelper.GameHelperListener {
 
   public class SignInDialogFragment extends DialogFragment {
@@ -58,12 +56,10 @@ public class GameActivity extends SherlockFragmentActivity implements
     }
   }
 
-  private ClassicGame mGame;
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
   private GameState mGameState;
   private StatusBar mStatusBar;
-  private Application mApplication;
 
   private GameHelper mHelper;
 
@@ -71,37 +67,25 @@ public class GameActivity extends SherlockFragmentActivity implements
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
-    mApplication = Application.getInstance(getApplication());
+    init(savedInstanceState);
 
-    if (getIntent().hasExtra(Game.ID_TAG)) {
-      // We are being created from the game list.
-      mGame = mApplication.getClassicGame(getIntent().getLongExtra(Game.ID_TAG, 0));
-    } else if (savedInstanceState != null) {
-      // We are being restored
-      mGame = mApplication.getClassicGame(savedInstanceState.getLong(Game.ID_TAG));
-    } else {
-      throw new IllegalArgumentException(
-          "No savedInstanceState or intent containing key");
-    }
-
-    mGame.addOnUpdateGameStateListener(this);
-    GameState originalGameState = mGame.getGameState();
+    getGame().addOnUpdateGameStateListener(this);
+    GameState originalGameState = getGame().getGameState();
 
     mStatusBar = (StatusBar) findViewById(R.id.status_bar);
-    mGame.setOnTimerTickListener(mStatusBar);
-    mGame.addOnUpdateCardsInPlayListener(mStatusBar);
+    getGame().setOnTimerTickListener(mStatusBar);
+    getGame().addOnUpdateCardsInPlayListener(mStatusBar);
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
-    mCardsView.setOnValidTripleSelectedListener(mGame);
-    mGame.addOnUpdateCardsInPlayListener(mCardsView);
+    mCardsView.setOnValidTripleSelectedListener(getGame());
+    getGame().addOnUpdateCardsInPlayListener(mCardsView);
 
     mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
-    mGame.begin();
+    getGame().begin();
 
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
@@ -110,6 +94,16 @@ public class GameActivity extends SherlockFragmentActivity implements
     mHelper = new GameHelper(this);
     mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
   }
+  
+  protected abstract Game getGame();
+
+  /**
+   * This must initialize the game (so that getGame() doesn't return null) and set the content
+   * view with a layout that contains a StatusBar (R.id.status_bar) and a CardsView
+   * (R.id.cards_view).
+   * @param savedInstanceState
+   */
+  protected abstract void init(Bundle savedInstanceState);
 
   @Override
   protected void onStart() {
@@ -144,10 +138,10 @@ public class GameActivity extends SherlockFragmentActivity implements
     // Handle item selection
     switch (item.getItemId()) {
       case R.id.pause:
-        mGame.pause();
+        getGame().pause();
         return true;
       case R.id.play:
-        mGame.resume();
+        getGame().resume();
         return true;
       case R.id.help:
         Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
@@ -173,7 +167,7 @@ public class GameActivity extends SherlockFragmentActivity implements
   @Override
   protected void onResume() {
     super.onResume();
-    mGame.resumeFromLifecycle();
+    getGame().resumeFromLifecycle();
 
     SharedPreferences sharedPref = PreferenceManager
         .getDefaultSharedPreferences(this);
@@ -199,25 +193,27 @@ public class GameActivity extends SherlockFragmentActivity implements
   @Override
   protected void onPause() {
     super.onPause();
-    mApplication.saveClassicGame(mGame);
-    mGame.pauseFromLifecycle();
+    saveGame();
+    getGame().pauseFromLifecycle();
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     updateViewSwitcher();
   }
 
+  protected abstract void saveGame();
+
   @Override
   protected void onSaveInstanceState(Bundle outState) {
-    outState.putLong(Game.ID_TAG, mGame.getId());
+    outState.putLong(Game.ID_TAG, getGame().getId());
   }
 
   @Override
   protected void onDestroy() {
-    mGame.removeOnUpdateCardsInPlayListener(mCardsView);
+    getGame().removeOnUpdateCardsInPlayListener(mCardsView);
 
-    mGame.removeOnUpdateCardsInPlayListener(mStatusBar);
-    mGame.setOnTimerTickListener(null);
+    getGame().removeOnUpdateCardsInPlayListener(mStatusBar);
+    getGame().setOnTimerTickListener(null);
 
-    mGame.removeOnUpdateGameStateListener(this);
+    getGame().removeOnUpdateGameStateListener(this);
 
     super.onDestroy();
   }
@@ -237,7 +233,7 @@ public class GameActivity extends SherlockFragmentActivity implements
 
   @Override
   public void gameFinished() {
-    Log.i("GameActivity", "game finished");
+    Log.i("BaseGameActivity", "game finished");
     if (mHelper.isSignedIn()) {
       submitScore();
     } else {
@@ -273,14 +269,14 @@ public class GameActivity extends SherlockFragmentActivity implements
             message = "Score could not be submitted";
             break;
         }
-        Toast.makeText(GameActivity.this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(BaseGameActivity.this, message, Toast.LENGTH_LONG).show();
       }
-    }, GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed());
+    }, GamesServices.Leaderboard.CLASSIC, getGame().getTimeElapsed());
   }
 
   private void updateViewSwitcher() {
     int childToDisplay = 0;
-    if(mGameState == GameState.PAUSED || !mGame.getActivityLifecycleActive()) {
+    if(mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
       childToDisplay = 1;
     } else {
       childToDisplay = 0;

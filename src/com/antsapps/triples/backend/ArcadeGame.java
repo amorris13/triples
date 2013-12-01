@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ArcadeGame extends Game implements OnTimerTickListener {
 
-  private static final long TIME_LIMIT_MS = 1 * 60 * 1000;
+  public static final long TIME_LIMIT_MS = 1 * 60 * 1000;
 
   private int mNumTriplesFound;
 

@@ -13,7 +13,7 @@
     android:layout_alignParentTop="true"
     android:background="#33B5E5" />
 
-  <com.antsapps.triples.StatusBar
+  <com.antsapps.triples.ArcadeStatusBar
     android:id="@+id/status_bar"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
