@@ -15,7 +15,7 @@ public class Statistics {
   private long mFastDate;
   private long mSlowDate;
 
-  Statistics(Iterable<Game> iterable, Period period) {
+  Statistics(Iterable<? extends Game> iterable, Period period) {
     mGamesInPeriod = period.filter(iterable);
     precalcStatistics();
   }

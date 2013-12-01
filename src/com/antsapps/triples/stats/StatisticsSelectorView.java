@@ -118,7 +118,7 @@ class StatisticsSelectorView extends FrameLayout {
 
   private void updateStatistics() {
     Statistics statistics = Application
-        .getInstance(getContext()).getStatistics(mCurrentPeriod);
+        .getInstance(getContext()).getClassicStatistics(mCurrentPeriod);
     if (mOnStatisticsChangeListener != null) {
       mOnStatisticsChangeListener.onStatisticsChange(statistics);
     }

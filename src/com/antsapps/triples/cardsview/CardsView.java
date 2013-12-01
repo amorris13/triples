@@ -164,7 +164,7 @@ public abstract class CardsView extends View implements
 
   @Override
   public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards, int numRemaining) {
+      ImmutableList<Card> oldCards, int numRemaining, int numTriplesFound) {
     updateCards(newCards, oldCards, numRemaining);
   }
 

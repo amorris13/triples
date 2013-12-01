@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public final class NumGamesPeriod implements Period {
+public final class NumGamesPeriod<T extends Game> implements Period<T> {
 
   private final int mNumber;
 
@@ -14,10 +14,10 @@ public final class NumGamesPeriod implements Period {
   }
 
   @Override
-  public List<Game> filter(Iterable<Game> games) {
-    List<Game> copy = Lists.newArrayList(games);
+  public List<T> filter(Iterable<T> games) {
+    List<T> copy = Lists.newArrayList(games);
     if (copy.isEmpty()) {
-      return Collections.<Game> emptyList();
+      return Collections.<T> emptyList();
     } else {
       Collections.sort(copy, GameProperty.DATE.createReversableComparator());
       return copy.subList(Math.max(0, copy.size() - mNumber), copy.size());

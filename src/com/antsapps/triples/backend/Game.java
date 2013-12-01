@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public abstract class Game implements Comparable<Game> {
+public abstract class Game implements Comparable<Game>, OnValidTripleSelectedListener {
 
   public interface OnUpdateGameStateListener {
     void onUpdateGameState(GameState state);

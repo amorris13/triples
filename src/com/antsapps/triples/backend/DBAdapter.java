@@ -15,13 +15,8 @@ import android.util.Log;
 import com.antsapps.triples.backend.Game.GameState;
 
 public class DBAdapter extends SQLiteOpenHelper {
-  /** The name of the database file on the file system */
-  private static final String DATABASE_NAME = "Triples.db";
-  /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 3;
-
   public static final String TABLE_CLASSIC_GAMES = "games";
-
+  public static final String TABLE_ARCADE_GAMES = "games";
   public static final String COLUMN_GAME_ID = "game_id";
   public static final String COLUMN_GAME_STATE = "game_state";
   public static final String COLUMN_GAME_RANDOM = "game_random";
@@ -29,7 +24,15 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_CARDS_IN_DECK = "cards_in_deck";
   public static final String COLUMN_TIME_ELAPSED = "time_elapsed";
   public static final String COLUMN_DATE = "date";
-
+  public static final String COLUMN_NUM_TRIPLES_FOUND = "num_triples_found"; // ARCADE only
+  /**
+   * The name of the database file on the file system
+   */
+  private static final String DATABASE_NAME = "Triples.db";
+  /**
+   * The version of the database that this class understands.
+   */
+  private static final int DATABASE_VERSION = 4;
   private static final String CREATE_CLASSIC_GAMES = "CREATE TABLE " + TABLE_CLASSIC_GAMES
       + "(" + COLUMN_GAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " //
       + COLUMN_GAME_STATE + " TEXT, " //
@@ -38,11 +41,20 @@ public class DBAdapter extends SQLiteOpenHelper {
       + COLUMN_CARDS_IN_DECK + " BLOB, " //
       + COLUMN_TIME_ELAPSED + " INTEGER, " //
       + COLUMN_DATE + " INTEGER)";
-  private static final String DROP_GAMES = "DROP TABLE IF EXISTS "
-      + TABLE_CLASSIC_GAMES;
+  private static final String CREATE_ARCADE_GAMES = "CREATE TABLE " + TABLE_ARCADE_GAMES
+      + "(" + COLUMN_GAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " //
+      + COLUMN_GAME_STATE + " TEXT, " //
+      + COLUMN_GAME_RANDOM + " INTEGER, " //
+      + COLUMN_CARDS_IN_PLAY + " BLOB, " //
+      + COLUMN_CARDS_IN_DECK + " BLOB, " //
+      + COLUMN_TIME_ELAPSED + " INTEGER, " //
+      + COLUMN_DATE + " INTEGER, " //
+      + COLUMN_NUM_TRIPLES_FOUND + "INTEGER)";
   private static final String TAG = "DBAdapter";
 
-  /** Constructor */
+  /**
+   * Constructor
+   */
   public DBAdapter(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
@@ -50,10 +62,8 @@ public class DBAdapter extends SQLiteOpenHelper {
   /**
    * Execute all of the SQL statements in the String[] array
    *
-   * @param db
-   *          The database on which to execute the statements
-   * @param sql
-   *          An array of SQL statements to execute
+   * @param db  The database on which to execute the statements
+   * @param sql An array of SQL statements to execute
    */
   private void execMultipleSQL(SQLiteDatabase db, String[] sql) {
     for (String s : sql) {
@@ -63,11 +73,13 @@ public class DBAdapter extends SQLiteOpenHelper {
     }
   }
 
-  /** Called when it is time to create the database */
+  /**
+   * Called when it is time to create the database
+   */
   @Override
   public void onCreate(SQLiteDatabase db) {
     Log.i("DBAdaptor", "onCreate");
-    String[] sql = new String[] { CREATE_CLASSIC_GAMES };
+    String[] sql = new String[]{CREATE_CLASSIC_GAMES, CREATE_ARCADE_GAMES};
     db.beginTransaction();
     try {
       // Create tables & test data
@@ -80,40 +92,51 @@ public class DBAdapter extends SQLiteOpenHelper {
     }
   }
 
-  /** Called when the database must be upgraded */
+  /**
+   * Called when the database must be upgraded
+   */
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     Log.w(DATABASE_NAME, "Upgrading database from version " + oldVersion
-        + " to " + newVersion + ", which will destroy all old data");
+        + " to " + newVersion);
 
-    String[] sql = new String[] { DROP_GAMES };
-    db.beginTransaction();
-    try {
-      // Create tables & test data
-      execMultipleSQL(db, sql);
-      db.setTransactionSuccessful();
-    } catch (SQLException e) {
-      Log.e("Error creating tables and debug data", e.toString());
-    } finally {
-      db.endTransaction();
+    if (oldVersion < 4) {
+      String[] sql = new String[]{CREATE_ARCADE_GAMES};
+      db.beginTransaction();
+      try {
+        // Create tables & test data
+        execMultipleSQL(db, sql);
+        db.setTransactionSuccessful();
+      } catch (SQLException e) {
+        Log.e("Error creating tables and debug data", e.toString());
+      } finally {
+        db.endTransaction();
+      }
     }
-
-    // This is cheating. In the real world, you'll need to add columns, not
-    // rebuild from scratch
-    onCreate(db);
   }
 
-  public void initialize(List<ClassicGame> classicGames) {
+  public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames) {
     Log.i("DBAdapter", "initialize");
+    initClassicGames(classicGames);
+    initArcadeGames(arcadeGames);
+  }
+
+  // Classic Game stuff
+
+  private void initClassicGames(List<ClassicGame> classicGames) {
     // Clear everything
     classicGames.clear();
 
     // Do classic games first.
     Cursor classicGamesCursor = getWritableDatabase().query(
         TABLE_CLASSIC_GAMES,
-        new String[] { COLUMN_GAME_ID, COLUMN_GAME_STATE, COLUMN_GAME_RANDOM,
-            COLUMN_CARDS_IN_PLAY, COLUMN_CARDS_IN_DECK, COLUMN_TIME_ELAPSED,
-            COLUMN_DATE },
+        new String[]{COLUMN_GAME_ID,
+            COLUMN_GAME_STATE,
+            COLUMN_GAME_RANDOM,
+            COLUMN_CARDS_IN_PLAY,
+            COLUMN_CARDS_IN_DECK,
+            COLUMN_TIME_ELAPSED,
+            COLUMN_DATE},
         null,
         null,
         null,
@@ -121,26 +144,19 @@ public class DBAdapter extends SQLiteOpenHelper {
         null);
     classicGamesCursor.moveToFirst();
     while (!classicGamesCursor.isAfterLast()) {
-      ClassicGame game = cursorToClassicGame(classicGamesCursor);
+      ClassicGame game = new ClassicGame(classicGamesCursor.getLong(0),
+          classicGamesCursor.getLong(2),
+          Utils.cardListFromByteArray(classicGamesCursor.getBlob(3)),
+          Deck.fromByteArray(classicGamesCursor.getBlob(4)),
+          classicGamesCursor.getLong(5),
+          new Date(classicGamesCursor.getLong(6)),
+          GameState.valueOf(classicGamesCursor.getString(1)));
       classicGames.add(game);
       classicGamesCursor.moveToNext();
     }
     classicGamesCursor.close();
 
     Collections.sort(classicGames);
-  }
-
-  private static ClassicGame cursorToClassicGame(Cursor cursor) {
-    long id = cursor.getLong(0);
-    GameState state = GameState.valueOf(cursor.getString(1));
-    long seed = cursor.getLong(2);
-    List<Card> cardsInPlay = Utils.cardListFromByteArray(cursor.getBlob(3));
-    Deck deck = Deck.fromByteArray(cursor.getBlob(4));
-    long timeElapsed = cursor.getLong(5);
-    Date date = new Date(cursor.getLong(6));
-    ClassicGame game = new ClassicGame(id, seed, cardsInPlay, deck,
-        timeElapsed, date, state);
-    return game;
   }
 
   public long addClassicGame(ClassicGame game) {
@@ -166,7 +182,6 @@ public class DBAdapter extends SQLiteOpenHelper {
         null);
   }
 
-
   private ContentValues createClassicGameValues(ClassicGame game) {
     ContentValues values = new ContentValues();
     values.put(COLUMN_GAME_STATE, game.getGameState().name());
@@ -175,6 +190,80 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
     values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    return values;
+  }
+
+  // Arcade Game methods
+
+  private void initArcadeGames(List<ArcadeGame> arcadeGames) {
+    // Clear everything
+    arcadeGames.clear();
+
+    // Do classic games first.
+    Cursor arcadeGamesCursor = getWritableDatabase().query(
+        TABLE_ARCADE_GAMES,
+        new String[]{COLUMN_GAME_ID,
+            COLUMN_GAME_STATE,
+            COLUMN_GAME_RANDOM,
+            COLUMN_CARDS_IN_PLAY,
+            COLUMN_CARDS_IN_DECK,
+            COLUMN_TIME_ELAPSED,
+            COLUMN_DATE,
+            COLUMN_NUM_TRIPLES_FOUND},
+        null,
+        null,
+        null,
+        null,
+        null);
+    arcadeGamesCursor.moveToFirst();
+    while (!arcadeGamesCursor.isAfterLast()) {
+      ArcadeGame game = new ArcadeGame(arcadeGamesCursor.getLong(0),
+          arcadeGamesCursor.getLong(2),
+          Utils.cardListFromByteArray(arcadeGamesCursor.getBlob(3)),
+          Deck.fromByteArray(arcadeGamesCursor.getBlob(4)),
+          arcadeGamesCursor.getLong(5),
+          new Date(arcadeGamesCursor.getLong(6)),
+          GameState.valueOf(arcadeGamesCursor.getString(1)),
+          arcadeGamesCursor.getInt(7));
+      arcadeGames.add(game);
+      arcadeGamesCursor.moveToNext();
+    }
+    arcadeGamesCursor.close();
+
+    Collections.sort(arcadeGames);
+  }
+
+  public long addArcadeGame(ArcadeGame game) {
+    return getWritableDatabase().insert(
+        TABLE_ARCADE_GAMES,
+        null,
+        createArcadeGameValues(game));
+  }
+
+  public void updateArcadeGame(ArcadeGame game) {
+    getWritableDatabase().update(
+        TABLE_ARCADE_GAMES,
+        createArcadeGameValues(game),
+        COLUMN_GAME_ID + " = " + game.getId(),
+        null);
+  }
+
+  public void removeArcadeGame(ArcadeGame game) {
+    getWritableDatabase().delete(
+        TABLE_ARCADE_GAMES,
+        COLUMN_GAME_ID + " = " + game.getId(),
+        null);
+  }
+
+  private ContentValues createArcadeGameValues(ArcadeGame game) {
+    ContentValues values = new ContentValues();
+    values.put(COLUMN_GAME_STATE, game.getGameState().name());
+    values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());
+    values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
+    values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
+    values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
+    values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_NUM_TRIPLES_FOUND, game.getNumTriplesFound());
     return values;
   }
 }

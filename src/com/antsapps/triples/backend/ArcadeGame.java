@@ -7,14 +7,18 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
 
   private static final long TIME_LIMIT_MS = 1 * 60 * 1000;
 
+  private int mNumTriplesFound;
+
   ArcadeGame(long id,
       long seed,
       List<Card> cardsInPlay,
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
-      GameState gameState) {
+      GameState gameState,
+      int numTriplesFound) {
     super(id, seed, cardsInPlay, cardsInDeck, timeElapsed, date, gameState);
+    mNumTriplesFound = numTriplesFound;
     mTimer.addOnTimerTickListener(this);
   }
 
@@ -43,6 +47,7 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   public void commitTriple(Card... cards) {
     super.commitTriple(cards);
 
+    mNumTriplesFound++;
     mDeck.readdCards(cards);
   }
 
@@ -51,5 +56,9 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
     if (elapsedTime > TIME_LIMIT_MS) {
       finish();
     }
+  }
+
+  public int getNumTriplesFound() {
+    return mNumTriplesFound;
   }
 }

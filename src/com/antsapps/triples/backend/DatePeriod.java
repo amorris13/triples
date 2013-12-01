@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public final class DatePeriod implements Period {
+public final class DatePeriod<T extends Game> implements Period<T> {
 
   private final Date mSince;
 
@@ -22,9 +22,9 @@ public final class DatePeriod implements Period {
   }
 
   @Override
-  public List<Game> filter(Iterable<Game> games) {
-    List<Game> filtered = Lists.newArrayList();
-    for (Game game : games) {
+  public List<T> filter(Iterable<T> games) {
+    List<T> filtered = Lists.newArrayList();
+    for (T game : games) {
       if (game.getDateStarted().compareTo(mSince) >= 0) {
         filtered.add(game);
       }

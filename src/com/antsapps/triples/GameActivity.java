@@ -21,6 +21,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
@@ -57,7 +58,7 @@ public class GameActivity extends SherlockFragmentActivity implements
     }
   }
 
-  private Game mGame;
+  private ClassicGame mGame;
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
   private GameState mGameState;
@@ -75,10 +76,10 @@ public class GameActivity extends SherlockFragmentActivity implements
 
     if (getIntent().hasExtra(Game.ID_TAG)) {
       // We are being created from the game list.
-      mGame = mApplication.getGame(getIntent().getLongExtra(Game.ID_TAG, 0));
+      mGame = mApplication.getClassicGame(getIntent().getLongExtra(Game.ID_TAG, 0));
     } else if (savedInstanceState != null) {
       // We are being restored
-      mGame = mApplication.getGame(savedInstanceState.getLong(Game.ID_TAG));
+      mGame = mApplication.getClassicGame(savedInstanceState.getLong(Game.ID_TAG));
     } else {
       throw new IllegalArgumentException(
           "No savedInstanceState or intent containing key");

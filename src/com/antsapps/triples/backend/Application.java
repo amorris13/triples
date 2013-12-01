@@ -16,15 +16,15 @@ public class Application extends OnStateChangedReporter {
   private static Application INSTANCE;
 
   /** Should remain sorted */
-  private final List<ClassicGame> mClassicGames;
+  private final List<ClassicGame> mClassicGames = Lists.newArrayList();;
+  private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();;
 
   public final DBAdapter database;
 
   private Application(Context context) {
     super();
-    mClassicGames = Lists.newArrayList();
     database = new DBAdapter(context);
-    init();
+    database.initialize(mClassicGames, mArcadeGames);
   }
 
   public static Application getInstance(Context context) {
@@ -32,10 +32,6 @@ public class Application extends OnStateChangedReporter {
       INSTANCE = new Application(context);
     }
     return INSTANCE;
-  }
-
-  private void init() {
-    database.initialize(mClassicGames);
   }
 
   public void addClassicGame(ClassicGame game) {
@@ -56,12 +52,8 @@ public class Application extends OnStateChangedReporter {
     notifyStateChanged();
   }
 
-  public List<Game> getAllGames() {
-    return mClassicGames;
-  }
-
-  public Game getGame(long id) {
-    for (Game game : mClassicGames) {
+  public ClassicGame getClassicGame(long id) {
+    for (ClassicGame game : mClassicGames) {
       if (game.getId() == id) {
         return game;
       }
@@ -69,17 +61,16 @@ public class Application extends OnStateChangedReporter {
     return null;
   }
 
-  public Iterable<Game> getCurrentGames() {
+  public Iterable<ClassicGame> getCurrentClassicGames() {
     return Iterables.filter(mClassicGames, new Predicate<Game>() {
       @Override
       public boolean apply(Game game) {
-        return game.getGameState() == GameState.PAUSED
-            || game.getGameState() == GameState.ACTIVE;
+        return game.getGameState() != GameState.COMPLETED;
       }
     });
   }
 
-  public Iterable<Game> getCompletedGames() {
+  public Iterable<ClassicGame> getCompletedClassicGames() {
     return Iterables.filter(mClassicGames, new Predicate<Game>() {
       @Override
       public boolean apply(Game game) {
@@ -88,7 +79,7 @@ public class Application extends OnStateChangedReporter {
     });
   }
 
-  public Statistics getStatistics(Period period) {
-    return new Statistics(getCompletedGames(), period);
+  public Statistics getClassicStatistics(Period period) {
+    return new Statistics(getCompletedClassicGames(), period);
   }
 }
