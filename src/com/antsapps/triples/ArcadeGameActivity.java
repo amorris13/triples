@@ -80,6 +80,6 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
   }
 
   protected Class<? extends BaseGameListActivity> getParentClass() {
-    return ClassicGameListActivity.class;
+    return ArcadeGameListActivity.class;
   }
 }

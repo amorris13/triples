@@ -65,7 +65,7 @@ public class Application extends OnStateChangedReporter {
     return Iterables.filter(mClassicGames, new Predicate<Game>() {
       @Override
       public boolean apply(Game game) {
-        return game.getGameState() != GameState.COMPLETED;
+        return game.getGameState() == GameState.ACTIVE || game.getGameState() == GameState.PAUSED;
       }
     });
   }
@@ -114,7 +114,7 @@ public class Application extends OnStateChangedReporter {
     return Iterables.filter(mArcadeGames, new Predicate<Game>() {
       @Override
       public boolean apply(Game game) {
-        return game.getGameState() != GameState.COMPLETED;
+        return game.getGameState() == GameState.ACTIVE || game.getGameState() == GameState.PAUSED;
       }
     });
   }

@@ -16,7 +16,7 @@
     android:textStyle="bold" />
 
   <TextView
-    android:id="@+id/cards_remaining_key_text"
+    android:id="@+id/progress_key_text"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentRight="true"

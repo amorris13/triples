@@ -19,22 +19,23 @@
 
     <activity
       android:name=".ClassicGameListActivity"
-      android:label="@string/app_name">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
+      android:label="Classic">
     </activity>
     <activity
       android:name=".ClassicGameActivity"
-      android:label="@string/app_name" />
+      android:label="Classic" />
     <activity
       android:name=".ArcadeGameActivity"
-      android:label="@string/app_name" />
+      android:label="Arcade" />
     <activity
       android:name=".ArcadeGameListActivity"
-      android:label="@string/app_name" />
+      android:label="Arcade">
+      <intent-filter
+        android:label="@string/app_name">
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
     <activity
       android:name=".HelpActivity"
       android:label="@string/help"

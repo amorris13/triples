@@ -28,7 +28,7 @@
     android:layout_alignParentRight="true" />
 
   <TextView
-    android:id="@+id/cards_remaining_key_text"
+    android:id="@+id/progress_key_text"
     style="@style/status_bar_key"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
