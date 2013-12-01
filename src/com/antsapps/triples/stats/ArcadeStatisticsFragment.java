@@ -47,13 +47,13 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getSherlockActivity(),
+    return new StatisticsGamesArrayAdapter(getActivity(),
         Lists.<Game>newArrayList());
   }
 
   @Override
   protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
-    return new ArcadeStatisticsListHeaderView(getSherlockActivity());
+    return new ArcadeStatisticsListHeaderView(getActivity());
   }
 
   protected String getLeaderboardId() {

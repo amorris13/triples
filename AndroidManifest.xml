@@ -4,7 +4,7 @@
   android:versionName="1.2.3">
 
   <uses-sdk
-    android:minSdkVersion="8"
+    android:minSdkVersion="15"
     android:targetSdkVersion="17" />
 
   <uses-permission android:name="android.permission.VIBRATE" />
@@ -12,7 +12,7 @@
   <application
     android:icon="@drawable/launcher"
     android:label="@string/app_name"
-    android:theme="@style/Theme.Sherlock.Light.DarkActionBar.TabColor">
+    android:theme="@style/Theme.Light.DarkActionBar.TabColor">
     <meta-data
       android:name="com.google.android.gms.games.APP_ID"
       android:value="@string/app_id" />

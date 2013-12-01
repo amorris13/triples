@@ -50,13 +50,13 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getSherlockActivity(),
+    return new StatisticsGamesArrayAdapter(getActivity(),
         Lists.<Game>newArrayList());
   }
 
   @Override
   protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
-    return new ClassicStatisticsListHeaderView(getSherlockActivity());
+    return new ClassicStatisticsListHeaderView(getActivity());
   }
 
   protected String getLeaderboardId() {

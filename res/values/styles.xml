@@ -23,17 +23,19 @@
     <item name="android:textSize">30sp</item>
   </style>
 
-  <style name="HelpDialog" parent="@style/Theme.Sherlock.Light.Dialog">
+  <style name="HelpDialog" parent="android:Theme.Holo.Light.Dialog">
     <item name="android:windowNoTitle">true</item>
   </style>
 
-  <style name="Theme.Sherlock.Light.DarkActionBar.TabColor" parent="@style/Theme.Sherlock.Light.DarkActionBar">
-    <item name="android:actionBarStyle">@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse.LightTabs</item>
+  <style name="Theme.Light.DarkActionBar.TabColor"
+         parent="android:Theme.Holo.Light.DarkActionBar">
+    <item name="android:actionBarStyle">@style/Widget.Light.ActionBar.Solid.Inverse.LightTabs</item>
   </style>
 
-  <style name="Widget.Sherlock.Light.ActionBar.Solid.Inverse.LightTabs" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-    <item name="background">@color/action_bar_background</item>
-    <item name="backgroundStacked">@color/action_bar_stacked_background</item>
+  <style name="Widget.Light.ActionBar.Solid.Inverse.LightTabs"
+         parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+    <item name="android:background">@color/action_bar_background</item>
+    <item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
     <item name="android:background">@color/action_bar_background</item>
     <item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
   </style>

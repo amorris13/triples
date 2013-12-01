@@ -2,7 +2,6 @@
   <library name="libs">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/libs/jsr305-2.0.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/libs/android-support-v4.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/guava-14.0.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/../google-play-services_lib/libs/google-play-services.jar!/" />
     </CLASSES>

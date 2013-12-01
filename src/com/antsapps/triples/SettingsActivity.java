@@ -1,16 +1,15 @@
 package com.antsapps.triples;
 
+import android.app.ActionBar;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.ListPreference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
-
-public class SettingsActivity extends SherlockPreferenceActivity implements
+public class SettingsActivity extends PreferenceActivity implements
     OnSharedPreferenceChangeListener {
   private SharedPreferences mSharedPref;
 
@@ -22,7 +21,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements
     mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     mSharedPref.registerOnSharedPreferenceChangeListener(this);
 
-    ActionBar actionBar = getSupportActionBar();
+    ActionBar actionBar = getActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     updateOrientationSummary();

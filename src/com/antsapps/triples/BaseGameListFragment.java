@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import android.app.AlertDialog;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -10,12 +11,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnStateChangedListener;
 
-public abstract class BaseGameListFragment extends SherlockListFragment implements
+public abstract class BaseGameListFragment extends ListFragment implements
     OnStateChangedListener {
 
   protected Application mApplication;
@@ -31,12 +31,12 @@ public abstract class BaseGameListFragment extends SherlockListFragment implemen
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mApplication = Application.getInstance(getSherlockActivity());
+    mApplication = Application.getInstance(getActivity());
 
     mAdapter = createArrayAdapter();
     setListAdapter(mAdapter);
 
-    final Vibrator vibrator = (Vibrator) getSherlockActivity()
+    final Vibrator vibrator = (Vibrator) getActivity()
         .getSystemService(Context.VIBRATOR_SERVICE);
 
     getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -68,7 +68,7 @@ public abstract class BaseGameListFragment extends SherlockListFragment implemen
   protected abstract ArrayAdapter<Game> createArrayAdapter();
 
   private AlertDialog createDeleteAlertDialog(final Game game) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setCancelable(true);
     builder.setTitle(R.string.delete);
     builder.setInverseBackgroundForced(true);

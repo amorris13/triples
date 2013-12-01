@@ -1,25 +1,25 @@
 package com.antsapps.triples;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
@@ -29,7 +29,7 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
 import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 
-public abstract class BaseGameActivity extends SherlockFragmentActivity implements
+public abstract class BaseGameActivity extends Activity implements
     OnUpdateGameStateListener, GameHelper.GameHelperListener {
 
   public class SignInDialogFragment extends DialogFragment {
@@ -79,7 +79,7 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
 
     mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
 
-    ActionBar actionBar = getSupportActionBar();
+    ActionBar actionBar = getActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     getGame().begin();
@@ -125,7 +125,7 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuInflater inflater = getSupportMenuInflater();
+    MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game, menu);
     return true;
   }
@@ -233,7 +233,7 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
       submitScore();
     } else {
       DialogFragment dialog = new SignInDialogFragment();
-      dialog.show(getSupportFragmentManager(), "SignInDialogFragment");
+      dialog.show(getFragmentManager(), "SignInDialogFragment");
     }
   }
 

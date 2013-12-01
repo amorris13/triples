@@ -49,7 +49,7 @@ public class ArcadeCurrentGameListFragment extends BaseCurrentGameListFragment {
 
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
-    return new CurrentGamesArrayAdapter(getSherlockActivity(),
+    return new CurrentGamesArrayAdapter(getActivity(),
         Lists.<Game>newArrayList(getCurrentGames()));
   }
 

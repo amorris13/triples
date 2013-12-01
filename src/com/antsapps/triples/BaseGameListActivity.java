@@ -1,27 +1,27 @@
 package com.antsapps.triples;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.stats.BaseStatisticsFragment;
 
 /**
  * Created by anthony on 1/12/13.
  */
-public abstract class BaseGameListActivity extends SherlockFragmentActivity
+public abstract class BaseGameListActivity extends Activity
     implements GameHelper.GameHelperListener {
   public static final String SIGNIN_PREFS = "signin_prefs";
   public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
@@ -86,13 +86,12 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
     // Set the drawer toggle as the DrawerListener
     mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setHomeButtonEnabled(true);
+    final ActionBar bar = getActionBar();
+    bar.setDisplayHomeAsUpEnabled(true);
+    bar.setHomeButtonEnabled(true);
 
-    final ActionBar bar = getSupportActionBar();
     bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
     mViewPager = (ViewPager) findViewById(R.id.pager);
-//    setContentView(mViewPager);
 
     mTabsAdapter = new TabsAdapter(this, mViewPager);
 
@@ -154,7 +153,7 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuInflater inflater = getSupportMenuInflater();
+    MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game_list, menu);
     return super.onCreateOptionsMenu(menu);
   }
@@ -170,9 +169,9 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
   public boolean onOptionsItemSelected(MenuItem item) {
     // Pass the event to ActionBarDrawerToggle, if it returns
     // true, then it has handled the app icon touch event
-//    if (mDrawerToggle.onOptionsItemSelected(item)) {
-//      return true;
-//    }
+    if (mDrawerToggle.onOptionsItemSelected(item)) {
+      return true;
+    }
 
     // Handle item selection
     switch (item.getItemId()) {
@@ -202,7 +201,7 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putInt(TAB_NUMBER, getSupportActionBar()
+    outState.putInt(TAB_NUMBER, getActionBar()
         .getSelectedNavigationIndex());
   }
 

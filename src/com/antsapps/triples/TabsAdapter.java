@@ -2,15 +2,14 @@ package com.antsapps.triples;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
  * This is a helper class that implements the management of tabs and all
@@ -39,10 +38,10 @@ public class TabsAdapter extends FragmentPagerAdapter implements
     }
   }
 
-  public TabsAdapter(SherlockFragmentActivity activity, ViewPager pager) {
-    super(activity.getSupportFragmentManager());
+  public TabsAdapter(Activity activity, ViewPager pager) {
+    super(activity.getFragmentManager());
     mContext = activity;
-    mActionBar = activity.getSupportActionBar();
+    mActionBar = activity.getActionBar();
     mViewPager = pager;
     mViewPager.setAdapter(this);
     mViewPager.setOnPageChangeListener(this);

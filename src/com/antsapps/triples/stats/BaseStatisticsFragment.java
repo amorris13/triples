@@ -43,16 +43,16 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
         R.layout.stats_fragment,
         null);
 
-    mGameServicesView = new StatisticsGamesServicesView(getSherlockActivity(), getLeaderboardId());
+    mGameServicesView = new StatisticsGamesServicesView(getActivity(), getLeaderboardId());
     mGameServicesView.setGameHelper(mGameListActivity.getGameHelper());
     mGameListActivity.setGameHelperListener(mGameServicesView);
     listView.addHeaderView(mGameServicesView, null, false);
 
-    mSelectorView = new StatisticsSelectorView(getSherlockActivity());
+    mSelectorView = new StatisticsSelectorView(getActivity());
     mSelectorView.setOnPeriodChangeListener(this);
     listView.addHeaderView(mSelectorView, null, false);
 
-    mSummaryView = new StatisticsSummaryView(getSherlockActivity());
+    mSummaryView = new StatisticsSummaryView(getActivity());
     listView.addHeaderView(mSummaryView, null, false);
 
     mListHeaderView = createStatisticsListHeaderView();
