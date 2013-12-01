@@ -60,6 +60,7 @@ public abstract class BaseGameListActivity extends Activity
             startActivity(new Intent(getBaseContext(), ArcadeGameListActivity.class));
             break;
         }
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
       }
     });
 
