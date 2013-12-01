@@ -82,4 +82,53 @@ public class Application extends OnStateChangedReporter {
   public Statistics getClassicStatistics(Period period) {
     return new Statistics(getCompletedClassicGames(), period);
   }
+
+  public void addArcadeGame(ArcadeGame game) {
+    game.setId(database.addArcadeGame(game));
+    mArcadeGames.add(game);
+    Log.i(TAG, "addGame. now mArcadeGames = " + mArcadeGames);
+    notifyStateChanged();
+  }
+
+  public void saveArcadeGame(ArcadeGame game) {
+    database.updateArcadeGame(game);
+    notifyStateChanged();
+  }
+
+  public void deleteArcadeGame(ArcadeGame game) {
+    mArcadeGames.remove(game);
+    database.removeArcadeGame(game);
+    notifyStateChanged();
+  }
+
+  public ArcadeGame getArcadeGame(long id) {
+    for (ArcadeGame game : mArcadeGames) {
+      if (game.getId() == id) {
+        return game;
+      }
+    }
+    return null;
+  }
+
+  public Iterable<ArcadeGame> getCurrentArcadeGames() {
+    return Iterables.filter(mArcadeGames, new Predicate<Game>() {
+      @Override
+      public boolean apply(Game game) {
+        return game.getGameState() != GameState.COMPLETED;
+      }
+    });
+  }
+
+  public Iterable<ArcadeGame> getCompletedArcadeGames() {
+    return Iterables.filter(mArcadeGames, new Predicate<Game>() {
+      @Override
+      public boolean apply(Game game) {
+        return game.getGameState() == GameState.COMPLETED;
+      }
+    });
+  }
+
+  public Statistics getArcadeStatistics(Period period) {
+    return new Statistics(getCompletedArcadeGames(), period);
+  }
 }

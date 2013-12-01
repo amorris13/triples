@@ -111,7 +111,7 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
       case R.id.new_game:
         ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
         mApplication.addClassicGame(game);
-        Intent newGameIntent = new Intent(getBaseContext(), BaseGameActivity.class);
+        Intent newGameIntent = new Intent(getBaseContext(), ClassicGameActivity.class);
         newGameIntent.putExtra(Game.ID_TAG, game.getId());
         startActivity(newGameIntent);
         return true;

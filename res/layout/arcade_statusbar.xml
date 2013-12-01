@@ -33,7 +33,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentRight="true"
-    android:layout_below="@id/cards_remaining_text"
+    android:layout_below="@id/triples_found_text"
     android:text="@string/triples_found" />
 
 </RelativeLayout>

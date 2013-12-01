@@ -8,19 +8,19 @@ import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Classic Game
+ * Arcade Game
  */
-public class ClassicGameActivity extends BaseGameActivity implements OnTimerTickListener,
+public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickListener,
     Game.OnUpdateCardsInPlayListener {
 
-  private ClassicGame mGame;
+  private ArcadeGame mGame;
   private Application mApplication;
 
   @Override
@@ -29,17 +29,17 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
 
     if (getIntent().hasExtra(Game.ID_TAG)) {
       // We are being created from the game list.
-      mGame = mApplication.getClassicGame(getIntent().getLongExtra(Game.ID_TAG, 0));
+      mGame = mApplication.getArcadeGame(getIntent().getLongExtra(Game.ID_TAG, 0));
     } else if (savedInstanceState != null) {
       // We are being restored
-      mGame = mApplication.getClassicGame(savedInstanceState.getLong(Game.ID_TAG));
+      mGame = mApplication.getArcadeGame(savedInstanceState.getLong(Game.ID_TAG));
     } else {
       throw new IllegalArgumentException(
           "No savedInstanceState or intent containing key");
     }
 
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
-    stub.setLayoutResource(R.layout.classic_statusbar);
+    stub.setLayoutResource(R.layout.arcade_statusbar);
     stub.inflate();
     mGame.setOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
@@ -52,7 +52,7 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
 
   @Override
   protected void saveGame() {
-    mApplication.saveClassicGame(mGame);
+    mApplication.saveArcadeGame(mGame);
   }
 
   @Override

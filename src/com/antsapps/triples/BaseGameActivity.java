@@ -59,7 +59,6 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
   private GameState mGameState;
-  private StatusBar mStatusBar;
 
   private GameHelper mHelper;
 
@@ -67,14 +66,12 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.game);
+
     init(savedInstanceState);
 
     getGame().addOnUpdateGameStateListener(this);
     GameState originalGameState = getGame().getGameState();
-
-    mStatusBar = (StatusBar) findViewById(R.id.status_bar);
-    getGame().setOnTimerTickListener(mStatusBar);
-    getGame().addOnUpdateCardsInPlayListener(mStatusBar);
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mCardsView.setOnValidTripleSelectedListener(getGame());
@@ -209,8 +206,6 @@ public abstract class BaseGameActivity extends SherlockFragmentActivity implemen
   @Override
   protected void onDestroy() {
     getGame().removeOnUpdateCardsInPlayListener(mCardsView);
-
-    getGame().removeOnUpdateCardsInPlayListener(mStatusBar);
     getGame().setOnTimerTickListener(null);
 
     getGame().removeOnUpdateGameStateListener(this);
