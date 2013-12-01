@@ -1,8 +1,15 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -20,6 +27,9 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
   public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
   public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score_2";
   private static final String TAB_NUMBER = "tab";
+
+  private DrawerLayout mDrawerLayout;
+  private ActionBarDrawerToggle mDrawerToggle;
   private ViewPager mViewPager;
   private TabsAdapter mTabsAdapter;
   protected GameHelper mHelper;
@@ -29,11 +39,60 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    setContentView(R.layout.game_overview);
+
+    String[] gameModes = new String[] {"Classic", "Arcade"};
+    mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+    ListView drawerList = (ListView) findViewById(R.id.left_drawer);
+
+    // Set the adapter for the list view
+    drawerList.setAdapter(new ArrayAdapter<String>(this,
+        R.layout.drawer_list_item, gameModes));
+    // Set the list's click listener
+    drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        switch (position) {
+          case 0:
+            startActivity(new Intent(getBaseContext(), ClassicGameListActivity.class));
+            break;
+          case 1:
+            startActivity(new Intent(getBaseContext(), ArcadeGameListActivity.class));
+            break;
+        }
+      }
+    });
+
+    mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+    mDrawerToggle = new ActionBarDrawerToggle(
+        this,                  /* host Activity */
+        mDrawerLayout,         /* DrawerLayout object */
+        R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+        R.string.drawer_open,  /* "open drawer" description */
+        R.string.drawer_close  /* "close drawer" description */
+    ) {
+
+      /** Called when a drawer has settled in a completely closed state. */
+      public void onDrawerClosed(View view) {
+//        getActionBar().setTitle(mTitle);
+      }
+
+      /** Called when a drawer has settled in a completely open state. */
+      public void onDrawerOpened(View drawerView) {
+//        getActionBar().setTitle(mDrawerTitle);
+      }
+    };
+
+    // Set the drawer toggle as the DrawerListener
+    mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setHomeButtonEnabled(true);
+
     final ActionBar bar = getSupportActionBar();
     bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-    setContentView(R.layout.game_overview);
     mViewPager = (ViewPager) findViewById(R.id.pager);
-    setContentView(mViewPager);
+//    setContentView(mViewPager);
 
     mTabsAdapter = new TabsAdapter(this, mViewPager);
 
@@ -57,6 +116,19 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
   protected abstract Class<? extends BaseStatisticsFragment> getStatisticsFragmentClass();
 
   protected abstract Class<? extends BaseCurrentGameListFragment> getCurrentGamesFragment();
+
+  @Override
+  protected void onPostCreate(Bundle savedInstanceState) {
+    super.onPostCreate(savedInstanceState);
+    // Sync the toggle state after onRestoreInstanceState has occurred.
+    mDrawerToggle.syncState();
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    mDrawerToggle.onConfigurationChanged(newConfig);
+  }
 
   @Override
   protected void onStart() {
@@ -96,6 +168,12 @@ public abstract class BaseGameListActivity extends SherlockFragmentActivity
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    // Pass the event to ActionBarDrawerToggle, if it returns
+    // true, then it has handled the app icon touch event
+//    if (mDrawerToggle.onOptionsItemSelected(item)) {
+//      return true;
+//    }
+
     // Handle item selection
     switch (item.getItemId()) {
       case R.id.new_game:
