@@ -25,7 +25,7 @@ class HistogramView extends View {
 
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
   private static final String X_AXIS_TITLE = "Time (minutes)";
-  private Statistics<Game> mStatistics;
+  private Statistics mStatistics;
   private float mYLabelWidth;
 
   private static final Paint TEXT_PAINT = new Paint();

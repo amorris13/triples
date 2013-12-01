@@ -16,7 +16,7 @@ import com.antsapps.triples.backend.Game.GameState;
 
 public class DBAdapter extends SQLiteOpenHelper {
   public static final String TABLE_CLASSIC_GAMES = "games";
-  public static final String TABLE_ARCADE_GAMES = "games";
+  public static final String TABLE_ARCADE_GAMES = "arcade_games";
   public static final String COLUMN_GAME_ID = "game_id";
   public static final String COLUMN_GAME_STATE = "game_state";
   public static final String COLUMN_GAME_RANDOM = "game_random";
@@ -49,7 +49,7 @@ public class DBAdapter extends SQLiteOpenHelper {
       + COLUMN_CARDS_IN_DECK + " BLOB, " //
       + COLUMN_TIME_ELAPSED + " INTEGER, " //
       + COLUMN_DATE + " INTEGER, " //
-      + COLUMN_NUM_TRIPLES_FOUND + "INTEGER)";
+      + COLUMN_NUM_TRIPLES_FOUND + " INTEGER)";
   private static final String TAG = "DBAdapter";
 
   /**

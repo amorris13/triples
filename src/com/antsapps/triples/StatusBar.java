@@ -36,7 +36,9 @@ public class StatusBar extends RelativeLayout implements OnTimerTickListener,
 
   @Override
   public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards, int numRemaining) {
+                                  ImmutableList<Card> oldCards,
+                                  int numRemaining,
+                                  int numTriplesFound) {
     mCardsRemainingText.setText(String.valueOf(numRemaining));
   }
 }

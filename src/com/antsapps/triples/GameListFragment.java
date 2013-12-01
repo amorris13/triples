@@ -12,14 +12,14 @@ import android.widget.ArrayAdapter;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.OnStateChangedListener;
 
 public abstract class GameListFragment extends SherlockListFragment implements
     OnStateChangedListener {
 
   protected Application mApplication;
-  protected ArrayAdapter<Game> mAdapter;
+  protected ArrayAdapter<ClassicGame> mAdapter;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public abstract class GameListFragment extends SherlockListFragment implements
       public boolean onItemLongClick(AdapterView<?> parent, View view,
           final int position, long id) {
         vibrator.vibrate(50);
-        AlertDialog alert = createDeleteAlertDialog((Game) parent
+        AlertDialog alert = createDeleteAlertDialog((ClassicGame) parent
             .getItemAtPosition(position));
         alert.show();
         return false;
@@ -66,9 +66,9 @@ public abstract class GameListFragment extends SherlockListFragment implements
     mApplication.removeOnStateChangedListener(this);
   }
 
-  protected abstract ArrayAdapter<Game> createArrayAdapter();
+  protected abstract ArrayAdapter<ClassicGame> createArrayAdapter();
 
-  private AlertDialog createDeleteAlertDialog(final Game game) {
+  private AlertDialog createDeleteAlertDialog(final ClassicGame game) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
     builder.setCancelable(true);
     builder.setTitle(R.string.delete);

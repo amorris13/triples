@@ -18,6 +18,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.backend.Statistics;
@@ -108,7 +109,7 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
     // Handle item selection
     switch (item.getItemId()) {
       case R.id.new_game:
-        Game game = Game.createFromSeed(System.currentTimeMillis());
+        ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
         mApplication.addClassicGame(game);
         Intent newGameIntent = new Intent(getBaseContext(), GameActivity.class);
         newGameIntent.putExtra(Game.ID_TAG, game.getId());
@@ -168,7 +169,7 @@ public class GameListActivity extends SherlockFragmentActivity implements GameHe
       return;
     }
 
-    Statistics stats = mApplication.getStatistics(Period.ALL_TIME);
+    Statistics stats = mApplication.getClassicStatistics(Period.ALL_TIME);
     mHelper.getGamesClient().submitScore(GamesServices.Leaderboard.CLASSIC, stats.getFastestTime());
 
     // We need an Editor object to make preference changes.

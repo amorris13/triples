@@ -7,8 +7,8 @@ import java.util.Random;
 
 public class ClassicGame extends Game {
 
-  public static Game createFromSeed(long seed) {
-    Game game = new ClassicGame(-1, seed, Collections.<Card> emptyList(), new Deck(
+  public static ClassicGame createFromSeed(long seed) {
+    ClassicGame game = new ClassicGame(-1, seed, Collections.<Card> emptyList(), new Deck(
         new Random(seed)), 0, new Date(), GameState.STARTING);
     game.init();
     return game;

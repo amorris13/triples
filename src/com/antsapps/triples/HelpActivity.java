@@ -43,7 +43,7 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     mColorExplanation = (TextView) findViewById(R.id.color_explanation);
 
     ImmutableList<Card> newCards = createValidTriple();
-    mHelpCardsView.onUpdateCardsInPlay(newCards, ImmutableList.<Card> of(), 0);
+    mHelpCardsView.onUpdateCardsInPlay(newCards, ImmutableList.<Card> of(), 0, 0);
     mCardsShown = newCards;
     updateTextExplanation();
   }
@@ -59,7 +59,7 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
 
   private void showAnotherTriple() {
     ImmutableList<Card> newCards = createValidTriple();
-    mHelpCardsView.onUpdateCardsInPlay(newCards, mCardsShown, 0);
+    mHelpCardsView.onUpdateCardsInPlay(newCards, mCardsShown, 0, 0);
     mCardsShown = newCards;
     updateTextExplanation();
   }

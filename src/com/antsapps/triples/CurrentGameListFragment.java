@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnStateChangedListener;
 import com.google.common.collect.Lists;
@@ -22,9 +23,9 @@ public class CurrentGameListFragment extends GameListFragment implements
     OnStateChangedListener {
   public final static String TAG = "CurrentGameListFragment";
 
-  protected static class CurrentGamesArrayAdapter extends ArrayAdapter<Game> {
+  protected static class CurrentGamesArrayAdapter extends ArrayAdapter<ClassicGame> {
 
-    public CurrentGamesArrayAdapter(Context context, List<Game> games) {
+    public CurrentGamesArrayAdapter(Context context, List<ClassicGame> games) {
       super(context, R.layout.game_list_item, games);
     }
 
@@ -82,15 +83,15 @@ public class CurrentGameListFragment extends GameListFragment implements
   }
 
   @Override
-  protected ArrayAdapter<Game> createArrayAdapter() {
+  protected ArrayAdapter<ClassicGame> createArrayAdapter() {
     return new CurrentGamesArrayAdapter(getSherlockActivity(),
-        Lists.newArrayList(mApplication.getCurrentGames()));
+        Lists.newArrayList(mApplication.getCurrentClassicGames()));
   }
 
   @Override
   protected void updateDataSet() {
     mAdapter.clear();
-    for (Game game : mApplication.getCurrentGames()) {
+    for (ClassicGame game : mApplication.getCurrentClassicGames()) {
       mAdapter.add(game);
     }
     mAdapter.notifyDataSetChanged();
