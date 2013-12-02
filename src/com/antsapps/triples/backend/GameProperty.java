@@ -12,21 +12,21 @@ public enum GameProperty {
     public int compare(Game lhs, Game rhs) {
       return lhs.getDateStarted().compareTo(rhs.getDateStarted());
     }
-  }),
+  }, true),
 
   TIME_ELAPSED(new Comparator<Game>() {
     @Override
     public int compare(Game lhs, Game rhs) {
       return Longs.compare(lhs.getTimeElapsed(), rhs.getTimeElapsed());
     }
-  }),
+  }, true),
 
   CARDS_REMAINING(new Comparator<Game>() {
     @Override
     public int compare(Game lhs, Game rhs) {
       return Ints.compare(lhs.getCardsRemaining(), rhs.getCardsRemaining());
     }
-  }),
+  }, true),
 
   NUM_TRIPLES_FOUND(new Comparator<Game>() {
     @Override
@@ -38,15 +38,22 @@ public enum GameProperty {
         return 0;
       }
     }
-  });
-
-  private GameProperty(Comparator<Game> comparator) {
-    mComparator = comparator;
-  }
+  }, false);
 
   private final Comparator<Game> mComparator;
+  private final boolean mDefaultAscending;
+
+  private GameProperty(Comparator<Game> comparator, boolean defaultAscending) {
+    mComparator = comparator;
+    mDefaultAscending = defaultAscending;
+  }
 
   public ReversableComparator<Game> createReversableComparator() {
-    return new ReversableComparator<Game>(mComparator);
+    ReversableComparator<Game> gameReversableComparator = new ReversableComparator<Game>
+        (mComparator);
+    if (!mDefaultAscending) {
+      gameReversableComparator.reverse();
+    }
+    return gameReversableComparator;
   }
 }
