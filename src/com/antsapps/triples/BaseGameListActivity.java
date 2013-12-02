@@ -3,11 +3,13 @@ package com.antsapps.triples;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +28,10 @@ public abstract class BaseGameListActivity extends Activity
   public static final String SIGNIN_PREFS = "signin_prefs";
   public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
   public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score_2";
+
+  public static final String NAV_DRAWER_PREFS = "nav_drawer_prefs";
+  public static final String OPENED_NAV_DRAWER_PREVIOUSLY = "opened_navdrawer_prev";
+
   private static final String TAB_NUMBER = "tab";
 
   private DrawerLayout mDrawerLayout;
@@ -76,6 +82,8 @@ public abstract class BaseGameListActivity extends Activity
     // Set the drawer toggle as the DrawerListener
     mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+    maybeOpenNavDrawer();
+
     final ActionBar bar = getActionBar();
     bar.setDisplayHomeAsUpEnabled(true);
     bar.setHomeButtonEnabled(true);
@@ -100,6 +108,22 @@ public abstract class BaseGameListActivity extends Activity
 
     mHelper = new GameHelper(this);
     mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
+  }
+
+  private void maybeOpenNavDrawer() {
+    SharedPreferences settings = getSharedPreferences(NAV_DRAWER_PREFS, 0);
+    if (settings.getBoolean(OPENED_NAV_DRAWER_PREVIOUSLY, false)) {
+      return;
+    }
+
+    mDrawerLayout.openDrawer(Gravity.LEFT);
+
+    // We need an Editor object to make preference changes.
+    // All objects are from android.context.Context
+    SharedPreferences.Editor editor = settings.edit();
+    editor.putBoolean(OPENED_NAV_DRAWER_PREVIOUSLY, true);
+    // Commit the edits!
+    editor.commit();
   }
 
   protected abstract Class<? extends BaseStatisticsFragment> getStatisticsFragmentClass();
