@@ -48,7 +48,7 @@
       android:drawablePadding="8dp"
       android:singleLine="false"
       android:layout_weight="1"
-      style="android:style/Widget.ActionButton"
+      style="@android:style/Widget.ActionButton"
       android:layout_gravity="center"/>
 
     <View
