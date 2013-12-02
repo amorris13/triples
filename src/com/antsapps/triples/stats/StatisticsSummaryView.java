@@ -1,5 +1,6 @@
 package com.antsapps.triples.stats;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.antsapps.triples.R;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
 
 class StatisticsSummaryView extends FrameLayout implements
@@ -45,7 +47,18 @@ class StatisticsSummaryView extends FrameLayout implements
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
-    mGraphView.setStatistics(statistics);
+    int maxTime = 30;
+    int[] bins = new int[maxTime + 1];
+    Arrays.fill(bins, 0);
+    int maxMinutes = 0;
+    for (Game game : statistics.getData()) {
+      int minutes = (int) Math.min(TimeUnit.MILLISECONDS.toMinutes(game.getTimeElapsed()),
+          maxTime);
+      maxMinutes = Math.max(maxMinutes, minutes);
+      bins[minutes]++;
+    }
+
+    mGraphView.setStatistics("Time (minutes)", Arrays.copyOfRange(bins, 0, maxMinutes + 1));
 
     int numGames = statistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));

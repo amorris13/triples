@@ -1,7 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.Arrays;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,18 +12,15 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.antsapps.triples.R;
-import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.Statistics;
+import com.google.common.primitives.Ints;
 
 class HistogramView extends View {
 
-  private static final int MAX_TIME = 30;
-  private static final int NUM_TIME_LABELS = 5;
+  private static final int NUM_X_LABELS = 5;
   private static final int NUM_GRIDLINES = 4;
 
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
-  private static final String X_AXIS_TITLE = "Time (minutes)";
-  private Statistics mStatistics;
+  private String mXAxisTitle;
   private float mYLabelWidth;
 
   private static final Paint TEXT_PAINT = new Paint();
@@ -41,9 +36,9 @@ class HistogramView extends View {
 
   private final int mVertSpacePx;
 
-  private final int[] mBins = new int[MAX_TIME + 1];
-  private int mMaxMinutes;
-  private int mMaxBinSize;
+  private int[] mBins;
+  private int mMaxX;
+  private int mMaxY;
   private float mGraphWidth;
   private float mGraphHeight;
 
@@ -64,32 +59,17 @@ class HistogramView extends View {
     TEXT_PAINT.setTextSize(mTextHeightPx);
   }
 
-  void setStatistics(Statistics statistics) {
-    mStatistics = statistics;
-    calcBins();
-    invalidate();
-  }
+  void setStatistics(String xLabel, int[] bins) {
+    mXAxisTitle = xLabel;
+    mBins = bins;
+    mMaxX = roundUpToNearestMultiple(mBins.length - 1, NUM_X_LABELS);
+    mMaxY = roundUpToNearestMultiple(Ints.max(mBins), NUM_GRIDLINES);
 
-  private void calcBins() {
-    mMaxMinutes = 0;
-    mMaxBinSize = 0;
-    Arrays.fill(mBins, 0);
-    for (Game game : mStatistics.getData()) {
-      int bin = Math.min(convertTimeToMinutes(game.getTimeElapsed()), MAX_TIME);
-      mBins[bin]++;
-      mMaxMinutes = Math.max(mMaxMinutes, bin);
-      mMaxBinSize = Math.max(mMaxBinSize, mBins[bin]);
-    }
-    mMaxMinutes = roundUpToNearestMultiple(mMaxMinutes, NUM_TIME_LABELS);
-    mMaxBinSize = roundUpToNearestMultiple(mMaxBinSize, NUM_GRIDLINES);
+    invalidate();
   }
 
   private static int roundUpToNearestMultiple(float number, int factor) {
     return (int) (FloatMath.ceil(number / factor)) * factor;
-  }
-
-  private int convertTimeToMinutes(long time) {
-    return (int) time / (60 * 1000);
   }
 
   @Override
@@ -110,17 +90,15 @@ class HistogramView extends View {
 
   @Override
   protected void onDraw(Canvas canvas) {
-    if (mStatistics != null) {
-      if (mStatistics.getNumGames() == 0) {
-        drawNoGames(canvas);
-      } else {
-        calcDimens();
-        drawLabels(canvas);
-        drawGridlines(canvas);
-        drawPlot(canvas);
-        drawAxes(canvas);
-        drawAxesTitles(canvas);
-      }
+    if (mBins == null || mBins.length == 0 || mMaxY == 0) {
+      drawNoGames(canvas);
+    } else {
+      calcDimens();
+      drawLabels(canvas);
+      drawGridlines(canvas);
+      drawPlot(canvas);
+      drawAxes(canvas);
+      drawAxesTitles(canvas);
     }
   }
 
@@ -153,7 +131,7 @@ class HistogramView extends View {
     canvas.drawLine(
         calcXForMinutes(0),
         calcYForNumber(0),
-        calcXForMinutes(mMaxMinutes + 1),
+        calcXForMinutes(mMaxX + 1),
         calcYForNumber(0),
         axesPaint);
   }
@@ -174,7 +152,7 @@ class HistogramView extends View {
     Paint xTitlePaint = new Paint(TEXT_PAINT);
     xTitlePaint.setTextAlign(Paint.Align.CENTER);
     canvas.drawText(
-        X_AXIS_TITLE,
+        mXAxisTitle,
         mYLabelWidth + mBufferPx + mGraphWidth / 2,
         getHeight() - mVertSpacePx,
         xTitlePaint);
@@ -196,27 +174,18 @@ class HistogramView extends View {
     // X Axis Labels (minutes)
     Paint xTextPaint = new Paint(TEXT_PAINT);
     xTextPaint.setTextAlign(Paint.Align.CENTER);
-    for (int i = 0; i <= NUM_TIME_LABELS; i++) {
-      int minutes = mMaxMinutes / NUM_TIME_LABELS * i;
+    for (int i = 0; i <= NUM_X_LABELS; i++) {
+      int minutes = mMaxX / NUM_X_LABELS * i;
       canvas.drawText(
           String.valueOf(minutes),
           calcXForMinutes(minutes),
           getHeight() - getXTitleHeight() - mVertSpacePx,
           xTextPaint);
     }
-    if (mMaxMinutes == MAX_TIME) {
-      // Draw a + for the last label.
-      xTextPaint.setTextAlign(Align.RIGHT);
-      canvas.drawText(
-          "+",
-          calcXForMinutes(MAX_TIME + 1),
-          getHeight() - getXTitleHeight(),
-          xTextPaint);
-    }
   }
 
   private float calcXForMinutes(float minutes) {
-    return mYLabelWidth + mBufferPx + mGraphWidth / (mMaxMinutes + 1) * minutes;
+    return mYLabelWidth + mBufferPx + mGraphWidth / (mMaxX + 1) * minutes;
   }
 
   private void drawGridlines(Canvas canvas) {
@@ -229,14 +198,14 @@ class HistogramView extends View {
       canvas.drawLine(
           calcXForMinutes(0),
           calcYForNumber(num),
-          calcXForMinutes(mMaxMinutes + 1),
+          calcXForMinutes(mMaxX + 1),
           calcYForNumber(num),
           gridlinePaint);
     }
   }
 
   private int calcNumForGridline(int i) {
-    return mMaxBinSize / NUM_GRIDLINES * i;
+    return mMaxY / NUM_GRIDLINES * i;
   }
 
   private void drawPlot(Canvas canvas) {
@@ -244,10 +213,10 @@ class HistogramView extends View {
     columnPaint.setColor(getResources().getColor(android.R.color.holo_blue_light));
     columnPaint.setStrokeWidth(2);
     columnPaint.setStyle(Paint.Style.FILL);
-    for (int i = 0; i <= mMaxMinutes; i++) {
+    for (int i = 0; i <= mMaxX; i++) {
       canvas.drawRect(
           calcXForMinutes(i) + mColumnPaddingPx,
-          calcYForNumber(mBins[i]),
+          calcYForNumber(i < mBins.length ? mBins[i] : 0),
           calcXForMinutes(i + 1) - mColumnPaddingPx,
           calcYForNumber(0),
           columnPaint);
@@ -256,7 +225,7 @@ class HistogramView extends View {
 
   private float calcYForNumber(int number) {
     return getHeight()
-        - (getXLabelHeight() + getXTitleHeight() + mVertSpacePx + mGraphHeight / mMaxBinSize
+        - (getXLabelHeight() + getXTitleHeight() + mVertSpacePx + mGraphHeight / mMaxY
             * number);
   }
 }
