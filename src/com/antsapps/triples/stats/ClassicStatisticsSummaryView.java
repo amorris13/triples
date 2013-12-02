@@ -58,7 +58,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
       bins[minutes]++;
     }
 
-    mGraphView.setStatistics("Time (minutes)", Arrays.copyOfRange(bins, 0, maxMinutes + 1));
+    mGraphView.setStatistics("Time (minutes)", Arrays.copyOfRange(bins, 0, maxMinutes + 1), false);
 
     int numGames = classicStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));

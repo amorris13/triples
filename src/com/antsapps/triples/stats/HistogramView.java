@@ -41,6 +41,7 @@ class HistogramView extends View {
   private int mMaxY;
   private float mGraphWidth;
   private float mGraphHeight;
+  private boolean mCentreXAxisLabels;
 
   public HistogramView(Context context) {
     this(context, null);
@@ -59,11 +60,13 @@ class HistogramView extends View {
     TEXT_PAINT.setTextSize(mTextHeightPx);
   }
 
-  void setStatistics(String xLabel, int[] bins) {
+  void setStatistics(String xLabel, int[] bins, boolean centreXAxisLabels) {
     mXAxisTitle = xLabel;
     mBins = bins;
     mMaxX = roundUpToNearestMultiple(mBins.length - 1, NUM_X_LABELS);
     mMaxY = roundUpToNearestMultiple(Ints.max(mBins), NUM_GRIDLINES);
+
+    mCentreXAxisLabels = centreXAxisLabels;
 
     invalidate();
   }
@@ -178,7 +181,7 @@ class HistogramView extends View {
       int minutes = mMaxX / NUM_X_LABELS * i;
       canvas.drawText(
           String.valueOf(minutes),
-          calcXForMinutes(minutes),
+          calcXForMinutes(mCentreXAxisLabels ? minutes + 0.5f : minutes),
           getHeight() - getXTitleHeight() - mVertSpacePx,
           xTextPaint);
     }

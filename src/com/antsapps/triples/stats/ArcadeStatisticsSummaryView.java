@@ -30,7 +30,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
 
     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
         Context.LAYOUT_INFLATER_SERVICE);
-    View v = inflater.inflate(R.layout.classic_stats_summary, this);
+    View v = inflater.inflate(R.layout.arcade_stats_summary, this);
 
     mGraphView = (HistogramView) findViewById(R.id.graph);
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
@@ -60,7 +60,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
       bins[numFound]++;
     }
 
-    mGraphView.setStatistics("Triples Found", Arrays.copyOfRange(bins, 0, maxFound + 1));
+    mGraphView.setStatistics("Triples Found", Arrays.copyOfRange(bins, 0, maxFound + 1), true);
 
     int numGames = arcadeStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
