@@ -189,6 +189,9 @@ public abstract class CardsView extends View implements
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    if (!isEnabled()) {
+      return false;
+    }
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
       Card tappedCard = getCardForPosition(
           (int) event.getX(),

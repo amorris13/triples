@@ -17,17 +17,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
-import com.google.android.gms.games.GamesClient;
-import com.google.android.gms.games.leaderboard.LeaderboardVariant;
-import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
-import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 
 public abstract class BaseGameActivity extends Activity implements
     OnUpdateGameStateListener, GameHelper.GameHelperListener {
@@ -60,7 +55,9 @@ public abstract class BaseGameActivity extends Activity implements
   private CardsView mCardsView;
   private GameState mGameState;
 
-  private GameHelper mHelper;
+  protected GameHelper mHelper;
+
+  private boolean shouldSubmitScoreOnSignIn = false;
 
   /** Called when the activity is first created. */
   @Override
@@ -75,6 +72,7 @@ public abstract class BaseGameActivity extends Activity implements
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mCardsView.setOnValidTripleSelectedListener(getGame());
+    mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().addOnUpdateCardsInPlayListener(mCardsView);
 
     mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
@@ -229,45 +227,17 @@ public abstract class BaseGameActivity extends Activity implements
   @Override
   public void gameFinished() {
     Log.i("BaseGameActivity", "game finished");
+    mCardsView.setEnabled(false);
     if (mHelper.isSignedIn()) {
       submitScore();
     } else {
+      shouldSubmitScoreOnSignIn = true;
       DialogFragment dialog = new SignInDialogFragment();
       dialog.show(getFragmentManager(), "SignInDialogFragment");
     }
   }
 
-  private void submitScore() {
-    if (mGameState != GameState.COMPLETED) {
-      return;
-    }
-    mHelper.getGamesClient().submitScoreImmediate(new OnScoreSubmittedListener() {
-      @Override
-      public void onScoreSubmitted(int status, SubmitScoreResult submitScoreResult) {
-        String message = null;
-        switch (status) {
-          case GamesClient.STATUS_OK:
-            if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME).newBest) {
-              message = "Congratulations! That's your best score ever.";
-            } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY).newBest) {
-              message = "Well Done! That's your best score this week.";
-            } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
-              message = "Nice! That's your best score today.";
-            } else {
-              message = "You've done better today - keep trying!";
-            }
-            break;
-          case GamesClient.STATUS_NETWORK_ERROR_OPERATION_DEFERRED :
-            message = "Score will be submitted when next connected.";
-            break;
-          default:
-            message = "Score could not be submitted";
-            break;
-        }
-        Toast.makeText(BaseGameActivity.this, message, Toast.LENGTH_LONG).show();
-      }
-    }, GamesServices.Leaderboard.CLASSIC, getGame().getTimeElapsed());
-  }
+  protected abstract void submitScore();
 
   private void updateViewSwitcher() {
     int childToDisplay = 0;
@@ -288,9 +258,10 @@ public abstract class BaseGameActivity extends Activity implements
 
   @Override
   public void onSignInSucceeded() {
-    if (mGameState == GameState.COMPLETED) {
+    if (mGameState == GameState.COMPLETED && shouldSubmitScoreOnSignIn) {
       submitScore();
     }
+    shouldSubmitScoreOnSignIn = false;
   }
 
   @Override

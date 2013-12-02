@@ -219,6 +219,9 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   protected void finish() {
+    if (mGameState == GameState.COMPLETED) {
+      return;
+    }
     mGameState = GameState.COMPLETED;
     updateTimer();
     dispatchGameStateUpdate();

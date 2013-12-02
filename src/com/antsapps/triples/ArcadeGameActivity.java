@@ -6,12 +6,17 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
+import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.OnScoreSubmittedListener;
+import com.google.android.gms.games.leaderboard.SubmitScoreResult;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -81,5 +86,37 @@ public class ArcadeGameActivity extends BaseGameActivity implements OnTimerTickL
 
   protected Class<? extends BaseGameListActivity> getParentClass() {
     return ArcadeGameListActivity.class;
+  }
+
+  protected void submitScore() {
+    if (mGame.getGameState() != Game.GameState.COMPLETED) {
+      return;
+    }
+    mHelper.getGamesClient().submitScoreImmediate(new OnScoreSubmittedListener() {
+      @Override
+      public void onScoreSubmitted(int status, SubmitScoreResult submitScoreResult) {
+        String message = null;
+        switch (status) {
+          case GamesClient.STATUS_OK:
+            if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME).newBest) {
+              message = "Congratulations! That's your best score ever.";
+            } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY).newBest) {
+              message = "Well Done! That's your best score this week.";
+            } else if (submitScoreResult.getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
+              message = "Nice! That's your best score today.";
+            } else {
+              message = "You've done better today - keep trying!";
+            }
+            break;
+          case GamesClient.STATUS_NETWORK_ERROR_OPERATION_DEFERRED :
+            message = "Score will be submitted when next connected.";
+            break;
+          default:
+            message = "Score could not be submitted";
+            break;
+        }
+        Toast.makeText(ArcadeGameActivity.this, message, Toast.LENGTH_LONG).show();
+      }
+    }, GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound());
   }
 }
