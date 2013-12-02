@@ -107,7 +107,7 @@
             android:text="@string/fastest_time" />
 
           <TextView
-            android:id="@+id/fastest_time"
+            android:id="@+id/best"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         </TableRow>
@@ -123,7 +123,7 @@
             android:text="@string/average_time" />
 
           <TextView
-            android:id="@+id/average_time"
+            android:id="@+id/average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         </TableRow>

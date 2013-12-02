@@ -59,6 +59,11 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
     return new ClassicStatisticsListHeaderView(getActivity());
   }
 
+  @Override
+  protected BaseStatisticsSummaryView createStatisticsSummaryView() {
+    return new ClassicStatisticsSummaryView(getActivity());
+  }
+
   protected String getLeaderboardId() {
     return GamesServices.Leaderboard.CLASSIC;
   }

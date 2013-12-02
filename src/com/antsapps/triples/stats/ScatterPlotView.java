@@ -11,14 +11,14 @@ import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.Statistics;
 
 class ScatterPlotView extends View {
 
   private static final float TEXT_HEIGHT = 24f;
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
-  private Statistics mStatistics;
+  private ClassicStatistics mStatistics;
   private String mSlowestTimeLabel;
   private String mAverageTimeLabel;
   private String mFastestTimeLabel;
@@ -43,7 +43,7 @@ class ScatterPlotView extends View {
     super(context, attrs);
   }
 
-  void setStatistics(Statistics statistics) {
+  void setStatistics(ClassicStatistics statistics) {
     mStatistics = statistics;
     invalidate();
   }

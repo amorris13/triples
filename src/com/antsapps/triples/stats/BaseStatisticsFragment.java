@@ -27,7 +27,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
       .createReversableComparator();
   private StatisticsGamesServicesView mGameServicesView;
   protected StatisticsSelectorView mSelectorView;
-  private StatisticsSummaryView mSummaryView;
+  private BaseStatisticsSummaryView mSummaryView;
   private BaseStatisticsListHeaderView mListHeaderView;
 
   @Override
@@ -52,7 +52,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
     mSelectorView.setOnPeriodChangeListener(this);
     listView.addHeaderView(mSelectorView, null, false);
 
-    mSummaryView = new StatisticsSummaryView(getActivity());
+    mSummaryView = createStatisticsSummaryView();
     listView.addHeaderView(mSummaryView, null, false);
 
     mListHeaderView = createStatisticsListHeaderView();
@@ -65,6 +65,8 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   protected abstract String getLeaderboardId();
 
   protected abstract BaseStatisticsListHeaderView createStatisticsListHeaderView();
+
+  protected abstract BaseStatisticsSummaryView createStatisticsSummaryView();
 
   @Override
   public void onStatisticsChange(Statistics statistics) {

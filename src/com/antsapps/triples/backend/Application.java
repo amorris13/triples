@@ -79,8 +79,8 @@ public class Application extends OnStateChangedReporter {
     });
   }
 
-  public Statistics getClassicStatistics(Period period) {
-    return new Statistics(getCompletedClassicGames(), period);
+  public ClassicStatistics getClassicStatistics(Period period) {
+    return new ClassicStatistics(getCompletedClassicGames(), period);
   }
 
   public void addArcadeGame(ArcadeGame game) {
@@ -128,7 +128,7 @@ public class Application extends OnStateChangedReporter {
     });
   }
 
-  public Statistics getArcadeStatistics(Period period) {
-    return new Statistics(getCompletedArcadeGames(), period);
+  public ArcadeStatistics getArcadeStatistics(Period period) {
+    return new ArcadeStatistics(getCompletedArcadeGames(), period);
   }
 }

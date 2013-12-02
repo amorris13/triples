@@ -6,9 +6,9 @@ import android.os.Bundle;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
-import com.antsapps.triples.backend.Statistics;
 import com.antsapps.triples.stats.BaseStatisticsFragment;
 import com.antsapps.triples.stats.ClassicStatisticsFragment;
 
@@ -48,7 +48,7 @@ public class ClassicGameListActivity extends BaseGameListActivity {
       return;
     }
 
-    Statistics stats = mApplication.getClassicStatistics(Period.ALL_TIME);
+    ClassicStatistics stats = mApplication.getClassicStatistics(Period.ALL_TIME);
     mHelper.getGamesClient().submitScore(GamesServices.Leaderboard.CLASSIC, stats.getFastestTime());
 
     // We need an Editor object to make preference changes.
