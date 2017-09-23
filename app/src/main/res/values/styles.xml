@@ -36,8 +36,6 @@
          parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
     <item name="android:background">@color/action_bar_background</item>
     <item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
-    <item name="android:background">@color/action_bar_background</item>
-    <item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
   </style>
 
   <style name="stats_list_header" parent="android:Widget.Holo.Light.TextView">

@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.FloatMath;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -72,7 +71,7 @@ class HistogramView extends View {
   }
 
   private static int roundUpToNearestMultiple(float number, int factor) {
-    return (int) (FloatMath.ceil(number / factor)) * factor;
+    return (int) (Math.ceil(number / factor)) * factor;
   }
 
   @Override

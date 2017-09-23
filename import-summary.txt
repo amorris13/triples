@@ -1,0 +1,106 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .gitignore
+* .idea/
+* .idea/.gitignore
+* .idea/.name
+* .idea/codeStyleSettings.xml
+* .idea/compiler.xml
+* .idea/copyright/
+* .idea/copyright/profiles_settings.xml
+* .idea/encodings.xml
+* .idea/libraries/
+* .idea/libraries/android_support_v13.xml
+* .idea/libraries/google_play_services.xml
+* .idea/libraries/libs.xml
+* .idea/misc.xml
+* .idea/modules.xml
+* .idea/scopes/
+* .idea/scopes/scope_settings.xml
+* .idea/vcs.xml
+* .idea/workspace.xml
+* LICENSE.txt
+* Triples.iml
+* art/
+* art/blue-empty-square.xcf
+* art/blue-fill-square.png
+* art/blue-fill-square.xcf
+* art/card-drawable.xcf
+* art/description.txt
+* art/feature.png
+* art/launcher.png
+* art/launcher.xcf
+* art/launcher2.png
+* art/launcher2.xcf
+* art/launcher3.png
+* art/launcher3.xcf
+* art/one-red-fill-circle.png
+* art/one-red-fill-circle.xcf
+* art/recent_changes-v1_0.txt
+* art/red-fill-circle.png
+* art/red-fill-circle.xcf
+* art/three-blue-fill-square.png
+* art/three-blue-fill-square.xcf
+* art/two-yellow-fill-triangle.png
+* art/two-yellow-fill-triangle.xcf
+* art/yellow-fill-triangle.png
+* art/yellow-fill-triangle.xcf
+* ic_launcher-web.png
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+guava-14.0.1.jar => com.google.guava:guava:14.0.1
+
+Potentially Missing Dependency:
+-------------------------------
+When we replaced the following .jar files with a Gradle dependency, we
+inferred the dependency version number from the filename. This
+specific version may not actually be available from the repository.
+If you get a build error stating that the dependency is missing, edit
+the version number to for example "+" to pick up the latest version
+instead. (This may require you to update your code if the library APIs
+have changed.)
+
+guava-14.0.1.jar => version 14.0.1 in com.google.guava:guava:14.0.1
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app/src/main/AndroidManifest.xml
+* libs/android-support-v13.jar => app/libs/android-support-v13.jar
+* libs/jsr305-2.0.1.jar => app/libs/jsr305-2.0.1.jar
+* proguard-project.txt => app/proguard-project.txt
+* res/ => app/src/main/res/
+* src/ => app/src/main/java/
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
