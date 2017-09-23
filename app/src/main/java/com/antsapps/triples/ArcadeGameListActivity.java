@@ -17,6 +17,7 @@ public class ArcadeGameListActivity extends BaseGameListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mApplication = Application.getInstance(getApplication());
+    setTitle(R.string.arcade_label);
   }
 
   @Override

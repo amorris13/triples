@@ -64,5 +64,7 @@
   <string name="triples_found">TRIPLES FOUND</string>
   <string name="drawer_open">Open navigation drawer</string>
   <string name="drawer_close">Close navigation drawer</string>
+  <string name="arcade_label">Arcade</string>
+  <string name="classic_label">Classic</string>
 
 </resources>

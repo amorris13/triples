@@ -17,6 +17,7 @@ public class ClassicGameListActivity extends BaseGameListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mApplication = Application.getInstance(getApplication());
+    setTitle(getString(R.string.classic_label));
   }
 
   @Override
