@@ -5,7 +5,7 @@
   android:layout_height="fill_parent"
   android:background="#E0E0E0"
   android:padding="10dp"
-  tools:context=".GameListActivity">
+  tools:context="com.antsapps.triples.BaseGameListActivity">
 
   <LinearLayout
     android:layout_width="fill_parent"
