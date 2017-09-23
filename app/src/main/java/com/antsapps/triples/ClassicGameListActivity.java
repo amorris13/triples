@@ -40,22 +40,4 @@ public class ClassicGameListActivity extends BaseGameListActivity {
     newGameIntent.putExtra(Game.ID_TAG, game.getId());
     return newGameIntent;
   }
-
-  @Override
-  protected void uploadExistingTopScoresIfNecessary() {
-    SharedPreferences settings = getSharedPreferences(SIGNIN_PREFS, 0);
-    if (settings.getBoolean(UPLOADED_EXISTING_TOP_SCORE, false)) {
-      return;
-    }
-
-    ClassicStatistics stats = mApplication.getClassicStatistics(Period.ALL_TIME);
-    mHelper.getGamesClient().submitScore(GamesServices.Leaderboard.CLASSIC, stats.getFastestTime());
-
-    // We need an Editor object to make preference changes.
-    // All objects are from android.context.Context
-    SharedPreferences.Editor editor = settings.edit();
-    editor.putBoolean(UPLOADED_EXISTING_TOP_SCORE, true);
-    // Commit the edits!
-    editor.commit();
-  }
 }

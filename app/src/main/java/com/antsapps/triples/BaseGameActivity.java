@@ -23,33 +23,10 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
+import com.google.example.games.basegameutils.GameHelper;
 
 public abstract class BaseGameActivity extends Activity implements
     OnUpdateGameStateListener, GameHelper.GameHelperListener {
-
-  public class SignInDialogFragment extends DialogFragment {
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-      // Use the Builder class for convenient dialog construction
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-      // Get the layout inflater
-      LayoutInflater inflater = getActivity().getLayoutInflater();
-
-      // Inflate and set the layout for the dialog
-      // Pass null as the parent view because its going in the dialog layout
-      View view = inflater.inflate(R.layout.signin_dialog, null);
-      view.findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          mHelper.beginUserInitiatedSignIn();
-          SignInDialogFragment.this.dismiss();
-        }
-      });
-      builder.setView(view);
-      // Create the AlertDialog object and return it
-      return builder.create();
-    }
-  }
 
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
@@ -86,8 +63,8 @@ public abstract class BaseGameActivity extends Activity implements
       mCardsView.shouldSlideIn();
     }
 
-    mHelper = new GameHelper(this);
-    mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
+    mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+    mHelper.setup(this);
   }
   
   protected abstract Game getGame();
@@ -99,19 +76,6 @@ public abstract class BaseGameActivity extends Activity implements
    * @param savedInstanceState
    */
   protected abstract void init(Bundle savedInstanceState);
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-    mHelper.onStart(this);
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    mHelper.onStop();
-  }
-
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
@@ -200,6 +164,7 @@ public abstract class BaseGameActivity extends Activity implements
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
     outState.putLong(Game.ID_TAG, getGame().getId());
   }
 
@@ -232,8 +197,6 @@ public abstract class BaseGameActivity extends Activity implements
       submitScore();
     } else {
       shouldSubmitScoreOnSignIn = true;
-      DialogFragment dialog = new SignInDialogFragment();
-      dialog.show(getFragmentManager(), "SignInDialogFragment");
     }
   }
 
@@ -262,10 +225,5 @@ public abstract class BaseGameActivity extends Activity implements
       submitScore();
     }
     shouldSubmitScoreOnSignIn = false;
-  }
-
-  @Override
-  public void onSignOut() {
-
   }
 }

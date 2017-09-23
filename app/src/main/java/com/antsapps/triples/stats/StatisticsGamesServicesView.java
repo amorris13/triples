@@ -2,12 +2,14 @@ package com.antsapps.triples.stats;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.antsapps.triples.GameHelper;
 import com.antsapps.triples.R;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.GameHelper;
 
 class StatisticsGamesServicesView extends FrameLayout implements View.OnClickListener, GameHelper.GameHelperListener {
 
@@ -43,8 +45,9 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
       // start the asynchronous sign in flow
       mHelper.beginUserInitiatedSignIn();
     } else if (view.getId() == R.id.leaderboards) {
-      ((Activity) getContext()).startActivityForResult(mHelper.getGamesClient()
-          .getLeaderboardIntent(mLeaderboardId), 26);
+      Intent leaderboardIntent = Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(),
+          mLeaderboardId);
+      ((Activity) getContext()).startActivityForResult(leaderboardIntent, 26);
     }
   }
 
@@ -55,11 +58,6 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
 
   @Override
   public void onSignInSucceeded() {
-    updateSignedInState();
-  }
-
-  @Override
-  public void onSignOut() {
     updateSignedInState();
   }
 

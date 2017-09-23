@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.antsapps.triples.stats.BaseStatisticsFragment;
+import com.google.example.games.basegameutils.GameHelper;
 
 /**
  * Created by anthony on 1/12/13.
@@ -106,8 +107,8 @@ public abstract class BaseGameListActivity extends Activity
       bar.setSelectedNavigationItem(savedInstanceState.getInt(TAB_NUMBER, 0));
     }
 
-    mHelper = new GameHelper(this);
-    mHelper.setup(this, GameHelper.CLIENT_PLUS | GameHelper.CLIENT_GAMES);
+    mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+    mHelper.setup(this);
   }
 
   private void maybeOpenNavDrawer() {
@@ -232,18 +233,7 @@ public abstract class BaseGameListActivity extends Activity
       mGameHelperListener.onSignInSucceeded();
     }
     invalidateOptionsMenu();
-    uploadExistingTopScoresIfNecessary();
   }
-
-  @Override
-  public void onSignOut() {
-    if (mGameHelperListener != null) {
-      mGameHelperListener.onSignOut();
-    }
-    invalidateOptionsMenu();
-  }
-
-  protected abstract void uploadExistingTopScoresIfNecessary();
 
   public void setGameHelperListener(GameHelper.GameHelperListener listener) {
     mGameHelperListener = listener;
