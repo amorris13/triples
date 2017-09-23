@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -197,8 +198,14 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
     if (!isEnabled()) {
       return false;
     }
-    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-      Card tappedCard = getCardForPosition((int) event.getX(), (int) event.getY());
+    int action = event.getActionMasked();
+    if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) {
+      // Get the index of the pointer associated with the action.
+      int index = event.getActionIndex();
+      int xPos = (int) event.getX(index);
+      int yPos = (int) event.getY(index);
+
+      Card tappedCard = getCardForPosition(xPos, yPos);
       if (tappedCard == null) {
         return true;
       }
