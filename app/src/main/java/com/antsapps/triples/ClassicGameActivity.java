@@ -1,7 +1,5 @@
 package com.antsapps.triples;
 
-import java.util.concurrent.TimeUnit;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
@@ -21,11 +19,11 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.common.collect.ImmutableList;
 
-/**
- * Classic Game
- */
-public class ClassicGameActivity extends BaseGameActivity implements OnTimerTickListener,
-    Game.OnUpdateCardsInPlayListener {
+import java.util.concurrent.TimeUnit;
+
+/** Classic Game */
+public class ClassicGameActivity extends BaseGameActivity
+    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener {
 
   private ClassicGame mGame;
   private Application mApplication;
@@ -41,8 +39,7 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
       // We are being restored
       mGame = mApplication.getClassicGame(savedInstanceState.getLong(Game.ID_TAG));
     } else {
-      throw new IllegalArgumentException(
-          "No savedInstanceState or intent containing key");
+      throw new IllegalArgumentException("No savedInstanceState or intent containing key");
     }
 
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
@@ -72,16 +69,15 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
   @Override
   public void onTimerTick(final long elapsedTime) {
     TextView timer = (TextView) findViewById(R.id.timer_value_text);
-    timer.setText(DateUtils.formatElapsedTime(TimeUnit
-        .MILLISECONDS
-        .toSeconds(elapsedTime)));
+    timer.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(elapsedTime)));
   }
 
   @Override
-  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-                                  ImmutableList<Card> oldCards,
-                                  int numRemaining,
-                                  int numTriplesFound) {
+  public void onUpdateCardsInPlay(
+      ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards,
+      int numRemaining,
+      int numTriplesFound) {
     TextView numRemainingText = (TextView) findViewById(R.id.cards_remaining_text);
     numRemainingText.setText(String.valueOf(numRemaining));
   }
@@ -94,35 +90,43 @@ public class ClassicGameActivity extends BaseGameActivity implements OnTimerTick
     if (mGame.getGameState() == Game.GameState.COMPLETED) {
       return;
     }
-    Games.Leaderboards.submitScoreImmediate(mHelper.getApiClient(),
-        GamesServices.Leaderboard.CLASSIC,
-        mGame.getTimeElapsed())
-        .setResultCallback(new ResultCallback<Leaderboards.SubmitScoreResult>() {
-          @Override
-          public void onResult(@NonNull Leaderboards.SubmitScoreResult submitScoreResult) {
-            String message = null;
-            switch (submitScoreResult.getStatus().getStatusCode()) {
-              case GamesStatusCodes.STATUS_OK:
-                if (submitScoreResult.getScoreData().getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME).newBest) {
-                  message = "Congratulations! That's your best score ever.";
-                } else if (submitScoreResult.getScoreData().getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY).newBest) {
-                  message = "Well Done! That's your best score this week.";
-                } else if (submitScoreResult.getScoreData().getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY).newBest) {
-                  message = "Nice! That's your best score today.";
-                } else {
-                  message = "You've done better today - keep trying!";
+    Games.Leaderboards.submitScoreImmediate(
+            mHelper.getApiClient(), GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed())
+        .setResultCallback(
+            new ResultCallback<Leaderboards.SubmitScoreResult>() {
+              @Override
+              public void onResult(@NonNull Leaderboards.SubmitScoreResult submitScoreResult) {
+                String message = null;
+                switch (submitScoreResult.getStatus().getStatusCode()) {
+                  case GamesStatusCodes.STATUS_OK:
+                    if (submitScoreResult
+                        .getScoreData()
+                        .getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME)
+                        .newBest) {
+                      message = "Congratulations! That's your best score ever.";
+                    } else if (submitScoreResult
+                        .getScoreData()
+                        .getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY)
+                        .newBest) {
+                      message = "Well Done! That's your best score this week.";
+                    } else if (submitScoreResult
+                        .getScoreData()
+                        .getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY)
+                        .newBest) {
+                      message = "Nice! That's your best score today.";
+                    } else {
+                      message = "You've done better today - keep trying!";
+                    }
+                    break;
+                  case GamesStatusCodes.STATUS_NETWORK_ERROR_OPERATION_DEFERRED:
+                    message = "Score will be submitted when next connected.";
+                    break;
+                  default:
+                    message = "Score could not be submitted";
+                    break;
                 }
-                break;
-              case GamesStatusCodes.STATUS_NETWORK_ERROR_OPERATION_DEFERRED:
-                message = "Score will be submitted when next connected.";
-                break;
-              default:
-                message = "Score could not be submitted";
-                break;
-            }
-            Toast.makeText(ClassicGameActivity.this, message, Toast.LENGTH_LONG).show();
-          }
-        });
-
+                Toast.makeText(ClassicGameActivity.this, message, Toast.LENGTH_LONG).show();
+              }
+            });
   }
 }

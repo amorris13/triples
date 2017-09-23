@@ -12,13 +12,22 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   private int mNumTriplesFound;
 
   public static ArcadeGame createFromSeed(long seed) {
-    ArcadeGame game = new ArcadeGame(-1, seed, Collections.<Card> emptyList(), new Deck(
-        new Random(seed)), 0, new Date(), GameState.STARTING, 0);
+    ArcadeGame game =
+        new ArcadeGame(
+            -1,
+            seed,
+            Collections.<Card>emptyList(),
+            new Deck(new Random(seed)),
+            0,
+            new Date(),
+            GameState.STARTING,
+            0);
     game.init();
     return game;
   }
 
-  ArcadeGame(long id,
+  ArcadeGame(
+      long id,
       long seed,
       List<Card> cardsInPlay,
       Deck cardsInDeck,
@@ -33,9 +42,10 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
 
   /**
    * A game is in a valid state if any of the following are true:
+   *
    * <ul>
-   * <li>It is completed and the time has been exceeded.
-   * <li>It is not completed and the time has not been exceeded.
+   *   <li>It is completed and the time has been exceeded.
+   *   <li>It is not completed and the time has not been exceeded.
    * </ul>
    */
   @Override

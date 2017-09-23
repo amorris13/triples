@@ -15,8 +15,7 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnStateChangedListener;
 
-public abstract class BaseGameListFragment extends ListFragment implements
-    OnStateChangedListener {
+public abstract class BaseGameListFragment extends ListFragment implements OnStateChangedListener {
 
   protected Application mApplication;
   protected ArrayAdapter<Game> mAdapter;
@@ -36,20 +35,21 @@ public abstract class BaseGameListFragment extends ListFragment implements
     mAdapter = createArrayAdapter();
     setListAdapter(mAdapter);
 
-    final Vibrator vibrator = (Vibrator) getActivity()
-        .getSystemService(Context.VIBRATOR_SERVICE);
+    final Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
-    getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
-      @Override
-      public boolean onItemLongClick(AdapterView<?> parent, View view,
-          final int position, long id) {
-        vibrator.vibrate(50);
-        AlertDialog alert = createDeleteAlertDialog((Game) parent
-            .getItemAtPosition(position));
-        alert.show();
-        return true;
-      }
-    });
+    getListView()
+        .setOnItemLongClickListener(
+            new OnItemLongClickListener() {
+              @Override
+              public boolean onItemLongClick(
+                  AdapterView<?> parent, View view, final int position, long id) {
+                vibrator.vibrate(50);
+                AlertDialog alert =
+                    createDeleteAlertDialog((Game) parent.getItemAtPosition(position));
+                alert.show();
+                return true;
+              }
+            });
   }
 
   @Override

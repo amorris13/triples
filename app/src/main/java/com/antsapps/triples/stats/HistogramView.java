@@ -51,7 +51,8 @@ class HistogramView extends View {
 
     DisplayMetrics dm = context.getResources().getDisplayMetrics();
     mBufferPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, BUFFER_DP, dm);
-    mColumnPaddingPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, COLUMN_PADDING_DP, dm);
+    mColumnPaddingPx =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, COLUMN_PADDING_DP, dm);
     mTextHeightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, TEXT_HEIGHT_SP, dm);
 
     mVertSpacePx = context.getResources().getDimensionPixelSize(R.dimen.stats_vert_padding);
@@ -75,19 +76,15 @@ class HistogramView extends View {
   }
 
   @Override
-  protected void onMeasure(final int widthMeasureSpec,
-      final int heightMeasureSpec) {
+  protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     updateMeasuredDimensions(widthMeasureSpec, heightMeasureSpec);
   }
 
-  private void updateMeasuredDimensions(final int widthMeasureSpec,
-      final int heightMeasureSpec) {
+  private void updateMeasuredDimensions(final int widthMeasureSpec, final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
     int heightOfCards = (int) (widthOfCards * HEIGHT_OVER_WIDTH);
-    setMeasuredDimension(
-        widthOfCards,
-        getDefaultSize(heightOfCards, heightMeasureSpec));
+    setMeasuredDimension(widthOfCards, getDefaultSize(heightOfCards, heightMeasureSpec));
   }
 
   @Override
@@ -107,22 +104,18 @@ class HistogramView extends View {
   private void drawNoGames(Canvas canvas) {
     Paint paint = new Paint(TEXT_PAINT);
     paint.setTextAlign(Align.CENTER);
-    canvas.drawText(
-        "No games completed",
-        getWidth() / 2,
-        getHeight() / 2,
-        paint);
+    canvas.drawText("No games completed", getWidth() / 2, getHeight() / 2, paint);
   }
 
   private void calcDimens() {
     mYLabelWidth = 0;
     for (int i = 0; i <= NUM_GRIDLINES; i++) {
-      mYLabelWidth = Math.max(
-          mYLabelWidth,
-          TEXT_PAINT.measureText(String.valueOf(calcNumForGridline(i))));
+      mYLabelWidth =
+          Math.max(mYLabelWidth, TEXT_PAINT.measureText(String.valueOf(calcNumForGridline(i))));
     }
     mGraphWidth = getWidth() - getYLabelWidth() - mBufferPx;
-    mGraphHeight = getHeight() - getXLabelHeight() - getXTitleHeight() - mBufferPx - 2 * mVertSpacePx;
+    mGraphHeight =
+        getHeight() - getXLabelHeight() - getXTitleHeight() - mBufferPx - 2 * mVertSpacePx;
   }
 
   private void drawAxes(Canvas canvas) {
@@ -227,7 +220,6 @@ class HistogramView extends View {
 
   private float calcYForNumber(int number) {
     return getHeight()
-        - (getXLabelHeight() + getXTitleHeight() + mVertSpacePx + mGraphHeight / mMaxY
-            * number);
+        - (getXLabelHeight() + getXTitleHeight() + mVertSpacePx + mGraphHeight / mMaxY * number);
   }
 }

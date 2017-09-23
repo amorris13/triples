@@ -9,8 +9,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
-public class SettingsActivity extends PreferenceActivity implements
-    OnSharedPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity
+    implements OnSharedPreferenceChangeListener {
   private SharedPreferences mSharedPref;
 
   @Override
@@ -48,15 +48,15 @@ public class SettingsActivity extends PreferenceActivity implements
   }
 
   @Override
-  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-      String key) {
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (key.equals(getString(R.string.pref_orientation))) {
       updateOrientationSummary();
     }
   }
 
   private void updateOrientationSummary() {
-    ListPreference orientationPref = (ListPreference) findPreference(getString(R.string.pref_orientation));
+    ListPreference orientationPref =
+        (ListPreference) findPreference(getString(R.string.pref_orientation));
 
     orientationPref.setSummary(orientationPref.getEntry());
   }

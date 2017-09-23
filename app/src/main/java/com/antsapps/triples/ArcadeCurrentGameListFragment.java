@@ -1,8 +1,5 @@
 package com.antsapps.triples;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -16,6 +13,9 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Lists;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class ArcadeCurrentGameListFragment extends BaseCurrentGameListFragment {
   protected static class CurrentGamesArrayAdapter extends ArrayAdapter<Game> {
 
@@ -27,20 +27,21 @@ public class ArcadeCurrentGameListFragment extends BaseCurrentGameListFragment {
     public View getView(int position, View convertView, ViewGroup parent) {
       View v = convertView;
       if (v == null) {
-        LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater vi =
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         v = vi.inflate(R.layout.game_list_item, null);
       }
 
       ArcadeGame g = (ArcadeGame) getItem(position);
       if (g != null) {
-        ((TextView) v.findViewById(R.id.time)).setText(DateUtils
-            .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(ArcadeGame.TIME_LIMIT_MS - g
-                .getTimeElapsed())));
-        ((TextView) v.findViewById(R.id.progress)).setText(String
-            .valueOf(g.getNumTriplesFound()));
-        ((TextView) v.findViewById(R.id.when_started)).setText(DateUtils
-            .getRelativeTimeSpanString(g.getDateStarted().getTime()));
+        ((TextView) v.findViewById(R.id.time))
+            .setText(
+                DateUtils.formatElapsedTime(
+                    TimeUnit.MILLISECONDS.toSeconds(
+                        ArcadeGame.TIME_LIMIT_MS - g.getTimeElapsed())));
+        ((TextView) v.findViewById(R.id.progress)).setText(String.valueOf(g.getNumTriplesFound()));
+        ((TextView) v.findViewById(R.id.when_started))
+            .setText(DateUtils.getRelativeTimeSpanString(g.getDateStarted().getTime()));
       }
 
       return v;
@@ -49,14 +50,12 @@ public class ArcadeCurrentGameListFragment extends BaseCurrentGameListFragment {
 
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
-    return new CurrentGamesArrayAdapter(getActivity(),
-        Lists.<Game>newArrayList(getCurrentGames()));
+    return new CurrentGamesArrayAdapter(getActivity(), Lists.<Game>newArrayList(getCurrentGames()));
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater,
-                           ViewGroup container,
-                           Bundle savedInstanceState) {
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View view = super.onCreateView(inflater, container, savedInstanceState);
 
     ((TextView) view.findViewById(R.id.timer_key_text)).setText("TIME REMAINING");
@@ -69,11 +68,11 @@ public class ArcadeCurrentGameListFragment extends BaseCurrentGameListFragment {
     mApplication.deleteArcadeGame((ArcadeGame) game);
   }
 
-  protected Class<? extends BaseGameActivity> getGameActivityClass(){
+  protected Class<? extends BaseGameActivity> getGameActivityClass() {
     return ArcadeGameActivity.class;
   }
 
-  protected Iterable<ArcadeGame> getCurrentGames(){
+  protected Iterable<ArcadeGame> getCurrentGames() {
     return mApplication.getCurrentArcadeGames();
   }
 }

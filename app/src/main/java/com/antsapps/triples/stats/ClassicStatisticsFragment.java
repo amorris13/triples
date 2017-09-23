@@ -1,8 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -18,6 +15,9 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
 import com.google.common.collect.Lists;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class ClassicStatisticsFragment extends BaseStatisticsFragment {
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
@@ -30,18 +30,18 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
     public View getView(int position, View convertView, ViewGroup parent) {
       View v = convertView;
       if (v == null) {
-        LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater vi =
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         v = vi.inflate(R.layout.stats_game_list_item, null);
       }
 
       Game g = getItem(position);
       if (g != null) {
-        ((TextView) v.findViewById(R.id.result)).setText(DateUtils
-            .formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g
-                .getTimeElapsed())));
-        ((TextView) v.findViewById(R.id.date_played)).setText(DateUtils
-            .formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
+        ((TextView) v.findViewById(R.id.result))
+            .setText(
+                DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g.getTimeElapsed())));
+        ((TextView) v.findViewById(R.id.date_played))
+            .setText(DateUtils.formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
       }
 
       return v;
@@ -50,8 +50,7 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getActivity(),
-        Lists.<Game>newArrayList());
+    return new StatisticsGamesArrayAdapter(getActivity(), Lists.<Game>newArrayList());
   }
 
   @Override

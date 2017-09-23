@@ -1,14 +1,11 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ClassicGame;
-import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.stats.BaseStatisticsFragment;
 import com.antsapps.triples.stats.ClassicStatisticsFragment;
 

@@ -1,10 +1,10 @@
 package com.antsapps.triples.backend;
 
+import com.google.common.collect.Lists;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import com.google.common.collect.Lists;
 
 class Deck {
 
@@ -64,9 +64,7 @@ class Deck {
     return new Deck(cards);
   }
 
-  /**
-   * To take cards from in play and re-add them to the deck.
-   */
+  /** To take cards from in play and re-add them to the deck. */
   public void readdCards(Card... cards) {
     for (Card card : cards) {
       mCards.add(card);

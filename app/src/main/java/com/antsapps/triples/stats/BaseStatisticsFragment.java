@@ -1,7 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.Comparator;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,15 +14,15 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
 
-/**
- * Created by anthony on 1/12/13.
- */
+import java.util.Comparator;
+
+/** Created by anthony on 1/12/13. */
 public abstract class BaseStatisticsFragment extends BaseGameListFragment
-    implements OnStatisticsChangeListener, OnComparatorChangeListener<Game>,
-    StatisticsSelectorView.OnPeriodChangeListener {
+    implements OnStatisticsChangeListener,
+        OnComparatorChangeListener<Game>,
+        StatisticsSelectorView.OnPeriodChangeListener {
   private BaseGameListActivity mGameListActivity;
-  private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED
-      .createReversableComparator();
+  private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED.createReversableComparator();
   private StatisticsGamesServicesView mGameServicesView;
   protected StatisticsSelectorView mSelectorView;
   private BaseStatisticsSummaryView mSummaryView;
@@ -37,11 +35,9 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-    ListView listView = (ListView) inflater.inflate(
-        R.layout.stats_fragment,
-        null);
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    ListView listView = (ListView) inflater.inflate(R.layout.stats_fragment, null);
 
     mGameServicesView = new StatisticsGamesServicesView(getActivity(), getLeaderboardId());
     mGameServicesView.setGameHelper(mGameListActivity.getGameHelper());

@@ -2,20 +2,15 @@ package com.antsapps.triples;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ViewSwitcher;
 
@@ -25,8 +20,8 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.example.games.basegameutils.GameHelper;
 
-public abstract class BaseGameActivity extends Activity implements
-    OnUpdateGameStateListener, GameHelper.GameHelperListener {
+public abstract class BaseGameActivity extends Activity
+    implements OnUpdateGameStateListener, GameHelper.GameHelperListener {
 
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
@@ -66,13 +61,13 @@ public abstract class BaseGameActivity extends Activity implements
     mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
     mHelper.setup(this);
   }
-  
+
   protected abstract Game getGame();
 
   /**
-   * This must initialize the game (so that getGame() doesn't return null) and set the content
-   * view with a layout that contains a StatusBar (R.id.status_bar) and a CardsView
-   * (R.id.cards_view).
+   * This must initialize the game (so that getGame() doesn't return null) and set the content view
+   * with a layout that contains a StatusBar (R.id.status_bar) and a CardsView (R.id.cards_view).
+   *
    * @param savedInstanceState
    */
   protected abstract void init(Bundle savedInstanceState);
@@ -107,8 +102,7 @@ public abstract class BaseGameActivity extends Activity implements
         startActivity(helpIntent);
         return true;
       case R.id.settings:
-        Intent settingsIntent = new Intent(getBaseContext(),
-            SettingsActivity.class);
+        Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
         startActivity(settingsIntent);
         return true;
       case android.R.id.home:
@@ -130,16 +124,13 @@ public abstract class BaseGameActivity extends Activity implements
     super.onResume();
     getGame().resumeFromLifecycle();
 
-    SharedPreferences sharedPref = PreferenceManager
-        .getDefaultSharedPreferences(this);
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_screen_lock), true)) {
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     if (sharedPref.getBoolean(getString(R.string.pref_orientation_lock), false)) {
-      String orientation = sharedPref.getString(
-          getString(R.string.pref_orientation),
-          "portrait");
+      String orientation = sharedPref.getString(getString(R.string.pref_orientation), "portrait");
       if (orientation.equals("portrait")) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
       } else if (orientation.equals("landscape")) {
@@ -204,7 +195,7 @@ public abstract class BaseGameActivity extends Activity implements
 
   private void updateViewSwitcher() {
     int childToDisplay = 0;
-    if(mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
+    if (mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
       childToDisplay = 1;
     } else {
       childToDisplay = 0;
@@ -215,9 +206,7 @@ public abstract class BaseGameActivity extends Activity implements
   }
 
   @Override
-  public void onSignInFailed() {
-
-  }
+  public void onSignInFailed() {}
 
   @Override
   public void onSignInSucceeded() {

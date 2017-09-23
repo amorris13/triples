@@ -1,7 +1,5 @@
 package com.antsapps.triples.cardsview;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -9,6 +7,8 @@ import android.util.Log;
 
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
+
+import java.util.List;
 
 public class VerticalCardsView extends CardsView {
 
@@ -48,24 +48,19 @@ public class VerticalCardsView extends CardsView {
   }
 
   @Override
-  protected void updateMeasuredDimensions(final int widthMeasureSpec,
-      final int heightMeasureSpec) {
+  protected void updateMeasuredDimensions(final int widthMeasureSpec, final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
     int rows = mCards.size() / COLUMNS;
     int heightOfCards = (int) (widthOfCards / COLUMNS * HEIGHT_OVER_WIDTH * rows);
-    setMeasuredDimension(
-        widthOfCards,
-        getDefaultSize(heightOfCards, heightMeasureSpec));
+    setMeasuredDimension(widthOfCards, getDefaultSize(heightOfCards, heightMeasureSpec));
   }
 
   @Override
-  protected void onLayout(boolean changed, int left, int top, int right,
-      int bottom) {
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     if (!changed) {
       return;
     }
-    Log.i("VCV", "oL: " + ", l = " + left + ", t = " + top + ", r = " + right
-        + ", b = " + bottom);
+    Log.i("VCV", "oL: " + ", l = " + left + ", t = " + top + ", r = " + right + ", b = " + bottom);
     mWidthOfCard = (right - left) / COLUMNS;
     mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
     mOffScreenLocation.set(right, bottom, right + mWidthOfCard, bottom + mHeightOfCard);
@@ -75,9 +70,11 @@ public class VerticalCardsView extends CardsView {
 
   @Override
   protected Rect calcBounds(int i) {
-    return new Rect(i % COLUMNS * mWidthOfCard, i / COLUMNS * mHeightOfCard, (i
-        % COLUMNS + 1)
-        * mWidthOfCard, (i / COLUMNS + 1) * mHeightOfCard);
+    return new Rect(
+        i % COLUMNS * mWidthOfCard,
+        i / COLUMNS * mHeightOfCard,
+        (i % COLUMNS + 1) * mWidthOfCard,
+        (i / COLUMNS + 1) * mHeightOfCard);
   }
 
   @Override

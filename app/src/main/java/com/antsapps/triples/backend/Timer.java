@@ -1,11 +1,11 @@
 package com.antsapps.triples.backend;
 
-import java.util.Set;
-
 import android.os.Handler;
 import android.os.Message;
 
 import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 class Timer {
 
@@ -34,15 +34,16 @@ class Timer {
   public Timer(long timeElapsed) {
     mTimeElapsedWhenLastResumed = timeElapsed;
     mTimeOfLastResume = -1;
-    mHandler = new Handler() {
-      @Override
-      public void handleMessage(Message m) {
-        if (isActive()) {
-          dispatchTimerTick();
-          sendMessageDelayed(Message.obtain(this, TICK_WHAT), 1000);
-        }
-      }
-    };
+    mHandler =
+        new Handler() {
+          @Override
+          public void handleMessage(Message m) {
+            if (isActive()) {
+              dispatchTimerTick();
+              sendMessageDelayed(Message.obtain(this, TICK_WHAT), 1000);
+            }
+          }
+        };
   }
 
   void resume() {

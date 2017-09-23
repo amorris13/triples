@@ -7,7 +7,5 @@ public interface GamesServices {
     public static final String ARCADE = "CgkI3f-DytEMEAIQEA";
   }
 
-  public interface Achievement {
-
-  }
+  public interface Achievement {}
 }

@@ -1,8 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -15,9 +12,10 @@ import com.antsapps.triples.backend.ArcadeStatistics;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
 
-/**
- * Created by anthony on 2/12/13.
- */
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+/** Created by anthony on 2/12/13. */
 public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
   private final HistogramView mGraphView;
   private final TextView mNumberOfGames;
@@ -28,8 +26,8 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
   public ArcadeStatisticsSummaryView(Context context) {
     super(context);
 
-    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-        Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater inflater =
+        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.arcade_stats_summary, this);
 
     mGraphView = (HistogramView) findViewById(R.id.graph);
@@ -54,8 +52,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     Arrays.fill(bins, 0);
     int maxFound = 0;
     for (Game game : arcadeStatistics.getData()) {
-      int numFound = (int) Math.min(((ArcadeGame) game).getNumTriplesFound(),
-          MAX_POSSIBLE);
+      int numFound = (int) Math.min(((ArcadeGame) game).getNumTriplesFound(), MAX_POSSIBLE);
       maxFound = Math.max(maxFound, numFound);
       bins[numFound]++;
     }
@@ -64,8 +61,13 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
 
     int numGames = arcadeStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
-    mBest.setText(numGames == 0 ? "-" : arcadeStatistics.getMostFound()
-        + " (" + convertDateToString(getContext(), arcadeStatistics.getMostFoundDate()) + ")");
+    mBest.setText(
+        numGames == 0
+            ? "-"
+            : arcadeStatistics.getMostFound()
+                + " ("
+                + convertDateToString(getContext(), arcadeStatistics.getMostFoundDate())
+                + ")");
     mAverage.setText(numGames != 0 ? String.valueOf(arcadeStatistics.getAverageFound()) : "-");
   }
 }

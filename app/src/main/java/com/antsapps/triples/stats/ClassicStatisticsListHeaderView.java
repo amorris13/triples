@@ -7,9 +7,7 @@ import android.widget.TextView;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.GameProperty;
 
-/**
- * Created by anthony on 1/12/13.
- */
+/** Created by anthony on 1/12/13. */
 public class ClassicStatisticsListHeaderView extends BaseStatisticsListHeaderView {
   public ClassicStatisticsListHeaderView(Context context) {
     super(context);

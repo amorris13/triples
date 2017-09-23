@@ -1,7 +1,5 @@
 package com.antsapps.triples.backend;
 
-import java.util.List;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -10,14 +8,16 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import java.util.List;
+
 public class Application extends OnStateChangedReporter {
   private static final String TAG = "Application";
 
   private static Application INSTANCE;
 
-  /** Should remain sorted */
-  private final List<ClassicGame> mClassicGames = Lists.newArrayList();;
-  private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();;
+  // Should remain sorted
+  private final List<ClassicGame> mClassicGames = Lists.newArrayList();
+  private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
 
   public final DBAdapter database;
 
@@ -62,21 +62,26 @@ public class Application extends OnStateChangedReporter {
   }
 
   public Iterable<ClassicGame> getCurrentClassicGames() {
-    return Iterables.filter(mClassicGames, new Predicate<Game>() {
-      @Override
-      public boolean apply(Game game) {
-        return game.getGameState() == GameState.ACTIVE || game.getGameState() == GameState.PAUSED;
-      }
-    });
+    return Iterables.filter(
+        mClassicGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.ACTIVE
+                || game.getGameState() == GameState.PAUSED;
+          }
+        });
   }
 
   public Iterable<ClassicGame> getCompletedClassicGames() {
-    return Iterables.filter(mClassicGames, new Predicate<Game>() {
-      @Override
-      public boolean apply(Game game) {
-        return game.getGameState() == GameState.COMPLETED;
-      }
-    });
+    return Iterables.filter(
+        mClassicGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.COMPLETED;
+          }
+        });
   }
 
   public ClassicStatistics getClassicStatistics(Period period) {
@@ -111,21 +116,26 @@ public class Application extends OnStateChangedReporter {
   }
 
   public Iterable<ArcadeGame> getCurrentArcadeGames() {
-    return Iterables.filter(mArcadeGames, new Predicate<Game>() {
-      @Override
-      public boolean apply(Game game) {
-        return game.getGameState() == GameState.ACTIVE || game.getGameState() == GameState.PAUSED;
-      }
-    });
+    return Iterables.filter(
+        mArcadeGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.ACTIVE
+                || game.getGameState() == GameState.PAUSED;
+          }
+        });
   }
 
   public Iterable<ArcadeGame> getCompletedArcadeGames() {
-    return Iterables.filter(mArcadeGames, new Predicate<Game>() {
-      @Override
-      public boolean apply(Game game) {
-        return game.getGameState() == GameState.COMPLETED;
-      }
-    });
+    return Iterables.filter(
+        mArcadeGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.COMPLETED;
+          }
+        });
   }
 
   public ArcadeStatistics getArcadeStatistics(Period period) {

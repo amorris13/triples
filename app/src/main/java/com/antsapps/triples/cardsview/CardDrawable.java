@@ -1,10 +1,5 @@
 package com.antsapps.triples.cardsview;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -31,6 +26,11 @@ import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
 class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private class BaseAnimationListener implements AnimationListener {
@@ -55,8 +55,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
 
     @Override
-    public void onAnimationRepeat(Animation animation) {
-    }
+    public void onAnimationRepeat(Animation animation) {}
   }
 
   enum CardState {
@@ -64,8 +63,8 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     NORMAL;
   }
 
-  private final Map<CardState, BitmapDrawable> mDrawableForCardState = Collections
-      .synchronizedMap(new EnumMap<CardState, BitmapDrawable>(CardState.class));
+  private final Map<CardState, BitmapDrawable> mDrawableForCardState =
+      Collections.synchronizedMap(new EnumMap<CardState, BitmapDrawable>(CardState.class));
 
   interface OnAnimationFinishedListener {
     void onAnimationFinished();
@@ -95,9 +94,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private final Context mContext;
 
-  CardDrawable(Context context,
-      Card card,
-      OnAnimationFinishedListener listener) {
+  CardDrawable(Context context, Card card, OnAnimationFinishedListener listener) {
     mContext = context;
     mState = CardState.NORMAL;
 
@@ -117,40 +114,35 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     int gap = halfSideLength / 2;
     switch (id) {
       case 0:
-        rects.add(squareFromCenterAndRadius(
-            width / 2,
-            height / 2,
-            halfSideLength));
+        rects.add(squareFromCenterAndRadius(width / 2, height / 2, halfSideLength));
         break;
       case 1:
-        rects.add(squareFromCenterAndRadius(width / 2 - gap / 2
-            - halfSideLength, height / 2, halfSideLength));
-        rects.add(squareFromCenterAndRadius(width / 2 + gap / 2
-            + halfSideLength, height / 2, halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                width / 2 - gap / 2 - halfSideLength, height / 2, halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                width / 2 + gap / 2 + halfSideLength, height / 2, halfSideLength));
         break;
       case 2:
-        rects.add(squareFromCenterAndRadius(width / 2 - gap - halfSideLength
-            * 2, height / 2, halfSideLength));
-        rects.add(squareFromCenterAndRadius(
-            width / 2,
-            height / 2,
-            halfSideLength));
-        rects.add(squareFromCenterAndRadius(width / 2 + gap + halfSideLength
-            * 2, height / 2, halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                width / 2 - gap - halfSideLength * 2, height / 2, halfSideLength));
+        rects.add(squareFromCenterAndRadius(width / 2, height / 2, halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                width / 2 + gap + halfSideLength * 2, height / 2, halfSideLength));
         break;
     }
     return rects;
   }
 
-  private static Rect squareFromCenterAndRadius(int centerX, int centerY,
-      int radius) {
-    return new Rect(centerX - radius, centerY - radius, centerX + radius,
-        centerY + radius);
+  private static Rect squareFromCenterAndRadius(int centerX, int centerY, int radius) {
+    return new Rect(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
   }
 
   boolean isAnimating() {
-    return mAnimation != null && mAnimation.hasStarted()
-        && !mAnimation.hasEnded();
+    return mAnimation != null && mAnimation.hasStarted() && !mAnimation.hasEnded();
   }
 
   @Override
@@ -166,9 +158,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         anim.initialize(bounds.width(), bounds.height(), 0, 0);
       }
 
-      anim.getTransformation(
-          AnimationUtils.currentAnimationTimeMillis(),
-          mTransformation);
+      anim.getTransformation(AnimationUtils.currentAnimationTimeMillis(), mTransformation);
 
       canvas.concat(mTransformation.getMatrix());
       setAlpha((int) (mTransformation.getAlpha() * 255));
@@ -191,17 +181,12 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     Log.i(TAG, "regen drawables for mCard = " + mCard);
     bounds.offsetTo(0, 0);
     for (CardState state : CardState.values()) {
-      Bitmap bitmap = Bitmap.createBitmap(
-          bounds.width(),
-          bounds.height(),
-          Config.ARGB_8888);
+      Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Config.ARGB_8888);
       Canvas tmpCanvas = new Canvas(bitmap);
       mCardBackground.setBounds(bounds);
       mCardBackground.setCardState(state);
       mCardBackground.draw(tmpCanvas);
-      for (Rect rect : getBoundsForNumId(
-          mCard.mNumber,
-          bounds)) {
+      for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
         mSymbol.setBounds(rect);
         mSymbol.draw(tmpCanvas);
       }
@@ -218,7 +203,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   @Override
   public void setAlpha(int alpha) {
     mAlpha = (float) alpha / 255;
-    for(BitmapDrawable drawable : mDrawableForCardState.values()) {
+    for (BitmapDrawable drawable : mDrawableForCardState.values()) {
       drawable.setAlpha(alpha);
     }
   }
@@ -241,18 +226,18 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   void onIncorrectTriple(final Handler handler) {
     // Shake animation
-    Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(),
-        mBounds.centerY());
+    Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
     shakeAnimation.setDuration(800);
     shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
-    shakeAnimation.setAnimationListener(new BaseAnimationListener(handler) {
-      @Override
-      public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        mState = CardState.NORMAL;
-      }
-    });
+    shakeAnimation.setAnimationListener(
+        new BaseAnimationListener(handler) {
+          @Override
+          public void onAnimationEnd(Animation animation) {
+            super.onAnimationEnd(animation);
+            mState = CardState.NORMAL;
+          }
+        });
     updateAnimation(shakeAnimation);
   }
 
@@ -260,14 +245,17 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
-    if (oldBounds == null || oldBounds.width() != mBounds.width()
+    if (oldBounds == null
+        || oldBounds.width() != mBounds.width()
         || oldBounds.height() != mBounds.height()) {
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          regenerateBitmapDrawables(new Rect(mBounds));
-        }
-      }).start();
+      new Thread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  regenerateBitmapDrawables(new Rect(mBounds));
+                }
+              })
+          .start();
     }
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
@@ -276,24 +264,25 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     } else if (oldBounds == null) {
       // This CardDrawable is new.
       if (mShouldSlideIn) {
-        transitionAnimation = new TranslateAnimation(0 - bounds.centerX(), 0,
-            0 - bounds.centerY(), 0);
+        transitionAnimation =
+            new TranslateAnimation(0 - bounds.centerX(), 0, 0 - bounds.centerY(), 0);
         mShouldSlideIn = false;
       } else {
         transitionAnimation = new AlphaAnimation(mAlpha, 1);
       }
     } else {
       // This CardDrawable is old
-      transitionAnimation = new TranslateAnimation(oldBounds.centerX()
-          - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
+      transitionAnimation =
+          new TranslateAnimation(
+              oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
     transitionAnimation.setDuration(800);
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
-    transitionAnimation
-        .setAnimationListener(new BaseAnimationListener(handler) {
+    transitionAnimation.setAnimationListener(
+        new BaseAnimationListener(handler) {
           @Override
           public void onAnimationEnd(Animation animation) {
             super.onAnimationEnd(animation);
@@ -329,10 +318,9 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       return ((BitmapDrawable) drawable).getBitmap();
     }
 
-    Bitmap bitmap = Bitmap.createBitmap(
-        drawable.getIntrinsicWidth(),
-        drawable.getIntrinsicHeight(),
-        Config.ARGB_8888);
+    Bitmap bitmap =
+        Bitmap.createBitmap(
+            drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
     Canvas canvas = new Canvas(bitmap);
     drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
     drawable.draw(canvas);

@@ -1,7 +1,5 @@
 package com.antsapps.triples.cardsview;
 
-import java.util.Arrays;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -11,6 +9,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
+
+import java.util.Arrays;
 
 class CardBackgroundDrawable extends Drawable {
 
@@ -91,5 +91,4 @@ class CardBackgroundDrawable extends Drawable {
     cardBounds.offset(SHADOW_OFFSET_HORIZONTAL, SHADOW_OFFSET_VERTICAL);
     mShadow.setBounds(cardBounds);
   }
-
 }

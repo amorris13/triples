@@ -1,11 +1,5 @@
 package com.antsapps.triples;
 
-import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Random;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +10,12 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Random;
+
+import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 public class HelpActivity extends Activity implements OnValidTripleSelectedListener {
 
@@ -43,7 +43,7 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     mColorExplanation = (TextView) findViewById(R.id.color_explanation);
 
     ImmutableList<Card> newCards = createValidTriple();
-    mHelpCardsView.onUpdateCardsInPlay(newCards, ImmutableList.<Card> of(), 0, 0);
+    mHelpCardsView.onUpdateCardsInPlay(newCards, ImmutableList.<Card>of(), 0, 0);
     mCardsShown = newCards;
     updateTextExplanation();
   }
@@ -66,27 +66,29 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
 
   private void updateTextExplanation() {
     try {
-      mNumberExplanation.setText(checkField(
-          Card.class.getField("mNumber"),
-          mCardsShown) ? R.string.all_same : R.string.all_different);
-      mShapeExplanation.setText(checkField(
-          Card.class.getField("mShape"),
-          mCardsShown) ? R.string.all_same : R.string.all_different);
-      mPatternExplanation.setText(checkField(
-          Card.class.getField("mPattern"),
-          mCardsShown) ? R.string.all_same : R.string.all_different);
-      mColorExplanation.setText(checkField(
-          Card.class.getField("mColor"),
-          mCardsShown) ? R.string.all_same : R.string.all_different);
+      mNumberExplanation.setText(
+          checkField(Card.class.getField("mNumber"), mCardsShown)
+              ? R.string.all_same
+              : R.string.all_different);
+      mShapeExplanation.setText(
+          checkField(Card.class.getField("mShape"), mCardsShown)
+              ? R.string.all_same
+              : R.string.all_different);
+      mPatternExplanation.setText(
+          checkField(Card.class.getField("mPattern"), mCardsShown)
+              ? R.string.all_same
+              : R.string.all_different);
+      mColorExplanation.setText(
+          checkField(Card.class.getField("mColor"), mCardsShown)
+              ? R.string.all_same
+              : R.string.all_different);
     } catch (NoSuchFieldException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  /**
-   * @return true if all the same, false otherwise.
-   */
+  /** @return true if all the same, false otherwise. */
   private static boolean checkField(Field property, ImmutableList<Card> cards) {
     try {
       return property.getInt(cards.get(0)) == property.getInt(cards.get(1))
@@ -103,17 +105,21 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     while (card1.equals(card0)) {
       card1 = createRandomCard(random);
     }
-    Card card2 = new Card(getValidProperty(card0.mNumber, card1.mNumber),
-        getValidProperty(card0.mShape, card1.mShape), getValidProperty(
-            card0.mPattern,
-            card1.mPattern), getValidProperty(card0.mColor, card1.mColor));
+    Card card2 =
+        new Card(
+            getValidProperty(card0.mNumber, card1.mNumber),
+            getValidProperty(card0.mShape, card1.mShape),
+            getValidProperty(card0.mPattern, card1.mPattern),
+            getValidProperty(card0.mColor, card1.mColor));
 
     return ImmutableList.of(card0, card1, card2);
   }
 
   private static Card createRandomCard(Random random) {
-    return new Card(random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES), random.nextInt(MAX_VARIABLES),
+    return new Card(
+        random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES),
         random.nextInt(MAX_VARIABLES));
   }
 

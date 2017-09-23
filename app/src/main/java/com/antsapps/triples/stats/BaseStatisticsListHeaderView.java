@@ -1,7 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
@@ -20,6 +18,8 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.ReversableComparator;
 import com.google.common.collect.Maps;
+
+import java.util.Map;
 
 abstract class BaseStatisticsListHeaderView extends FrameLayout {
 
@@ -77,8 +77,7 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
   }
 
   private OnComparatorChangeListener<Game> mComparatorChangeListener;
-  private final Map<TextView, ReversableComparator<Game>> mComparatorsMap = Maps
-      .newHashMap();
+  private final Map<TextView, ReversableComparator<Game>> mComparatorsMap = Maps.newHashMap();
   private final Map<TextView, Integer> mPositionsMap = Maps.newHashMap();
   private ReversableComparator<Game> mCurrentComparator;
 
@@ -90,13 +89,11 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
     this(context, attrs, 0);
   }
 
-  public BaseStatisticsListHeaderView(Context context,
-                                      AttributeSet attrs,
-                                      int defStyle) {
+  public BaseStatisticsListHeaderView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
 
-    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-        Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater inflater =
+        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.stats_list_header, this);
 
     TextView resultHeader = initHeaders(v);
@@ -107,24 +104,20 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
   protected abstract TextView initHeaders(View container);
 
   protected void initHeader(TextView header, GameProperty property, int position) {
-    ReversableComparator<Game> reversableComparator = property
-        .createReversableComparator();
+    ReversableComparator<Game> reversableComparator = property.createReversableComparator();
     mComparatorsMap.put(header, reversableComparator);
     mPositionsMap.put(header, position);
     header.setCompoundDrawablePadding(5);
-    header.setOnClickListener(new ComparatorChangeOnClickListener(
-        reversableComparator));
+    header.setOnClickListener(new ComparatorChangeOnClickListener(reversableComparator));
   }
 
-  void setOnComparatorChangeListener(
-      OnComparatorChangeListener<Game> listener) {
+  void setOnComparatorChangeListener(OnComparatorChangeListener<Game> listener) {
     mComparatorChangeListener = listener;
     mComparatorChangeListener.onComparatorChange(mCurrentComparator);
   }
 
   private void styleDrawable(ShapeDrawable dr) {
-    dr.getPaint().setColor(
-            getResources().getColor(android.R.color.darker_gray));
+    dr.getPaint().setColor(getResources().getColor(android.R.color.darker_gray));
     dr.getPaint().setStyle(Style.FILL_AND_STROKE);
   }
 
@@ -136,8 +129,9 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
 
   private void updateDrawableForView(TextView view) {
     if (mComparatorsMap.get(view) == mCurrentComparator) {
-      setDrawableForView(view, createDrawableFromShape(mComparatorsMap
-          .get(view).isAscending() ? UP_SHAPE : DOWN_SHAPE));
+      setDrawableForView(
+          view,
+          createDrawableFromShape(mComparatorsMap.get(view).isAscending() ? UP_SHAPE : DOWN_SHAPE));
     } else {
       setDrawableForView(view, createDrawableFromShape(UNSELECTED_SHAPE));
     }
@@ -157,13 +151,9 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
   private ShapeDrawable createDrawableFromShape(Shape shape) {
     ShapeDrawable dr = new ShapeDrawable(shape);
     styleDrawable(dr);
-    int sizePx = getResources()
-        .getDimensionPixelSize(R.dimen.heading_text_size);
+    int sizePx = getResources().getDimensionPixelSize(R.dimen.heading_text_size);
     dr.setBounds(
-        (int) (sizePx * 0.1),
-        (int) (sizePx * 0.1),
-        (int) (sizePx * 0.9),
-        (int) (sizePx * 0.9));
+        (int) (sizePx * 0.1), (int) (sizePx * 0.1), (int) (sizePx * 0.9), (int) (sizePx * 0.9));
     return dr;
   }
 

@@ -1,8 +1,6 @@
 package com.antsapps.triples.backend;
 
-/**
- * Created by anthony on 2/12/13.
- */
+/** Created by anthony on 2/12/13. */
 public class ArcadeStatistics extends Statistics {
   private long mMostFound;
   private long mLeastFound;

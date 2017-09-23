@@ -1,8 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -14,9 +11,10 @@ import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
 
-/**
- * Created by anthony on 2/12/13.
- */
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+/** Created by anthony on 2/12/13. */
 public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
   private final HistogramView mGraphView;
   private final TextView mNumberOfGames;
@@ -26,8 +24,8 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
   public ClassicStatisticsSummaryView(Context context) {
     super(context);
 
-    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-        Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater inflater =
+        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.classic_stats_summary, this);
 
     mGraphView = (HistogramView) findViewById(R.id.graph);
@@ -52,8 +50,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     Arrays.fill(bins, 0);
     int maxMinutes = 0;
     for (Game game : classicStatistics.getData()) {
-      int minutes = (int) Math.min(TimeUnit.MILLISECONDS.toMinutes(game.getTimeElapsed()),
-          maxTime);
+      int minutes = (int) Math.min(TimeUnit.MILLISECONDS.toMinutes(game.getTimeElapsed()), maxTime);
       maxMinutes = Math.max(maxMinutes, minutes);
       bins[minutes]++;
     }
@@ -62,11 +59,14 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
 
     int numGames = classicStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
-    mFastestTime.setText(numGames == 0 ? "-" : convertTimeToString(classicStatistics
-        .getFastestTime())
-        + " ("
-        + convertDateToString(getContext(), classicStatistics.getFastestDate()) + ")");
-    mAverageTime.setText(numGames != 0 ? convertTimeToString(classicStatistics
-        .getAverageTime()) : "-");
+    mFastestTime.setText(
+        numGames == 0
+            ? "-"
+            : convertTimeToString(classicStatistics.getFastestTime())
+                + " ("
+                + convertDateToString(getContext(), classicStatistics.getFastestDate())
+                + ")");
+    mAverageTime.setText(
+        numGames != 0 ? convertTimeToString(classicStatistics.getAverageTime()) : "-");
   }
 }

@@ -1,8 +1,5 @@
 package com.antsapps.triples.stats;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,6 +10,9 @@ import android.view.View;
 
 import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 class ScatterPlotView extends View {
 
@@ -28,6 +28,7 @@ class ScatterPlotView extends View {
   private float mYLabelWidth;
 
   private static final Paint TEXT_PAINT = new Paint();
+
   static {
     TEXT_PAINT.setTextSize(TEXT_HEIGHT);
   }
@@ -49,19 +50,15 @@ class ScatterPlotView extends View {
   }
 
   @Override
-  protected void onMeasure(final int widthMeasureSpec,
-      final int heightMeasureSpec) {
+  protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     updateMeasuredDimensions(widthMeasureSpec, heightMeasureSpec);
   }
 
-  private void updateMeasuredDimensions(final int widthMeasureSpec,
-      final int heightMeasureSpec) {
+  private void updateMeasuredDimensions(final int widthMeasureSpec, final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
     int heightOfCards = (int) (widthOfCards * HEIGHT_OVER_WIDTH);
-    setMeasuredDimension(
-        widthOfCards,
-        getDefaultSize(heightOfCards, heightMeasureSpec));
+    setMeasuredDimension(widthOfCards, getDefaultSize(heightOfCards, heightMeasureSpec));
   }
 
   @Override
@@ -77,11 +74,12 @@ class ScatterPlotView extends View {
 
   private void calcWidths() {
     generateLabels();
-    mYLabelWidth = Math.max(
-        TEXT_PAINT.measureText(mSlowestTimeLabel),
+    mYLabelWidth =
         Math.max(
-            TEXT_PAINT.measureText(mAverageTimeLabel),
-            TEXT_PAINT.measureText(mFastestTimeLabel)));
+            TEXT_PAINT.measureText(mSlowestTimeLabel),
+            Math.max(
+                TEXT_PAINT.measureText(mAverageTimeLabel),
+                TEXT_PAINT.measureText(mFastestTimeLabel)));
   }
 
   private void generateLabels() {
@@ -99,10 +97,8 @@ class ScatterPlotView extends View {
   }
 
   private String convertDateToString(long dateMS) {
-    return DateUtils.formatDateTime(
-        getContext(),
-        dateMS,
-        DateUtils.FORMAT_ABBREV_ALL).toUpperCase();
+    return DateUtils.formatDateTime(getContext(), dateMS, DateUtils.FORMAT_ABBREV_ALL)
+        .toUpperCase();
   }
 
   private void drawAxes(Canvas canvas) {
@@ -139,11 +135,7 @@ class ScatterPlotView extends View {
     // X Axis Labels (dates)
     Paint xTextPaint = new Paint(TEXT_PAINT);
     xTextPaint.setTextAlign(Paint.Align.LEFT);
-    canvas.drawText(
-        mStartDateLabel,
-        getGraphXOffset(),
-        getHeight(),
-        xTextPaint);
+    canvas.drawText(mStartDateLabel, getGraphXOffset(), getHeight(), xTextPaint);
 
     xTextPaint.setTextAlign(Paint.Align.RIGHT);
     canvas.drawText(mFinishDateLabel, getWidth(), getHeight(), xTextPaint);
@@ -158,34 +150,30 @@ class ScatterPlotView extends View {
   }
 
   private float convertTimeToYCoord(long time) {
-    return getGraphHeight()
-        - getGraphHeight()
-        * ((float) time / mStatistics
-            .getSlowestTime());
+    return getGraphHeight() - getGraphHeight() * ((float) time / mStatistics.getSlowestTime());
   }
 
   private float convertDateToXCoord(long date) {
-    return getGraphXOffset() + getGraphWidth()
-        * (date - mStatistics.getStartDate())
-        / (mStatistics.getFinishDate() - mStatistics.getStartDate());
+    return getGraphXOffset()
+        + getGraphWidth()
+            * (date - mStatistics.getStartDate())
+            / (mStatistics.getFinishDate() - mStatistics.getStartDate());
   }
 
   private float getGraphHeight() {
     return getHeight() - TEXT_HEIGHT - AXES_BUFFER;
   }
 
-  private void drawGridlines(Canvas canvas) {
-
-  }
+  private void drawGridlines(Canvas canvas) {}
 
   private void drawPlot(Canvas canvas) {
     List<Game> rawData = mStatistics.getData();
     float[] scaledData = new float[rawData.size() * 2];
     int i = 0;
-    for(Game game : rawData) {
-//      scaledData[2*i] = getGraphXOffset() + i * getGraphWidth() / rawData.length;
-      scaledData[2*i] = convertDateToXCoord(game.getDateStarted().getTime());
-      scaledData[2*i + 1] = convertTimeToYCoord(game.getTimeElapsed());
+    for (Game game : rawData) {
+      //      scaledData[2*i] = getGraphXOffset() + i * getGraphWidth() / rawData.length;
+      scaledData[2 * i] = convertDateToXCoord(game.getDateStarted().getTime());
+      scaledData[2 * i + 1] = convertTimeToYCoord(game.getTimeElapsed());
       i++;
     }
     Paint pointPaint = new Paint();

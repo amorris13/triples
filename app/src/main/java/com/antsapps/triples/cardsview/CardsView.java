@@ -1,8 +1,5 @@
 package com.antsapps.triples.cardsview;
 
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,18 +11,20 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
+import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
-public abstract class CardsView extends View implements
-    OnUpdateCardsInPlayListener {
+import java.util.List;
+import java.util.Map;
+
+public abstract class CardsView extends View implements OnUpdateCardsInPlayListener {
 
   private static final String TAG = "CardsView";
 
@@ -48,8 +47,7 @@ public abstract class CardsView extends View implements
   static final int WHAT_INCREMENT = 0;
   static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
-  private final Map<Card, CardDrawable> mCardDrawables = Maps
-      .newConcurrentMap();
+  private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
   private final List<Card> mCurrentlySelected = Lists.newArrayList();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
@@ -57,8 +55,8 @@ public abstract class CardsView extends View implements
   private volatile int mNumAnimating;
 
   /**
-   * This is a value from 0 to 1, where 0 means the view is completely
-   * transparent and 1 means the view is completely opaque.
+   * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
+   * view is completely opaque.
    */
   private float mAlpha = 1;
 
@@ -72,24 +70,24 @@ public abstract class CardsView extends View implements
 
   public CardsView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    mHandler = new Handler() {
-      @Override
-      public void handleMessage(Message m) {
-        switch (m.what) {
-          case WHAT_INCREMENT:
-            incrementNumAnimating();
-            break;
-          case WHAT_DECREMENT:
-            decrementNumAnimating();
-            break;
-        }
-      }
-    };
+    mHandler =
+        new Handler() {
+          @Override
+          public void handleMessage(Message m) {
+            switch (m.what) {
+              case WHAT_INCREMENT:
+                incrementNumAnimating();
+                break;
+              case WHAT_DECREMENT:
+                decrementNumAnimating();
+                break;
+            }
+          }
+        };
   }
 
   @Override
-  protected void onMeasure(final int widthMeasureSpec,
-      final int heightMeasureSpec) {
+  protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     updateMeasuredDimensions(widthMeasureSpec, heightMeasureSpec);
   }
@@ -97,8 +95,7 @@ public abstract class CardsView extends View implements
   @Override
   protected void onDraw(Canvas canvas) {
     long start = System.currentTimeMillis();
-    for (CardDrawable dr : Ordering.natural().sortedCopy(
-        mCardDrawables.values())) {
+    for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
     }
     if (mAlpha != 1) {
@@ -110,12 +107,18 @@ public abstract class CardsView extends View implements
       invalidated = true;
     }
     long end = System.currentTimeMillis();
-    Log.v(TAG, "draw took " + (end - start) + ", cards drawn: "
-        + mCardDrawables.size() + ", invalidated = " + invalidated);
+    Log.v(
+        TAG,
+        "draw took "
+            + (end - start)
+            + ", cards drawn: "
+            + mCardDrawables.size()
+            + ", invalidated = "
+            + invalidated);
   }
 
-  private void updateCards(ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards, int numRemaining) {
+  private void updateCards(
+      ImmutableList<Card> newCards, ImmutableList<Card> oldCards, int numRemaining) {
     long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
@@ -128,8 +131,7 @@ public abstract class CardsView extends View implements
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
       if (cardDrawable == null) {
-        cardDrawable = new CardDrawable(getContext(), card,
-            new CardRemovalListener(card));
+        cardDrawable = new CardDrawable(getContext(), card, new CardRemovalListener(card));
         mCardDrawables.put(card, cardDrawable);
       }
       if (!calcBounds(i).equals(EMPTY_RECT)) {
@@ -157,14 +159,17 @@ public abstract class CardsView extends View implements
     Log.i(TAG, "updateBounds took " + (end - start));
   }
 
-  protected abstract void updateMeasuredDimensions(final int widthMeasureSpec,
-      final int heightMeasureSpec);
+  protected abstract void updateMeasuredDimensions(
+      final int widthMeasureSpec, final int heightMeasureSpec);
 
   protected abstract Rect calcBounds(int i);
 
   @Override
-  public void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards, int numRemaining, int numTriplesFound) {
+  public void onUpdateCardsInPlay(
+      ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards,
+      int numRemaining,
+      int numTriplesFound) {
     updateCards(newCards, oldCards, numRemaining);
   }
 
@@ -193,9 +198,7 @@ public abstract class CardsView extends View implements
       return false;
     }
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-      Card tappedCard = getCardForPosition(
-          (int) event.getX(),
-          (int) event.getY());
+      Card tappedCard = getCardForPosition((int) event.getX(), (int) event.getY());
       if (tappedCard == null) {
         return true;
       }
@@ -228,7 +231,7 @@ public abstract class CardsView extends View implements
   }
 
   public void shouldSlideIn() {
-    for(CardDrawable cardDrawable : mCardDrawables.values()) {
+    for (CardDrawable cardDrawable : mCardDrawables.values()) {
       cardDrawable.setShouldSlideIn();
     }
   }

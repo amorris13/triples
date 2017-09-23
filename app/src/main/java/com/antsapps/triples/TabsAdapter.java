@@ -1,7 +1,5 @@
 package com.antsapps.triples;
 
-import java.util.ArrayList;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,18 +9,19 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import java.util.ArrayList;
+
 /**
- * This is a helper class that implements the management of tabs and all
- * details of connecting a ViewPager with associated TabHost. It relies on a
- * trick. Normally a tab host has a simple API for supplying a View or Intent
- * that each tab will show. This is not sufficient for switching between
- * pages. So instead we make the content part of the tab host 0dp high (it is
- * not shown) and the TabsAdapter supplies its own dummy view to show as the
- * tab content. It listens to changes in tabs, and takes care of switch to the
- * correct paged in the ViewPager whenever the selected tab changes.
+ * This is a helper class that implements the management of tabs and all details of connecting a
+ * ViewPager with associated TabHost. It relies on a trick. Normally a tab host has a simple API for
+ * supplying a View or Intent that each tab will show. This is not sufficient for switching between
+ * pages. So instead we make the content part of the tab host 0dp high (it is not shown) and the
+ * TabsAdapter supplies its own dummy view to show as the tab content. It listens to changes in
+ * tabs, and takes care of switch to the correct paged in the ViewPager whenever the selected tab
+ * changes.
  */
-public class TabsAdapter extends FragmentPagerAdapter implements
-    ActionBar.TabListener, ViewPager.OnPageChangeListener {
+public class TabsAdapter extends FragmentPagerAdapter
+    implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
   private final Context mContext;
   private final ActionBar mActionBar;
   private final ViewPager mViewPager;
@@ -68,9 +67,7 @@ public class TabsAdapter extends FragmentPagerAdapter implements
   }
 
   @Override
-  public void onPageScrolled(int position, float positionOffset,
-      int positionOffsetPixels) {
-  }
+  public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
   @Override
   public void onPageSelected(int position) {
@@ -78,8 +75,7 @@ public class TabsAdapter extends FragmentPagerAdapter implements
   }
 
   @Override
-  public void onPageScrollStateChanged(int state) {
-  }
+  public void onPageScrollStateChanged(int state) {}
 
   @Override
   public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
@@ -92,10 +88,8 @@ public class TabsAdapter extends FragmentPagerAdapter implements
   }
 
   @Override
-  public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-  }
+  public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {}
 
   @Override
-  public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-  }
+  public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {}
 }

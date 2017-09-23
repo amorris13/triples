@@ -42,8 +42,7 @@ class SymbolDrawable extends Drawable {
 
   private static ShapeDrawable getFillForCard(Card card) {
     ShapeDrawable symbol = new ShapeDrawable(getShapeForId(card.mShape));
-    symbol.getPaint().setShader(
-        getShaderForPatternId(card.mPattern, card.mColor));
+    symbol.getPaint().setShader(getShaderForPatternId(card.mPattern, card.mColor));
     symbol.getPaint().setStyle(Style.FILL);
     return symbol;
   }
@@ -54,13 +53,13 @@ class SymbolDrawable extends Drawable {
     Bitmap bm;
     switch (patternId) {
       case 0: // Empty
-        pixels = new int[] { 0, 0, 0, 0 };
+        pixels = new int[] {0, 0, 0, 0};
         break;
       case 1: // Stripes
-        pixels = new int[] { color, color, 0, 0 };
+        pixels = new int[] {color, color, 0, 0};
         break;
       case 2: // Solid
-        pixels = new int[] { color, color, color, color };
+        pixels = new int[] {color, color, color, color};
         break;
       default:
         return null;

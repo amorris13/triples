@@ -21,9 +21,7 @@ import android.widget.ListView;
 import com.antsapps.triples.stats.BaseStatisticsFragment;
 import com.google.example.games.basegameutils.GameHelper;
 
-/**
- * Created by anthony on 1/12/13.
- */
+/** Created by anthony on 1/12/13. */
 public abstract class BaseGameListActivity extends Activity
     implements GameHelper.GameHelperListener {
   public static final String SIGNIN_PREFS = "signin_prefs";
@@ -53,32 +51,32 @@ public abstract class BaseGameListActivity extends Activity
     ListView drawerList = (ListView) findViewById(R.id.mode_list);
 
     // Set the adapter for the list view
-    drawerList.setAdapter(new ArrayAdapter<String>(this,
-        R.layout.drawer_list_item, gameModes));
+    drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, gameModes));
     // Set the list's click listener
-    drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override
-      public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        switch (position) {
-          case 0:
-            startActivity(new Intent(getBaseContext(), ClassicGameListActivity.class));
-            break;
-          case 1:
-            startActivity(new Intent(getBaseContext(), ArcadeGameListActivity.class));
-            break;
-        }
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-      }
-    });
+    drawerList.setOnItemClickListener(
+        new AdapterView.OnItemClickListener() {
+          @Override
+          public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            switch (position) {
+              case 0:
+                startActivity(new Intent(getBaseContext(), ClassicGameListActivity.class));
+                break;
+              case 1:
+                startActivity(new Intent(getBaseContext(), ArcadeGameListActivity.class));
+                break;
+            }
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+          }
+        });
 
     mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-    mDrawerToggle = new ActionBarDrawerToggle(
-        this,                  /* host Activity */
-        mDrawerLayout,         /* DrawerLayout object */
-        R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-        R.string.drawer_open,  /* "open drawer" description */
-        R.string.drawer_close  /* "close drawer" description */
-    );
+    mDrawerToggle =
+        new ActionBarDrawerToggle(
+            this, /* host Activity */
+            mDrawerLayout, /* DrawerLayout object */
+            R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+            R.string.drawer_open, /* "open drawer" description */
+            R.string.drawer_close /* "close drawer" description */);
 
     // Set the drawer toggle as the DrawerListener
     mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -94,14 +92,9 @@ public abstract class BaseGameListActivity extends Activity
 
     mTabsAdapter = new TabsAdapter(this, mViewPager);
 
+    mTabsAdapter.addTab(bar.newTab().setText(R.string.current), getCurrentGamesFragment(), null);
     mTabsAdapter.addTab(
-        bar.newTab().setText(R.string.current),
-        getCurrentGamesFragment(),
-        null);
-    mTabsAdapter.addTab(
-        bar.newTab().setText(R.string.statistics),
-        getStatisticsFragmentClass(),
-        null);
+        bar.newTab().setText(R.string.statistics), getStatisticsFragmentClass(), null);
 
     if (savedInstanceState != null) {
       bar.setSelectedNavigationItem(savedInstanceState.getInt(TAB_NUMBER, 0));
@@ -199,8 +192,7 @@ public abstract class BaseGameListActivity extends Activity
         startActivity(helpIntent);
         return true;
       case R.id.settings:
-        Intent settingsIntent = new Intent(getBaseContext(),
-            SettingsActivity.class);
+        Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
         startActivity(settingsIntent);
         return true;
       case R.id.signout:
@@ -216,8 +208,7 @@ public abstract class BaseGameListActivity extends Activity
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putInt(TAB_NUMBER, getActionBar()
-        .getSelectedNavigationIndex());
+    outState.putInt(TAB_NUMBER, getActionBar().getSelectedNavigationIndex());
   }
 
   @Override

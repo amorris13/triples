@@ -1,13 +1,13 @@
 package com.antsapps.triples.backend;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class Game implements Comparable<Game>, OnValidTripleSelectedListener {
 
@@ -18,13 +18,16 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   public interface OnUpdateCardsInPlayListener {
-    void onUpdateCardsInPlay(ImmutableList<Card> newCards,
-        ImmutableList<Card> oldCards, int numRemaining, int numTriplesFound);
+    void onUpdateCardsInPlay(
+        ImmutableList<Card> newCards,
+        ImmutableList<Card> oldCards,
+        int numRemaining,
+        int numTriplesFound);
   }
 
   /**
-   * This reflects the game state as controlled by the user. This is orthogonal
-   * to that controlled by Android's activity lifecycle.
+   * This reflects the game state as controlled by the user. This is orthogonal to that controlled
+   * by Android's activity lifecycle.
    */
   public enum GameState {
     STARTING,
@@ -55,13 +58,12 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final Date mDate;
 
-  private final List<OnUpdateGameStateListener> mGameStateListeners = Lists
-      .newArrayList();
+  private final List<OnUpdateGameStateListener> mGameStateListeners = Lists.newArrayList();
 
-  private final List<OnUpdateCardsInPlayListener> mCardsInPlayListeners = Lists
-      .newArrayList();
+  private final List<OnUpdateCardsInPlayListener> mCardsInPlayListeners = Lists.newArrayList();
 
-  Game(long id,
+  Game(
+      long id,
       long seed,
       List<Card> cardsInPlay,
       Deck cardsInDeck,
@@ -89,18 +91,15 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     mGameStateListeners.add(listener);
   }
 
-  public void
-      removeOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
+  public void removeOnUpdateGameStateListener(OnUpdateGameStateListener listener) {
     mGameStateListeners.remove(listener);
   }
 
-  public void addOnUpdateCardsInPlayListener(
-      OnUpdateCardsInPlayListener listener) {
+  public void addOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
     mCardsInPlayListeners.add(listener);
   }
 
-  public void removeOnUpdateCardsInPlayListener(
-      OnUpdateCardsInPlayListener listener) {
+  public void removeOnUpdateCardsInPlayListener(OnUpdateCardsInPlayListener listener) {
     mCardsInPlayListeners.remove(listener);
   }
 
@@ -116,9 +115,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   public void begin() {
     Preconditions.checkState(
-        isGameInValidState(),
-        "Game is not in a valid state. Game state = " + mGameState);
-    dispatchCardsInPlayUpdate(ImmutableList.<Card> of());
+        isGameInValidState(), "Game is not in a valid state. Game state = " + mGameState);
+    dispatchCardsInPlayUpdate(ImmutableList.<Card>of());
     dispatchGameStateUpdate();
     updateTimer();
     if (mGameState == GameState.STARTING) {
@@ -171,13 +169,11 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   public void commitTriple(Card... cards) {
-    Preconditions.checkState(
-        mGameState != GameState.COMPLETED,
-        "Game is already completed.");
+    Preconditions.checkState(mGameState != GameState.COMPLETED, "Game is already completed.");
     ImmutableList<Card> oldCards = ImmutableList.copyOf(mCardsInPlay);
     if (!mCardsInPlay.containsAll(Lists.newArrayList(cards))) {
-      throw new IllegalArgumentException("Cards are not in the set. cards = "
-          + cards + ", mCardsInPlay = " + mCardsInPlay);
+      throw new IllegalArgumentException(
+          "Cards are not in the set. cards = " + cards + ", mCardsInPlay = " + mCardsInPlay);
     }
     if (!isValidTriple(cards)) {
       throw new IllegalArgumentException("Cards are not a valid triple");
@@ -201,8 +197,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     for (int i = 0; i < numNotNull; i++) {
       if (mCardsInPlay.get(i) == null) {
         removeTrailingNulls(mCardsInPlay);
-        if (i == mCardsInPlay.size() - 1)
-          break;
+        if (i == mCardsInPlay.size() - 1) break;
         mCardsInPlay.set(i, mCardsInPlay.remove(mCardsInPlay.size() - 1));
       }
     }
@@ -257,23 +252,19 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   private static boolean isDistinct(Card... cards) {
-    return (cards[0] != cards[1]) && (cards[0] != cards[2])
-        && (cards[1] != cards[2]);
+    return (cards[0] != cards[1]) && (cards[0] != cards[2]) && (cards[1] != cards[2]);
   }
 
   protected boolean checkIfAnyValidTriples() {
     for (int i = 0; i < mCardsInPlay.size(); i++) {
       Card c0 = mCardsInPlay.get(i);
-      if (c0 == null)
-        continue;
+      if (c0 == null) continue;
       for (int j = i + 1; j < mCardsInPlay.size(); j++) {
         Card c1 = mCardsInPlay.get(j);
-        if (c1 == null)
-          continue;
+        if (c1 == null) continue;
         for (int k = j + 1; k < mCardsInPlay.size(); k++) {
           Card c2 = mCardsInPlay.get(k);
-          if (c2 == null)
-            continue;
+          if (c2 == null) continue;
           if (isValidTriple(c0, c1, c2)) {
             return true;
           }
@@ -302,8 +293,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   private static int numNotNull(Iterable<Card> cards) {
     int countNotNull = 0;
     for (Card card : cards) {
-      if (card != null)
-        countNotNull++;
+      if (card != null) countNotNull++;
     }
     return countNotNull;
   }
@@ -322,10 +312,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   private void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
       listener.onUpdateCardsInPlay(
-          ImmutableList.copyOf(mCardsInPlay),
-          oldCards,
-          getCardsRemaining(),
-          mNumTriplesFound);    }
+          ImmutableList.copyOf(mCardsInPlay), oldCards, getCardsRemaining(), mNumTriplesFound);
+    }
   }
 
   public int getCardsRemaining() {

@@ -11,7 +11,8 @@ import com.antsapps.triples.R;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.GameHelper;
 
-class StatisticsGamesServicesView extends FrameLayout implements View.OnClickListener, GameHelper.GameHelperListener {
+class StatisticsGamesServicesView extends FrameLayout
+    implements View.OnClickListener, GameHelper.GameHelperListener {
 
   private GameHelper mHelper;
   private View mSignInBar;
@@ -22,8 +23,8 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
     super(context);
 
     mLeaderboardId = leaderboardId;
-    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-        Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater inflater =
+        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.game_services_summary, this);
 
     mSignInBar = v.findViewById(R.id.sign_in_bar);
@@ -45,8 +46,8 @@ class StatisticsGamesServicesView extends FrameLayout implements View.OnClickLis
       // start the asynchronous sign in flow
       mHelper.beginUserInitiatedSignIn();
     } else if (view.getId() == R.id.leaderboards) {
-      Intent leaderboardIntent = Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(),
-          mLeaderboardId);
+      Intent leaderboardIntent =
+          Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(), mLeaderboardId);
       ((Activity) getContext()).startActivityForResult(leaderboardIntent, 26);
     }
   }
