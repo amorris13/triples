@@ -18,8 +18,14 @@ import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
 
 import com.antsapps.triples.backend.Card;
+import com.google.common.primitives.Ints;
+
+import java.util.Arrays;
 
 class SymbolDrawable extends Drawable {
+
+  private static final int OUTLINE_WIDTH = 4;
+  private static final int STRIPE_WIDTH = 3;
 
   private final Card mCard;
 
@@ -36,7 +42,7 @@ class SymbolDrawable extends Drawable {
     ShapeDrawable symbol = new ShapeDrawable(getShapeForId(card.mShape));
     symbol.getPaint().setColor(getColorForId(card.mColor));
     symbol.getPaint().setStyle(Style.STROKE);
-    symbol.getPaint().setStrokeWidth(5);
+    symbol.getPaint().setStrokeWidth(OUTLINE_WIDTH);
     return symbol;
   }
 
@@ -49,23 +55,30 @@ class SymbolDrawable extends Drawable {
 
   private static Shader getShaderForPatternId(int patternId, int colorId) {
     int color = getColorForId(colorId);
+    int thickness = STRIPE_WIDTH;
     int[] pixels;
     Bitmap bm;
     switch (patternId) {
       case 0: // Empty
-        pixels = new int[] {0, 0, 0, 0};
+        pixels = new int[] {0};
         break;
       case 1: // Stripes
-        pixels = new int[] {color, color, 0, 0};
+        pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
         break;
       case 2: // Solid
-        pixels = new int[] {color, color, color, color};
+        pixels = new int[] {color};
         break;
       default:
         return null;
     }
-    bm = Bitmap.createBitmap(pixels, 4, 1, Bitmap.Config.ARGB_8888);
-    return new BitmapShader(bm, Shader.TileMode.MIRROR, Shader.TileMode.REPEAT);
+    bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
+    return new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+  }
+
+  private static int[] initIntArray(int value, int length) {
+    int[] arr = new int[length];
+    Arrays.fill(arr, value);
+    return arr;
   }
 
   private static Shape getShapeForId(int id) {
@@ -76,15 +89,7 @@ class SymbolDrawable extends Drawable {
         return new OvalShape();
       case 2: // Triangle
       default:
-        // This is a hack :(
-        // TODO: Fix this to work with any screen density.
-        int size = 50;
-        Path path = new Path();
-        path.moveTo(0, size);
-        path.lineTo(size / 2, 0);
-        path.lineTo(size, size);
-        path.close();
-        return new PathShape(path, size, size);
+        return new TriangleShape();
     }
   }
 

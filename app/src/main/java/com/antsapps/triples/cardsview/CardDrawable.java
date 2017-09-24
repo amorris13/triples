@@ -178,8 +178,13 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   private void regenerateBitmapDrawables(Rect bounds) {
-    Log.i(TAG, "regen drawables for mCard = " + mCard);
+    Log.v(TAG, "regen drawables for mCard = " + mCard);
     bounds.offsetTo(0, 0);
+
+    // Rescale bounds for density
+    float density = mContext.getResources().getDisplayMetrics().density;
+    bounds.set(0, 0, (int) (bounds.right / density * 2), (int) (bounds.bottom / density * 2));
+
     for (CardState state : CardState.values()) {
       Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Config.ARGB_8888);
       Canvas tmpCanvas = new Canvas(bitmap);
