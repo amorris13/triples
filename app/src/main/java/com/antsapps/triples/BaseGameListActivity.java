@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.antsapps.triples.stats.BaseStatisticsFragment;
 import com.google.example.games.basegameutils.GameHelper;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /** Created by anthony on 1/12/13. */
 public abstract class BaseGameListActivity extends Activity
@@ -32,6 +33,8 @@ public abstract class BaseGameListActivity extends Activity
   public static final String OPENED_NAV_DRAWER_PREVIOUSLY = "opened_navdrawer_prev";
 
   private static final String TAB_NUMBER = "tab";
+
+  protected FirebaseAnalytics mFirebaseAnalytics;
 
   private DrawerLayout mDrawerLayout;
   private ActionBarDrawerToggle mDrawerToggle;
@@ -102,6 +105,8 @@ public abstract class BaseGameListActivity extends Activity
 
     mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
     mHelper.setup(this);
+
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
 
   private void maybeOpenNavDrawer() {
@@ -185,6 +190,7 @@ public abstract class BaseGameListActivity extends Activity
     switch (item.getItemId()) {
       case R.id.new_game:
         Intent newGameIntent = createNewGame();
+        logNewGame();
         startActivity(newGameIntent);
         return true;
       case R.id.help:
@@ -204,6 +210,14 @@ public abstract class BaseGameListActivity extends Activity
   }
 
   protected abstract Intent createNewGame();
+
+  private void logNewGame() {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getAnalyticsGameType());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.NEW_GAME, bundle);
+  }
+
+  protected abstract String getAnalyticsGameType();
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {

@@ -7,6 +7,8 @@ import java.util.Random;
 
 public class ClassicGame extends Game {
 
+  public static final String GAME_TYPE_FOR_ANALYTICS = "classic";
+
   public static ClassicGame createFromSeed(long seed) {
     ClassicGame game =
         new ClassicGame(
@@ -63,5 +65,10 @@ public class ClassicGame extends Game {
     if (!checkIfAnyValidTriples()) {
       finish();
     }
+  }
+
+  @Override
+  public String getGameTypeForAnalytics() {
+    return GAME_TYPE_FOR_ANALYTICS;
   }
 }

@@ -10,6 +10,7 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.Random;
 import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 public class HelpActivity extends Activity implements OnValidTripleSelectedListener {
+
+  private FirebaseAnalytics mFirebaseAnalytics;
 
   private CardsView mHelpCardsView;
   private ImmutableList<Card> mCardsShown;
@@ -46,6 +49,9 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     mHelpCardsView.onUpdateCardsInPlay(newCards, ImmutableList.<Card>of(), 0, 0);
     mCardsShown = newCards;
     updateTextExplanation();
+
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.VIEW_HELP, null);
   }
 
   @Override

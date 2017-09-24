@@ -38,4 +38,9 @@ public class ArcadeGameListActivity extends BaseGameListActivity {
     newGameIntent.putExtra(Game.ID_TAG, game.getId());
     return newGameIntent;
   }
+
+  @Override
+  protected String getAnalyticsGameType() {
+    return ArcadeGame.GAME_TYPE_FOR_ANALYTICS;
+  }
 }

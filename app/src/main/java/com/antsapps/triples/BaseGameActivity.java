@@ -19,9 +19,12 @@ import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.example.games.basegameutils.GameHelper;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 public abstract class BaseGameActivity extends Activity
     implements OnUpdateGameStateListener, GameHelper.GameHelperListener {
+
+  private FirebaseAnalytics mFirebaseAnalytics;
 
   private ViewSwitcher mViewSwitcher;
   private CardsView mCardsView;
@@ -60,6 +63,8 @@ public abstract class BaseGameActivity extends Activity
 
     mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
     mHelper.setup(this);
+
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
 
   protected abstract Game getGame();
@@ -184,11 +189,18 @@ public abstract class BaseGameActivity extends Activity
   public void gameFinished() {
     Log.i("BaseGameActivity", "game finished");
     mCardsView.setEnabled(false);
+    logGameFinished();
     if (mHelper.isSignedIn()) {
       submitScore();
     } else {
       shouldSubmitScoreOnSignIn = true;
     }
+  }
+
+  private void logGameFinished() {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.FINISH_GAME, bundle);
   }
 
   protected abstract void submitScore();

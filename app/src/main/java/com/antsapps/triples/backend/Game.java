@@ -360,4 +360,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   public boolean getActivityLifecycleActive() {
     return mActivitiyLifecycleActive;
   }
+
+  public abstract String getGameTypeForAnalytics();
 }
