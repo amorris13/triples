@@ -24,4 +24,12 @@
     android:summaryOn="Never sleep while playing"
     android:title="Stay Awake" />
 
+
+  <CheckBoxPreference
+      android:defaultValue="false"
+      android:key="@string/pref_fast_animations"
+      android:summaryOff="Use default animations"
+      android:summaryOn="Use fast animations"
+      android:title="Fast Animations"/>
+
 </PreferenceScreen>

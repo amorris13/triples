@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -22,6 +23,7 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
@@ -32,6 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+
+  private static final int INCORRECT_ANIMATION_DURATION_MS = 800;
+  private static final int TRANSITION_DURATION_MS = 800;
+  private static final int TRANSITION_DURATION_MS_FAST = 200;
 
   private class BaseAnimationListener implements AnimationListener {
 
@@ -92,6 +98,8 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private boolean mShouldSlideIn;
 
+  private int mTransitionDurationMillis = TRANSITION_DURATION_MS;
+
   private final Context mContext;
 
   CardDrawable(Context context, Card card, OnAnimationFinishedListener listener) {
@@ -103,6 +111,12 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
     mSymbol = new SymbolDrawable(mCard);
     mCardBackground = new CardBackgroundDrawable();
+
+    mTransitionDurationMillis =
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getString(R.string.pref_fast_animations), false)
+            ? TRANSITION_DURATION_MS_FAST
+            : TRANSITION_DURATION_MS;
   }
 
   private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
@@ -233,7 +247,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
-    shakeAnimation.setDuration(800);
+    shakeAnimation.setDuration(INCORRECT_ANIMATION_DURATION_MS);
     shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
     shakeAnimation.setAnimationListener(
         new BaseAnimationListener(handler) {
@@ -283,7 +297,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
-    transitionAnimation.setDuration(800);
+    transitionAnimation.setDuration(mTransitionDurationMillis);
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
     transitionAnimation.setAnimationListener(

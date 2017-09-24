@@ -4,5 +4,6 @@
   <string name="pref_orientation_lock">pref_orientation_lock</string>
   <string name="pref_orientation">pref_orientation</string>
   <string name="pref_screen_lock">pref_screen_lock</string>
+  <string name="pref_fast_animations">pref_fast_animations</string>
 
 </resources>
