@@ -62,6 +62,11 @@ class StatisticsGamesServicesView extends FrameLayout
     updateSignedInState();
   }
 
+  @Override
+  public void onSignOut() {
+    updateSignedInState();
+  }
+
   private void updateSignedInState() {
     if (mHelper == null || !mHelper.isSignedIn()) {
       mSignInBar.setVisibility(View.VISIBLE);

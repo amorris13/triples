@@ -240,6 +240,14 @@ public abstract class BaseGameListActivity extends Activity
     invalidateOptionsMenu();
   }
 
+  @Override
+  public void onSignOut() {
+    if (mGameHelperListener != null) {
+      mGameHelperListener.onSignInSucceeded();
+    }
+    invalidateOptionsMenu();
+  }
+
   public void setGameHelperListener(GameHelper.GameHelperListener listener) {
     mGameHelperListener = listener;
   }

@@ -75,6 +75,9 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 
         /** Called when sign-in succeeds. */
         void onSignInSucceeded();
+
+    /** Called on sign out. */
+    void onSignOut();
     }
 
     // configuration done?
@@ -128,11 +131,6 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     // What clients were requested? (bit flags)
     int mRequestedClients = CLIENT_NONE;
 
-    // Whether to automatically try to sign in on onStart(). We only set this
-    // to true when the sign-in process fails or the user explicitly signs out.
-    // We set it back to false when the user initiates the sign in process.
-    boolean mConnectOnStart = true;
-
     /*
      * Whether user has specifically requested that the sign-in process begin.
      * If mUserInitiatedSignIn is false, we're in the automatic sign-in attempt
@@ -150,8 +148,8 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     // Should we show error dialog boxes?
     boolean mShowErrorDialogs = true;
 
-    // Print debug logs?
-    boolean mDebugLog = false;
+  // Print debug logs?
+  boolean mDebugLog = true;
 
     Handler mHandler;
 
@@ -365,7 +363,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         debugLog("onStart");
         assertConfigured("onStart");
 
-        if (mConnectOnStart) {
+    if (getConnectOnStart()) {
             if (mGoogleApiClient.isConnected()) {
                 Log.w(TAG,
                         "GameHelper: client was already connected on onStart()");
@@ -537,9 +535,10 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 
         // Ready to disconnect
         debugLog("Disconnecting client.");
-        mConnectOnStart = false;
+    setConnectOnStart(false);
         mConnecting = false;
         mGoogleApiClient.disconnect();
+    mListener.onSignOut();
     }
 
     /**
@@ -579,7 +578,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
             // User cancelled.
             debugLog("onAR: Got a cancellation result, so disconnecting.");
             mSignInCancelled = true;
-            mConnectOnStart = false;
+      setConnectOnStart(false);
             mUserInitiatedSignIn = false;
             mSignInFailureReason = null; // cancelling is not a failure!
             mConnecting = false;
@@ -628,7 +627,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         debugLog("beginUserInitiatedSignIn: resetting attempt count.");
         resetSignInCancellations();
         mSignInCancelled = false;
-        mConnectOnStart = true;
+    setConnectOnStart(true);
 
         if (mGoogleApiClient.isConnected()) {
             // nothing to do
@@ -731,7 +730,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     void succeedSignIn() {
         debugLog("succeedSignIn");
         mSignInFailureReason = null;
-        mConnectOnStart = true;
+    setConnectOnStart(true);
         mUserInitiatedSignIn = false;
         mConnecting = false;
         notifyListener(true);
@@ -739,6 +738,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 
     private final String GAMEHELPER_SHARED_PREFS = "GAMEHELPER_SHARED_PREFS";
     private final String KEY_SIGN_IN_CANCELLATIONS = "KEY_SIGN_IN_CANCELLATIONS";
+  private final String KEY_SIGN_IN_ON_START = "KEY_SIGN_IN_ON_START";
 
     // Return the number of times the user has cancelled the sign-in flow in the
     // life of the app
@@ -768,6 +768,25 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         editor.putInt(KEY_SIGN_IN_CANCELLATIONS, 0);
         editor.commit();
     }
+
+  // Not recommended for general use. This method forces the
+  // "connect on start" flag
+  // to a given state. This may be useful when using GameHelper in a
+  // non-standard
+  // sign-in flow.
+  public void setConnectOnStart(boolean connectOnStart) {
+    debugLog("Forcing mConnectOnStart=" + connectOnStart);
+    SharedPreferences.Editor editor =
+        mAppContext.getSharedPreferences(GAMEHELPER_SHARED_PREFS, Context.MODE_PRIVATE).edit();
+    editor.putBoolean(KEY_SIGN_IN_ON_START, connectOnStart);
+    editor.commit();
+  }
+
+  public boolean getConnectOnStart() {
+    SharedPreferences sp =
+        mAppContext.getSharedPreferences(GAMEHELPER_SHARED_PREFS, Context.MODE_PRIVATE);
+    return sp.getBoolean(KEY_SIGN_IN_ON_START, true);
+  }
 
     /** Handles a connection failure. */
     @Override
@@ -886,7 +905,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
      * new version, etc).
      */
     void giveUp(SignInFailureReason reason) {
-        mConnectOnStart = false;
+    setConnectOnStart(false);
         disconnect();
         mSignInFailureReason = reason;
 
@@ -1042,15 +1061,5 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
                     + GameHelperUtils
                     .activityResponseCodeToString(mActivityResultCode) + ")"));
         }
-    }
-
-    // Not recommended for general use. This method forces the
-    // "connect on start" flag
-    // to a given state. This may be useful when using GameHelper in a
-    // non-standard
-    // sign-in flow.
-    public void setConnectOnStart(boolean connectOnStart) {
-        debugLog("Forcing mConnectOnStart=" + connectOnStart);
-        mConnectOnStart = connectOnStart;
     }
 }

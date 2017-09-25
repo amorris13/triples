@@ -159,6 +159,18 @@ public abstract class BaseGameActivity extends Activity
   protected abstract void saveGame();
 
   @Override
+  protected void onStart() {
+    super.onStart();
+    mHelper.onStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mHelper.onStop();
+  }
+
+  @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
     outState.putLong(Game.ID_TAG, getGame().getId());
@@ -227,4 +239,7 @@ public abstract class BaseGameActivity extends Activity
     }
     shouldSubmitScoreOnSignIn = false;
   }
+
+  @Override
+  public void onSignOut() {}
 }
