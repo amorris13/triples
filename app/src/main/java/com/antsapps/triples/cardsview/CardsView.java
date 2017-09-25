@@ -40,6 +40,7 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
     public void onAnimationFinished() {
       if (!mCards.contains(mCard)) {
         mCardDrawables.remove(mCard);
+        mCurrentlySelected.remove(mCard);
       }
     }
   }
