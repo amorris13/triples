@@ -25,7 +25,7 @@
     android:layout_above="@id/status_bar"
     android:background="#33B5E5" />
 
-  <ViewSwitcher
+  <ViewAnimator
     android:id="@+id/view_switcher"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -47,6 +47,29 @@
       android:text="@string/paused"
       android:textColor="#33B5E5"
       android:textSize="@dimen/game_paused_text_size" />
-  </ViewSwitcher>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/game_completed"
+          android:textColor="#33B5E5"
+          android:textSize="@dimen/game_paused_text_size"
+          />
+
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/new_game"
+          android:textAllCaps="true"
+          android:onClick="newGame"/>
+
+    </LinearLayout>
+  </ViewAnimator>
 
 </RelativeLayout>

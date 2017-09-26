@@ -1,5 +1,6 @@
 package com.antsapps.triples;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
@@ -128,5 +129,14 @@ public class ClassicGameActivity extends BaseGameActivity
                 Toast.makeText(ClassicGameActivity.this, message, Toast.LENGTH_LONG).show();
               }
             });
+  }
+
+  @Override
+  protected Intent createNewGame() {
+    ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
+    mApplication.addClassicGame(game);
+    Intent newGameIntent = new Intent(getBaseContext(), ClassicGameActivity.class);
+    newGameIntent.putExtra(Game.ID_TAG, game.getId());
+    return newGameIntent;
   }
 }

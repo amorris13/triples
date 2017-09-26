@@ -1,5 +1,6 @@
 package com.antsapps.triples;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
@@ -131,5 +132,14 @@ public class ArcadeGameActivity extends BaseGameActivity
                 Toast.makeText(ArcadeGameActivity.this, message, Toast.LENGTH_LONG).show();
               }
             });
+  }
+
+  @Override
+  protected Intent createNewGame() {
+    ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());
+    mApplication.addArcadeGame(game);
+    Intent newGameIntent = new Intent(getBaseContext(), ArcadeGameActivity.class);
+    newGameIntent.putExtra(Game.ID_TAG, game.getId());
+    return newGameIntent;
   }
 }

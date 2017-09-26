@@ -11,8 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
-import android.widget.ViewSwitcher;
+import android.widget.ViewAnimator;
 
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
@@ -24,9 +25,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 public abstract class BaseGameActivity extends Activity
     implements OnUpdateGameStateListener, GameHelper.GameHelperListener {
 
+  public static final int VIEW_CARDS = 0;
+  public static final int VIEW_PAUSED = 1;
+  public static final int VIEW_COMPLETED = 2;
+
   private FirebaseAnalytics mFirebaseAnalytics;
 
-  private ViewSwitcher mViewSwitcher;
+  private ViewAnimator mViewAnimator;
   private CardsView mCardsView;
   private GameState mGameState;
 
@@ -50,7 +55,7 @@ public abstract class BaseGameActivity extends Activity
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().addOnUpdateCardsInPlayListener(mCardsView);
 
-    mViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
+    mViewAnimator = findViewById(R.id.view_switcher);
 
     ActionBar actionBar = getActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -200,7 +205,7 @@ public abstract class BaseGameActivity extends Activity
   @Override
   public void gameFinished() {
     Log.i("BaseGameActivity", "game finished");
-    mCardsView.setEnabled(false);
+    updateViewSwitcher();
     logGameFinished();
     if (mHelper.isSignedIn()) {
       submitScore();
@@ -218,14 +223,16 @@ public abstract class BaseGameActivity extends Activity
   protected abstract void submitScore();
 
   private void updateViewSwitcher() {
-    int childToDisplay = 0;
+    int childToDisplay = VIEW_CARDS;
     if (mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
-      childToDisplay = 1;
+      childToDisplay = VIEW_PAUSED;
+    } else if (mGameState == GameState.COMPLETED) {
+      childToDisplay = VIEW_COMPLETED;
     } else {
-      childToDisplay = 0;
+      childToDisplay = VIEW_CARDS;
     }
-    if (mViewSwitcher.getDisplayedChild() != childToDisplay) {
-      mViewSwitcher.setDisplayedChild(childToDisplay);
+    if (mViewAnimator.getDisplayedChild() != childToDisplay) {
+      mViewAnimator.setDisplayedChild(childToDisplay);
     }
   }
 
@@ -242,4 +249,18 @@ public abstract class BaseGameActivity extends Activity
 
   @Override
   public void onSignOut() {}
+
+  public void newGame(View view) {
+    Intent newGameIntent = createNewGame();
+    logNewGame();
+    startActivity(newGameIntent);
+  }
+
+  protected abstract Intent createNewGame();
+
+  private void logNewGame() {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.NEW_GAME, bundle);
+  }
 }

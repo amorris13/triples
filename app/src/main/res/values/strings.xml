@@ -66,5 +66,6 @@
   <string name="drawer_close">Close navigation drawer</string>
   <string name="arcade_label">Arcade</string>
   <string name="classic_label">Classic</string>
+  <string name="game_completed">GAME COMPLETED</string>
 
 </resources>
