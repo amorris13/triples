@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -18,12 +17,12 @@ import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class CardsView extends View implements OnUpdateCardsInPlayListener {
 
@@ -50,7 +49,7 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
   static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
-  private final List<Card> mCurrentlySelected = Lists.newArrayList();
+  private final Set<Card> mCurrentlySelected = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
   private final Handler mHandler;
@@ -211,10 +210,12 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
         return true;
       }
       CardDrawable tappedCardDrawable = mCardDrawables.get(tappedCard);
-      if (tappedCardDrawable.onTap()) {
-        mCurrentlySelected.add(tappedCard);
-      } else {
+      if (mCurrentlySelected.contains(tappedCard)) {
         mCurrentlySelected.remove(tappedCard);
+        tappedCardDrawable.setSelected(false);
+      } else {
+        mCurrentlySelected.add(tappedCard);
+        tappedCardDrawable.setSelected(true);
       }
 
       checkSelectedCards();

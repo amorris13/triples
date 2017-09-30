@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -164,7 +166,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
   }
 
-  public void onValidTripleSelected(List<Card> cards) {
+  public void onValidTripleSelected(Collection<Card> cards) {
     commitTriple(Iterables.toArray(cards, Card.class));
   }
 
@@ -231,13 +233,13 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
   }
 
-  public static boolean isValidTriple(List<Card> cards) {
+  public static boolean isValidTriple(Collection<Card> cards) {
     return isValidTriple(Iterables.toArray(cards, Card.class));
   }
 
   public static boolean isValidTriple(Card... cards) {
     if (cards.length != 3 || !isDistinct(cards)) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("Bad set of cards: " + Arrays.toString(cards));
     }
     if ((cards[0].mNumber + cards[1].mNumber + cards[2].mNumber) % 3 == 0) {
       if ((cards[0].mShape + cards[1].mShape + cards[2].mShape) % 3 == 0) {

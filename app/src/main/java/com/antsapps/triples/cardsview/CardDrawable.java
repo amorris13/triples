@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -28,10 +29,7 @@ import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
@@ -64,14 +62,6 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     public void onAnimationRepeat(Animation animation) {}
   }
 
-  enum CardState {
-    SELECTED,
-    NORMAL;
-  }
-
-  private final Map<CardState, BitmapDrawable> mDrawableForCardState =
-      Collections.synchronizedMap(new EnumMap<CardState, BitmapDrawable>(CardState.class));
-
   interface OnAnimationFinishedListener {
     void onAnimationFinished();
   }
@@ -82,12 +72,12 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private final Card mCard;
 
-  private final SymbolDrawable mSymbol;
-  private final CardBackgroundDrawable mCardBackground;
+  private BitmapDrawable mCachedDrawable;
 
   private Rect mBounds;
 
-  private CardState mState;
+  private boolean mSelected = false;
+  private boolean mShakeAnimating = false;
 
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
@@ -104,13 +94,9 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   CardDrawable(Context context, Card card, OnAnimationFinishedListener listener) {
     mContext = context;
-    mState = CardState.NORMAL;
 
     mCard = card;
     mListener = listener;
-
-    mSymbol = new SymbolDrawable(mCard);
-    mCardBackground = new CardBackgroundDrawable();
 
     mTransitionDurationMillis =
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -182,8 +168,10 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   private void drawInternal(Canvas canvas, Rect bounds) {
-    CardState state = mState;
-    BitmapDrawable drawable = mDrawableForCardState.get(state);
+    if (mCachedDrawable == null) {
+      regenerateCachedDrawable();
+    }
+    BitmapDrawable drawable = mCachedDrawable;
     if (drawable == null) {
       return;
     }
@@ -191,27 +179,30 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     drawable.draw(canvas);
   }
 
-  private void regenerateBitmapDrawables(Rect bounds) {
+  private void regenerateCachedDrawable() {
     Log.v(TAG, "regen drawables for mCard = " + mCard);
+    Rect bounds = new Rect(mBounds);
     bounds.offsetTo(0, 0);
 
     // Rescale bounds for density
     float density = mContext.getResources().getDisplayMetrics().density;
     bounds.set(0, 0, (int) (bounds.right / density * 2), (int) (bounds.bottom / density * 2));
 
-    for (CardState state : CardState.values()) {
-      Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Config.ARGB_8888);
-      Canvas tmpCanvas = new Canvas(bitmap);
-      mCardBackground.setBounds(bounds);
-      mCardBackground.setCardState(state);
-      mCardBackground.draw(tmpCanvas);
-      for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
-        mSymbol.setBounds(rect);
-        mSymbol.draw(tmpCanvas);
-      }
-      BitmapDrawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-      mDrawableForCardState.put(state, drawable);
+    Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Config.ARGB_8888);
+    Canvas tmpCanvas = new Canvas(bitmap);
+
+    CardBackgroundDrawable mCardBackground = new CardBackgroundDrawable();
+    mCardBackground.setBounds(bounds);
+    mCardBackground.setSelected(mSelected || mShakeAnimating);
+    mCardBackground.draw(tmpCanvas);
+
+    SymbolDrawable mSymbol = new SymbolDrawable(mCard);
+    for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
+      mSymbol.setBounds(rect);
+      mSymbol.draw(tmpCanvas);
     }
+
+    mCachedDrawable = new BitmapDrawable(mContext.getResources(), bitmap);
   }
 
   @Override
@@ -222,28 +213,28 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   @Override
   public void setAlpha(int alpha) {
     mAlpha = (float) alpha / 255;
-    for (BitmapDrawable drawable : mDrawableForCardState.values()) {
-      drawable.setAlpha(alpha);
+    if (mCachedDrawable != null) {
+      mCachedDrawable.setAlpha(alpha);
     }
   }
 
   @Override
-  public void setColorFilter(ColorFilter cf) {
-    mSymbol.setColorFilter(cf);
-    mCardBackground.setColorFilter(cf);
+  public void setColorFilter(@Nullable ColorFilter colorFilter) {
+    if (mCachedDrawable != null) {
+      mCachedDrawable.setColorFilter(colorFilter);
+    }
   }
 
-  /** Returns true if the card is now selected, false otherwise. */
-  boolean onTap() {
-    if (mState == CardState.SELECTED) {
-      mState = CardState.NORMAL;
-    } else {
-      mState = CardState.SELECTED;
+  void setSelected(boolean selected) {
+    if (mSelected != selected) {
+      mSelected = selected;
+      regenerateCachedDrawable();
     }
-    return mState == CardState.SELECTED;
   }
 
   void onIncorrectTriple(final Handler handler) {
+    mSelected = false;
+    mShakeAnimating = true;
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
@@ -254,7 +245,8 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
           @Override
           public void onAnimationEnd(Animation animation) {
             super.onAnimationEnd(animation);
-            mState = CardState.NORMAL;
+            mShakeAnimating = false;
+            regenerateCachedDrawable();
           }
         });
     updateAnimation(shakeAnimation);
@@ -267,14 +259,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     if (oldBounds == null
         || oldBounds.width() != mBounds.width()
         || oldBounds.height() != mBounds.height()) {
-      new Thread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  regenerateBitmapDrawables(new Rect(mBounds));
-                }
-              })
-          .start();
+      regenerateCachedDrawable();
     }
     Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {

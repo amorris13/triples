@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.Collection;
 import java.util.Random;
 
 import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
@@ -55,7 +55,7 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
   }
 
   @Override
-  public void onValidTripleSelected(List<Card> validTriple) {
+  public void onValidTripleSelected(Collection<Card> validTriple) {
     showAnotherTriple();
   }
 

@@ -30,7 +30,7 @@ class CardBackgroundDrawable extends Drawable {
 
   private final ShapeDrawable mOutline;
 
-  private CardDrawable.CardState mCardState;
+  private boolean mSelected;
 
   CardBackgroundDrawable() {
     float[] outerR = new float[8];
@@ -53,7 +53,7 @@ class CardBackgroundDrawable extends Drawable {
   public void draw(Canvas canvas) {
     mShadow.draw(canvas);
     mBackground.draw(canvas);
-    if (mCardState == CardDrawable.CardState.SELECTED) {
+    if (mSelected) {
       mOutline.draw(canvas);
     }
   }
@@ -77,8 +77,8 @@ class CardBackgroundDrawable extends Drawable {
     mShadow.setColorFilter(cf);
   }
 
-  void setCardState(CardDrawable.CardState state) {
-    mCardState = state;
+  void setSelected(boolean selected) {
+    mSelected = selected;
   }
 
   @Override
