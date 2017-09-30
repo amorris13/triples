@@ -29,8 +29,10 @@ class CardBackgroundDrawable extends Drawable {
   private final ShapeDrawable mShadow;
 
   private final ShapeDrawable mOutline;
+  private final ShapeDrawable mHintOutline;
 
   private boolean mSelected;
+  private boolean mHinted;
 
   CardBackgroundDrawable() {
     float[] outerR = new float[8];
@@ -46,11 +48,19 @@ class CardBackgroundDrawable extends Drawable {
     mOutline = new ShapeDrawable(mCardShape);
     mOutline.getPaint().setStyle(Paint.Style.STROKE);
     mOutline.getPaint().setColor(Color.BLUE);
-    mOutline.getPaint().setStrokeWidth(7);
+    mOutline.getPaint().setStrokeWidth(5);
+
+    mHintOutline = new ShapeDrawable(mCardShape);
+    mHintOutline.getPaint().setStyle(Paint.Style.STROKE);
+    mHintOutline.getPaint().setColor((0x400000FF));
+    mHintOutline.getPaint().setStrokeWidth(15);
   }
 
   @Override
   public void draw(Canvas canvas) {
+    if (mHinted) {
+      mHintOutline.draw(canvas);
+    }
     mShadow.draw(canvas);
     mBackground.draw(canvas);
     if (mSelected) {
@@ -66,6 +76,7 @@ class CardBackgroundDrawable extends Drawable {
   @Override
   public void setAlpha(int alpha) {
     mOutline.setAlpha(alpha);
+    mHintOutline.setAlpha(alpha);
     mBackground.setAlpha(alpha);
     mShadow.setAlpha(alpha);
   }
@@ -73,6 +84,7 @@ class CardBackgroundDrawable extends Drawable {
   @Override
   public void setColorFilter(ColorFilter cf) {
     mOutline.setColorFilter(cf);
+    mHintOutline.setColorFilter(cf);
     mBackground.setColorFilter(cf);
     mShadow.setColorFilter(cf);
   }
@@ -81,12 +93,17 @@ class CardBackgroundDrawable extends Drawable {
     mSelected = selected;
   }
 
+  public void setHinted(boolean hinted) {
+    mHinted = hinted;
+  }
+
   @Override
   public void setBounds(Rect bounds) {
     Rect cardBounds = new Rect(bounds);
     cardBounds.inset(INSET_PX, INSET_PX);
     mBackground.setBounds(cardBounds);
     mOutline.setBounds(cardBounds);
+    mHintOutline.setBounds(cardBounds);
 
     cardBounds.offset(SHADOW_OFFSET_HORIZONTAL, SHADOW_OFFSET_VERTICAL);
     mShadow.setBounds(cardBounds);

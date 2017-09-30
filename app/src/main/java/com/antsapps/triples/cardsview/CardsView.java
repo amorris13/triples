@@ -13,7 +13,6 @@ import android.view.View;
 
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
@@ -24,7 +23,7 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CardsView extends View implements OnUpdateCardsInPlayListener {
+public abstract class CardsView extends View implements Game.GameRenderer {
 
   private static final String TAG = "CardsView";
 
@@ -39,7 +38,6 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
     public void onAnimationFinished() {
       if (!mCards.contains(mCard)) {
         mCardDrawables.remove(mCard);
-        mCurrentlySelected.remove(mCard);
       }
     }
   }
@@ -50,6 +48,7 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
   private final Set<Card> mCurrentlySelected = Sets.newHashSet();
+  private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
   private final Handler mHandler;
@@ -118,12 +117,13 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
             + invalidated);
   }
 
-  private void updateCards(
-      ImmutableList<Card> newCards, ImmutableList<Card> oldCards, int numRemaining) {
+  public void updateCardsInPlay(ImmutableList<Card> newCards) {
     long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
         mCardDrawables.get(oldCard).updateBounds(mOffScreenLocation, mHandler);
+        mCurrentlySelected.remove(oldCard);
+        mCurrentlyHinted.remove(oldCard);
       }
     }
 
@@ -164,15 +164,6 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
       final int widthMeasureSpec, final int heightMeasureSpec);
 
   protected abstract Rect calcBounds(int i);
-
-  @Override
-  public void onUpdateCardsInPlay(
-      ImmutableList<Card> newCards,
-      ImmutableList<Card> oldCards,
-      int numRemaining,
-      int numTriplesFound) {
-    updateCards(newCards, oldCards, numRemaining);
-  }
 
   private void incrementNumAnimating() {
     mNumAnimating++;
@@ -247,5 +238,18 @@ public abstract class CardsView extends View implements OnUpdateCardsInPlayListe
 
   public void setOnValidTripleSelectedListener(OnValidTripleSelectedListener listener) {
     mOnValidTripleSelectedListener = listener;
+  }
+
+  public Set<Card> getSelectedCards() {
+    return mCurrentlySelected;
+  }
+
+  public void addHint(Card card) {
+    mCurrentlyHinted.add(card);
+    CardDrawable cardDrawable = mCardDrawables.get(card);
+    if (cardDrawable != null) {
+      cardDrawable.setHinted(true);
+    }
+    invalidate();
   }
 }

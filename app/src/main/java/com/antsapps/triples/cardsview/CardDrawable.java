@@ -78,6 +78,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private boolean mSelected = false;
   private boolean mShakeAnimating = false;
+  private boolean mHinted = false;
 
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
@@ -194,6 +195,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     CardBackgroundDrawable mCardBackground = new CardBackgroundDrawable();
     mCardBackground.setBounds(bounds);
     mCardBackground.setSelected(mSelected || mShakeAnimating);
+    mCardBackground.setHinted(mHinted);
     mCardBackground.draw(tmpCanvas);
 
     SymbolDrawable mSymbol = new SymbolDrawable(mCard);
@@ -228,6 +230,13 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   void setSelected(boolean selected) {
     if (mSelected != selected) {
       mSelected = selected;
+      regenerateCachedDrawable();
+    }
+  }
+
+  void setHinted(boolean hinted) {
+    if (mHinted != hinted) {
+      mHinted = hinted;
       regenerateCachedDrawable();
     }
   }

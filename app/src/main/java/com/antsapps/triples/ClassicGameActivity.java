@@ -83,6 +83,9 @@ public class ClassicGameActivity extends BaseGameActivity
     numRemainingText.setText(String.valueOf(numRemaining));
   }
 
+  @Override
+  public void onCardHinted(Card hintedCard) {}
+
   protected Class<? extends BaseGameListActivity> getParentClass() {
     return ClassicGameListActivity.class;
   }

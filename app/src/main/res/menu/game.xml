@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item
+    android:id="@+id/hint"
+    android:icon="@drawable/ic_hint"
+    android:showAsAction="always"
+    android:title="@string/hint" />
+  <item
     android:id="@+id/pause"
     android:icon="@drawable/av_pause_holo_dark"
     android:showAsAction="always"

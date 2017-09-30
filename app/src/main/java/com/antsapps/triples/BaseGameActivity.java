@@ -53,7 +53,7 @@ public abstract class BaseGameActivity extends Activity
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mCardsView.setOnValidTripleSelectedListener(getGame());
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
-    getGame().addOnUpdateCardsInPlayListener(mCardsView);
+    getGame().setGameRenderer(mCardsView);
 
     mViewAnimator = findViewById(R.id.view_switcher);
 
@@ -101,6 +101,9 @@ public abstract class BaseGameActivity extends Activity
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle item selection
     switch (item.getItemId()) {
+      case R.id.hint:
+        getGame().addHint();
+        return true;
       case R.id.pause:
         getGame().pause();
         return true;
@@ -183,7 +186,7 @@ public abstract class BaseGameActivity extends Activity
 
   @Override
   protected void onDestroy() {
-    getGame().removeOnUpdateCardsInPlayListener(mCardsView);
+    getGame().setGameRenderer(null);
     getGame().removeOnUpdateGameStateListener(this);
 
     super.onDestroy();

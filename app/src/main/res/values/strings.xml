@@ -67,5 +67,6 @@
   <string name="arcade_label">Arcade</string>
   <string name="classic_label">Classic</string>
   <string name="game_completed">GAME COMPLETED</string>
+    <string name="hint">Hint</string>
 
 </resources>

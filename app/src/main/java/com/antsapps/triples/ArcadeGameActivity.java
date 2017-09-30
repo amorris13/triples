@@ -85,6 +85,9 @@ public class ArcadeGameActivity extends BaseGameActivity
     triplesFound.setText(String.valueOf(numTriplesFound));
   }
 
+  @Override
+  public void onCardHinted(Card hintedCard) {}
+
   protected Class<? extends BaseGameListActivity> getParentClass() {
     return ArcadeGameListActivity.class;
   }
