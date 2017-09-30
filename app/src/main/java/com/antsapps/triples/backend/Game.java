@@ -281,7 +281,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   protected boolean checkIfAnyValidTriples() {
-    return !getAValidTriple(mCardsInPlay, new HashSet<Card>()).isEmpty();
+    return getAValidTriple(mCardsInPlay, new HashSet<Card>()) != null;
   }
 
   public static List<Integer> getValidTriplePositions(List<Card> cardsInPlay) {
