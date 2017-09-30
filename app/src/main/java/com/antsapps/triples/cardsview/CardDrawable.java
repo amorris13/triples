@@ -21,6 +21,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 
@@ -34,25 +35,22 @@ import java.util.List;
 class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final int INCORRECT_ANIMATION_DURATION_MS = 800;
+  private static final int HINT_ANIMATION_DURATION_MS = 800;
   private static final int TRANSITION_DURATION_MS = 800;
   private static final int TRANSITION_DURATION_MS_FAST = 200;
 
   private class BaseAnimationListener implements AnimationListener {
 
-    private final Handler mHandler;
-
-    BaseAnimationListener(Handler handler) {
-      mHandler = handler;
-    }
+    BaseAnimationListener() {}
 
     @Override
     public void onAnimationStart(Animation animation) {
-      mHandler.sendMessage(Message.obtain(mHandler, CardsView.WHAT_INCREMENT));
+      mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_INCREMENT));
     }
 
     @Override
     public void onAnimationEnd(Animation animation) {
-      mHandler.sendMessage(Message.obtain(mHandler, CardsView.WHAT_DECREMENT));
+      mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_DECREMENT));
       if (mAnimation == animation) {
         mAnimation = null;
       }
@@ -92,9 +90,12 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private int mTransitionDurationMillis = TRANSITION_DURATION_MS;
 
   private final Context mContext;
+  private final Handler mAnimationHandler;
 
-  CardDrawable(Context context, Card card, OnAnimationFinishedListener listener) {
+  CardDrawable(
+      Context context, Handler animationHandler, Card card, OnAnimationFinishedListener listener) {
     mContext = context;
+    mAnimationHandler = animationHandler;
 
     mCard = card;
     mListener = listener;
@@ -238,10 +239,20 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     if (mHinted != hinted) {
       mHinted = hinted;
       regenerateCachedDrawable();
+      if (hinted) {
+        // Throb animation
+        Animation throbAnimation =
+            new ScaleAnimation(1.0f, 1.15f, 1.0f, 1.15f, mBounds.centerX(), mBounds.centerY());
+        throbAnimation.setInterpolator(new CycleInterpolator(0.5f));
+        throbAnimation.setDuration(HINT_ANIMATION_DURATION_MS);
+        throbAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
+        throbAnimation.setAnimationListener(new BaseAnimationListener());
+        updateAnimation(throbAnimation);
+      }
     }
   }
 
-  void onIncorrectTriple(final Handler handler) {
+  void onIncorrectTriple() {
     mSelected = false;
     mShakeAnimating = true;
     // Shake animation
@@ -250,7 +261,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     shakeAnimation.setDuration(INCORRECT_ANIMATION_DURATION_MS);
     shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
     shakeAnimation.setAnimationListener(
-        new BaseAnimationListener(handler) {
+        new BaseAnimationListener() {
           @Override
           public void onAnimationEnd(Animation animation) {
             super.onAnimationEnd(animation);
@@ -261,7 +272,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     updateAnimation(shakeAnimation);
   }
 
-  void updateBounds(Rect bounds, final Handler handler) {
+  void updateBounds(Rect bounds) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
@@ -295,7 +306,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
     transitionAnimation.setAnimationListener(
-        new BaseAnimationListener(handler) {
+        new BaseAnimationListener() {
           @Override
           public void onAnimationEnd(Animation animation) {
             super.onAnimationEnd(animation);

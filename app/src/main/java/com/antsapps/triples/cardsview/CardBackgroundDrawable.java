@@ -3,6 +3,7 @@ package com.antsapps.triples.cardsview;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -54,6 +55,7 @@ class CardBackgroundDrawable extends Drawable {
     mHintOutline.getPaint().setStyle(Paint.Style.STROKE);
     mHintOutline.getPaint().setColor((0x400000FF));
     mHintOutline.getPaint().setStrokeWidth(15);
+    mHintOutline.getPaint().setPathEffect(new DashPathEffect(new float[] {20, 10}, 0));
   }
 
   @Override

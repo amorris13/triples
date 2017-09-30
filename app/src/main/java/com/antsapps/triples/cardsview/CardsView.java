@@ -20,6 +20,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -121,9 +122,9 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
-        mCardDrawables.get(oldCard).updateBounds(mOffScreenLocation, mHandler);
+        CardDrawable cardDrawable = mCardDrawables.get(oldCard);
+        cardDrawable.updateBounds(mOffScreenLocation);
         mCurrentlySelected.remove(oldCard);
-        mCurrentlyHinted.remove(oldCard);
       }
     }
 
@@ -132,11 +133,12 @@ public abstract class CardsView extends View implements Game.GameRenderer {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
       if (cardDrawable == null) {
-        cardDrawable = new CardDrawable(getContext(), card, new CardRemovalListener(card));
+        cardDrawable =
+            new CardDrawable(getContext(), mHandler, card, new CardRemovalListener(card));
         mCardDrawables.put(card, cardDrawable);
       }
       if (!calcBounds(i).equals(EMPTY_RECT)) {
-        cardDrawable.updateBounds(calcBounds(i), mHandler);
+        cardDrawable.updateBounds(calcBounds(i));
       }
     }
     updateMeasuredDimensions(0, 0);
@@ -153,7 +155,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
-      cardDrawable.updateBounds(calcBounds(i), mHandler);
+      cardDrawable.updateBounds(calcBounds(i));
     }
     invalidate();
     long end = System.currentTimeMillis();
@@ -223,7 +225,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         mOnValidTripleSelectedListener.onValidTripleSelected(mCurrentlySelected);
       } else {
         for (Card card : mCurrentlySelected) {
-          mCardDrawables.get(card).onIncorrectTriple(mHandler);
+          mCardDrawables.get(card).onIncorrectTriple();
         }
       }
       mCurrentlySelected.clear();
@@ -240,16 +242,39 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     mOnValidTripleSelectedListener = listener;
   }
 
+  @Override
   public Set<Card> getSelectedCards() {
     return mCurrentlySelected;
   }
 
+  @Override
   public void addHint(Card card) {
-    mCurrentlyHinted.add(card);
     CardDrawable cardDrawable = mCardDrawables.get(card);
     if (cardDrawable != null) {
       cardDrawable.setHinted(true);
+      mCurrentlyHinted.add(card);
     }
+
+    // Remove incorrectly selected cards
+    Iterator<Card> iter = mCurrentlySelected.iterator();
+    while (iter.hasNext()) {
+      Card selectedCard = iter.next();
+      if (!mCurrentlyHinted.contains(selectedCard)) {
+        mCardDrawables.get(selectedCard).setSelected(false);
+        iter.remove();
+      }
+    }
+
     invalidate();
+  }
+
+  @Override
+  public void clearHintedCards() {
+    for (CardDrawable cardDrawable : mCardDrawables.values()) {
+      if (cardDrawable != null) {
+        cardDrawable.setHinted(false);
+      }
+    }
+    mCurrentlyHinted.clear();
   }
 }

@@ -38,6 +38,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     void updateCardsInPlay(ImmutableList<Card> newCards);
 
     void addHint(Card card);
+
+    void clearHintedCards();
+
+    Set<Card> getSelectedCards();
   }
 
   /**
@@ -205,6 +209,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     mNumTriplesFound++;
 
     mHintedCards.clear();
+    mGameRenderer.clearHintedCards();
 
     for (int i = 0; i < 3; i++) {
       mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
