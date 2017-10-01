@@ -36,8 +36,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final int INCORRECT_ANIMATION_DURATION_MS = 800;
   private static final int HINT_ANIMATION_DURATION_MS = 800;
-  private static final int TRANSITION_DURATION_MS = 800;
-  private static final int TRANSITION_DURATION_MS_FAST = 200;
+  private static final int DEFAULT_TRANSITION_DURATION_MS = 800;
 
   private class BaseAnimationListener implements AnimationListener {
 
@@ -87,7 +86,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private boolean mShouldSlideIn;
 
-  private int mTransitionDurationMillis = TRANSITION_DURATION_MS;
+  private int mTransitionDurationMillis = DEFAULT_TRANSITION_DURATION_MS;
 
   private final Context mContext;
   private final Handler mAnimationHandler;
@@ -102,9 +101,8 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
     mTransitionDurationMillis =
         PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(context.getString(R.string.pref_fast_animations), false)
-            ? TRANSITION_DURATION_MS_FAST
-            : TRANSITION_DURATION_MS;
+            .getInt(
+                context.getString(R.string.pref_animation_speed), DEFAULT_TRANSITION_DURATION_MS);
   }
 
   private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
