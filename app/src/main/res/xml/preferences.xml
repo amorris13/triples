@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                                                xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <CheckBoxPreference
+  <android.support.v7.preference.CheckBoxPreference
     android:defaultValue="true"
     android:key="@string/pref_orientation_lock"
     android:summaryOff="Screen will auto rotate"
     android:summaryOn="Screen will not auto rotate"
     android:title="Orientation Lock" />
 
-  <ListPreference
+  <android.support.v7.preference.ListPreference
       android:dependency="@string/pref_orientation_lock"
       android:dialogTitle="Preferred orientation"
       android:entries="@array/entries_orientation_pref"
@@ -18,7 +19,7 @@
       android:layout="?android:attr/preferenceLayoutChild"
       android:title="Orientation" />
 
-  <CheckBoxPreference
+  <android.support.v7.preference.CheckBoxPreference
     android:defaultValue="false"
     android:key="@string/pref_screen_lock"
     android:summaryOff="Use default sleep timeout"
@@ -26,11 +27,14 @@
     android:title="Stay Awake" />
 
 
-  <CheckBoxPreference
-      android:defaultValue="false"
-      android:key="@string/pref_fast_animations"
-      android:summaryOff="Use default animations"
-      android:summaryOn="Use fast animations"
-      android:title="Fast Animations"/>
+  <android.support.v7.preference.SeekBarPreference
+      android:defaultValue="800"
+      android:key="@string/pref_animation_speed"
+      android:min="0"
+      android:max="1000"
+      app:seekBarIncrement="100"
+      app:adjustable="true"
+      app:showSeekBarValue="false"
+      android:title="Animation Speed"/>
 
-</PreferenceScreen>
+</android.support.v7.preference.PreferenceScreen>
