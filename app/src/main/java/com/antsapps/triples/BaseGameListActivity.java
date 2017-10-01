@@ -1,14 +1,13 @@
 package com.antsapps.triples;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,12 +18,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.antsapps.triples.stats.BaseStatisticsFragment;
-import com.google.example.games.basegameutils.GameHelper;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /** Created by anthony on 1/12/13. */
-public abstract class BaseGameListActivity extends Activity
-    implements GameHelper.GameHelperListener {
+public abstract class BaseGameListActivity extends BaseTriplesActivity {
   public static final String SIGNIN_PREFS = "signin_prefs";
   public static final String SIGNED_IN_PREVIOUSLY = "signed_in_previously";
   public static final String UPLOADED_EXISTING_TOP_SCORE = "uploaded_existing_top_score_2";
@@ -40,8 +37,6 @@ public abstract class BaseGameListActivity extends Activity
   private ActionBarDrawerToggle mDrawerToggle;
   private ViewPager mViewPager;
   private TabsAdapter mTabsAdapter;
-  protected GameHelper mHelper;
-  private GameHelper.GameHelperListener mGameHelperListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +72,6 @@ public abstract class BaseGameListActivity extends Activity
         new ActionBarDrawerToggle(
             this, /* host Activity */
             mDrawerLayout, /* DrawerLayout object */
-            R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
             R.string.drawer_open, /* "open drawer" description */
             R.string.drawer_close /* "close drawer" description */);
 
@@ -86,7 +80,7 @@ public abstract class BaseGameListActivity extends Activity
 
     maybeOpenNavDrawer();
 
-    final ActionBar bar = getActionBar();
+    final ActionBar bar = getSupportActionBar();
     bar.setDisplayHomeAsUpEnabled(true);
     bar.setHomeButtonEnabled(true);
 
@@ -102,9 +96,6 @@ public abstract class BaseGameListActivity extends Activity
     if (savedInstanceState != null) {
       bar.setSelectedNavigationItem(savedInstanceState.getInt(TAB_NUMBER, 0));
     }
-
-    mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
-    mHelper.setup(this);
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
@@ -143,28 +134,6 @@ public abstract class BaseGameListActivity extends Activity
   }
 
   @Override
-  protected void onStart() {
-    super.onStart();
-    mHelper.onStart(this);
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    mHelper.onStop();
-  }
-
-  @Override
-  protected void onActivityResult(int request, int response, Intent data) {
-    super.onActivityResult(request, response, data);
-    mHelper.onActivityResult(request, response, data);
-  }
-
-  public GameHelper getGameHelper() {
-    return mHelper;
-  }
-
-  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game_list, menu);
@@ -174,7 +143,7 @@ public abstract class BaseGameListActivity extends Activity
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
-    menu.findItem(R.id.signout).setVisible(mHelper.isSignedIn());
+    menu.findItem(R.id.signout).setVisible(isSignedIn());
     return true;
   }
 
@@ -202,7 +171,7 @@ public abstract class BaseGameListActivity extends Activity
         startActivity(settingsIntent);
         return true;
       case R.id.signout:
-        mHelper.signOut();
+        signOut();
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -222,33 +191,18 @@ public abstract class BaseGameListActivity extends Activity
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putInt(TAB_NUMBER, getActionBar().getSelectedNavigationIndex());
-  }
-
-  @Override
-  public void onSignInFailed() {
-    if (mGameHelperListener != null) {
-      mGameHelperListener.onSignInFailed();
-    }
+    outState.putInt(TAB_NUMBER, getSupportActionBar().getSelectedNavigationIndex());
   }
 
   @Override
   public void onSignInSucceeded() {
-    if (mGameHelperListener != null) {
-      mGameHelperListener.onSignInSucceeded();
-    }
+    super.onSignInSucceeded();
     invalidateOptionsMenu();
   }
 
   @Override
   public void onSignOut() {
-    if (mGameHelperListener != null) {
-      mGameHelperListener.onSignInSucceeded();
-    }
+    super.onSignOut();
     invalidateOptionsMenu();
-  }
-
-  public void setGameHelperListener(GameHelper.GameHelperListener listener) {
-    mGameHelperListener = listener;
   }
 }

@@ -1,11 +1,11 @@
 package com.antsapps.triples;
 
 import android.app.AlertDialog;
-import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -29,7 +29,7 @@ public abstract class BaseGameListFragment extends ListFragment implements OnSta
   /** Called when the activity is first created. */
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    super.onActivityCreated(savedInstanceState);
     mApplication = Application.getInstance(getActivity());
 
     mAdapter = createArrayAdapter();

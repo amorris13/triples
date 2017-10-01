@@ -40,8 +40,8 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
     ListView listView = (ListView) inflater.inflate(R.layout.stats_fragment, null);
 
     mGameServicesView = new StatisticsGamesServicesView(getActivity(), getLeaderboardId());
-    mGameServicesView.setGameHelper(mGameListActivity.getGameHelper());
-    mGameListActivity.setGameHelperListener(mGameServicesView);
+    mGameServicesView.setActivity(mGameListActivity);
+    mGameListActivity.setSignInListener(mGameServicesView);
     listView.addHeaderView(mGameServicesView, null, false);
 
     mSelectorView = new StatisticsSelectorView(getActivity());

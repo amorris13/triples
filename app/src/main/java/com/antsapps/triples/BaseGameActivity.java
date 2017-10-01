@@ -1,12 +1,11 @@
 package com.antsapps.triples;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,11 +18,10 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
-import com.google.example.games.basegameutils.GameHelper;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-public abstract class BaseGameActivity extends Activity
-    implements OnUpdateGameStateListener, GameHelper.GameHelperListener {
+public abstract class BaseGameActivity extends BaseTriplesActivity
+    implements OnUpdateGameStateListener {
 
   public static final int VIEW_CARDS = 0;
   public static final int VIEW_PAUSED = 1;
@@ -34,8 +32,6 @@ public abstract class BaseGameActivity extends Activity
   private ViewAnimator mViewAnimator;
   private CardsView mCardsView;
   private GameState mGameState;
-
-  protected GameHelper mHelper;
 
   private boolean shouldSubmitScoreOnSignIn = false;
 
@@ -57,7 +53,7 @@ public abstract class BaseGameActivity extends Activity
 
     mViewAnimator = findViewById(R.id.view_switcher);
 
-    ActionBar actionBar = getActionBar();
+    ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     getGame().begin();
@@ -65,9 +61,6 @@ public abstract class BaseGameActivity extends Activity
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
     }
-
-    mHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
-    mHelper.setup(this);
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
@@ -167,18 +160,6 @@ public abstract class BaseGameActivity extends Activity
   protected abstract void saveGame();
 
   @Override
-  protected void onStart() {
-    super.onStart();
-    mHelper.onStart(this);
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    mHelper.onStop();
-  }
-
-  @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
     outState.putLong(Game.ID_TAG, getGame().getId());
@@ -210,7 +191,7 @@ public abstract class BaseGameActivity extends Activity
     Log.i("BaseGameActivity", "game finished");
     updateViewSwitcher();
     logGameFinished();
-    if (mHelper.isSignedIn()) {
+    if (isSignedIn()) {
       submitScore();
     } else {
       shouldSubmitScoreOnSignIn = true;

@@ -7,14 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.antsapps.triples.BaseGameListActivity;
+import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.google.android.gms.games.Games;
-import com.google.example.games.basegameutils.GameHelper;
 
 class StatisticsGamesServicesView extends FrameLayout
-    implements View.OnClickListener, GameHelper.GameHelperListener {
+    implements View.OnClickListener, BaseTriplesActivity.OnSignInListener {
 
-  private GameHelper mHelper;
+  private BaseTriplesActivity mActivity;
   private View mSignInBar;
   private View mGamesServicesBar;
   private String mLeaderboardId;
@@ -36,39 +37,30 @@ class StatisticsGamesServicesView extends FrameLayout
     updateSignedInState();
   }
 
-  void setGameHelper(GameHelper helper) {
-    mHelper = helper;
+  public void setActivity(BaseGameListActivity activity) {
+    mActivity = activity;
+    updateSignedInState();
   }
 
   @Override
   public void onClick(View view) {
     if (view.getId() == R.id.sign_in_button) {
       // start the asynchronous sign in flow
-      mHelper.beginUserInitiatedSignIn();
+      mActivity.signIn();
     } else if (view.getId() == R.id.leaderboards) {
       Intent leaderboardIntent =
-          Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(), mLeaderboardId);
+          Games.Leaderboards.getLeaderboardIntent(mActivity.getApiClient(), mLeaderboardId);
       ((Activity) getContext()).startActivityForResult(leaderboardIntent, 26);
     }
   }
 
   @Override
-  public void onSignInFailed() {
-    updateSignedInState();
-  }
-
-  @Override
-  public void onSignInSucceeded() {
-    updateSignedInState();
-  }
-
-  @Override
-  public void onSignOut() {
+  public void onSignInStateChanged(boolean signedInAndConnected) {
     updateSignedInState();
   }
 
   private void updateSignedInState() {
-    if (mHelper == null || !mHelper.isSignedIn()) {
+    if (mActivity == null || !mActivity.isSignedIn()) {
       mSignInBar.setVisibility(View.VISIBLE);
       mGamesServicesBar.setVisibility(View.GONE);
     } else {

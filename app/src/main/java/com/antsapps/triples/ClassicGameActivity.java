@@ -95,7 +95,7 @@ public class ClassicGameActivity extends BaseGameActivity
       return;
     }
     Games.Leaderboards.submitScoreImmediate(
-            mHelper.getApiClient(), GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed())
+            mGoogleApiClient, GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed())
         .setResultCallback(
             new ResultCallback<Leaderboards.SubmitScoreResult>() {
               @Override

@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <item
-    android:id="@+id/hint"
-    android:icon="@drawable/ic_hint"
-    android:showAsAction="always"
-    android:title="@string/hint" />
+      android:id="@+id/hint"
+      android:icon="@drawable/ic_hint"
+      app:showAsAction="always"
+      android:title="@string/hint" />
   <item
-    android:id="@+id/pause"
-    android:icon="@drawable/av_pause_holo_dark"
-    android:showAsAction="always"
-    android:title="@string/pause" />
+      android:id="@+id/pause"
+      android:icon="@drawable/av_pause_holo_dark"
+      app:showAsAction="always"
+      android:title="@string/pause" />
   <item
-    android:id="@+id/play"
-    android:icon="@drawable/av_play_holo_dark"
-    android:showAsAction="always"
-    android:title="@string/play" />
+      android:id="@+id/play"
+      android:icon="@drawable/av_play_holo_dark"
+      app:showAsAction="always"
+      android:title="@string/play" />
   <item
-    android:id="@+id/help"
-    android:icon="@drawable/action_help_holo_dark"
-    android:showAsAction="ifRoom|withText"
-    android:title="@string/help" />
+      android:id="@+id/help"
+      android:icon="@drawable/action_help_holo_dark"
+      app:showAsAction="ifRoom|withText"
+      android:title="@string/help" />
   <item
-    android:id="@+id/settings"
-    android:showAsAction="never"
-    android:title="@string/settings" />
+      android:id="@+id/settings"
+      app:showAsAction="never"
+      android:title="@string/settings" />
 </menu>

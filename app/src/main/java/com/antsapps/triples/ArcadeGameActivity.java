@@ -98,7 +98,7 @@ public class ArcadeGameActivity extends BaseGameActivity
     }
 
     Games.Leaderboards.submitScoreImmediate(
-            mHelper.getApiClient(), GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound())
+            mGoogleApiClient, GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound())
         .setResultCallback(
             new ResultCallback<Leaderboards.SubmitScoreResult>() {
               @Override
