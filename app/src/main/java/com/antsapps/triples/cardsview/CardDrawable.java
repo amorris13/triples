@@ -86,8 +86,6 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private boolean mShouldSlideIn;
 
-  private int mTransitionDurationMillis = DEFAULT_TRANSITION_DURATION_MS;
-
   private final Context mContext;
   private final Handler mAnimationHandler;
 
@@ -98,11 +96,6 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
     mCard = card;
     mListener = listener;
-
-    mTransitionDurationMillis =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getInt(
-                context.getString(R.string.pref_animation_speed), DEFAULT_TRANSITION_DURATION_MS);
   }
 
   private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
@@ -300,7 +293,12 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
-    transitionAnimation.setDuration(mTransitionDurationMillis);
+
+    transitionAnimation.setDuration(
+        PreferenceManager.getDefaultSharedPreferences(mContext)
+            .getInt(
+                mContext.getString(R.string.pref_animation_speed), DEFAULT_TRANSITION_DURATION_MS));
+
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
     transitionAnimation.setAnimationListener(
