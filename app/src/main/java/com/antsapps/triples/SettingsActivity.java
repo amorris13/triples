@@ -1,30 +1,21 @@
 package com.antsapps.triples;
 
-import android.app.ActionBar;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class SettingsActivity extends PreferenceActivity
-    implements OnSharedPreferenceChangeListener {
+public class SettingsActivity extends AppCompatActivity {
   private SharedPreferences mSharedPref;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    addPreferencesFromResource(R.xml.preferences);
+    setContentView(R.layout.settings);
 
-    mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    mSharedPref.registerOnSharedPreferenceChangeListener(this);
-
-    ActionBar actionBar = getActionBar();
+    ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
-
-    updateOrientationSummary();
   }
 
   @Override
@@ -38,26 +29,5 @@ public class SettingsActivity extends PreferenceActivity
       default:
         return super.onOptionsItemSelected(item);
     }
-  }
-
-  @Override
-  protected void onDestroy() {
-    mSharedPref.unregisterOnSharedPreferenceChangeListener(this);
-
-    super.onDestroy();
-  }
-
-  @Override
-  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    if (key.equals(getString(R.string.pref_orientation))) {
-      updateOrientationSummary();
-    }
-  }
-
-  private void updateOrientationSummary() {
-    ListPreference orientationPref =
-        (ListPreference) findPreference(getString(R.string.pref_orientation));
-
-    orientationPref.setSummary(orientationPref.getEntry());
   }
 }

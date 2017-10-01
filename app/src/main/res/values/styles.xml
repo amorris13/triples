@@ -38,6 +38,10 @@
     <item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
   </style>
 
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+  </style>
+
   <style name="stats_list_header" parent="android:Widget.Holo.Light.TextView">
     <item name="android:paddingTop">5dp</item>
     <item name="android:paddingBottom">5dp</item>
@@ -47,5 +51,4 @@
     <item name="android:textStyle">bold</item>
     <item name="android:background">?android:attr/selectableItemBackground</item>
   </style>
-
 </resources>

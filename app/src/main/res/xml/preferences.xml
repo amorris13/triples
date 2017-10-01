@@ -9,13 +9,14 @@
     android:title="Orientation Lock" />
 
   <ListPreference
-    android:dependency="@string/pref_orientation_lock"
-    android:dialogTitle="Preferred orientation"
-    android:entries="@array/entries_orientation_pref"
-    android:entryValues="@array/entryvalues_orientation_pref"
-    android:key="@string/pref_orientation"
-    android:layout="?android:attr/preferenceLayoutChild"
-    android:title="Orientation" />
+      android:dependency="@string/pref_orientation_lock"
+      android:dialogTitle="Preferred orientation"
+      android:entries="@array/entries_orientation_pref"
+      android:entryValues="@array/entryvalues_orientation_pref"
+      android:summary="%s"
+      android:key="@string/pref_orientation"
+      android:layout="?android:attr/preferenceLayoutChild"
+      android:title="Orientation" />
 
   <CheckBoxPreference
     android:defaultValue="false"
