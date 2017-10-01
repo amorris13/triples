@@ -23,19 +23,8 @@
     <item name="android:textSize">30sp</item>
   </style>
 
-  <style name="HelpDialog" parent="android:Theme.Holo.Light.Dialog">
+  <style name="HelpDialog" parent="Theme.AppCompat.Light.Dialog">
     <item name="android:windowNoTitle">true</item>
-  </style>
-
-  <style name="Theme.Light.DarkActionBar.TabColor"
-         parent="android:Theme.Holo.Light.DarkActionBar">
-    <item name="android:actionBarStyle">@style/Widget.Light.ActionBar.Solid.Inverse.LightTabs</item>
-  </style>
-
-  <style name="Widget.Light.ActionBar.Solid.Inverse.LightTabs"
-         parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
-    <item name="android:background">@color/action_bar_background</item>
-    <item name="android:backgroundStacked">@color/action_bar_stacked_background</item>
   </style>
 
   <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
