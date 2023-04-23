@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
+import androidx.viewpager.widget.ViewPager;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -156,26 +156,25 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
     }
 
     // Handle item selection
-    switch (item.getItemId()) {
-      case R.id.new_game:
-        Intent newGameIntent = createNewGame();
-        logNewGame();
-        startActivity(newGameIntent);
-        return true;
-      case R.id.help:
-        Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
-        startActivity(helpIntent);
-        return true;
-      case R.id.settings:
-        Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
-        startActivity(settingsIntent);
-        return true;
-      case R.id.signout:
-        signOut();
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    int itemId = item.getItemId();
+    if (itemId == R.id.new_game) {
+      Intent newGameIntent = createNewGame();
+      logNewGame();
+      startActivity(newGameIntent);
+      return true;
+    } else if (itemId == R.id.help) {
+      Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+      startActivity(helpIntent);
+      return true;
+    } else if (itemId == R.id.settings) {
+      Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
+      startActivity(settingsIntent);
+      return true;
+    } else if (itemId == R.id.signout) {
+      signOut();
+      return true;
     }
+    return super.onOptionsItemSelected(item);
   }
 
   protected abstract Intent createNewGame();
