@@ -1,6 +1,7 @@
 package com.antsapps.triples.backend;
 
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 public final class Card {
@@ -42,7 +43,7 @@ public final class Card {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("mNumber", mNumber)
         .add("mShape", mShape)
         .add("mPattern", mPattern)

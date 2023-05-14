@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
+import androidx.appcompat.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -93,34 +93,32 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle item selection
-    switch (item.getItemId()) {
-      case R.id.hint:
-        getGame().addHint();
-        return true;
-      case R.id.pause:
-        getGame().pause();
-        return true;
-      case R.id.play:
-        getGame().resume();
-        return true;
-      case R.id.help:
-        Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
-        startActivity(helpIntent);
-        return true;
-      case R.id.settings:
-        Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
-        startActivity(settingsIntent);
-        return true;
-      case android.R.id.home:
-        // app icon in action bar clicked; go up one level
-        Intent intent = new Intent(this, getParentClass());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    int itemId = item.getItemId();
+    if (itemId == R.id.hint) {
+      getGame().addHint();
+      return true;
+    } else if (itemId == R.id.pause) {
+      getGame().pause();
+      return true;
+    } else if (itemId == R.id.play) {
+      getGame().resume();
+      return true;
+    } else if (itemId == R.id.help) {
+      Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+      startActivity(helpIntent);
+      return true;
+    } else if (itemId == R.id.settings) {
+      Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
+      startActivity(settingsIntent);
+      return true;
+    } else if (itemId == android.R.id.home) {// app icon in action bar clicked; go up one level
+      Intent intent = new Intent(this, getParentClass());
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(intent);
+      finish();
+      return true;
     }
+    return super.onOptionsItemSelected(item);
   }
 
   protected abstract Class<? extends BaseGameListActivity> getParentClass();
