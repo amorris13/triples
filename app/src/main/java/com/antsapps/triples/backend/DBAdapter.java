@@ -100,7 +100,7 @@ public class DBAdapter extends SQLiteOpenHelper {
       execMultipleSQL(db, sql);
       db.setTransactionSuccessful();
     } catch (SQLException e) {
-      Log.e("Error creating tables and debug data", e.toString());
+      Log.e("DBAdapter", e.toString());
     } finally {
       db.endTransaction();
     }
@@ -119,7 +119,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         execMultipleSQL(db, sql);
         db.setTransactionSuccessful();
       } catch (SQLException e) {
-        Log.e("Error creating tables and debug data", e.toString());
+        Log.e("DBAdapter-Upgrade", e.toString());
       } finally {
         db.endTransaction();
       }
