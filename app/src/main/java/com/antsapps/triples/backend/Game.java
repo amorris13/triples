@@ -69,6 +69,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected final List<Card> mCardsInPlay;
 
+  protected final List<Long> mTripleFindTimes;
+
   private final Set<Card> mHintedCards = Sets.newHashSet();
 
   protected final Timer mTimer;
@@ -89,6 +91,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       long id,
       long seed,
       List<Card> cardsInPlay,
+      List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
@@ -96,6 +99,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     this.id = id;
     mRandomSeed = seed;
     mCardsInPlay = Lists.newArrayList(cardsInPlay);
+    mTripleFindTimes = Lists.newArrayList(tripleFindTimes);
     mDeck = cardsInDeck;
     mTimer = new Timer(timeElapsed);
     mDate = date;
@@ -207,6 +211,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
 
     mNumTriplesFound++;
+    mTripleFindTimes.add(mTimer.getElapsed());
 
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
@@ -387,6 +392,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   public long getTimeElapsed() {
     return mTimer.getElapsed();
+  }
+
+  public List<Long> getTripleFindTimes() {
+    return ImmutableList.copyOf(mTripleFindTimes);
   }
 
   public Date getDateStarted() {

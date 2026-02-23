@@ -2,6 +2,7 @@ package com.antsapps.triples.backend;
 
 import com.google.common.collect.Lists;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +50,26 @@ public class Utils {
       cards.add(cardFromByte(b[i]));
     }
     return cards;
+  }
+
+  public static byte[] longListToByteArray(List<Long> longs) {
+    ByteBuffer bb = ByteBuffer.allocate(longs.size() * 8);
+    for (long l : longs) {
+      bb.putLong(l);
+    }
+    return bb.array();
+  }
+
+  public static List<Long> longListFromByteArray(byte[] b) {
+    if (b == null) {
+      return Lists.newArrayList();
+    }
+    ByteBuffer bb = ByteBuffer.wrap(b);
+    List<Long> longs = Lists.newArrayList();
+    while (bb.hasRemaining()) {
+      longs.add(bb.getLong());
+    }
+    return longs;
   }
 
   private Utils() {}
