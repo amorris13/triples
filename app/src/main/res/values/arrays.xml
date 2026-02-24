@@ -26,7 +26,6 @@
     <item>Holo Dark Purple</item>
     <item>Black</item>
     <item>Grey</item>
-    <item>White</item>
   </string-array>
 
   <string-array name="entryvalues_color_pref">
@@ -42,7 +41,6 @@
     <item>#9933CC</item>
     <item>#000000</item>
     <item>#888888</item>
-    <item>#FFFFFF</item>
   </string-array>
 
   <string-array name="entries_shape_pref">
