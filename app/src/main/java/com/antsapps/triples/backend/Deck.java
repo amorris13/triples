@@ -64,6 +64,19 @@ class Deck {
     return new Deck(cards);
   }
 
+  public static Deck createTutorialDeck(Random random) {
+    List<Card> cards = Lists.newArrayList();
+    for (int number = 0; number < Card.MAX_VARIABLES; number++) {
+      for (int shape = 0; shape < Card.MAX_VARIABLES; shape++) {
+        for (int color = 0; color < Card.MAX_VARIABLES; color++) {
+          cards.add(new Card(number, shape, Card.PATTERN_SOLID, color));
+        }
+      }
+    }
+    Collections.shuffle(cards, random);
+    return new Deck(cards);
+  }
+
   /** To take cards from in play and re-add them to the deck. */
   public void readdCards(Card... cards) {
     for (Card card : cards) {

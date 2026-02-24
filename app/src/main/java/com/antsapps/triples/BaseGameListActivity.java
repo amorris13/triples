@@ -17,6 +17,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.stats.BaseStatisticsFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -44,7 +47,12 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
 
     setContentView(R.layout.game_overview);
 
-    String[] gameModes = new String[] {"Classic", "Arcade"};
+    String[] gameModes =
+        new String[] {
+          getString(R.string.classic_label),
+          getString(R.string.arcade_label),
+          getString(R.string.tutorial_label)
+        };
     mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     ListView drawerList = (ListView) findViewById(R.id.mode_list);
 
@@ -61,6 +69,13 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
                 break;
               case 1:
                 startActivity(new Intent(getBaseContext(), ArcadeGameListActivity.class));
+                break;
+              case 2:
+                ClassicGame game = ClassicGame.createTutorial(System.currentTimeMillis());
+                Application.getInstance(getApplication()).addClassicGame(game);
+                Intent newGameIntent = new Intent(getBaseContext(), ClassicGameActivity.class);
+                newGameIntent.putExtra(Game.ID_TAG, game.getId());
+                startActivity(newGameIntent);
                 break;
             }
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

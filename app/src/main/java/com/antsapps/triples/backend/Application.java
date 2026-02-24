@@ -18,6 +18,7 @@ public class Application extends OnStateChangedReporter {
   // Should remain sorted
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
+  private ClassicGame mTutorialGame;
 
   public final DBAdapter database;
 
@@ -35,13 +36,21 @@ public class Application extends OnStateChangedReporter {
   }
 
   public void addClassicGame(ClassicGame game) {
-    game.setId(database.addClassicGame(game));
-    mClassicGames.add(game);
+    if (game.isTutorial()) {
+      mTutorialGame = game;
+      mTutorialGame.setId(Long.MAX_VALUE);
+    } else {
+      game.setId(database.addClassicGame(game));
+      mClassicGames.add(game);
+    }
     Log.i(TAG, "addGame. now mClassicGames = " + mClassicGames);
     notifyStateChanged();
   }
 
   public void saveClassicGame(ClassicGame game) {
+    if (game.isTutorial()) {
+      return;
+    }
     database.updateClassicGame(game);
     notifyStateChanged();
   }
@@ -53,6 +62,9 @@ public class Application extends OnStateChangedReporter {
   }
 
   public ClassicGame getClassicGame(long id) {
+    if (id == Long.MAX_VALUE && mTutorialGame != null) {
+      return mTutorialGame;
+    }
     for (ClassicGame game : mClassicGames) {
       if (game.getId() == id) {
         return game;

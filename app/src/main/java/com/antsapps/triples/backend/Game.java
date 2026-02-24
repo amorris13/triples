@@ -79,6 +79,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final Date mDate;
 
+  private boolean mIsTutorial = false;
+
   private GameRenderer mGameRenderer;
 
   private final List<OnUpdateGameStateListener> mGameStateListeners = Lists.newArrayList();
@@ -395,6 +397,14 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   public GameState getGameState() {
     return mGameState;
+  }
+
+  public boolean isTutorial() {
+    return mIsTutorial;
+  }
+
+  protected void setIsTutorial(boolean isTutorial) {
+    mIsTutorial = isTutorial;
   }
 
   public boolean getActivityLifecycleActive() {

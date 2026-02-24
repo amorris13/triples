@@ -48,6 +48,10 @@ public class ClassicGameActivity extends BaseGameActivity
     stub.inflate();
     mGame.addOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
+
+    if (mGame.isTutorial()) {
+      setTitle(R.string.tutorial_label);
+    }
   }
 
   @Override
@@ -91,7 +95,7 @@ public class ClassicGameActivity extends BaseGameActivity
   }
 
   protected void submitScore() {
-    if (mGame.getGameState() == Game.GameState.COMPLETED) {
+    if (mGame.getGameState() == Game.GameState.COMPLETED || mGame.isTutorial()) {
       return;
     }
     Games.Leaderboards.submitScoreImmediate(
@@ -136,7 +140,10 @@ public class ClassicGameActivity extends BaseGameActivity
 
   @Override
   protected Intent createNewGame() {
-    ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
+    ClassicGame game =
+        mGame.isTutorial()
+            ? ClassicGame.createTutorial(System.currentTimeMillis())
+            : ClassicGame.createFromSeed(System.currentTimeMillis());
     mApplication.addClassicGame(game);
     Intent newGameIntent = new Intent(getBaseContext(), ClassicGameActivity.class);
     newGameIntent.putExtra(Game.ID_TAG, game.getId());

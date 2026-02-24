@@ -6,7 +6,11 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import android.content.Intent;
+import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
@@ -61,6 +65,15 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
 
   public void showAnother(View view) {
     showAnotherTriple();
+  }
+
+  public void playTutorial(View view) {
+    ClassicGame game = ClassicGame.createTutorial(System.currentTimeMillis());
+    Application.getInstance(getApplication()).addClassicGame(game);
+    Intent newGameIntent = new Intent(getBaseContext(), ClassicGameActivity.class);
+    newGameIntent.putExtra(Game.ID_TAG, game.getId());
+    startActivity(newGameIntent);
+    finish();
   }
 
   private void showAnotherTriple() {

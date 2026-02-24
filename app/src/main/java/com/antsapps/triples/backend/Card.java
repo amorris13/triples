@@ -7,6 +7,10 @@ import com.google.common.base.Preconditions;
 public final class Card {
   public static final int MAX_VARIABLES = 3;
 
+  public static final int PATTERN_EMPTY = 0;
+  public static final int PATTERN_STRIPES = 1;
+  public static final int PATTERN_SOLID = 2;
+
   public final int mNumber;
   public final int mShape;
   public final int mPattern;

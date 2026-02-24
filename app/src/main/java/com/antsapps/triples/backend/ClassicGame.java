@@ -8,6 +8,7 @@ import java.util.Random;
 public class ClassicGame extends Game {
 
   public static final String GAME_TYPE_FOR_ANALYTICS = "classic";
+  public static final String TUTORIAL_TYPE_FOR_ANALYTICS = "tutorial";
 
   public static ClassicGame createFromSeed(long seed) {
     ClassicGame game =
@@ -19,6 +20,21 @@ public class ClassicGame extends Game {
             0,
             new Date(),
             GameState.STARTING);
+    game.init();
+    return game;
+  }
+
+  public static ClassicGame createTutorial(long seed) {
+    ClassicGame game =
+        new ClassicGame(
+            -1,
+            seed,
+            Collections.<Card>emptyList(),
+            Deck.createTutorialDeck(new Random(seed)),
+            0,
+            new Date(),
+            GameState.STARTING);
+    game.setIsTutorial(true);
     game.init();
     return game;
   }
@@ -69,6 +85,6 @@ public class ClassicGame extends Game {
 
   @Override
   public String getGameTypeForAnalytics() {
-    return GAME_TYPE_FOR_ANALYTICS;
+    return isTutorial() ? TUTORIAL_TYPE_FOR_ANALYTICS : GAME_TYPE_FOR_ANALYTICS;
   }
 }
