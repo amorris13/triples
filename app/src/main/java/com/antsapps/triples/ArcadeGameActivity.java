@@ -93,7 +93,7 @@ public class ArcadeGameActivity extends BaseGameActivity
   }
 
   protected void submitScore() {
-    if (mGame.getGameState() != Game.GameState.COMPLETED) {
+    if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
 

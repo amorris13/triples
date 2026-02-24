@@ -17,4 +17,7 @@
 
   <string name="pref_shaded_pattern">pref_shaded_pattern</string>
 
+  <string name="pref_hide_hint">pref_hide_hint</string>
+  <string name="pref_dont_ask_for_hint">pref_dont_ask_for_hint</string>
+
 </resources>
