@@ -6,25 +6,19 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.ActionBar;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
-import com.antsapps.triples.stats.TimelineView;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public abstract class BaseGameActivity extends BaseTriplesActivity
     implements OnUpdateGameStateListener {
@@ -216,35 +210,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       childToDisplay = VIEW_PAUSED;
     } else if (mGameState == GameState.COMPLETED) {
       childToDisplay = VIEW_COMPLETED;
-      updateStatistics();
     } else {
       childToDisplay = VIEW_CARDS;
     }
     if (mViewAnimator.getDisplayedChild() != childToDisplay) {
       mViewAnimator.setDisplayedChild(childToDisplay);
-    }
-  }
-
-  private void updateStatistics() {
-    List<Long> findTimes = getGame().getTripleFindTimes();
-    if (!findTimes.isEmpty()) {
-      long fastest = Long.MAX_VALUE;
-      long slowest = 0;
-      long lastTime = 0;
-      for (long time : findTimes) {
-        long duration = time - lastTime;
-        fastest = Math.min(fastest, duration);
-        slowest = Math.max(slowest, duration);
-        lastTime = time;
-      }
-
-      ((TextView) findViewById(R.id.fastest_triple))
-          .setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(fastest)));
-      ((TextView) findViewById(R.id.slowest_triple))
-          .setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(slowest)));
-
-      ((TimelineView) findViewById(R.id.timeline))
-          .setTripleFindTimes(findTimes, getGame().getTimeElapsed());
     }
   }
 
