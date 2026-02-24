@@ -7,4 +7,14 @@
   <string name="pref_fast_animations">pref_fast_animations</string>
   <string name="pref_animation_speed">pref_animation_speed</string>
 
+  <string name="pref_color_0">pref_color_0</string>
+  <string name="pref_color_1">pref_color_1</string>
+  <string name="pref_color_2">pref_color_2</string>
+
+  <string name="pref_shape_0">pref_shape_0</string>
+  <string name="pref_shape_1">pref_shape_1</string>
+  <string name="pref_shape_2">pref_shape_2</string>
+
+  <string name="pref_shaded_pattern">pref_shaded_pattern</string>
+
 </resources>
