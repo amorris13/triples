@@ -5,34 +5,72 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.antsapps.triples.BaseGameListActivity;
-import com.antsapps.triples.BaseGameListFragment;
+import androidx.fragment.app.ListFragment;
+
+import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
+import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
+import com.antsapps.triples.backend.OnStateChangedListener;
 import com.antsapps.triples.backend.Statistics;
 
 import java.util.Comparator;
 
 /** Created by anthony on 1/12/13. */
-public abstract class BaseStatisticsFragment extends BaseGameListFragment
-    implements OnStatisticsChangeListener,
+public abstract class BaseStatisticsFragment extends ListFragment
+    implements OnStateChangedListener,
+        OnStatisticsChangeListener,
         OnComparatorChangeListener<Game>,
         StatisticsSelectorView.OnPeriodChangeListener {
-  private BaseGameListActivity mGameListActivity;
+  private BaseTriplesActivity mGameListActivity;
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED.createReversableComparator();
   private StatisticsGamesServicesView mGameServicesView;
   protected StatisticsSelectorView mSelectorView;
   private BaseStatisticsSummaryView mSummaryView;
   private BaseStatisticsListHeaderView mListHeaderView;
+  protected Application mApplication;
+  protected ArrayAdapter<Game> mAdapter;
 
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mGameListActivity = (BaseGameListActivity) activity;
+    mGameListActivity = (BaseTriplesActivity) activity;
   }
+
+  @Override
+  public void onViewCreated(View view, Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    mApplication = Application.getInstance(getActivity());
+
+    mAdapter = createArrayAdapter();
+    setListAdapter(mAdapter);
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    mApplication.addOnStateChangedListener(this);
+    updateDataSet();
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    mApplication.removeOnStateChangedListener(this);
+  }
+
+  protected abstract ArrayAdapter<Game> createArrayAdapter();
+
+  @Override
+  public void onStateChanged() {
+    updateDataSet();
+  }
+
+  protected abstract void updateDataSet();
 
   @Override
   public View onCreateView(

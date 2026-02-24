@@ -88,8 +88,8 @@ public class ArcadeGameActivity extends BaseGameActivity
   @Override
   public void onCardHinted(Card hintedCard) {}
 
-  protected Class<? extends BaseGameListActivity> getParentClass() {
-    return ArcadeGameListActivity.class;
+  protected Class<? extends BaseTriplesActivity> getParentClass() {
+    return MainActivity.class;
   }
 
   protected void submitScore() {
