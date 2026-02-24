@@ -172,7 +172,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     drawable.draw(canvas);
   }
 
-  private void regenerateCachedDrawable() {
+  public void regenerateCachedDrawable() {
     Log.v(TAG, "regen drawables for mCard = " + mCard);
     Rect bounds = new Rect(mBounds);
     bounds.offsetTo(0, 0);
@@ -190,7 +190,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mCardBackground.setHinted(mHinted);
     mCardBackground.draw(tmpCanvas);
 
-    SymbolDrawable mSymbol = new SymbolDrawable(mCard);
+    SymbolDrawable mSymbol = new SymbolDrawable(mContext, mCard);
     for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
       mSymbol.setBounds(rect);
       mSymbol.draw(tmpCanvas);

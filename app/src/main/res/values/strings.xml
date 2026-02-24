@@ -71,4 +71,14 @@
     <string name="fastest_triple">Fastest triple:</string>
     <string name="slowest_triple">Slowest triple:</string>
 
+  <string name="color_0">Color 1</string>
+  <string name="color_1">Color 2</string>
+  <string name="color_2">Color 3</string>
+
+  <string name="shape_0">Shape 1</string>
+  <string name="shape_1">Shape 2</string>
+  <string name="shape_2">Shape 3</string>
+
+  <string name="shaded_pattern">Shaded Pattern</string>
+
 </resources>
