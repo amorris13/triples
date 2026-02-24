@@ -2,7 +2,10 @@ package com.antsapps.triples.backend;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -20,7 +23,7 @@ public class DeckTest {
   public void getNextCard_returnsAll81DistinctCards() {
     Deck deck = new Deck(new Random());
     int count = 0;
-    java.util.Set<Card> cards = new java.util.HashSet<>();
+    Set<Card> cards = new HashSet<>();
     while (!deck.isEmpty()) {
       Card card = deck.getNextCard();
       assertThat(card).isNotNull();
@@ -46,7 +49,7 @@ public class DeckTest {
 
   @Test
   public void readdCards_addsCardsToDeck() {
-    Deck deck = new Deck(new java.util.ArrayList<Card>());
+    Deck deck = new Deck(new ArrayList<Card>());
     assertThat(deck.isEmpty()).isTrue();
 
     Card card1 = new Card(0, 0, 0, 0);

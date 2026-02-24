@@ -1,7 +1,7 @@
 package com.antsapps.triples.backend;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,50 +21,31 @@ public class CardTest {
 
   @Test
   public void constructor_invalidNumber_throwsException() {
-    try {
-      new Card(3, 0, 0, 0);
-      fail("Should have thrown IllegalArgumentException");
-    } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessageThat().contains("number = 3");
-    }
+    IllegalArgumentException expected =
+        assertThrows(IllegalArgumentException.class, () -> new Card(3, 0, 0, 0));
+    assertThat(expected).hasMessageThat().contains("number = 3");
   }
 
   @Test
   public void constructor_negativeNumber_throwsException() {
-    try {
-      new Card(-1, 0, 0, 0);
-      fail("Should have thrown IllegalArgumentException");
-    } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessageThat().contains("number = -1");
-    }
+    IllegalArgumentException expected =
+        assertThrows(IllegalArgumentException.class, () -> new Card(-1, 0, 0, 0));
+    assertThat(expected).hasMessageThat().contains("number = -1");
   }
 
   @Test
-  public void equals_sameFields_isTrue() {
+  public void equalsAndHashCode() {
     Card card1 = new Card(1, 1, 1, 1);
     Card card2 = new Card(1, 1, 1, 1);
+    Card card3 = new Card(1, 1, 1, 2);
+
+    // Equality
     assertThat(card1).isEqualTo(card2);
-  }
+    assertThat(card1).isNotEqualTo(card3);
 
-  @Test
-  public void equals_differentFields_isFalse() {
-    Card card1 = new Card(1, 1, 1, 1);
-    Card card2 = new Card(1, 1, 1, 2);
-    assertThat(card1).isNotEqualTo(card2);
-  }
-
-  @Test
-  public void hashCode_sameFields_isSame() {
-    Card card1 = new Card(1, 1, 1, 1);
-    Card card2 = new Card(1, 1, 1, 1);
+    // Hash code
     assertThat(card1.hashCode()).isEqualTo(card2.hashCode());
-  }
-
-  @Test
-  public void hashCode_differentFields_isDifferent() {
-    Card card1 = new Card(1, 1, 1, 1);
-    Card card2 = new Card(1, 1, 1, 2);
-    assertThat(card1.hashCode()).isNotEqualTo(card2.hashCode());
+    assertThat(card1.hashCode()).isNotEqualTo(card3.hashCode());
   }
 
   @Test

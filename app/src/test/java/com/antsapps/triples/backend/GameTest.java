@@ -1,7 +1,7 @@
 package com.antsapps.triples.backend;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
@@ -49,11 +49,7 @@ public class GameTest {
     Card c1 = new Card(0, 0, 0, 0);
     Card c2 = c1;
     Card c3 = new Card(1, 1, 1, 1);
-    try {
-      Game.isValidTriple(c1, c2, c3);
-      fail("Should have thrown IllegalArgumentException for duplicate cards");
-    } catch (IllegalArgumentException expected) {
-    }
+    assertThrows(IllegalArgumentException.class, () -> Game.isValidTriple(c1, c2, c3));
   }
 
   @Test
