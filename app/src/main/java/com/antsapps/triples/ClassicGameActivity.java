@@ -86,8 +86,8 @@ public class ClassicGameActivity extends BaseGameActivity
   @Override
   public void onCardHinted(Card hintedCard) {}
 
-  protected Class<? extends BaseGameListActivity> getParentClass() {
-    return ClassicGameListActivity.class;
+  protected Class<? extends BaseTriplesActivity> getParentClass() {
+    return MainActivity.class;
   }
 
   protected void submitScore() {

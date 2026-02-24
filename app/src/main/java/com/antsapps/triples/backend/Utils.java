@@ -1,10 +1,14 @@
 package com.antsapps.triples.backend;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+
+import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 public class Utils {
 
@@ -70,6 +74,35 @@ public class Utils {
       longs.add(bb.getLong());
     }
     return longs;
+  }
+
+  public static ImmutableList<Card> createValidTriple() {
+    Random random = new Random();
+    Card card0 = createRandomCard(random);
+    Card card1 = createRandomCard(random);
+    while (card1.equals(card0)) {
+      card1 = createRandomCard(random);
+    }
+    Card card2 =
+        new Card(
+            getValidProperty(card0.mNumber, card1.mNumber),
+            getValidProperty(card0.mShape, card1.mShape),
+            getValidProperty(card0.mPattern, card1.mPattern),
+            getValidProperty(card0.mColor, card1.mColor));
+
+    return ImmutableList.of(card0, card1, card2);
+  }
+
+  private static Card createRandomCard(Random random) {
+    return new Card(
+        random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES),
+        random.nextInt(MAX_VARIABLES));
+  }
+
+  public static int getValidProperty(int card0, int card1) {
+    return (MAX_VARIABLES - ((card0 + card1) % MAX_VARIABLES)) % MAX_VARIABLES;
   }
 
   private Utils() {}

@@ -127,7 +127,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     return super.onOptionsItemSelected(item);
   }
 
-  protected abstract Class<? extends BaseGameListActivity> getParentClass();
+  protected abstract Class<? extends BaseTriplesActivity> getParentClass();
 
   @Override
   protected void onResume() {

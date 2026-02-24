@@ -27,8 +27,11 @@
     <item name="android:windowNoTitle">true</item>
   </style>
 
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
     <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    <item name="colorPrimary">#003749</item>
+    <item name="colorPrimaryDark">#002b3a</item>
+    <item name="colorAccent">#33B5E5</item>
   </style>
 
   <style name="stats_list_header" parent="android:Widget.Holo.Light.TextView">

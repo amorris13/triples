@@ -8,11 +8,11 @@ import android.widget.TextView;
 
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
+import com.antsapps.triples.backend.Utils;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Random;
 
@@ -45,10 +45,17 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     mPatternExplanation = (TextView) findViewById(R.id.pattern_explanation);
     mColorExplanation = (TextView) findViewById(R.id.color_explanation);
 
-    ImmutableList<Card> newCards = createValidTriple();
+    ImmutableList<Card> newCards = Utils.createValidTriple();
     mHelpCardsView.updateCardsInPlay(newCards);
     mCardsShown = newCards;
     updateTextExplanation();
+
+    findViewById(R.id.show_me_another).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showAnotherTriple();
+        }
+    });
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.VIEW_HELP, null);
@@ -59,77 +66,34 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     showAnotherTriple();
   }
 
-  public void showAnother(View view) {
-    showAnotherTriple();
-  }
-
   private void showAnotherTriple() {
-    ImmutableList<Card> newCards = createValidTriple();
+    ImmutableList<Card> newCards = Utils.createValidTriple();
     mHelpCardsView.updateCardsInPlay(newCards);
     mCardsShown = newCards;
     updateTextExplanation();
   }
 
   private void updateTextExplanation() {
-    try {
-      mNumberExplanation.setText(
-          checkField(Card.class.getField("mNumber"), mCardsShown)
-              ? R.string.all_same
-              : R.string.all_different);
-      mShapeExplanation.setText(
-          checkField(Card.class.getField("mShape"), mCardsShown)
-              ? R.string.all_same
-              : R.string.all_different);
-      mPatternExplanation.setText(
-          checkField(Card.class.getField("mPattern"), mCardsShown)
-              ? R.string.all_same
-              : R.string.all_different);
-      mColorExplanation.setText(
-          checkField(Card.class.getField("mColor"), mCardsShown)
-              ? R.string.all_same
-              : R.string.all_different);
-    } catch (NoSuchFieldException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    mNumberExplanation.setText(checkNumber(mCardsShown) ? R.string.all_same : R.string.all_different);
+    mShapeExplanation.setText(checkShape(mCardsShown) ? R.string.all_same : R.string.all_different);
+    mPatternExplanation.setText(checkPattern(mCardsShown) ? R.string.all_same : R.string.all_different);
+    mColorExplanation.setText(checkColor(mCardsShown) ? R.string.all_same : R.string.all_different);
   }
 
-  /** @return true if all the same, false otherwise. */
-  private static boolean checkField(Field property, ImmutableList<Card> cards) {
-    try {
-      return property.getInt(cards.get(0)) == property.getInt(cards.get(1))
-          && property.getInt(cards.get(0)) == property.getInt(cards.get(2));
-    } catch (Exception e) {
-      return false;
-    }
+  private static boolean checkNumber(ImmutableList<Card> cards) {
+    return cards.get(0).mNumber == cards.get(1).mNumber && cards.get(0).mNumber == cards.get(2).mNumber;
   }
 
-  public static ImmutableList<Card> createValidTriple() {
-    Random random = new Random();
-    Card card0 = createRandomCard(random);
-    Card card1 = createRandomCard(random);
-    while (card1.equals(card0)) {
-      card1 = createRandomCard(random);
-    }
-    Card card2 =
-        new Card(
-            getValidProperty(card0.mNumber, card1.mNumber),
-            getValidProperty(card0.mShape, card1.mShape),
-            getValidProperty(card0.mPattern, card1.mPattern),
-            getValidProperty(card0.mColor, card1.mColor));
-
-    return ImmutableList.of(card0, card1, card2);
+  private static boolean checkShape(ImmutableList<Card> cards) {
+    return cards.get(0).mShape == cards.get(1).mShape && cards.get(0).mShape == cards.get(2).mShape;
   }
 
-  private static Card createRandomCard(Random random) {
-    return new Card(
-        random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES),
-        random.nextInt(MAX_VARIABLES));
+  private static boolean checkPattern(ImmutableList<Card> cards) {
+    return cards.get(0).mPattern == cards.get(1).mPattern && cards.get(0).mPattern == cards.get(2).mPattern;
   }
 
-  public static int getValidProperty(int card0, int card1) {
-    return (MAX_VARIABLES - ((card0 + card1) % MAX_VARIABLES)) % MAX_VARIABLES;
+  private static boolean checkColor(ImmutableList<Card> cards) {
+    return cards.get(0).mColor == cards.get(1).mColor && cards.get(0).mColor == cards.get(2).mColor;
   }
+
 }

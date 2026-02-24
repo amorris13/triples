@@ -6,6 +6,7 @@
   android:background="#E0E0E0">
 
   <LinearLayout
+    android:id="@+id/help_content"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -130,11 +131,11 @@
       android:background="@android:color/darker_gray" />
 
     <Button
+      android:id="@+id/show_me_another"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:text="@string/show_me_another"
-      style="@android:style/Widget.ActionButton"
-      android:onClick="showAnother" />
+      style="@android:style/Widget.ActionButton" />
 
     <TextView
       android:layout_width="wrap_content"

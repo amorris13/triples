@@ -18,6 +18,7 @@ public class Application extends OnStateChangedReporter {
   // Should remain sorted
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
+  private TutorialGame mTutorialGame;
 
   public final DBAdapter database;
 
@@ -140,5 +141,13 @@ public class Application extends OnStateChangedReporter {
 
   public ArcadeStatistics getArcadeStatistics(Period period) {
     return new ArcadeStatistics(getCompletedArcadeGames(), period);
+  }
+
+  public void setTutorialGame(TutorialGame game) {
+    mTutorialGame = game;
+  }
+
+  public TutorialGame getTutorialGame() {
+    return mTutorialGame;
   }
 }
