@@ -69,6 +69,8 @@
   <string name="tutorial_label">Tutorial</string>
   <string name="game_completed">GAME COMPLETED</string>
   <string name="hint">Hint</string>
+  <string name="fastest_triple">Fastest triple:</string>
+  <string name="slowest_triple">Slowest triple:</string>
   <string name="play_tutorial">Play Tutorial</string>
 
 </resources>
