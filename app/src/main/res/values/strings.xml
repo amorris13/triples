@@ -68,5 +68,7 @@
   <string name="classic_label">Classic</string>
   <string name="game_completed">GAME COMPLETED</string>
     <string name="hint">Hint</string>
+    <string name="fastest_triple">Fastest triple:</string>
+    <string name="slowest_triple">Slowest triple:</string>
 
 </resources>
