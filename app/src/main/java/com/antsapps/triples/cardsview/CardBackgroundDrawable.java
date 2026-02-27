@@ -13,7 +13,7 @@ import android.graphics.drawable.shapes.RoundRectShape;
 
 import java.util.Arrays;
 
-class CardBackgroundDrawable extends Drawable {
+public class CardBackgroundDrawable extends Drawable {
 
   private static final int SHADOW_OFFSET_VERTICAL = 4;
 
@@ -35,7 +35,7 @@ class CardBackgroundDrawable extends Drawable {
   private boolean mSelected;
   private boolean mHinted;
 
-  CardBackgroundDrawable() {
+  public CardBackgroundDrawable() {
     float[] outerR = new float[8];
     Arrays.fill(outerR, CORNER_RADIUS);
     mCardShape = new RoundRectShape(outerR, null, null);

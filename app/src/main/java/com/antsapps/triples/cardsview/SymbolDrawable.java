@@ -34,10 +34,14 @@ public class SymbolDrawable extends Drawable {
   private final ShapeDrawable mOutline;
   private final ShapeDrawable mFill;
 
-  SymbolDrawable(Context context, Card card) {
+  public SymbolDrawable(Context context, Card card) {
+    this(context, card, null);
+  }
+
+  public SymbolDrawable(Context context, Card card, String overriddenPattern) {
     mCard = card;
     mOutline = getOutlineForCard(context, card);
-    mFill = getFillForCard(context, card);
+    mFill = getFillForCard(context, card, overriddenPattern);
   }
 
   private static ShapeDrawable getOutlineForCard(Context context, Card card) {
@@ -48,14 +52,14 @@ public class SymbolDrawable extends Drawable {
     return symbol;
   }
 
-  private static ShapeDrawable getFillForCard(Context context, Card card) {
+  private static ShapeDrawable getFillForCard(Context context, Card card, String overriddenPattern) {
     ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
-    symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor));
+    symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor, overriddenPattern));
     symbol.getPaint().setStyle(Style.FILL);
     return symbol;
   }
 
-  private static Shader getShaderForPatternId(Context context, int patternId, int colorId) {
+  private static Shader getShaderForPatternId(Context context, int patternId, int colorId, String overriddenPattern) {
     int color = getColorForId(context, colorId);
     switch (patternId) {
       case 0: // Empty
@@ -64,7 +68,7 @@ public class SymbolDrawable extends Drawable {
             Shader.TileMode.REPEAT,
             Shader.TileMode.REPEAT);
       case 1: // Customizable Shaded
-        return getCustomShadedShader(context, color);
+        return getCustomShadedShader(context, color, overriddenPattern);
       case 2: // Solid
         return new BitmapShader(
             Bitmap.createBitmap(new int[] {color}, 1, 1, Bitmap.Config.ARGB_8888),
@@ -75,12 +79,13 @@ public class SymbolDrawable extends Drawable {
     }
   }
 
-  private static Shader getCustomShadedShader(Context context, int color) {
-    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-    String pattern =
-        sharedPref.getString(context.getString(R.string.pref_shaded_pattern), "stripes");
-    float density = context.getResources().getDisplayMetrics().density;
-    int thickness = Math.max(1, Math.round(STRIPE_WIDTH * density));
+  private static Shader getCustomShadedShader(Context context, int color, String overriddenPattern) {
+    String pattern = overriddenPattern;
+    if (pattern == null) {
+      SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+      pattern = sharedPref.getString(context.getString(R.string.pref_shaded_pattern), "stripes");
+    }
+    int thickness = STRIPE_WIDTH;
     Bitmap bm;
     if (pattern.equals("stripes")) {
       int[] pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));

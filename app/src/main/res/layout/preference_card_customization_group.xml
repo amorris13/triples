@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+        <Spinner android:id="@+id/color_0_spinner" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <Spinner android:id="@+id/color_1_spinner" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <Spinner android:id="@+id/color_2_spinner" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+        <Spinner android:id="@+id/shape_0_spinner" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <Spinner android:id="@+id/shape_1_spinner" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <Spinner android:id="@+id/shape_2_spinner" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="24dp">
+        <Spinner android:id="@+id/pattern_spinner" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <com.antsapps.triples.SampleCardView
+            android:id="@+id/sample_card_0"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_margin="4dp" />
+        <com.antsapps.triples.SampleCardView
+            android:id="@+id/sample_card_1"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_margin="4dp" />
+        <com.antsapps.triples.SampleCardView
+            android:id="@+id/sample_card_2"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_margin="4dp" />
+    </LinearLayout>
+
+</LinearLayout>
