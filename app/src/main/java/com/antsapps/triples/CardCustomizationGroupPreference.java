@@ -32,6 +32,7 @@ import com.antsapps.triples.cardsview.SymbolDrawable;
 import com.antsapps.triples.cardsview.TriangleShape;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CardCustomizationGroupPreference extends Preference {
 

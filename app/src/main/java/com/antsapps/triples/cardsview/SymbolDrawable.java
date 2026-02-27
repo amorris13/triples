@@ -35,27 +35,28 @@ public class SymbolDrawable extends Drawable {
   private final ShapeDrawable mFill;
 
   public SymbolDrawable(Context context, Card card) {
-    this(
-        card,
-        getShapeForId(context, card.mShape),
-        getColorForId(context, card.mColor),
-        getShaderForPatternId(context, card.mPattern, card.mColor));
+    this(context, card, null);
   }
 
-  public SymbolDrawable(Shape shape, int color, Shader shader) {
-    this(null, shape, color, shader);
-  }
-
-  private SymbolDrawable(Card card, Shape shape, int color, Shader shader) {
+  public SymbolDrawable(Context context, Card card, String overriddenPattern) {
     mCard = card;
-    mOutline = new ShapeDrawable(shape);
-    mOutline.getPaint().setColor(color);
-    mOutline.getPaint().setStyle(Style.STROKE);
-    mOutline.getPaint().setStrokeWidth(OUTLINE_WIDTH);
+    mOutline = getOutlineForCard(context, card);
+    mFill = getFillForCard(context, card, overriddenPattern);
+  }
 
-    mFill = new ShapeDrawable(shape);
-    mFill.getPaint().setShader(shader);
-    mFill.getPaint().setStyle(Style.FILL);
+  private static ShapeDrawable getOutlineForCard(Context context, Card card) {
+    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
+    symbol.getPaint().setColor(getColorForId(context, card.mColor));
+    symbol.getPaint().setStyle(Style.STROKE);
+    symbol.getPaint().setStrokeWidth(OUTLINE_WIDTH);
+    return symbol;
+  }
+
+  private static ShapeDrawable getFillForCard(Context context, Card card, String overriddenPattern) {
+    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
+    symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor, overriddenPattern));
+    symbol.getPaint().setStyle(Style.FILL);
+    return symbol;
   }
 
   public static Shader getShaderForPatternId(Context context, int patternId, int colorId) {
