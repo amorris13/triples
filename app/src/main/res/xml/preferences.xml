@@ -35,6 +35,7 @@
       app:seekBarIncrement="100"
       app:adjustable="true"
       app:showSeekBarValue="false"
+      app:updatesContinuously="true"
       android:title="@string/pref_animation_duration_title"/>
 
   <androidx.preference.PreferenceCategory
