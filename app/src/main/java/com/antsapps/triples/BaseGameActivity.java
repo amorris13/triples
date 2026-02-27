@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -56,6 +57,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mCardsView.setOnValidTripleSelectedListener(getGame());
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().setGameRenderer(mCardsView);
+
+    mCardsView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            // Ensure width and height are greater than 0 before refreshing drawables
+            if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+                mCardsView.refreshDrawables();
+                mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        }
+    });
 
     mViewAnimator = findViewById(R.id.view_switcher);
 
@@ -149,7 +161,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     } else {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
-    mCardsView.refreshDrawables();
     updateViewSwitcher();
   }
 

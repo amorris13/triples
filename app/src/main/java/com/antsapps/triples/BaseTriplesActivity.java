@@ -216,7 +216,9 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
     // An unresolvable error has occurred and Google APIs (including Sign-In) will not
     // be available.
     Log.d(TAG, "onConnectionFailed:" + connectionResult);
-    mSignInListener.onSignInStateChanged(isSignedIn());
+    if (mSignInListener != null) {
+      mSignInListener.onSignInStateChanged(isSignedIn());
+    }
   }
 
   @Override
