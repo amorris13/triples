@@ -85,13 +85,20 @@ class SymbolDrawable extends Drawable {
       int[] pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
       bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
     } else if (pattern.equals("dots")) {
-      bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
-      bm.setPixel(0, 0, color);
+      bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+          bm.setPixel(i, j, color);
+        }
+      }
     } else if (pattern.equals("crosshatch")) {
-      bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
-      for (int i = 0; i < thickness * 2; i++) {
-        bm.setPixel(i, 0, color);
-        bm.setPixel(0, i, color);
+      bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+          if ((i + j) % 8 < 2 || (i - j + 8) % 8 < 2) {
+            bm.setPixel(i, j, color);
+          }
+        }
       }
     } else if (pattern.equals("lighter")) {
       int lighterColor = Color.argb(128, Color.red(color), Color.green(color), Color.blue(color));
@@ -136,6 +143,7 @@ class SymbolDrawable extends Drawable {
     if (shape.equals("triangle")) return new TriangleShape();
     if (shape.equals("diamond")) return new DiamondShape();
     if (shape.equals("hexagon")) return new HexagonShape();
+    if (shape.equals("star")) return new StarShape();
     return new TriangleShape();
   }
 

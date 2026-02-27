@@ -22,13 +22,20 @@ public class HexagonShape extends RectShape {
     super.onResize(width, height);
 
     RectF rect = rect();
+    float cx = rect.centerX();
+    float cy = rect.centerY();
+    float s = Math.min(height / 2f, (float) (width / Math.sqrt(3)));
+
+    float dx = (float) (s * Math.sqrt(3) / 2);
+    float dy = s / 2;
+
     mPath = new Path();
-    mPath.moveTo(rect.centerX(), 0);
-    mPath.lineTo(rect.width(), rect.height() / 4);
-    mPath.lineTo(rect.width(), 3 * rect.height() / 4);
-    mPath.lineTo(rect.centerX(), rect.height());
-    mPath.lineTo(0, 3 * rect.height() / 4);
-    mPath.lineTo(0, rect.height() / 4);
+    mPath.moveTo(cx, cy - s);
+    mPath.lineTo(cx + dx, cy - dy);
+    mPath.lineTo(cx + dx, cy + dy);
+    mPath.lineTo(cx, cy + s);
+    mPath.lineTo(cx - dx, cy + dy);
+    mPath.lineTo(cx - dx, cy - dy);
     mPath.close();
   }
 
