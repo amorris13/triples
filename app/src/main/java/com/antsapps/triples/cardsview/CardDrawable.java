@@ -34,9 +34,7 @@ import java.util.List;
 
 class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
-  private static final int INCORRECT_ANIMATION_DURATION_MS = 800;
-  private static final int HINT_ANIMATION_DURATION_MS = 800;
-  private static final int DEFAULT_TRANSITION_DURATION_MS = 800;
+  private static final int DEFAULT_ANIMATION_DURATION_MS = 800;
 
   private class BaseAnimationListener implements AnimationListener {
 
@@ -235,7 +233,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         Animation throbAnimation =
             new ScaleAnimation(1.0f, 1.15f, 1.0f, 1.15f, mBounds.centerX(), mBounds.centerY());
         throbAnimation.setInterpolator(new CycleInterpolator(0.5f));
-        throbAnimation.setDuration(HINT_ANIMATION_DURATION_MS);
+        throbAnimation.setDuration(getAnimationDuration());
         throbAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
         throbAnimation.setAnimationListener(new BaseAnimationListener());
         updateAnimation(throbAnimation);
@@ -249,7 +247,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
-    shakeAnimation.setDuration(INCORRECT_ANIMATION_DURATION_MS);
+    shakeAnimation.setDuration(getAnimationDuration());
     shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
     shakeAnimation.setAnimationListener(
         new BaseAnimationListener() {
@@ -294,10 +292,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
 
-    transitionAnimation.setDuration(
-        PreferenceManager.getDefaultSharedPreferences(mContext)
-            .getInt(
-                mContext.getString(R.string.pref_animation_speed), DEFAULT_TRANSITION_DURATION_MS));
+    transitionAnimation.setDuration(getAnimationDuration());
 
     transitionAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
 
@@ -318,6 +313,11 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       mAnimation.cancel();
     }
     mAnimation = animation;
+  }
+
+  private int getAnimationDuration() {
+    return PreferenceManager.getDefaultSharedPreferences(mContext)
+        .getInt(mContext.getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS);
   }
 
   int getDrawOrder() {
