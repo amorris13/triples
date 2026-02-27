@@ -35,7 +35,7 @@
       app:seekBarIncrement="100"
       app:adjustable="true"
       app:showSeekBarValue="false"
-      android:title="Animation Speed"/>
+      android:title="@string/pref_animation_duration_title"/>
 
   <androidx.preference.PreferenceCategory
       android:title="Card Customization">

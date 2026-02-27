@@ -81,4 +81,7 @@
 
   <string name="shaded_pattern">Shaded Pattern</string>
 
+  <string name="pref_animation_duration_title">Animation Duration</string>
+  <string name="pref_animation_duration_summary">%1$d ms</string>
+
 </resources>
