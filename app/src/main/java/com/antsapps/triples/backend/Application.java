@@ -27,19 +27,22 @@ public class Application extends OnStateChangedReporter {
     super();
     database = new DBAdapter(context);
     database.initialize(mClassicGames, mArcadeGames);
-    prefillDatabaseIfEmpty();
+    if (isDebug()) {
+      prefillDatabaseIfEmpty();
+    }
+  }
+
+  private boolean isDebug() {
+    try {
+      Class<?> buildConfigClass = Class.forName("com.antsapps.triples.BuildConfig");
+      return (Boolean) buildConfigClass.getField("DEBUG").get(null);
+    } catch (Exception e) {
+      Log.e(TAG, "Could not find BuildConfig", e);
+      return false;
+    }
   }
 
   private void prefillDatabaseIfEmpty() {
-    try {
-      Class<?> buildConfigClass = Class.forName("com.antsapps.triples.BuildConfig");
-      if (!(Boolean) buildConfigClass.getField("DEBUG").get(null)) {
-        return;
-      }
-    } catch (Exception e) {
-      Log.e(TAG, "Could not find BuildConfig", e);
-      return;
-    }
     if (mClassicGames.isEmpty()) {
       Random random = new Random();
       for (int i = 0; i < 10; i++) {
