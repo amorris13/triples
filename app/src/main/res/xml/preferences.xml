@@ -47,53 +47,59 @@
   <androidx.preference.PreferenceCategory
       android:title="Card Customization">
 
-    <androidx.preference.ListPreference
+    <com.antsapps.triples.CardCustomizationPreference
         android:defaultValue="#33B5E5"
         android:entries="@array/entries_color_pref"
         android:entryValues="@array/entryvalues_color_pref"
         android:key="@string/pref_color_0"
         android:title="@string/color_0"
-        android:summary="%s" />
+        android:summary="%s"
+        app:customizationType="color" />
 
-    <androidx.preference.ListPreference
+    <com.antsapps.triples.CardCustomizationPreference
         android:defaultValue="#FFBB33"
         android:entries="@array/entries_color_pref"
         android:entryValues="@array/entryvalues_color_pref"
         android:key="@string/pref_color_1"
         android:title="@string/color_1"
-        android:summary="%s" />
+        android:summary="%s"
+        app:customizationType="color" />
 
-    <androidx.preference.ListPreference
+    <com.antsapps.triples.CardCustomizationPreference
         android:defaultValue="#FF4444"
         android:entries="@array/entries_color_pref"
         android:entryValues="@array/entryvalues_color_pref"
         android:key="@string/pref_color_2"
         android:title="@string/color_2"
-        android:summary="%s" />
+        android:summary="%s"
+        app:customizationType="color" />
 
-    <androidx.preference.ListPreference
+    <com.antsapps.triples.CardCustomizationPreference
         android:defaultValue="square"
         android:entries="@array/entries_shape_pref"
         android:entryValues="@array/entryvalues_shape_pref"
         android:key="@string/pref_shape_0"
         android:title="@string/shape_0"
-        android:summary="%s" />
+        android:summary="%s"
+        app:customizationType="shape" />
 
-    <androidx.preference.ListPreference
+    <com.antsapps.triples.CardCustomizationPreference
         android:defaultValue="circle"
         android:entries="@array/entries_shape_pref"
         android:entryValues="@array/entryvalues_shape_pref"
         android:key="@string/pref_shape_1"
         android:title="@string/shape_1"
-        android:summary="%s" />
+        android:summary="%s"
+        app:customizationType="shape" />
 
-    <androidx.preference.ListPreference
+    <com.antsapps.triples.CardCustomizationPreference
         android:defaultValue="triangle"
         android:entries="@array/entries_shape_pref"
         android:entryValues="@array/entryvalues_shape_pref"
         android:key="@string/pref_shape_2"
         android:title="@string/shape_2"
-        android:summary="%s" />
+        android:summary="%s"
+        app:customizationType="shape" />
 
     <androidx.preference.ListPreference
         android:defaultValue="stripes"

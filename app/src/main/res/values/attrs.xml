@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CardCustomizationPreference">
+        <attr name="customizationType" format="enum">
+            <enum name="color" value="0" />
+            <enum name="shape" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

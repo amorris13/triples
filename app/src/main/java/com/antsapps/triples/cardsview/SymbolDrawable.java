@@ -24,7 +24,7 @@ import com.google.common.primitives.Ints;
 
 import java.util.Arrays;
 
-class SymbolDrawable extends Drawable {
+public class SymbolDrawable extends Drawable {
 
   private static final int OUTLINE_WIDTH = 4;
   private static final int STRIPE_WIDTH = 3;
