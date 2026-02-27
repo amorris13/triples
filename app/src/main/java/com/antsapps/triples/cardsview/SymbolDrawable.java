@@ -79,23 +79,25 @@ class SymbolDrawable extends Drawable {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
     String pattern =
         sharedPref.getString(context.getString(R.string.pref_shaded_pattern), "stripes");
-    int thickness = STRIPE_WIDTH;
+    float density = context.getResources().getDisplayMetrics().density;
+    int thickness = Math.max(1, Math.round(STRIPE_WIDTH * density));
     Bitmap bm;
     if (pattern.equals("stripes")) {
       int[] pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
       bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
     } else if (pattern.equals("dots")) {
-      bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
-      for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
+      bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < thickness; i++) {
+        for (int j = 0; j < thickness; j++) {
           bm.setPixel(i, j, color);
         }
       }
     } else if (pattern.equals("crosshatch")) {
-      bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
-      for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-          if ((i + j) % 8 < 2 || (i - j + 8) % 8 < 2) {
+      int size = thickness * 3;
+      bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+          if ((i + j) % size < thickness || (i - j + size) % size < thickness) {
             bm.setPixel(i, j, color);
           }
         }
