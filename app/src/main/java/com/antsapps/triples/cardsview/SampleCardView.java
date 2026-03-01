@@ -1,13 +1,14 @@
 package com.antsapps.triples.cardsview;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.shapes.Shape;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.antsapps.triples.backend.Card;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class SampleCardView extends View {
     mNumber = number;
     Shape shape = SymbolDrawable.getShapeForId(context, shapeId);
     int color = SymbolDrawable.getColorForId(context, colorId);
-    Shader shader = SymbolDrawable.getShaderForPatternId(context, patternId, color);
+    Shader shader = SymbolDrawable.getShaderForPatternId(context, patternId, colorId);
     mSymbol = new SymbolDrawable(shape, color, shader);
     invalidate();
   }
@@ -33,8 +34,8 @@ public class SampleCardView extends View {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
-    // Landscape card aspect ratio is 3:2
-    int height = width * 2 / 3;
+    // Standard card aspect ratio is 2:3
+    int height = width * 3 / 2;
     setMeasuredDimension(width, height);
   }
 
@@ -43,22 +44,13 @@ public class SampleCardView extends View {
     if (mSymbol == null) return;
 
     Rect bounds = new Rect(0, 0, getWidth(), getHeight());
-    // We draw to a bitmap at 2x size and scale down to match CardDrawable's behavior
-    // and ensure correct line/pattern thickness.
-    Bitmap bitmap = Bitmap.createBitmap(bounds.width() * 2, bounds.height() * 2, Bitmap.Config.ARGB_8888);
-    Canvas tmpCanvas = new Canvas(bitmap);
-    Rect tmpBounds = new Rect(0, 0, bounds.width() * 2, bounds.height() * 2);
+    mBackground.setBounds(bounds);
+    mBackground.draw(canvas);
 
-    mBackground.setBounds(tmpBounds);
-    mBackground.draw(tmpCanvas);
-
-    List<Rect> symbolBounds = CardDrawable.getBoundsForNumId(mNumber, tmpBounds);
+    List<Rect> symbolBounds = CardDrawable.getBoundsForNumId(mNumber, bounds);
     for (Rect rect : symbolBounds) {
       mSymbol.setBounds(rect);
-      mSymbol.draw(tmpCanvas);
+      mSymbol.draw(canvas);
     }
-
-    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bounds.width(), bounds.height(), true);
-    canvas.drawBitmap(scaledBitmap, 0, 0, null);
   }
 }

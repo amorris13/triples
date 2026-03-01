@@ -26,6 +26,12 @@
     android:summaryOn="Never sleep while playing"
     android:title="Stay Awake" />
 
+  <androidx.preference.CheckBoxPreference
+      android:defaultValue="false"
+      android:key="@string/pref_hide_hint"
+      android:summary="@string/pref_hide_hint_summary"
+      android:title="@string/pref_hide_hint_title" />
+
 
   <androidx.preference.SeekBarPreference
       android:defaultValue="800"
@@ -35,7 +41,8 @@
       app:seekBarIncrement="100"
       app:adjustable="true"
       app:showSeekBarValue="false"
-      android:title="Animation Speed"/>
+      app:updatesContinuously="true"
+      android:title="@string/pref_animation_duration_title"/>
 
   <androidx.preference.PreferenceCategory
       android:title="Card Customization">

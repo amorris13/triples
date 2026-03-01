@@ -32,6 +32,7 @@ import com.antsapps.triples.cardsview.SymbolDrawable;
 import com.antsapps.triples.cardsview.TriangleShape;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CardCustomizationGroupPreference extends Preference {
 
@@ -215,11 +216,8 @@ public class CardCustomizationGroupPreference extends Preference {
                 convertView.setLayoutParams(new ViewGroup.LayoutParams(size, size));
                 int padding = (int) (8 * getContext().getResources().getDisplayMetrics().density);
                 convertView.setPadding(padding, padding, padding, padding);
-                ((ImageView) convertView).setScaleType(ImageView.ScaleType.FIT_CENTER);
             }
-            int size = (int) (48 * getContext().getResources().getDisplayMetrics().density);
             ShapeDrawable drawable = new ShapeDrawable(new RectShape());
-            drawable.setBounds(0, 0, size, size);
             drawable.getPaint().setColor(Color.parseColor(getItem(position)));
             ((ImageView) convertView).setImageDrawable(drawable);
             return convertView;
@@ -249,9 +247,7 @@ public class CardCustomizationGroupPreference extends Preference {
                 convertView.setLayoutParams(new ViewGroup.LayoutParams(size, size));
                 int padding = (int) (8 * getContext().getResources().getDisplayMetrics().density);
                 convertView.setPadding(padding, padding, padding, padding);
-                ((ImageView) convertView).setScaleType(ImageView.ScaleType.FIT_CENTER);
             }
-            int size = (int) (48 * getContext().getResources().getDisplayMetrics().density);
             android.graphics.drawable.shapes.Shape shape;
             switch (getItem(position)) {
                 case "square": shape = new RectShape(); break;
@@ -262,7 +258,6 @@ public class CardCustomizationGroupPreference extends Preference {
                 default: shape = new RectShape(); break;
             }
             ShapeDrawable drawable = new ShapeDrawable(shape);
-            drawable.setBounds(0, 0, size, size);
             drawable.getPaint().setColor(Color.GRAY);
             ((ImageView) convertView).setImageDrawable(drawable);
             return convertView;
@@ -296,19 +291,17 @@ public class CardCustomizationGroupPreference extends Preference {
 
             android.graphics.drawable.shapes.Shape shape = new RectShape();
             int color = Color.BLACK;
-            Shader shader = SymbolDrawable.getShaderForPatternId(getContext(), 1, color, getItem(position));
+            // Use color index 0 (Holo Blue) for the preview, though it doesn't matter much for shader.
+            Shader shader = SymbolDrawable.getShaderForPatternId(getContext(), 1, 0, getItem(position));
             SymbolDrawable drawable = new SymbolDrawable(shape, color, shader);
 
             int size = (int) (48 * getContext().getResources().getDisplayMetrics().density);
-            // We draw at a larger size and scale down to match how CardDrawable works
-            // and ensure correct pattern thickness.
-            Bitmap bitmap = Bitmap.createBitmap(size * 2, size * 2, Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(new Rect(0, 0, size * 2, size * 2));
+            drawable.setBounds(new Rect(0, 0, size, size));
             drawable.draw(canvas);
 
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
-            ((ImageView) convertView).setImageBitmap(scaledBitmap);
+            ((ImageView) convertView).setImageBitmap(bitmap);
 
             return convertView;
         }

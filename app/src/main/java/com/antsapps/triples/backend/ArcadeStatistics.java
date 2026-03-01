@@ -21,6 +21,9 @@ public class ArcadeStatistics extends Statistics {
     long leastDate = 0;
 
     for (Game game : mGamesInPeriod) {
+      if (game.areHintsUsed()) {
+        continue;
+      }
       ArcadeGame arcadeGame = (ArcadeGame) game;
       long found = arcadeGame.getNumTriplesFound();
       long date = arcadeGame.getDateStarted().getTime();
@@ -37,9 +40,16 @@ public class ArcadeStatistics extends Statistics {
       }
     }
 
+    int numGamesNotHinted = 0;
+    for (Game game : mGamesInPeriod) {
+      if (!game.areHintsUsed()) {
+        numGamesNotHinted++;
+      }
+    }
+
     mMostFound = mostFound;
     mLeastFound = leastFound;
-    mAverageFound = getNumGames() != 0 ? sumFound / getNumGames() : 0;
+    mAverageFound = numGamesNotHinted != 0 ? sumFound / numGamesNotHinted : 0;
     mMostFoundDate = mostDate;
     mLeastFoundDate = leastDate;
   }

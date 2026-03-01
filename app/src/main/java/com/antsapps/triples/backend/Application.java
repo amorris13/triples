@@ -8,7 +8,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class Application extends OnStateChangedReporter {
   private static final String TAG = "Application";
@@ -25,6 +27,59 @@ public class Application extends OnStateChangedReporter {
     super();
     database = new DBAdapter(context);
     database.initialize(mClassicGames, mArcadeGames);
+    if (isDebug()) {
+      prefillDatabaseIfEmpty();
+    }
+  }
+
+  private boolean isDebug() {
+    try {
+      Class<?> buildConfigClass = Class.forName("com.antsapps.triples.BuildConfig");
+      return (Boolean) buildConfigClass.getField("DEBUG").get(null);
+    } catch (Exception e) {
+      Log.e(TAG, "Could not find BuildConfig", e);
+      return false;
+    }
+  }
+
+  private void prefillDatabaseIfEmpty() {
+    if (mClassicGames.isEmpty()) {
+      Random random = new Random();
+      for (int i = 0; i < 10; i++) {
+        long seed = random.nextLong();
+        ClassicGame game =
+            new ClassicGame(
+                -1,
+                seed,
+                Lists.<Card>newArrayList(),
+                Lists.<Long>newArrayList(),
+                new Deck(Lists.<Card>newArrayList()),
+                (long) (120000 + random.nextInt(300000)), // 2 to 7 minutes
+                new Date(System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
+                GameState.COMPLETED,
+                false);
+        addClassicGame(game);
+      }
+    }
+    if (mArcadeGames.isEmpty()) {
+      Random random = new Random();
+      for (int i = 0; i < 10; i++) {
+        long seed = random.nextLong();
+        ArcadeGame game =
+            new ArcadeGame(
+                -1,
+                seed,
+                Lists.<Card>newArrayList(),
+                Lists.<Long>newArrayList(),
+                new Deck(new Random(seed)),
+                ArcadeGame.TIME_LIMIT_MS + 100,
+                new Date(System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000),
+                GameState.COMPLETED,
+                10 + random.nextInt(20), // 10 to 30 triples
+                false);
+        addArcadeGame(game);
+      }
+    }
   }
 
   public static Application getInstance(Context context) {

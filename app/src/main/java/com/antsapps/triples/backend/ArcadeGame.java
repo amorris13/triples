@@ -23,7 +23,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
             0,
             new Date(),
             GameState.STARTING,
-            0);
+            0,
+            false);
     game.init();
     return game;
   }
@@ -37,8 +38,10 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
       long timeElapsed,
       Date date,
       GameState gameState,
-      int numTriplesFound) {
-    super(id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState);
+      int numTriplesFound,
+      boolean hintsUsed) {
+    super(
+        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
     mNumTriplesFound = numTriplesFound;
     mTimer.addOnTimerTickListener(this);
   }

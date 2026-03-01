@@ -71,6 +71,15 @@
     <string name="fastest_triple">Fastest triple:</string>
     <string name="slowest_triple">Slowest triple:</string>
 
+    <string name="hint_confirmation_title">Use a hint?</string>
+    <string name="hint_confirmation_message">Are you sure you want to use a hint? This game will not count towards your statistics or leaderboards.</string>
+    <string name="dont_ask_again">Don\'t ask again</string>
+
+    <string name="pref_hide_hint_title">Hide Hint Icon</string>
+    <string name="pref_hide_hint_summary">Hide the hint icon in the game action bar</string>
+
+    <string name="hint_used_indicator">HINT USED</string>
+
   <string name="color_0">Color 1</string>
   <string name="color_1">Color 2</string>
   <string name="color_2">Color 3</string>
@@ -80,5 +89,8 @@
   <string name="shape_2">Shape 3</string>
 
   <string name="shaded_pattern">Shaded Pattern</string>
+
+  <string name="pref_animation_duration_title">Animation Duration</string>
+  <string name="pref_animation_duration_summary">%1$d ms</string>
 
 </resources>
