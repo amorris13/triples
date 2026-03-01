@@ -37,8 +37,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public static final int VIEW_PAUSED = 1;
   public static final int VIEW_COMPLETED = 2;
 
-  private FirebaseAnalytics mFirebaseAnalytics;
-
   private ViewAnimator mViewAnimator;
   private CardsView mCardsView;
   private GameState mGameState;
@@ -125,9 +123,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       return true;
     } else if (itemId == R.id.pause) {
       getGame().pause();
+      logPauseGame();
       return true;
     } else if (itemId == R.id.play) {
       getGame().resume();
+      logResumeGame();
       return true;
     } else if (itemId == R.id.help) {
       Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
@@ -153,6 +153,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_dont_ask_for_hint), false)) {
       getGame().addHint();
+      logUseHint();
       updateHintUsedIndicator();
     } else {
       View checkBoxView = View.inflate(this, R.layout.remember_checkbox, null);
@@ -175,6 +176,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
                     .commit();
               }
               getGame().addHint();
+              logUseHint();
               updateHintUsedIndicator();
             }
           });
@@ -344,5 +346,23 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.NEW_GAME, bundle);
+  }
+
+  private void logPauseGame() {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.PAUSE_GAME, bundle);
+  }
+
+  private void logResumeGame() {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.RESUME_GAME, bundle);
+  }
+
+  private void logUseHint() {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.USE_HINT, bundle);
   }
 }

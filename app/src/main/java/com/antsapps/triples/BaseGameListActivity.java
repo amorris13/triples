@@ -31,8 +31,6 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
 
   private static final String TAB_NUMBER = "tab";
 
-  protected FirebaseAnalytics mFirebaseAnalytics;
-
   private DrawerLayout mDrawerLayout;
   private ActionBarDrawerToggle mDrawerToggle;
   private ViewPager mViewPager;
@@ -57,9 +55,11 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
           public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             switch (position) {
               case 0:
+                logSwitchGameMode("Classic");
                 startActivity(new Intent(getBaseContext(), ClassicGameListActivity.class));
                 break;
               case 1:
+                logSwitchGameMode("Arcade");
                 startActivity(new Intent(getBaseContext(), ArcadeGameListActivity.class));
                 break;
             }
@@ -97,7 +97,13 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
       bar.setSelectedNavigationItem(savedInstanceState.getInt(TAB_NUMBER, 0));
     }
 
-    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+    mViewPager.addOnPageChangeListener(
+        new ViewPager.SimpleOnPageChangeListener() {
+          @Override
+          public void onPageSelected(int position) {
+            logTabSelected(position);
+          }
+        });
   }
 
   private void maybeOpenNavDrawer() {
@@ -186,6 +192,27 @@ public abstract class BaseGameListActivity extends BaseTriplesActivity {
   }
 
   protected abstract String getAnalyticsGameType();
+
+  private void logSwitchGameMode(String mode) {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.MODE, mode);
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SWITCH_GAME_MODE, bundle);
+  }
+
+  private void logTabSelected(int position) {
+    String tabName = "";
+    switch (position) {
+      case 0:
+        tabName = "Current";
+        break;
+      case 1:
+        tabName = "Statistics";
+        break;
+    }
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.TAB_NAME, tabName);
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SELECT_TAB, bundle);
+  }
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
