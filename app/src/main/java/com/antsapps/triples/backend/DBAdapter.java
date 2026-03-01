@@ -25,10 +25,12 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_TIME_ELAPSED = "time_elapsed";
   public static final String COLUMN_DATE = "date";
   public static final String COLUMN_NUM_TRIPLES_FOUND = "num_triples_found"; // ARCADE only
+  public static final String COLUMN_TRIPLE_FIND_TIMES = "triple_find_times";
+  public static final String COLUMN_HINTS_USED = "hints_used";
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
   /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 4;
+  private static final int DATABASE_VERSION = 6;
 
   private static final String CREATE_CLASSIC_GAMES =
       "CREATE TABLE "
@@ -47,6 +49,10 @@ public class DBAdapter extends SQLiteOpenHelper {
           + COLUMN_TIME_ELAPSED
           + " INTEGER, " //
           + COLUMN_DATE
+          + " INTEGER, " //
+          + COLUMN_TRIPLE_FIND_TIMES
+          + " BLOB, " //
+          + COLUMN_HINTS_USED
           + " INTEGER)";
   private static final String CREATE_ARCADE_GAMES =
       "CREATE TABLE "
@@ -67,6 +73,10 @@ public class DBAdapter extends SQLiteOpenHelper {
           + COLUMN_DATE
           + " INTEGER, " //
           + COLUMN_NUM_TRIPLES_FOUND
+          + " INTEGER, " //
+          + COLUMN_TRIPLE_FIND_TIMES
+          + " BLOB, " //
+          + COLUMN_HINTS_USED
           + " INTEGER)";
   private static final String TAG = "DBAdapter";
 
@@ -124,6 +134,30 @@ public class DBAdapter extends SQLiteOpenHelper {
         db.endTransaction();
       }
     }
+    if (oldVersion < 5) {
+      db.beginTransaction();
+      try {
+        db.execSQL("ALTER TABLE " + TABLE_CLASSIC_GAMES + " ADD COLUMN " + COLUMN_TRIPLE_FIND_TIMES + " BLOB");
+        db.execSQL("ALTER TABLE " + TABLE_ARCADE_GAMES + " ADD COLUMN " + COLUMN_TRIPLE_FIND_TIMES + " BLOB");
+        db.setTransactionSuccessful();
+      } catch (SQLException e) {
+        Log.e("DBAdapter-Upgrade", e.toString());
+      } finally {
+        db.endTransaction();
+      }
+    }
+    if (oldVersion < 6) {
+      db.beginTransaction();
+      try {
+        db.execSQL("ALTER TABLE " + TABLE_CLASSIC_GAMES + " ADD COLUMN " + COLUMN_HINTS_USED + " INTEGER DEFAULT 0");
+        db.execSQL("ALTER TABLE " + TABLE_ARCADE_GAMES + " ADD COLUMN " + COLUMN_HINTS_USED + " INTEGER DEFAULT 0");
+        db.setTransactionSuccessful();
+      } catch (SQLException e) {
+        Log.e("DBAdapter-Upgrade", e.toString());
+      } finally {
+        db.endTransaction();
+      }
+    }
   }
 
   public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames) {
@@ -150,7 +184,9 @@ public class DBAdapter extends SQLiteOpenHelper {
                   COLUMN_CARDS_IN_PLAY,
                   COLUMN_CARDS_IN_DECK,
                   COLUMN_TIME_ELAPSED,
-                  COLUMN_DATE
+                  COLUMN_DATE,
+                  COLUMN_TRIPLE_FIND_TIMES,
+                  COLUMN_HINTS_USED
                 },
                 null,
                 null,
@@ -164,10 +200,12 @@ public class DBAdapter extends SQLiteOpenHelper {
               classicGamesCursor.getLong(0),
               classicGamesCursor.getLong(2),
               Utils.cardListFromByteArray(classicGamesCursor.getBlob(3)),
+              Utils.longListFromByteArray(classicGamesCursor.getBlob(7)),
               Deck.fromByteArray(classicGamesCursor.getBlob(4)),
               classicGamesCursor.getLong(5),
               new Date(classicGamesCursor.getLong(6)),
-              GameState.valueOf(classicGamesCursor.getString(1)));
+              GameState.valueOf(classicGamesCursor.getString(1)),
+              classicGamesCursor.getInt(8) != 0);
       classicGames.add(game);
       classicGamesCursor.moveToNext();
     }
@@ -202,6 +240,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
     values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
+    values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
     return values;
   }
 
@@ -224,7 +264,9 @@ public class DBAdapter extends SQLiteOpenHelper {
                   COLUMN_CARDS_IN_DECK,
                   COLUMN_TIME_ELAPSED,
                   COLUMN_DATE,
-                  COLUMN_NUM_TRIPLES_FOUND
+                  COLUMN_NUM_TRIPLES_FOUND,
+                  COLUMN_TRIPLE_FIND_TIMES,
+                  COLUMN_HINTS_USED
                 },
                 null,
                 null,
@@ -238,11 +280,13 @@ public class DBAdapter extends SQLiteOpenHelper {
               arcadeGamesCursor.getLong(0),
               arcadeGamesCursor.getLong(2),
               Utils.cardListFromByteArray(arcadeGamesCursor.getBlob(3)),
+              Utils.longListFromByteArray(arcadeGamesCursor.getBlob(8)),
               Deck.fromByteArray(arcadeGamesCursor.getBlob(4)),
               arcadeGamesCursor.getLong(5),
               new Date(arcadeGamesCursor.getLong(6)),
               GameState.valueOf(arcadeGamesCursor.getString(1)),
-              arcadeGamesCursor.getInt(7));
+              arcadeGamesCursor.getInt(7),
+              arcadeGamesCursor.getInt(9) != 0);
       arcadeGames.add(game);
       arcadeGamesCursor.moveToNext();
     }
@@ -277,6 +321,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
     values.put(COLUMN_DATE, game.getDateStarted().getTime());
     values.put(COLUMN_NUM_TRIPLES_FOUND, game.getNumTriplesFound());
+    values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
+    values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
     return values;
   }
 }

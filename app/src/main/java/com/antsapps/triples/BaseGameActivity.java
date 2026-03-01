@@ -1,24 +1,34 @@
 package com.antsapps.triples;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.ActionBar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
+import com.antsapps.triples.stats.TimelineView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public abstract class BaseGameActivity extends BaseTriplesActivity
     implements OnUpdateGameStateListener {
@@ -51,6 +61,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().setGameRenderer(mCardsView);
 
+    mCardsView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            // Ensure width and height are greater than 0 before refreshing drawables
+            if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+                mCardsView.refreshDrawables();
+                mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        }
+    });
+
     mViewAnimator = findViewById(R.id.view_switcher);
 
     ActionBar actionBar = getSupportActionBar();
@@ -80,6 +101,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.pause).setVisible(mGameState == GameState.ACTIVE);
     menu.findItem(R.id.play).setVisible(mGameState == GameState.PAUSED);
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
+    menu.findItem(R.id.hint).setVisible(!hideHint);
+
     return true;
   }
 
@@ -95,7 +121,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     // Handle item selection
     int itemId = item.getItemId();
     if (itemId == R.id.hint) {
-      getGame().addHint();
+      handleHintSelection();
       return true;
     } else if (itemId == R.id.pause) {
       getGame().pause();
@@ -123,10 +149,60 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   protected abstract Class<? extends BaseGameListActivity> getParentClass();
 
+  private void handleHintSelection() {
+    final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    if (sharedPref.getBoolean(getString(R.string.pref_dont_ask_for_hint), false)) {
+      getGame().addHint();
+      updateHintUsedIndicator();
+    } else {
+      View checkBoxView = View.inflate(this, R.layout.remember_checkbox, null);
+      final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox);
+      checkBox.setText(R.string.dont_ask_again);
+
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setTitle(R.string.hint_confirmation_title);
+      builder.setMessage(R.string.hint_confirmation_message);
+      builder.setView(checkBoxView);
+      builder.setPositiveButton(
+          R.string.yes,
+          new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              if (checkBox.isChecked()) {
+                sharedPref
+                    .edit()
+                    .putBoolean(getString(R.string.pref_dont_ask_for_hint), true)
+                    .commit();
+              }
+              getGame().addHint();
+              updateHintUsedIndicator();
+            }
+          });
+      builder.setNegativeButton(
+          R.string.no,
+          new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              // do nothing
+            }
+          });
+      builder.show();
+    }
+  }
+
+  private void updateHintUsedIndicator() {
+    View hintUsedIndicator = findViewById(R.id.hint_used_text);
+    if (hintUsedIndicator != null) {
+      hintUsedIndicator.setVisibility(getGame().areHintsUsed() ? View.VISIBLE : View.GONE);
+    }
+  }
+
   @Override
   protected void onResume() {
     super.onResume();
     getGame().resumeFromLifecycle();
+
+    updateHintUsedIndicator();
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_screen_lock), true)) {
@@ -210,11 +286,35 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       childToDisplay = VIEW_PAUSED;
     } else if (mGameState == GameState.COMPLETED) {
       childToDisplay = VIEW_COMPLETED;
+      updateStatistics();
     } else {
       childToDisplay = VIEW_CARDS;
     }
     if (mViewAnimator.getDisplayedChild() != childToDisplay) {
       mViewAnimator.setDisplayedChild(childToDisplay);
+    }
+  }
+
+  private void updateStatistics() {
+    List<Long> findTimes = getGame().getTripleFindTimes();
+    if (!findTimes.isEmpty()) {
+      long fastest = Long.MAX_VALUE;
+      long slowest = 0;
+      long lastTime = 0;
+      for (long time : findTimes) {
+        long duration = time - lastTime;
+        fastest = Math.min(fastest, duration);
+        slowest = Math.max(slowest, duration);
+        lastTime = time;
+      }
+
+      ((TextView) findViewById(R.id.fastest_triple))
+          .setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(fastest)));
+      ((TextView) findViewById(R.id.slowest_triple))
+          .setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(slowest)));
+
+      ((TimelineView) findViewById(R.id.timeline))
+          .setTripleFindTimes(findTimes, getGame().getTimeElapsed());
     }
   }
 

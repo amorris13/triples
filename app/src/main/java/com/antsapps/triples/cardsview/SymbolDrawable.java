@@ -1,5 +1,7 @@
 package com.antsapps.triples.cardsview;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -14,7 +16,9 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
+import androidx.preference.PreferenceManager;
 
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.google.common.primitives.Ints;
 
@@ -30,46 +34,82 @@ class SymbolDrawable extends Drawable {
   private final ShapeDrawable mOutline;
   private final ShapeDrawable mFill;
 
-  SymbolDrawable(Card card) {
+  SymbolDrawable(Context context, Card card) {
     mCard = card;
-    mOutline = getOutlineForCard(card);
-    mFill = getFillForCard(card);
+    mOutline = getOutlineForCard(context, card);
+    mFill = getFillForCard(context, card);
   }
 
-  private static ShapeDrawable getOutlineForCard(Card card) {
-    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(card.mShape));
-    symbol.getPaint().setColor(getColorForId(card.mColor));
+  private static ShapeDrawable getOutlineForCard(Context context, Card card) {
+    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
+    symbol.getPaint().setColor(getColorForId(context, card.mColor));
     symbol.getPaint().setStyle(Style.STROKE);
     symbol.getPaint().setStrokeWidth(OUTLINE_WIDTH);
     return symbol;
   }
 
-  private static ShapeDrawable getFillForCard(Card card) {
-    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(card.mShape));
-    symbol.getPaint().setShader(getShaderForPatternId(card.mPattern, card.mColor));
+  private static ShapeDrawable getFillForCard(Context context, Card card) {
+    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
+    symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor));
     symbol.getPaint().setStyle(Style.FILL);
     return symbol;
   }
 
-  private static Shader getShaderForPatternId(int patternId, int colorId) {
-    int color = getColorForId(colorId);
-    int thickness = STRIPE_WIDTH;
-    int[] pixels;
-    Bitmap bm;
+  private static Shader getShaderForPatternId(Context context, int patternId, int colorId) {
+    int color = getColorForId(context, colorId);
     switch (patternId) {
       case 0: // Empty
-        pixels = new int[] {0};
-        break;
-      case 1: // Stripes
-        pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
-        break;
+        return new BitmapShader(
+            Bitmap.createBitmap(new int[] {0}, 1, 1, Bitmap.Config.ARGB_8888),
+            Shader.TileMode.REPEAT,
+            Shader.TileMode.REPEAT);
+      case 1: // Customizable Shaded
+        return getCustomShadedShader(context, color);
       case 2: // Solid
-        pixels = new int[] {color};
-        break;
+        return new BitmapShader(
+            Bitmap.createBitmap(new int[] {color}, 1, 1, Bitmap.Config.ARGB_8888),
+            Shader.TileMode.REPEAT,
+            Shader.TileMode.REPEAT);
       default:
         return null;
     }
-    bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
+  }
+
+  private static Shader getCustomShadedShader(Context context, int color) {
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+    String pattern =
+        sharedPref.getString(context.getString(R.string.pref_shaded_pattern), "stripes");
+    float density = context.getResources().getDisplayMetrics().density;
+    int thickness = Math.max(1, Math.round(STRIPE_WIDTH * density));
+    Bitmap bm;
+    if (pattern.equals("stripes")) {
+      int[] pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
+      bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
+    } else if (pattern.equals("dots")) {
+      bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < thickness; i++) {
+        for (int j = 0; j < thickness; j++) {
+          bm.setPixel(i, j, color);
+        }
+      }
+    } else if (pattern.equals("crosshatch")) {
+      int size = thickness * 3;
+      bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+          if ((i + j) % size < thickness || (i - j + size) % size < thickness) {
+            bm.setPixel(i, j, color);
+          }
+        }
+      }
+    } else if (pattern.equals("lighter")) {
+      int lighterColor = Color.argb(128, Color.red(color), Color.green(color), Color.blue(color));
+      bm = Bitmap.createBitmap(new int[] {lighterColor}, 1, 1, Bitmap.Config.ARGB_8888);
+    } else {
+      // default to stripes
+      int[] pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
+      bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
+    }
     return new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
   }
 
@@ -79,28 +119,58 @@ class SymbolDrawable extends Drawable {
     return arr;
   }
 
-  private static Shape getShapeForId(int id) {
+  private static Shape getShapeForId(Context context, int id) {
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+    String key;
+    String defaultShape;
     switch (id) {
-      case 0: // Square
-        return new RectShape();
-      case 1: // Circle
-        return new OvalShape();
-      case 2: // Triangle
+      case 0:
+        key = context.getString(R.string.pref_shape_0);
+        defaultShape = "square";
+        break;
+      case 1:
+        key = context.getString(R.string.pref_shape_1);
+        defaultShape = "circle";
+        break;
+      case 2:
+        key = context.getString(R.string.pref_shape_2);
+        defaultShape = "triangle";
+        break;
       default:
         return new TriangleShape();
     }
+    String shape = sharedPref.getString(key, defaultShape);
+    if (shape.equals("square")) return new RectShape();
+    if (shape.equals("circle")) return new OvalShape();
+    if (shape.equals("triangle")) return new TriangleShape();
+    if (shape.equals("diamond")) return new DiamondShape();
+    if (shape.equals("hexagon")) return new HexagonShape();
+    if (shape.equals("star")) return new StarShape();
+    return new TriangleShape();
   }
 
-  private static int getColorForId(int id) {
+  private static int getColorForId(Context context, int id) {
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+    String key;
+    String defaultHex;
     switch (id) {
       case 0:
-        return Color.parseColor("#33B5E5"); // Holo Light Blue
+        key = context.getString(R.string.pref_color_0);
+        defaultHex = "#33B5E5";
+        break;
       case 1:
-        return Color.parseColor("#FFBB33"); // Holo Light Orange
+        key = context.getString(R.string.pref_color_1);
+        defaultHex = "#FFBB33";
+        break;
       case 2:
-        return Color.parseColor("#FF4444"); // Holo Light Red
+        key = context.getString(R.string.pref_color_2);
+        defaultHex = "#FF4444";
+        break;
+      default:
+        return 0;
     }
-    return 0;
+    String hex = sharedPref.getString(key, defaultHex);
+    return Color.parseColor(hex);
   }
 
   @Override

@@ -17,10 +17,10 @@ public final class Card {
   public final int mColor;
 
   public Card(int number, int shape, int pattern, int color) {
-    Preconditions.checkArgument(number >= 0 && number < MAX_VARIABLES, "number = %d", number);
-    Preconditions.checkArgument(shape >= 0 && shape < MAX_VARIABLES, "shape = %d", shape);
-    Preconditions.checkArgument(pattern >= 0 && pattern < MAX_VARIABLES, "pattern = %d", pattern);
-    Preconditions.checkArgument(color >= 0 && color < MAX_VARIABLES, "color = %d", color);
+    Preconditions.checkArgument(number >= 0 && number < MAX_VARIABLES, "number = %s", number);
+    Preconditions.checkArgument(shape >= 0 && shape < MAX_VARIABLES, "shape = %s", shape);
+    Preconditions.checkArgument(pattern >= 0 && pattern < MAX_VARIABLES, "pattern = %s", pattern);
+    Preconditions.checkArgument(color >= 0 && color < MAX_VARIABLES, "color = %s", color);
 
     mNumber = number;
     mShape = shape;

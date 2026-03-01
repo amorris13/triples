@@ -23,6 +23,8 @@ android {
 }
 
 dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'com.google.truth:truth:1.4.4'
     implementation 'com.google.guava:guava:33.5.0-android'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -32,6 +34,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-auth:21.3.0'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

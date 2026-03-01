@@ -69,7 +69,11 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected final List<Card> mCardsInPlay;
 
+  protected final List<Long> mTripleFindTimes;
+
   private final Set<Card> mHintedCards = Sets.newHashSet();
+
+  private boolean mHintsUsed;
 
   protected final Timer mTimer;
 
@@ -91,17 +95,21 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       long id,
       long seed,
       List<Card> cardsInPlay,
+      List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
-      GameState gameState) {
+      GameState gameState,
+      boolean hintsUsed) {
     this.id = id;
     mRandomSeed = seed;
     mCardsInPlay = Lists.newArrayList(cardsInPlay);
+    mTripleFindTimes = Lists.newArrayList(tripleFindTimes);
     mDeck = cardsInDeck;
     mTimer = new Timer(timeElapsed);
     mDate = date;
     mGameState = gameState;
+    mHintsUsed = hintsUsed;
   }
 
   public void setGameRenderer(GameRenderer gameRenderer) {
@@ -209,6 +217,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
 
     mNumTriplesFound++;
+    mTripleFindTimes.add(mTimer.getElapsed());
 
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
@@ -391,12 +400,20 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return mTimer.getElapsed();
   }
 
+  public List<Long> getTripleFindTimes() {
+    return ImmutableList.copyOf(mTripleFindTimes);
+  }
+
   public Date getDateStarted() {
     return mDate;
   }
 
   public GameState getGameState() {
     return mGameState;
+  }
+
+  public boolean areHintsUsed() {
+    return mHintsUsed;
   }
 
   public boolean isTutorial() {
@@ -414,6 +431,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   public abstract String getGameTypeForAnalytics();
 
   public boolean addHint() {
+    mHintsUsed = true;
     if (mHintedCards.size() == 3) {
       return false;
     }

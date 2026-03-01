@@ -18,11 +18,13 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
             -1,
             seed,
             Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
             new Deck(new Random(seed)),
             0,
             new Date(),
             GameState.STARTING,
-            0);
+            0,
+            false);
     game.init();
     return game;
   }
@@ -31,12 +33,15 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
       long id,
       long seed,
       List<Card> cardsInPlay,
+      List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
       GameState gameState,
-      int numTriplesFound) {
-    super(id, seed, cardsInPlay, cardsInDeck, timeElapsed, date, gameState);
+      int numTriplesFound,
+      boolean hintsUsed) {
+    super(
+        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
     mNumTriplesFound = numTriplesFound;
     mTimer.addOnTimerTickListener(this);
   }

@@ -238,6 +238,13 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     }
   }
 
+  public void refreshDrawables() {
+    for (CardDrawable cardDrawable : mCardDrawables.values()) {
+      cardDrawable.regenerateCachedDrawable();
+    }
+    invalidate();
+  }
+
   public void setOnValidTripleSelectedListener(OnValidTripleSelectedListener listener) {
     mOnValidTripleSelectedListener = listener;
   }

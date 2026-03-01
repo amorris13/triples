@@ -16,10 +16,12 @@ public class ClassicGame extends Game {
             -1,
             seed,
             Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
             new Deck(new Random(seed)),
             0,
             new Date(),
-            GameState.STARTING);
+            GameState.STARTING,
+            false);
     game.init();
     return game;
   }
@@ -43,11 +45,14 @@ public class ClassicGame extends Game {
       long id,
       long seed,
       List<Card> cardsInPlay,
+      List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
-      GameState gameState) {
-    super(id, seed, cardsInPlay, cardsInDeck, timeElapsed, date, gameState);
+      GameState gameState,
+      boolean hintsUsed) {
+    super(
+        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
   }
 
   /**
