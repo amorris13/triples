@@ -37,12 +37,9 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
 
       Game g = getItem(position);
       if (g != null) {
-        String result =
-            DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g.getTimeElapsed()));
-        if (g.areHintsUsed()) {
-          result += " (hinted)";
-        }
-        ((TextView) v.findViewById(R.id.result)).setText(result);
+        ((TextView) v.findViewById(R.id.result))
+            .setText(
+                DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g.getTimeElapsed())));
         ((TextView) v.findViewById(R.id.date_played))
             .setText(DateUtils.formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
       }

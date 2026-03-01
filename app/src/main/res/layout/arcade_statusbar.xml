@@ -36,15 +36,4 @@
     android:layout_below="@id/triples_found_text"
     android:text="@string/triples_found" />
 
-  <TextView
-      android:id="@+id/hint_used_text"
-      style="@style/status_bar_key"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_centerHorizontal="true"
-      android:layout_centerVertical="true"
-      android:text="@string/hint_used_indicator"
-      android:textColor="#FF4444"
-      android:visibility="gone"/>
-
 </RelativeLayout>

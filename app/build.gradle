@@ -11,18 +11,8 @@ android {
         targetSdkVersion 34
     }
 
-    signingConfigs {
-        release {
-            storeFile file(System.getenv("RELEASE_STORE_FILE") ?: "keystore.jks")
-            storePassword System.getenv("RELEASE_STORE_PASSWORD")
-            keyAlias System.getenv("RELEASE_KEY_ALIAS")
-            keyPassword System.getenv("RELEASE_KEY_PASSWORD")
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
         }

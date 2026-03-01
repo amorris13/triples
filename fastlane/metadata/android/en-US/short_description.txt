@@ -1,1 +1,0 @@
-Triples - A Set-style card game. Find triples where properties match or differ.

@@ -19,8 +19,7 @@ public class ClassicGame extends Game {
             new Deck(new Random(seed)),
             0,
             new Date(),
-            GameState.STARTING,
-            false);
+            GameState.STARTING);
     game.init();
     return game;
   }
@@ -33,10 +32,8 @@ public class ClassicGame extends Game {
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
-      GameState gameState,
-      boolean hintsUsed) {
-    super(
-        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
+      GameState gameState) {
+    super(id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState);
   }
 
   /**

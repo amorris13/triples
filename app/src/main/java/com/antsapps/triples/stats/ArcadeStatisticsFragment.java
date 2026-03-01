@@ -36,11 +36,7 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
 
       ArcadeGame g = (ArcadeGame) getItem(position);
       if (g != null) {
-        String result = String.valueOf(g.getNumTriplesFound());
-        if (g.areHintsUsed()) {
-          result += " (hinted)";
-        }
-        ((TextView) v.findViewById(R.id.result)).setText(result);
+        ((TextView) v.findViewById(R.id.result)).setText(String.valueOf(g.getNumTriplesFound()));
         ((TextView) v.findViewById(R.id.date_played))
             .setText(DateUtils.formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
       }

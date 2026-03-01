@@ -35,13 +35,11 @@ public class SymbolDrawable extends Drawable {
   private final ShapeDrawable mFill;
 
   public SymbolDrawable(Context context, Card card) {
-    this(context, card, null);
-  }
-
-  public SymbolDrawable(Context context, Card card, String overriddenPattern) {
-    mCard = card;
-    mOutline = getOutlineForCard(context, card);
-    mFill = getFillForCard(context, card, overriddenPattern);
+    this(
+        card,
+        getShapeForId(context, card.mShape),
+        getColorForId(context, card.mColor),
+        getShaderForPatternId(context, card.mPattern, getColorForId(context, card.mColor)));
   }
 
   public SymbolDrawable(Shape shape, int color, Shader shader) {
@@ -60,28 +58,12 @@ public class SymbolDrawable extends Drawable {
     mFill.getPaint().setStyle(Style.FILL);
   }
 
-  private static ShapeDrawable getOutlineForCard(Context context, Card card) {
-    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
-    symbol.getPaint().setColor(getColorForId(context, card.mColor));
-    symbol.getPaint().setStyle(Style.STROKE);
-    symbol.getPaint().setStrokeWidth(OUTLINE_WIDTH);
-    return symbol;
-  }
-
-  private static ShapeDrawable getFillForCard(Context context, Card card, String overriddenPattern) {
-    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
-    symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor, overriddenPattern));
-    symbol.getPaint().setStyle(Style.FILL);
-    return symbol;
-  }
-
-  public static Shader getShaderForPatternId(Context context, int patternId, int colorId) {
-    return getShaderForPatternId(context, patternId, colorId, null);
+  public static Shader getShaderForPatternId(Context context, int patternId, int color) {
+    return getShaderForPatternId(context, patternId, color, null);
   }
 
   public static Shader getShaderForPatternId(
-      Context context, int patternId, int colorId, String overriddenPattern) {
-    int color = getColorForId(context, colorId);
+      Context context, int patternId, int color, String overriddenPattern) {
     switch (patternId) {
       case 0: // Empty
         return new BitmapShader(
@@ -113,20 +95,12 @@ public class SymbolDrawable extends Drawable {
       bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
     } else if (pattern.equals("dots")) {
       bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
-      for (int i = 0; i < thickness; i++) {
-        for (int j = 0; j < thickness; j++) {
-          bm.setPixel(i, j, color);
-        }
-      }
+      bm.setPixel(0, 0, color);
     } else if (pattern.equals("crosshatch")) {
-      int size = thickness * 3;
-      bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-      for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-          if ((i + j) % size < thickness || (i - j + size) % size < thickness) {
-            bm.setPixel(i, j, color);
-          }
-        }
+      bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
+      for (int i = 0; i < thickness * 2; i++) {
+        bm.setPixel(i, 0, color);
+        bm.setPixel(0, i, color);
       }
     } else if (pattern.equals("lighter")) {
       int lighterColor = Color.argb(128, Color.red(color), Color.green(color), Color.blue(color));
@@ -174,7 +148,6 @@ public class SymbolDrawable extends Drawable {
     if (shape.equals("triangle")) return new TriangleShape();
     if (shape.equals("diamond")) return new DiamondShape();
     if (shape.equals("hexagon")) return new HexagonShape();
-    if (shape.equals("star")) return new StarShape();
     return new TriangleShape();
   }
 

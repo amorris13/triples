@@ -23,12 +23,12 @@ public class HexagonShape extends RectShape {
 
     RectF rect = rect();
     mPath = new Path();
-    mPath.moveTo(rect.centerX(), rect.top);
-    mPath.lineTo(rect.right, rect.top + rect.height() / 4);
-    mPath.lineTo(rect.right, rect.top + 3 * rect.height() / 4);
-    mPath.lineTo(rect.centerX(), rect.bottom);
-    mPath.lineTo(rect.left, rect.top + 3 * rect.height() / 4);
-    mPath.lineTo(rect.left, rect.top + rect.height() / 4);
+    mPath.moveTo(rect.centerX(), 0);
+    mPath.lineTo(rect.width(), rect.height() / 4);
+    mPath.lineTo(rect.width(), 3 * rect.height() / 4);
+    mPath.lineTo(rect.centerX(), rect.height());
+    mPath.lineTo(0, 3 * rect.height() / 4);
+    mPath.lineTo(0, rect.height() / 4);
     mPath.close();
   }
 

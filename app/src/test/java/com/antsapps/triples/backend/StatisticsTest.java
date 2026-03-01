@@ -13,16 +13,7 @@ import org.junit.runners.JUnit4;
 public class StatisticsTest {
 
   private static Game createGame(long id, Date date) {
-    return new ClassicGame(
-        id,
-        0,
-        ImmutableList.<Card>of(),
-        ImmutableList.<Long>of(),
-        null,
-        0,
-        date,
-        Game.GameState.ACTIVE,
-        false);
+    return new ClassicGame(id, 0, ImmutableList.<Card>of(), ImmutableList.<Long>of(), null, 0, date, Game.GameState.ACTIVE);
   }
 
   @Test

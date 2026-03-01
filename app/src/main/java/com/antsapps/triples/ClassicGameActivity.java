@@ -91,7 +91,7 @@ public class ClassicGameActivity extends BaseGameActivity
   }
 
   protected void submitScore() {
-    if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
+    if (mGame.getGameState() == Game.GameState.COMPLETED) {
       return;
     }
     Games.Leaderboards.submitScoreImmediate(

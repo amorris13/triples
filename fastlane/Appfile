@@ -1,2 +1,0 @@
-json_key_file(ENV["GPC_JSON_KEY_FILE"]) # Path to the service account JSON key file
-package_name("com.antsapps.triples") # Your app identifier

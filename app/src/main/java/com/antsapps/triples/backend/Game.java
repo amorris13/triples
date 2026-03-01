@@ -73,8 +73,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final Set<Card> mHintedCards = Sets.newHashSet();
 
-  private boolean mHintsUsed;
-
   protected final Timer mTimer;
 
   private final long mRandomSeed;
@@ -97,8 +95,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       Deck cardsInDeck,
       long timeElapsed,
       Date date,
-      GameState gameState,
-      boolean hintsUsed) {
+      GameState gameState) {
     this.id = id;
     mRandomSeed = seed;
     mCardsInPlay = Lists.newArrayList(cardsInPlay);
@@ -107,7 +104,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     mTimer = new Timer(timeElapsed);
     mDate = date;
     mGameState = gameState;
-    mHintsUsed = hintsUsed;
   }
 
   public void setGameRenderer(GameRenderer gameRenderer) {
@@ -410,10 +406,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return mGameState;
   }
 
-  public boolean areHintsUsed() {
-    return mHintsUsed;
-  }
-
   public boolean getActivityLifecycleActive() {
     return mActivitiyLifecycleActive;
   }
@@ -421,7 +413,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   public abstract String getGameTypeForAnalytics();
 
   public boolean addHint() {
-    mHintsUsed = true;
     if (mHintedCards.size() == 3) {
       return false;
     }

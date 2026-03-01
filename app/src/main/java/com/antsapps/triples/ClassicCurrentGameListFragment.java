@@ -35,12 +35,9 @@ public class ClassicCurrentGameListFragment extends BaseCurrentGameListFragment 
 
       Game g = getItem(position);
       if (g != null) {
-        String timeStr =
-            DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g.getTimeElapsed()));
-        if (g.areHintsUsed()) {
-          timeStr += " (hinted)";
-        }
-        ((TextView) v.findViewById(R.id.time)).setText(timeStr);
+        ((TextView) v.findViewById(R.id.time))
+            .setText(
+                DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g.getTimeElapsed())));
         ((TextView) v.findViewById(R.id.progress)).setText(String.valueOf(g.getCardsRemaining()));
         ((TextView) v.findViewById(R.id.when_started))
             .setText(DateUtils.getRelativeTimeSpanString(g.getDateStarted().getTime()));
