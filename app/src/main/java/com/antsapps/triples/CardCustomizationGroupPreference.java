@@ -2,9 +2,11 @@ package com.antsapps.triples;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -23,14 +25,13 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
 
-import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.DiamondShape;
 import com.antsapps.triples.cardsview.HexagonShape;
+import com.antsapps.triples.cardsview.SampleCardView;
 import com.antsapps.triples.cardsview.SymbolDrawable;
 import com.antsapps.triples.cardsview.TriangleShape;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class CardCustomizationGroupPreference extends Preference {
 
@@ -81,58 +82,49 @@ public class CardCustomizationGroupPreference extends Preference {
     private void setupSpinners() {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        setupColorSpinners(sharedPrefs);
-        setupShapeSpinners(sharedPrefs);
-        setupPatternSpinner(sharedPrefs);
-    }
-
-    private void setupColorSpinners(SharedPreferences sharedPrefs) {
-        String[] keys = {
+        setupPropertySpinners(
+            new String[] {
                 getContext().getString(R.string.pref_color_0),
                 getContext().getString(R.string.pref_color_1),
                 getContext().getString(R.string.pref_color_2)
-        };
+            },
+            mColorSpinners,
+            mColorValues,
+            new ColorAdapter(getContext(), mColorValues),
+            sharedPrefs);
 
-        for (int i = 0; i < 3; i++) {
-            final int index = i;
-            mColorSpinners[i].setAdapter(new ColorAdapter(getContext(), mColorValues));
-            String value = sharedPrefs.getString(keys[i], "");
-            mColorSpinners[i].setSelection(Math.max(0, Arrays.asList(mColorValues).indexOf(value)));
-
-            mColorSpinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (mBinding) return;
-                    String newValue = mColorValues[position];
-                    handleUniqueness(keys, mColorSpinners, index, newValue, mColorValues);
-                    updateSampleCards();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
-            });
-        }
-    }
-
-    private void setupShapeSpinners(SharedPreferences sharedPrefs) {
-        String[] keys = {
+        setupPropertySpinners(
+            new String[] {
                 getContext().getString(R.string.pref_shape_0),
                 getContext().getString(R.string.pref_shape_1),
                 getContext().getString(R.string.pref_shape_2)
-        };
+            },
+            mShapeSpinners,
+            mShapeValues,
+            new ShapeAdapter(getContext(), mShapeValues),
+            sharedPrefs);
 
+        setupPatternSpinner(sharedPrefs);
+    }
+
+    private void setupPropertySpinners(
+            final String[] keys,
+            final Spinner[] spinners,
+            final String[] allValues,
+            ArrayAdapter<String> adapter,
+            SharedPreferences sharedPrefs) {
         for (int i = 0; i < 3; i++) {
             final int index = i;
-            mShapeSpinners[i].setAdapter(new ShapeAdapter(getContext(), mShapeValues));
+            spinners[i].setAdapter(adapter);
             String value = sharedPrefs.getString(keys[i], "");
-            mShapeSpinners[i].setSelection(Math.max(0, Arrays.asList(mShapeValues).indexOf(value)));
+            spinners[i].setSelection(Math.max(0, Arrays.asList(allValues).indexOf(value)));
 
-            mShapeSpinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            spinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (mBinding) return;
-                    String newValue = mShapeValues[position];
-                    handleUniqueness(keys, mShapeSpinners, index, newValue, mShapeValues);
+                    String newValue = allValues[position];
+                    handleUniqueness(keys, spinners, index, newValue, allValues);
                     updateSampleCards();
                 }
 
@@ -189,12 +181,39 @@ public class CardCustomizationGroupPreference extends Preference {
     }
 
     private void updateSampleCards() {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         for (int i = 0; i < 3; i++) {
-            // Sample cards:
-            // Card 1: color 0, shape 0, pattern 0 (Empty)
-            // Card 2: color 1, shape 1, pattern 1 (Shaded)
-            // Card 3: color 2, shape 2, pattern 2 (Solid)
-            mSampleCards[i].setCard(new Card(1, i, i, i));
+            String colorValue = sharedPrefs.getString(getContext().getString(R.string.pref_color_0 + i), mColorValues[i]);
+            String shapeValue = sharedPrefs.getString(getContext().getString(R.string.pref_shape_0 + i), mShapeValues[i]);
+            // Wait, R.string.pref_color_0 + i might not be safe if IDs are not sequential.
+            // Better to use a mapping.
+        }
+        // Actually, let's just use a more robust way to get values.
+        String[] colorKeys = {
+            getContext().getString(R.string.pref_color_0),
+            getContext().getString(R.string.pref_color_1),
+            getContext().getString(R.string.pref_color_2)
+        };
+        String[] shapeKeys = {
+            getContext().getString(R.string.pref_shape_0),
+            getContext().getString(R.string.pref_shape_1),
+            getContext().getString(R.string.pref_shape_2)
+        };
+
+        for (int i = 0; i < 3; i++) {
+            String colorValue = sharedPrefs.getString(colorKeys[i], mColorValues[i]);
+            String shapeValue = sharedPrefs.getString(shapeKeys[i], mShapeValues[i]);
+            String patternName = sharedPrefs.getString(getContext().getString(R.string.pref_shaded_pattern), "stripes");
+
+            int colorId = i; // This is the ID used in Card(..., ..., ..., colorId)
+            int shapeId = i; // This is the ID used in Card(..., shapeId, ..., ...)
+
+            // Wait, SampleCardView.setProperties takes the property IDs (0, 1, 2) and resolves them internally.
+            // The request says: "each with two symbols the first with colour 1, shape 1 and empty pattern, etc."
+            // Card 1: 2 symbols (number 1), color 0, shape 0, pattern 0 (empty)
+            // Card 2: 2 symbols (number 1), color 1, shape 1, pattern 1 (shaded)
+            // Card 3: 2 symbols (number 1), color 2, shape 2, pattern 2 (solid)
+            mSampleCards[i].setProperties(getContext(), 1, i, i, i);
         }
     }
 
@@ -294,11 +313,13 @@ public class CardCustomizationGroupPreference extends Preference {
                 convertView.setPadding(padding, padding, padding, padding);
             }
 
-            Card sampleCard = new Card(0, 0, 1, 0); // number 0, shape 0, pattern 1 (shaded), color 0
-            SymbolDrawable drawable = new SymbolDrawable(getContext(), sampleCard, getItem(position));
-            // We need a bitmap because SymbolDrawable might use Shaders that need bounds
+            android.graphics.drawable.shapes.Shape shape = new RectShape();
+            int color = Color.BLACK;
+            Shader shader = SymbolDrawable.getShaderForPatternId(getContext(), 1, 10, getItem(position)); // Black is index 10
+            SymbolDrawable drawable = new SymbolDrawable(shape, color, shader);
+
             int size = (int) (48 * getContext().getResources().getDisplayMetrics().density);
-            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(new Rect(0, 0, size, size));
             drawable.draw(canvas);

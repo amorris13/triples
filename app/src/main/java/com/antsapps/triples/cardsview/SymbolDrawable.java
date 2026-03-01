@@ -35,31 +35,30 @@ public class SymbolDrawable extends Drawable {
   private final ShapeDrawable mFill;
 
   public SymbolDrawable(Context context, Card card) {
-    this(context, card, null);
+    this(
+        getShapeForId(context, card.mShape),
+        getColorForId(context, card.mColor),
+        getShaderForPatternId(context, card.mPattern, card.mColor));
   }
 
-  public SymbolDrawable(Context context, Card card, String overriddenPattern) {
-    mCard = card;
-    mOutline = getOutlineForCard(context, card);
-    mFill = getFillForCard(context, card, overriddenPattern);
+  public SymbolDrawable(Shape shape, int color, Shader shader) {
+    mCard = null;
+    mOutline = new ShapeDrawable(shape);
+    mOutline.getPaint().setColor(color);
+    mOutline.getPaint().setStyle(Style.STROKE);
+    mOutline.getPaint().setStrokeWidth(OUTLINE_WIDTH);
+
+    mFill = new ShapeDrawable(shape);
+    mFill.getPaint().setShader(shader);
+    mFill.getPaint().setStyle(Style.FILL);
   }
 
-  private static ShapeDrawable getOutlineForCard(Context context, Card card) {
-    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
-    symbol.getPaint().setColor(getColorForId(context, card.mColor));
-    symbol.getPaint().setStyle(Style.STROKE);
-    symbol.getPaint().setStrokeWidth(OUTLINE_WIDTH);
-    return symbol;
+  public static Shader getShaderForPatternId(Context context, int patternId, int colorId) {
+    return getShaderForPatternId(context, patternId, colorId, null);
   }
 
-  private static ShapeDrawable getFillForCard(Context context, Card card, String overriddenPattern) {
-    ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
-    symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor, overriddenPattern));
-    symbol.getPaint().setStyle(Style.FILL);
-    return symbol;
-  }
-
-  private static Shader getShaderForPatternId(Context context, int patternId, int colorId, String overriddenPattern) {
+  public static Shader getShaderForPatternId(
+      Context context, int patternId, int colorId, String overriddenPattern) {
     int color = getColorForId(context, colorId);
     switch (patternId) {
       case 0: // Empty
@@ -79,7 +78,7 @@ public class SymbolDrawable extends Drawable {
     }
   }
 
-  private static Shader getCustomShadedShader(Context context, int color, String overriddenPattern) {
+  public static Shader getCustomShadedShader(Context context, int color, String overriddenPattern) {
     String pattern = overriddenPattern;
     if (pattern == null) {
       SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -124,7 +123,7 @@ public class SymbolDrawable extends Drawable {
     return arr;
   }
 
-  private static Shape getShapeForId(Context context, int id) {
+  public static Shape getShapeForId(Context context, int id) {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
     String key;
     String defaultShape;
@@ -154,7 +153,7 @@ public class SymbolDrawable extends Drawable {
     return new TriangleShape();
   }
 
-  private static int getColorForId(Context context, int id) {
+  public static int getColorForId(Context context, int id) {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
     String key;
     String defaultHex;

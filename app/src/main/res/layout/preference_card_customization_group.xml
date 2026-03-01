@@ -41,20 +41,23 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
-        <com.antsapps.triples.SampleCardView
+        <com.antsapps.triples.cardsview.SampleCardView
             android:id="@+id/sample_card_0"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_margin="4dp" />
-        <com.antsapps.triples.SampleCardView
+        <com.antsapps.triples.cardsview.SampleCardView
             android:id="@+id/sample_card_1"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_margin="4dp" />
-        <com.antsapps.triples.SampleCardView
+        <com.antsapps.triples.cardsview.SampleCardView
             android:id="@+id/sample_card_2"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_margin="4dp" />
     </LinearLayout>
 
