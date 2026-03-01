@@ -44,6 +44,22 @@ public class SymbolDrawable extends Drawable {
     mFill = getFillForCard(context, card, overriddenPattern);
   }
 
+  public SymbolDrawable(Shape shape, int color, Shader shader) {
+    this(null, shape, color, shader);
+  }
+
+  private SymbolDrawable(Card card, Shape shape, int color, Shader shader) {
+    mCard = card;
+    mOutline = new ShapeDrawable(shape);
+    mOutline.getPaint().setColor(color);
+    mOutline.getPaint().setStyle(Style.STROKE);
+    mOutline.getPaint().setStrokeWidth(OUTLINE_WIDTH);
+
+    mFill = new ShapeDrawable(shape);
+    mFill.getPaint().setShader(shader);
+    mFill.getPaint().setStyle(Style.FILL);
+  }
+
   private static ShapeDrawable getOutlineForCard(Context context, Card card) {
     ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
     symbol.getPaint().setColor(getColorForId(context, card.mColor));
