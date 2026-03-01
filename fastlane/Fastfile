@@ -1,0 +1,18 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build and upload to Google Play Beta"
+  lane :beta do
+    gradle(
+      task: "bundle",
+      build_type: "Release"
+    )
+    upload_to_play_store(
+      track: 'beta',
+      aab: 'app/build/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: true
+    )
+  end
+end
