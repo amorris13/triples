@@ -123,11 +123,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       return true;
     } else if (itemId == R.id.pause) {
       getGame().pause();
-      logPauseGame();
+      logGameEvent(AnalyticsConstants.Event.PAUSE_GAME);
       return true;
     } else if (itemId == R.id.play) {
       getGame().resume();
-      logResumeGame();
+      logGameEvent(AnalyticsConstants.Event.RESUME_GAME);
       return true;
     } else if (itemId == R.id.help) {
       Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
@@ -153,7 +153,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_dont_ask_for_hint), false)) {
       getGame().addHint();
-      logUseHint();
+      logGameEvent(AnalyticsConstants.Event.USE_HINT);
       updateHintUsedIndicator();
     } else {
       View checkBoxView = View.inflate(this, R.layout.remember_checkbox, null);
@@ -176,7 +176,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
                     .commit();
               }
               getGame().addHint();
-              logUseHint();
+              logGameEvent(AnalyticsConstants.Event.USE_HINT);
               updateHintUsedIndicator();
             }
           });
@@ -266,18 +266,12 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public void gameFinished() {
     Log.i("BaseGameActivity", "game finished");
     updateViewSwitcher();
-    logGameFinished();
+    logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
     if (isSignedIn()) {
       submitScore();
     } else {
       shouldSubmitScoreOnSignIn = true;
     }
-  }
-
-  private void logGameFinished() {
-    Bundle bundle = new Bundle();
-    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
-    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.FINISH_GAME, bundle);
   }
 
   protected abstract void submitScore();
@@ -336,33 +330,15 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   public void newGame(View view) {
     Intent newGameIntent = createNewGame();
-    logNewGame();
+    logGameEvent(AnalyticsConstants.Event.NEW_GAME);
     startActivity(newGameIntent);
   }
 
   protected abstract Intent createNewGame();
 
-  private void logNewGame() {
+  private void logGameEvent(String event) {
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
-    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.NEW_GAME, bundle);
-  }
-
-  private void logPauseGame() {
-    Bundle bundle = new Bundle();
-    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
-    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.PAUSE_GAME, bundle);
-  }
-
-  private void logResumeGame() {
-    Bundle bundle = new Bundle();
-    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
-    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.RESUME_GAME, bundle);
-  }
-
-  private void logUseHint() {
-    Bundle bundle = new Bundle();
-    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
-    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.USE_HINT, bundle);
+    mFirebaseAnalytics.logEvent(event, bundle);
   }
 }
