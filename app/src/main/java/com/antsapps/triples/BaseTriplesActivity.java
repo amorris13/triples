@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
   private static final String TAG = "SignInActivity";
   private static final int RC_SIGN_IN = 9001;
 
+  protected FirebaseAnalytics mFirebaseAnalytics;
   private FirebaseAuth mFirebaseAuth;
   protected GoogleApiClient mGoogleApiClient;
   protected GoogleSignInAccount mGoogleSignInAccount;
@@ -64,6 +66,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
             .build();
 
     mFirebaseAuth = FirebaseAuth.getInstance();
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
 
   @Override
@@ -119,6 +122,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
     if (result.isSuccess()) {
       mGoogleSignInAccount = result.getSignInAccount();
       firebaseAuthWithGoogle(mGoogleSignInAccount);
+      mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SIGN_IN, null);
       onSignInSucceeded();
     } else {
       onSignInFailed();
@@ -181,6 +185,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
   protected void signOut() {
     mFirebaseAuth.signOut();
     Games.signOut(mGoogleApiClient);
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SIGN_OUT, null);
     Auth.GoogleSignInApi.signOut(mGoogleApiClient)
         .setResultCallback(
             new ResultCallback<Status>() {
