@@ -116,7 +116,8 @@ public class CardCustomizationGroupPreference extends Preference {
         for (int i = 0; i < 3; i++) {
             final int index = i;
             spinners[i].setAdapter(adapter);
-            String value = sharedPrefs.getString(keys[i], "");
+            String defaultValue = allValues[i]; // Use index-based defaults as fallback
+            String value = sharedPrefs.getString(keys[i], defaultValue);
             spinners[i].setSelection(Math.max(0, Arrays.asList(allValues).indexOf(value)));
 
             spinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -157,13 +158,15 @@ public class CardCustomizationGroupPreference extends Preference {
 
     private void handleUniqueness(String[] keys, Spinner[] spinners, int index, String newValue, String[] allValues) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String oldValue = prefs.getString(keys[index], "");
+        String defaultValue = allValues[index];
+        String oldValue = prefs.getString(keys[index], defaultValue);
         if (newValue.equals(oldValue)) return;
 
         SharedPreferences.Editor editor = prefs.edit();
         for (int i = 0; i < 3; i++) {
             if (i == index) continue;
-            String otherValue = prefs.getString(keys[i], "");
+            String otherDefaultValue = allValues[i];
+            String otherValue = prefs.getString(keys[i], otherDefaultValue);
             if (newValue.equals(otherValue)) {
                 // Swap
                 editor.putString(keys[i], oldValue);
@@ -181,35 +184,7 @@ public class CardCustomizationGroupPreference extends Preference {
     }
 
     private void updateSampleCards() {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         for (int i = 0; i < 3; i++) {
-            String colorValue = sharedPrefs.getString(getContext().getString(R.string.pref_color_0 + i), mColorValues[i]);
-            String shapeValue = sharedPrefs.getString(getContext().getString(R.string.pref_shape_0 + i), mShapeValues[i]);
-            // Wait, R.string.pref_color_0 + i might not be safe if IDs are not sequential.
-            // Better to use a mapping.
-        }
-        // Actually, let's just use a more robust way to get values.
-        String[] colorKeys = {
-            getContext().getString(R.string.pref_color_0),
-            getContext().getString(R.string.pref_color_1),
-            getContext().getString(R.string.pref_color_2)
-        };
-        String[] shapeKeys = {
-            getContext().getString(R.string.pref_shape_0),
-            getContext().getString(R.string.pref_shape_1),
-            getContext().getString(R.string.pref_shape_2)
-        };
-
-        for (int i = 0; i < 3; i++) {
-            String colorValue = sharedPrefs.getString(colorKeys[i], mColorValues[i]);
-            String shapeValue = sharedPrefs.getString(shapeKeys[i], mShapeValues[i]);
-            String patternName = sharedPrefs.getString(getContext().getString(R.string.pref_shaded_pattern), "stripes");
-
-            int colorId = i; // This is the ID used in Card(..., ..., ..., colorId)
-            int shapeId = i; // This is the ID used in Card(..., shapeId, ..., ...)
-
-            // Wait, SampleCardView.setProperties takes the property IDs (0, 1, 2) and resolves them internally.
-            // The request says: "each with two symbols the first with colour 1, shape 1 and empty pattern, etc."
             // Card 1: 2 symbols (number 1), color 0, shape 0, pattern 0 (empty)
             // Card 2: 2 symbols (number 1), color 1, shape 1, pattern 1 (shaded)
             // Card 3: 2 symbols (number 1), color 2, shape 2, pattern 2 (solid)
@@ -315,7 +290,8 @@ public class CardCustomizationGroupPreference extends Preference {
 
             android.graphics.drawable.shapes.Shape shape = new RectShape();
             int color = Color.BLACK;
-            Shader shader = SymbolDrawable.getShaderForPatternId(getContext(), 1, 10, getItem(position)); // Black is index 10
+            // Use color index 0 (Holo Blue) for the preview, though it doesn't matter much for shader.
+            Shader shader = SymbolDrawable.getShaderForPatternId(getContext(), 1, 0, getItem(position));
             SymbolDrawable drawable = new SymbolDrawable(shape, color, shader);
 
             int size = (int) (48 * getContext().getResources().getDisplayMetrics().density);

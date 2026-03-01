@@ -36,13 +36,18 @@ public class SymbolDrawable extends Drawable {
 
   public SymbolDrawable(Context context, Card card) {
     this(
+        card,
         getShapeForId(context, card.mShape),
         getColorForId(context, card.mColor),
         getShaderForPatternId(context, card.mPattern, card.mColor));
   }
 
   public SymbolDrawable(Shape shape, int color, Shader shader) {
-    mCard = null;
+    this(null, shape, color, shader);
+  }
+
+  private SymbolDrawable(Card card, Shape shape, int color, Shader shader) {
+    mCard = card;
     mOutline = new ShapeDrawable(shape);
     mOutline.getPaint().setColor(color);
     mOutline.getPaint().setStyle(Style.STROKE);
@@ -144,6 +149,9 @@ public class SymbolDrawable extends Drawable {
         return new TriangleShape();
     }
     String shape = sharedPref.getString(key, defaultShape);
+    if (shape == null || shape.isEmpty()) {
+      shape = defaultShape;
+    }
     if (shape.equals("square")) return new RectShape();
     if (shape.equals("circle")) return new OvalShape();
     if (shape.equals("triangle")) return new TriangleShape();
@@ -174,6 +182,9 @@ public class SymbolDrawable extends Drawable {
         return 0;
     }
     String hex = sharedPref.getString(key, defaultHex);
+    if (hex == null || hex.isEmpty()) {
+      hex = defaultHex;
+    }
     return Color.parseColor(hex);
   }
 
