@@ -32,7 +32,7 @@ import com.google.common.primitives.Ints;
 
 import java.util.List;
 
-class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final int DEFAULT_ANIMATION_DURATION_MS = 800;
 
@@ -96,7 +96,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mListener = listener;
   }
 
-  private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
+  public static List<Rect> getBoundsForNumId(int id, Rect bounds) {
     List<Rect> rects = Lists.newArrayList();
 
     int width = bounds.width();

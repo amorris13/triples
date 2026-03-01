@@ -5,6 +5,10 @@ android {
 
     compileSdkVersion 34
 
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId "com.antsapps.triples"
         minSdkVersion 21
