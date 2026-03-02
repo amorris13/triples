@@ -2,8 +2,11 @@ package com.antsapps.triples.cardsview;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.Shader;
@@ -12,6 +15,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import androidx.preference.PreferenceManager;
 
+import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 
@@ -33,7 +37,7 @@ public class SymbolDrawable extends Drawable {
   private static ShapeDrawable getOutlineForCard(Context context, Card card) {
     ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
     symbol.getPaint().setColor(getColorForId(context, card.mColor));
-    symbol.getPaint().setStyle(android.graphics.Paint.Style.STROKE);
+    symbol.getPaint().setStyle(Paint.Style.STROKE);
     float density = context.getResources().getDisplayMetrics().density;
     symbol.getPaint().setStrokeWidth(OUTLINE_WIDTH * density);
     return symbol;
@@ -42,7 +46,7 @@ public class SymbolDrawable extends Drawable {
   private static ShapeDrawable getFillForCard(Context context, Card card) {
     ShapeDrawable symbol = new ShapeDrawable(getShapeForId(context, card.mShape));
     symbol.getPaint().setShader(getShaderForPatternId(context, card.mPattern, card.mColor));
-    symbol.getPaint().setStyle(android.graphics.Paint.Style.FILL);
+    symbol.getPaint().setStyle(Paint.Style.FILL);
     return symbol;
   }
 
@@ -50,15 +54,15 @@ public class SymbolDrawable extends Drawable {
     int color = getColorForId(context, colorId);
     switch (patternId) {
       case 0: // Empty
-        return new android.graphics.BitmapShader(
-            android.graphics.Bitmap.createBitmap(new int[] {0}, 1, 1, android.graphics.Bitmap.Config.ARGB_8888),
+        return new BitmapShader(
+            Bitmap.createBitmap(new int[] {0}, 1, 1, Bitmap.Config.ARGB_8888),
             Shader.TileMode.REPEAT,
             Shader.TileMode.REPEAT);
       case 1: // Customizable Shaded
         return getCustomShadedShader(context, color);
       case 2: // Solid
-        return new android.graphics.BitmapShader(
-            android.graphics.Bitmap.createBitmap(new int[] {color}, 1, 1, android.graphics.Bitmap.Config.ARGB_8888),
+        return new BitmapShader(
+            Bitmap.createBitmap(new int[] {color}, 1, 1, Bitmap.Config.ARGB_8888),
             Shader.TileMode.REPEAT,
             Shader.TileMode.REPEAT);
       default:
@@ -70,15 +74,15 @@ public class SymbolDrawable extends Drawable {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
     String pattern =
         sharedPref.getString(context.getString(R.string.pref_shaded_pattern), "stripes");
-    return com.antsapps.triples.CardCustomizationUtils.getCustomShadedShader(context, color, pattern);
+    return CardCustomizationUtils.getCustomShadedShader(context, color, pattern);
   }
 
   public static Shape getShapeForId(Context context, int id) {
-    return com.antsapps.triples.CardCustomizationUtils.getShapeForId(context, id);
+    return CardCustomizationUtils.getShapeForId(context, id);
   }
 
   public static int getColorForId(Context context, int id) {
-    return com.antsapps.triples.CardCustomizationUtils.getColorForId(context, id);
+    return CardCustomizationUtils.getColorForId(context, id);
   }
 
   @Override
