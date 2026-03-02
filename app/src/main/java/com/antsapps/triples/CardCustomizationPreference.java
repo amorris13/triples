@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,6 +43,17 @@ public class CardCustomizationPreference extends Preference {
   private SampleCardView[] sampleCards = new SampleCardView[3];
 
   private boolean updating = false;
+
+  public static class ColorItemView extends FrameLayout {
+    public ColorItemView(@NonNull Context context) {
+      super(context);
+      int height = context.getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+      setMinimumHeight(height);
+    }
+    public void setColor(String hex) {
+      setBackgroundColor(Color.parseColor(hex));
+    }
+  }
 
   public CardCustomizationPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
@@ -196,7 +208,6 @@ public class CardCustomizationPreference extends Preference {
     sampleCards[0].setCard(new Card(1, 0, 0, 0));
     sampleCards[1].setCard(new Card(1, 1, 1, 1));
     sampleCards[2].setCard(new Card(1, 2, 2, 2));
-    for (SampleCardView sc : sampleCards) sc.invalidate();
   }
 
   private class ColorAdapter extends ArrayAdapter<String> {
@@ -206,13 +217,18 @@ public class CardCustomizationPreference extends Preference {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      if (convertView == null) convertView = new ColorItemView(getContext());
+      if (convertView == null) {
+        convertView = new ColorItemView(getContext());
+      }
       ((ColorItemView) convertView).setColor(getItem(position));
       return convertView;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      return getView(position, convertView, parent);
+      View view = getView(position, convertView, parent);
+      int padding = (int) (8 * getContext().getResources().getDisplayMetrics().density);
+      view.setPadding(padding, padding, padding, padding);
+      return view;
     }
   }
 
@@ -231,13 +247,16 @@ public class CardCustomizationPreference extends Preference {
       ShapeIconView siv = (ShapeIconView) convertView;
       siv.setShape(getItem(position));
       siv.setColor(Color.BLACK);
-      int padding = 16;
+      int padding = (int) (4 * getContext().getResources().getDisplayMetrics().density);
       siv.setPadding(padding, padding, padding, padding);
       return siv;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      return getView(position, convertView, parent);
+      View view = getView(position, convertView, parent);
+      int padding = (int) (12 * getContext().getResources().getDisplayMetrics().density);
+      view.setPadding(padding, padding, padding, padding);
+      return view;
     }
   }
 
@@ -255,13 +274,16 @@ public class CardCustomizationPreference extends Preference {
       }
       PatternIconView piv = (PatternIconView) convertView;
       piv.setPattern(getItem(position));
-      int padding = 16;
+      int padding = (int) (4 * getContext().getResources().getDisplayMetrics().density);
       piv.setPadding(padding, padding, padding, padding);
       return piv;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      return getView(position, convertView, parent);
+      View view = getView(position, convertView, parent);
+      int padding = (int) (12 * getContext().getResources().getDisplayMetrics().density);
+      view.setPadding(padding, padding, padding, padding);
+      return view;
     }
   }
 }

@@ -232,7 +232,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     if (mHinted != hinted) {
       mHinted = hinted;
       regenerateCachedDrawable();
-      if (hinted) {
+      if (hinted && mAnimationHandler != null) {
         // Throb animation
         Animation throbAnimation =
             new ScaleAnimation(1.0f, 1.15f, 1.0f, 1.15f, mBounds.centerX(), mBounds.centerY());
@@ -248,6 +248,11 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   void onIncorrectTriple() {
     mSelected = false;
     mShakeAnimating = true;
+    if (mAnimationHandler == null) {
+      mShakeAnimating = false;
+      regenerateCachedDrawable();
+      return;
+    }
     // Shake animation
     Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
@@ -274,11 +279,18 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         || oldBounds.height() != mBounds.height()) {
       regenerateCachedDrawable();
     }
-    Animation transitionAnimation = null;
     if (bounds.equals(oldBounds)) {
       // No change
       return;
-    } else if (oldBounds == null) {
+    }
+    if (mAnimationHandler == null) {
+      if (mListener != null) {
+        mListener.onAnimationFinished();
+      }
+      return;
+    }
+    Animation transitionAnimation = null;
+    if (oldBounds == null) {
       // This CardDrawable is new.
       if (mShouldSlideIn) {
         transitionAnimation =

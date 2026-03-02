@@ -58,7 +58,7 @@ public class ShapeIconView extends View {
       mDrawable.getPaint().setColor(mColor);
       mDrawable.getPaint().setStyle(Paint.Style.STROKE);
       float density = getResources().getDisplayMetrics().density;
-      mDrawable.getPaint().setStrokeWidth(2 * density);
+      mDrawable.getPaint().setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
       mDrawable.setBounds(new Rect(8, 8, getWidth() - 8, getHeight() - 8));
       mDrawable.draw(canvas);
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import com.antsapps.triples.CardCustomizationUtils;
@@ -33,22 +32,41 @@ public class PatternIconView extends View {
     mPaint.setShader(CardCustomizationUtils.getCustomShadedShader(getContext(), Color.BLACK, mPattern));
     mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
-    int size = getWidth();
+    int width = getWidth();
+    int height = getHeight();
     int margin = (int) (4 * density);
-    canvas.drawRect(margin, margin, size - margin, size - margin, mPaint);
+    canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
 
     // Draw outline for better visibility of the pattern area
     mPaint.setShader(null);
     mPaint.setColor(Color.BLACK);
     mPaint.setStyle(Paint.Style.STROKE);
-    mPaint.setStrokeWidth(density);
-    canvas.drawRect(margin, margin, size - margin, size - margin, mPaint);
+    mPaint.setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
+    canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
   }
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int size = MeasureSpec.getSize(widthMeasureSpec);
-    if (size == 0) size = 100;
-    setMeasuredDimension(size, size);
+    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+    int width;
+    int height;
+
+    if (widthMode == MeasureSpec.EXACTLY) {
+      width = widthSize;
+    } else {
+      width = 100;
+    }
+
+    if (heightMode == MeasureSpec.EXACTLY) {
+      height = heightSize;
+    } else {
+      height = width;
+    }
+
+    setMeasuredDimension(width, height);
   }
 }
