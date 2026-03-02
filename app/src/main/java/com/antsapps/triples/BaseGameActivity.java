@@ -1,6 +1,5 @@
 package com.antsapps.triples;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +23,7 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -159,7 +159,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox);
       checkBox.setText(R.string.dont_ask_again);
 
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
       builder.setTitle(R.string.hint_confirmation_title);
       builder.setMessage(R.string.hint_confirmation_message);
       builder.setView(checkBoxView);

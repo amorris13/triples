@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:id="@+id/games_services"
   android:layout_height="wrap_content"
   android:layout_width="match_parent"
@@ -39,16 +40,16 @@
     android:orientation="vertical"
     android:id="@+id/games_services_bar">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="@string/leaderboards"
       android:id="@+id/leaderboards"
-      android:drawableLeft="@drawable/games_controller_green"
-      android:drawablePadding="8dp"
+      app:icon="@drawable/games_controller_green"
+      app:iconPadding="8dp"
       android:singleLine="false"
       android:layout_weight="1"
-      style="@android:style/Widget.ActionButton"
+      style="@style/Widget.MaterialComponents.Button.TextButton"
       android:layout_gravity="center"/>
 
     <View

@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.antsapps.triples.backend.Application;
@@ -15,16 +14,21 @@ import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 public class MainActivity extends BaseTriplesActivity {
 
   private Application mApplication;
 
-  private Button mClassicResumeButton;
-  private Button mArcadeResumeButton;
-  private Button mClassicNewGameButton;
-  private Button mArcadeNewGameButton;
-  private Button mClassicStatisticsButton;
-  private Button mArcadeStatisticsButton;
+  private MaterialButton mClassicResumeButton;
+  private MaterialButton mArcadeResumeButton;
+  private MaterialButton mClassicNewGameButton;
+  private MaterialButton mArcadeNewGameButton;
+  private MaterialButton mClassicStatisticsButton;
+  private MaterialButton mArcadeStatisticsButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +133,8 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewClassicGame() {
-    for (ClassicGame game : mApplication.getCurrentClassicGames()) {
+    List<ClassicGame> currentGames = Lists.newArrayList(mApplication.getCurrentClassicGames());
+    for (ClassicGame game : currentGames) {
       mApplication.deleteClassicGame(game);
     }
     ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
@@ -140,7 +145,8 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewArcadeGame() {
-    for (ArcadeGame game : mApplication.getCurrentArcadeGames()) {
+    List<ArcadeGame> currentGames = Lists.newArrayList(mApplication.getCurrentArcadeGames());
+    for (ArcadeGame game : currentGames) {
       mApplication.deleteArcadeGame(game);
     }
     ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());

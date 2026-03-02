@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+  <color name="colorPrimary">#00222d</color>
+  <color name="colorPrimaryVariant">#00181F</color>
+  <color name="colorOnPrimary">#FFFFFF</color>
+  <color name="colorSecondary">#33B5E5</color>
+  <color name="colorSecondaryVariant">#0099CC</color>
+  <color name="colorOnSecondary">#FFFFFF</color>
+
   <color name="action_bar_background">#00222d</color>
   <color name="action_bar_stacked_background">#202020</color>
 
