@@ -369,6 +369,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return mDeck.getCardsRemaining() + mCardsInPlay.size();
   }
 
+  public List<Card> getCardsInPlay() {
+    return ImmutableList.copyOf(mCardsInPlay);
+  }
+
   byte[] getCardsInPlayAsByteArray() {
     return Utils.cardListToByteArray(mCardsInPlay);
   }
