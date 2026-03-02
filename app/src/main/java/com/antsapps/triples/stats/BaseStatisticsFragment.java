@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.antsapps.triples.BaseGameListActivity;
 import com.antsapps.triples.BaseGameListFragment;
+import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
@@ -21,7 +21,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
     implements OnStatisticsChangeListener,
         OnComparatorChangeListener<Game>,
         StatisticsSelectorView.OnPeriodChangeListener {
-  private BaseGameListActivity mGameListActivity;
+  private BaseTriplesActivity mGameListActivity;
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED.createReversableComparator();
   private StatisticsGamesServicesView mGameServicesView;
   protected StatisticsSelectorView mSelectorView;
@@ -31,7 +31,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mGameListActivity = (BaseGameListActivity) activity;
+    mGameListActivity = (BaseTriplesActivity) activity;
   }
 
   @Override

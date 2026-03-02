@@ -86,10 +86,6 @@ public class ClassicGameActivity extends BaseGameActivity
   @Override
   public void onCardHinted(Card hintedCard) {}
 
-  protected Class<? extends BaseGameListActivity> getParentClass() {
-    return ClassicGameListActivity.class;
-  }
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
