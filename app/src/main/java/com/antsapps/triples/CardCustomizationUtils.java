@@ -87,10 +87,11 @@ public class CardCustomizationUtils {
 
     switch (pattern) {
       case "dots":
-        bm = Bitmap.createBitmap(thickness * 4, thickness * 4, Bitmap.Config.ARGB_8888);
+        // Make dots denser: 2x2 tile with 1x1 dot, starting with whitespace
+        bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
         for (int i = 0; i < thickness; i++) {
           for (int j = 0; j < thickness; j++) {
-            bm.setPixel(i + thickness * 2, j + thickness * 2, color);
+            bm.setPixel(i + thickness, j + thickness, color);
           }
         }
         break;

@@ -200,11 +200,14 @@ public class CardCustomizationPreference extends Preference {
         String oldShape = prefs.getString(getContext().getString(getShapeKey(index)), SHAPES[index]);
         prefs.edit().putString(getContext().getString(getShapeKey(i)), oldShape).apply();
         updating = true;
-        shapeSpinners[i].setSelection(Arrays.asList(SHAPES).indexOf(oldShape));
+        updateSpinnerSelection(shapeSpinners[i], oldShape);
         updating = false;
       }
     }
     prefs.edit().putString(getContext().getString(getShapeKey(index)), selectedShape).apply();
+    updating = true;
+    updateSpinnerSelection(shapeSpinners[index], selectedShape);
+    updating = false;
   }
 
   private int getColorKey(int i) {

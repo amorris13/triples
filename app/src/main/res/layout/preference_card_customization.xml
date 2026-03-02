@@ -14,22 +14,19 @@
             android:id="@+id/color_spinner_0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null" />
+            android:layout_weight="1" />
 
         <Spinner
             android:id="@+id/color_spinner_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null" />
+            android:layout_weight="1" />
 
         <Spinner
             android:id="@+id/color_spinner_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -42,22 +39,19 @@
             android:id="@+id/shape_spinner_0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null" />
+            android:layout_weight="1" />
 
         <Spinner
             android:id="@+id/shape_spinner_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null" />
+            android:layout_weight="1" />
 
         <Spinner
             android:id="@+id/shape_spinner_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <Spinner
@@ -65,8 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:background="@null" />
+        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
