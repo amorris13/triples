@@ -87,7 +87,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private final Context mContext;
   private final Handler mAnimationHandler;
 
-  CardDrawable(
+  public CardDrawable(
       Context context, Handler animationHandler, Card card, OnAnimationFinishedListener listener) {
     mContext = context;
     mAnimationHandler = animationHandler;
