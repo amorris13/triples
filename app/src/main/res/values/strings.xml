@@ -10,6 +10,8 @@
   <string name="list_of_games">LIST OF GAMES</string>
   <string name="new_game">New Game</string>
   <string name="resume_game">Resume</string>
+  <string name="resume_game_classic_format">Resume (%1$d left)</string>
+  <string name="resume_game_arcade_format">Resume (%1$d found)</string>
   <string name="start_again">Start Again</string>
   <string name="no_current_games">No Current Games.\nTo start a new game, click +.</string>
   <string name="current">CURRENT</string>
@@ -45,6 +47,7 @@
   <string name="average_time">Average time:</string>
   <string name="period">Period:</string>
   <string name="statistics">STATISTICS</string>
+  <string name="statistics_format">STATISTICS (%1$d played)</string>
   <string name="all_time">All Time</string>
   <string name="past_day">Past Day</string>
   <string name="past_week">Past Week</string>

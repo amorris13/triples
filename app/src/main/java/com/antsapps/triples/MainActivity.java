@@ -23,13 +23,18 @@ public class MainActivity extends BaseTriplesActivity {
   private Button mArcadeResumeButton;
   private Button mClassicNewGameButton;
   private Button mArcadeNewGameButton;
-  private TextView mClassicGameInfo;
-  private TextView mArcadeGameInfo;
+  private Button mClassicStatisticsButton;
+  private Button mArcadeStatisticsButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setDisplayShowHomeEnabled(true);
+      getSupportActionBar().setIcon(R.drawable.launcher);
+    }
 
     mApplication = Application.getInstance(getApplication());
 
@@ -49,9 +54,8 @@ public class MainActivity extends BaseTriplesActivity {
       }
     });
 
-    mClassicGameInfo = findViewById(R.id.classic_game_info);
-
-    findViewById(R.id.classic_statistics_button).setOnClickListener(new View.OnClickListener() {
+    mClassicStatisticsButton = findViewById(R.id.classic_statistics_button);
+    mClassicStatisticsButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         showStatistics("Classic");
@@ -74,9 +78,8 @@ public class MainActivity extends BaseTriplesActivity {
       }
     });
 
-    mArcadeGameInfo = findViewById(R.id.arcade_game_info);
-
-    findViewById(R.id.arcade_statistics_button).setOnClickListener(new View.OnClickListener() {
+    mArcadeStatisticsButton = findViewById(R.id.arcade_statistics_button);
+    mArcadeStatisticsButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         showStatistics("Arcade");
@@ -94,26 +97,26 @@ public class MainActivity extends BaseTriplesActivity {
     ClassicGame classicGame = Iterables.getFirst(mApplication.getCurrentClassicGames(), null);
     if (classicGame != null) {
       mClassicResumeButton.setVisibility(View.VISIBLE);
+      mClassicResumeButton.setText(getString(R.string.resume_game_classic_format, classicGame.getCardsRemaining()));
       mClassicNewGameButton.setText(R.string.start_again);
-      mClassicGameInfo.setVisibility(View.VISIBLE);
-      mClassicGameInfo.setText(getString(R.string.cards_remaining_format, classicGame.getCardsRemaining()));
     } else {
       mClassicResumeButton.setVisibility(View.GONE);
       mClassicNewGameButton.setText(R.string.new_game);
-      mClassicGameInfo.setVisibility(View.GONE);
     }
+    int numClassicCompleted = Iterables.size(mApplication.getCompletedClassicGames());
+    mClassicStatisticsButton.setText(getString(R.string.statistics_format, numClassicCompleted));
 
     ArcadeGame arcadeGame = Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
     if (arcadeGame != null) {
       mArcadeResumeButton.setVisibility(View.VISIBLE);
+      mArcadeResumeButton.setText(getString(R.string.resume_game_arcade_format, arcadeGame.getNumTriplesFound()));
       mArcadeNewGameButton.setText(R.string.start_again);
-      mArcadeGameInfo.setVisibility(View.VISIBLE);
-      mArcadeGameInfo.setText(getString(R.string.triples_found_format, arcadeGame.getNumTriplesFound()));
     } else {
       mArcadeResumeButton.setVisibility(View.GONE);
       mArcadeNewGameButton.setText(R.string.new_game);
-      mArcadeGameInfo.setVisibility(View.GONE);
     }
+    int numArcadeCompleted = Iterables.size(mApplication.getCompletedArcadeGames());
+    mArcadeStatisticsButton.setText(getString(R.string.statistics_format, numArcadeCompleted));
   }
 
   private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {

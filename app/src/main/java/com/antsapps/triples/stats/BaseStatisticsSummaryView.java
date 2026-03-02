@@ -8,4 +8,6 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
   public BaseStatisticsSummaryView(Context context) {
     super(context);
   }
+
+  protected void setAccentColor(int accentColor) {}
 }
