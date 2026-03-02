@@ -133,7 +133,7 @@
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:text="@string/show_me_another"
-      style="@style/Widget.MaterialComponents.Button.TextButton"
+      style="@style/Widget.Material3.Button.TextButton"
       android:onClick="showAnother" />
 
     <TextView

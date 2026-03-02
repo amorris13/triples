@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <color name="colorPrimary">#00222d</color>
-  <color name="colorPrimaryVariant">#00181F</color>
+  <color name="colorPrimary">#00677C</color>
   <color name="colorOnPrimary">#FFFFFF</color>
-  <color name="colorSecondary">#33B5E5</color>
-  <color name="colorSecondaryVariant">#0099CC</color>
+  <color name="colorPrimaryContainer">#B0ECFF</color>
+  <color name="colorOnPrimaryContainer">#001F27</color>
+
+  <color name="colorSecondary">#4C626B</color>
   <color name="colorOnSecondary">#FFFFFF</color>
+  <color name="colorSecondaryContainer">#CFE6F1</color>
+  <color name="colorOnSecondaryContainer">#071E26</color>
+
+  <color name="colorTertiary">#595C7E</color>
+  <color name="colorOnTertiary">#FFFFFF</color>
+  <color name="colorTertiaryContainer">#E0E0FF</color>
+  <color name="colorOnTertiaryContainer">#161937</color>
+
+  <color name="colorError">#BA1A1A</color>
+  <color name="colorOnError">#FFFFFF</color>
+  <color name="colorErrorContainer">#FFDAD6</color>
+  <color name="colorOnErrorContainer">#410002</color>
+
+  <color name="colorSurface">#FBFCFE</color>
+  <color name="colorOnSurface">#191C1D</color>
+  <color name="colorOutline">#70787D</color>
 
   <color name="action_bar_background">#00222d</color>
   <color name="action_bar_stacked_background">#202020</color>
