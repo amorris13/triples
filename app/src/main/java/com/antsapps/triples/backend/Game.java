@@ -430,19 +430,71 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       return false;
     }
 
-    // Calculate hinted card
-    Set<Card> validTripleIncludingExistingHintedCards =
-        getAValidTriple(mCardsInPlay, Sets.newHashSet(mHintedCards));
-    Card cardToHint =
-        Iterables.getFirst(
-            Sets.difference(validTripleIncludingExistingHintedCards, mHintedCards), null);
-    mHintedCards.add(cardToHint);
+    Set<Card> selectedCards = mGameRenderer.getSelectedCards();
 
-    // Notify renderer & listeners
-    mGameRenderer.addHint(cardToHint);
-    for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.onCardHinted(cardToHint);
+    // Calculate target triple
+    Set<Card> targetTriple;
+    if (mHintedCards.isEmpty()) {
+      targetTriple = findValidTripleIncludingSelected(selectedCards);
+    } else {
+      targetTriple = getAValidTriple(mCardsInPlay, Sets.newHashSet(mHintedCards));
     }
+
+    if (targetTriple == null) {
+      return false;
+    }
+
+    boolean hintedNewCard = false;
+
+    // 1. Hint all selected cards in the triple that aren't hinted yet.
+    // This ensures they stay selected in the UI.
+    for (Card c : targetTriple) {
+      if (selectedCards.contains(c) && !mHintedCards.contains(c)) {
+        dispatchHint(c);
+      }
+    }
+
+    // 2. Hint at least one card that was not selected (the "actual" hint).
+    for (Card c : targetTriple) {
+      if (!mHintedCards.contains(c) && !selectedCards.contains(c)) {
+        dispatchHint(c);
+        hintedNewCard = true;
+        break;
+      }
+    }
+
+    // 3. Fallback: if we haven't hinted a new card (e.g. all remaining cards in the triple
+    // are selected), hint one of them.
+    if (!hintedNewCard && mHintedCards.size() < 3) {
+      for (Card c : targetTriple) {
+        if (!mHintedCards.contains(c)) {
+          dispatchHint(c);
+          break;
+        }
+      }
+    }
+
     return true;
+  }
+
+  private void dispatchHint(Card card) {
+    if (mHintedCards.add(card)) {
+      mGameRenderer.addHint(card);
+      for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
+        listener.onCardHinted(card);
+      }
+    }
+  }
+
+  private Set<Card> findValidTripleIncludingSelected(Set<Card> selectedCards) {
+    for (int i = selectedCards.size(); i > 0; i--) {
+      for (Set<Card> subset : Sets.combinations(selectedCards, i)) {
+        Set<Card> triple = getAValidTriple(mCardsInPlay, Sets.newHashSet(subset));
+        if (triple != null) {
+          return triple;
+        }
+      }
+    }
+    return getAValidTriple(mCardsInPlay, Sets.<Card>newHashSet());
   }
 }
