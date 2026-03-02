@@ -42,12 +42,16 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
     @Override
     public void onAnimationStart(Animation animation) {
-      mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_INCREMENT));
+      if (mAnimationHandler != null) {
+        mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_INCREMENT));
+      }
     }
 
     @Override
     public void onAnimationEnd(Animation animation) {
-      mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_DECREMENT));
+      if (mAnimationHandler != null) {
+        mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_DECREMENT));
+      }
       if (mAnimation == animation) {
         mAnimation = null;
       }
@@ -301,7 +305,9 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
           @Override
           public void onAnimationEnd(Animation animation) {
             super.onAnimationEnd(animation);
-            mListener.onAnimationFinished();
+            if (mListener != null) {
+              mListener.onAnimationFinished();
+            }
             mDrawOrder = 0;
           }
         });
