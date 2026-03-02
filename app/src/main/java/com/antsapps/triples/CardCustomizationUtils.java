@@ -20,6 +20,7 @@ import java.util.Arrays;
 public class CardCustomizationUtils {
 
   private static final float STRIPE_WIDTH = 1.5f;
+  public static final int ICON_MARGIN_DP = 8;
 
   public static int getColorForId(Context context, int id) {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);

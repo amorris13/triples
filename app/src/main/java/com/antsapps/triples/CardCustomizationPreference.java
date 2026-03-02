@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -41,17 +42,24 @@ public class CardCustomizationPreference extends Preference {
   private Spinner[] shapeSpinners = new Spinner[3];
   private Spinner patternSpinner;
   private SampleCardView[] sampleCards = new SampleCardView[3];
+  private Button resetButton;
 
   private boolean updating = false;
 
-  public static class ColorItemView extends FrameLayout {
+  public static class ColorItemView extends View {
+    private String mColor;
     public ColorItemView(@NonNull Context context) {
       super(context);
-      int height = context.getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-      setMinimumHeight(height);
     }
     public void setColor(String hex) {
+      mColor = hex;
       setBackgroundColor(Color.parseColor(hex));
+    }
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      int width = MeasureSpec.getSize(widthMeasureSpec);
+      if (width == 0) width = 100;
+      setMeasuredDimension(width, width);
     }
   }
 
@@ -76,6 +84,9 @@ public class CardCustomizationPreference extends Preference {
     sampleCards[0] = (SampleCardView) holder.findViewById(R.id.sample_card_0);
     sampleCards[1] = (SampleCardView) holder.findViewById(R.id.sample_card_1);
     sampleCards[2] = (SampleCardView) holder.findViewById(R.id.sample_card_2);
+
+    resetButton = (Button) holder.findViewById(R.id.reset_button);
+    resetButton.setOnClickListener(v -> resetToDefaults());
 
     setupSpinners();
     updateSampleCards();
@@ -141,6 +152,19 @@ public class CardCustomizationPreference extends Preference {
     });
 
     updating = false;
+  }
+
+  private void resetToDefaults() {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    SharedPreferences.Editor editor = prefs.edit();
+    for (int i = 0; i < 3; i++) {
+      editor.putString(getContext().getString(getColorKey(i)), PRESET_COLORS[i]);
+      editor.putString(getContext().getString(getShapeKey(i)), SHAPES[i]);
+    }
+    editor.putString(getContext().getString(R.string.pref_shaded_pattern), PATTERNS[0]);
+    editor.apply();
+    setupSpinners();
+    updateSampleCards();
   }
 
   private void ensureUniqueColor(int index, String selectedColor) {
@@ -219,14 +243,18 @@ public class CardCustomizationPreference extends Preference {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
       if (convertView == null) {
         convertView = new ColorItemView(getContext());
+        int size = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+        convertView.setLayoutParams(new ViewGroup.LayoutParams(size, size));
       }
       ((ColorItemView) convertView).setColor(getItem(position));
+      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
+      convertView.setPadding(padding, padding, padding, padding);
       return convertView;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
       View view = getView(position, convertView, parent);
-      int padding = (int) (8 * getContext().getResources().getDisplayMetrics().density);
+      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
       view.setPadding(padding, padding, padding, padding);
       return view;
     }
@@ -247,14 +275,14 @@ public class CardCustomizationPreference extends Preference {
       ShapeIconView siv = (ShapeIconView) convertView;
       siv.setShape(getItem(position));
       siv.setColor(Color.BLACK);
-      int padding = (int) (4 * getContext().getResources().getDisplayMetrics().density);
+      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
       siv.setPadding(padding, padding, padding, padding);
       return siv;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
       View view = getView(position, convertView, parent);
-      int padding = (int) (12 * getContext().getResources().getDisplayMetrics().density);
+      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
       view.setPadding(padding, padding, padding, padding);
       return view;
     }
@@ -274,14 +302,14 @@ public class CardCustomizationPreference extends Preference {
       }
       PatternIconView piv = (PatternIconView) convertView;
       piv.setPattern(getItem(position));
-      int padding = (int) (4 * getContext().getResources().getDisplayMetrics().density);
+      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
       piv.setPadding(padding, padding, padding, padding);
       return piv;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
       View view = getView(position, convertView, parent);
-      int padding = (int) (12 * getContext().getResources().getDisplayMetrics().density);
+      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
       view.setPadding(padding, padding, padding, padding);
       return view;
     }

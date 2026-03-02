@@ -12,6 +12,7 @@ import android.graphics.drawable.shapes.Shape;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 
 public class ShapeIconView extends View {
@@ -59,15 +60,34 @@ public class ShapeIconView extends View {
       mDrawable.getPaint().setStyle(Paint.Style.STROKE);
       float density = getResources().getDisplayMetrics().density;
       mDrawable.getPaint().setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
-      mDrawable.setBounds(new Rect(8, 8, getWidth() - 8, getHeight() - 8));
+      int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
+      mDrawable.setBounds(new Rect(margin, margin, getWidth() - margin, getHeight() - margin));
       mDrawable.draw(canvas);
     }
   }
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int size = MeasureSpec.getSize(widthMeasureSpec);
-    if (size == 0) size = 100;
-    setMeasuredDimension(size, size);
+    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+    int width;
+    int height;
+
+    if (widthMode == MeasureSpec.EXACTLY) {
+      width = widthSize;
+    } else {
+      width = 100;
+    }
+
+    if (heightMode == MeasureSpec.EXACTLY) {
+      height = heightSize;
+    } else {
+      height = width;
+    }
+
+    setMeasuredDimension(width, height);
   }
 }

@@ -34,7 +34,7 @@ public class PatternIconView extends View {
     float density = getResources().getDisplayMetrics().density;
     int width = getWidth();
     int height = getHeight();
-    int margin = (int) (4 * density);
+    int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
     canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
 
     // Draw outline for better visibility of the pattern area
