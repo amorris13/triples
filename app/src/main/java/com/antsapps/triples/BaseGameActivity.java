@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
@@ -269,6 +270,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
     if (isSignedIn()) {
       submitScore();
+      AchievementManager.awardAchievementsForGame(mGoogleApiClient, getGame());
+      AchievementManager.awardCountAchievements(mGoogleApiClient, Application.getInstance(this));
     } else {
       shouldSubmitScoreOnSignIn = true;
     }
