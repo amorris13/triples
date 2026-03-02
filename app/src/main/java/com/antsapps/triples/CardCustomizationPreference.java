@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
@@ -78,8 +77,6 @@ public class CardCustomizationPreference extends Preference {
       final int index = i;
       String currentColor = prefs.getString(getContext().getString(getColorKey(i)), PRESET_COLORS[i]);
       List<String> colors = new ArrayList<>(Arrays.asList(PRESET_COLORS));
-      if (!colors.contains(currentColor)) colors.add(currentColor);
-      colors.add("Custom...");
 
       final ColorAdapter colorAdapter = new ColorAdapter(getContext(), colors);
       colorSpinners[i].setAdapter(colorAdapter);
@@ -89,12 +86,8 @@ public class CardCustomizationPreference extends Preference {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
           if (!updating) {
             String selectedColor = (String) parent.getItemAtPosition(position);
-            if (selectedColor.equals("Custom...")) {
-              showColorPicker(index);
-            } else {
-              ensureUniqueColor(index, selectedColor);
-              updateSampleCards();
-            }
+            ensureUniqueColor(index, selectedColor);
+            updateSampleCards();
           }
         }
         @Override
@@ -138,25 +131,6 @@ public class CardCustomizationPreference extends Preference {
     updating = false;
   }
 
-  private void showColorPicker(final int index) {
-    ColorPickerView colorPickerView = new ColorPickerView(getContext());
-    final AlertDialog dialog = new AlertDialog.Builder(getContext())
-            .setTitle("Select Color")
-            .setView(colorPickerView)
-            .create();
-    colorPickerView.setOnColorSelectedListener(new ColorPickerView.OnColorSelectedListener() {
-      @Override
-      public void onColorSelected(int color) {
-        String hex = String.format("#%06X", (0xFFFFFF & color));
-        ensureUniqueColor(index, hex);
-        setupSpinners();
-        updateSampleCards();
-        dialog.dismiss();
-      }
-    });
-    dialog.show();
-  }
-
   private void ensureUniqueColor(int index, String selectedColor) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     for (int i = 0; i < 3; i++) {
@@ -179,9 +153,7 @@ public class CardCustomizationPreference extends Preference {
   private void updateSpinnerSelection(Spinner spinner, String value) {
     ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
     int position = adapter.getPosition(value);
-    if (position == -1) {
-       setupSpinners();
-    } else {
+    if (position != -1) {
       spinner.setSelection(position);
     }
   }

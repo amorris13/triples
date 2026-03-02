@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import com.antsapps.triples.CardCustomizationUtils;
 
 public class PatternIconView extends View {
 
@@ -29,34 +30,19 @@ public class PatternIconView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    mPaint.setColor(Color.BLACK);
+    mPaint.setShader(CardCustomizationUtils.getCustomShadedShader(getContext(), Color.BLACK, mPattern));
+    mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
     int size = getWidth();
     int margin = (int) (4 * density);
-    Rect r = new Rect(margin, margin, size - margin, size - margin);
+    canvas.drawRect(margin, margin, size - margin, size - margin, mPaint);
 
-    if (mPattern.equals("stripes")) {
-      float thickness = 2 * density;
-      for (float i = r.left; i < r.right; i += 2 * thickness) {
-        canvas.drawRect(i, r.top, i + thickness, r.bottom, mPaint);
-      }
-    } else if (mPattern.equals("dots")) {
-      float radius = 2 * density;
-      for (float x = r.left + radius; x < r.right; x += 4 * radius) {
-        for (float y = r.top + radius; y < r.bottom; y += 4 * radius) {
-          canvas.drawCircle(x, y, radius, mPaint);
-        }
-      }
-    } else if (mPattern.equals("lighter")) {
-      mPaint.setAlpha(128);
-      canvas.drawRect(r, mPaint);
-    } else if (mPattern.equals("crosshatch")) {
-      mPaint.setStrokeWidth( density);
-      for (int i = -size; i < size; i += (int) (4 * density)) {
-        canvas.drawLine(r.left + i, r.top, r.left + i + size, r.bottom, mPaint);
-        canvas.drawLine(r.left + i + size, r.top, r.left + i, r.bottom, mPaint);
-      }
-    }
+    // Draw outline for better visibility of the pattern area
+    mPaint.setShader(null);
+    mPaint.setColor(Color.BLACK);
+    mPaint.setStyle(Paint.Style.STROKE);
+    mPaint.setStrokeWidth(density);
+    canvas.drawRect(margin, margin, size - margin, size - margin, mPaint);
   }
 
   @Override
