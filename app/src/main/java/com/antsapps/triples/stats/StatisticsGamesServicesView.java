@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.antsapps.triples.BaseGameListActivity;
 import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.google.android.gms.games.Games;
@@ -37,7 +36,7 @@ class StatisticsGamesServicesView extends FrameLayout
     updateSignedInState();
   }
 
-  public void setActivity(BaseGameListActivity activity) {
+  public void setActivity(BaseTriplesActivity activity) {
     mActivity = activity;
     updateSignedInState();
   }

@@ -64,6 +64,11 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
     return new ArcadeStatisticsSummaryView(getActivity());
   }
 
+  @Override
+  protected String getGameType() {
+    return "Arcade";
+  }
+
   protected String getLeaderboardId() {
     return GamesServices.Leaderboard.ARCADE;
   }

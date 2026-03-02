@@ -36,6 +36,13 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     mAverage = (TextView) findViewById(R.id.average);
   }
 
+  @Override
+  protected void setAccentColor(int accentColor) {
+    ((TextView) findViewById(R.id.summary_title)).setTextColor(accentColor);
+    findViewById(R.id.summary_divider).setBackgroundColor(accentColor);
+    mGraphView.setAccentColor(accentColor);
+  }
+
   private static String convertTimeToString(long timeMS) {
     return DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(timeMS));
   }

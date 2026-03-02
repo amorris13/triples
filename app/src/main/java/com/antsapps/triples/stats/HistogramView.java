@@ -41,6 +41,7 @@ class HistogramView extends View {
   private float mGraphWidth;
   private float mGraphHeight;
   private boolean mCentreXAxisLabels;
+  private int mAccentColor = Color.BLUE; // Default
 
   public HistogramView(Context context) {
     this(context, null);
@@ -68,6 +69,11 @@ class HistogramView extends View {
 
     mCentreXAxisLabels = centreXAxisLabels;
 
+    invalidate();
+  }
+
+  void setAccentColor(int accentColor) {
+    mAccentColor = accentColor;
     invalidate();
   }
 
@@ -205,7 +211,7 @@ class HistogramView extends View {
 
   private void drawPlot(Canvas canvas) {
     Paint columnPaint = new Paint();
-    columnPaint.setColor(getResources().getColor(android.R.color.holo_blue_light));
+    columnPaint.setColor(mAccentColor);
     columnPaint.setStrokeWidth(2);
     columnPaint.setStyle(Paint.Style.FILL);
     for (int i = 0; i <= mMaxX; i++) {

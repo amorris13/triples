@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.antsapps.triples.BaseGameListActivity;
+import androidx.core.content.ContextCompat;
+
 import com.antsapps.triples.BaseGameListFragment;
+import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
@@ -21,7 +23,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
     implements OnStatisticsChangeListener,
         OnComparatorChangeListener<Game>,
         StatisticsSelectorView.OnPeriodChangeListener {
-  private BaseGameListActivity mGameListActivity;
+  private BaseTriplesActivity mGameListActivity;
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED.createReversableComparator();
   private StatisticsGamesServicesView mGameServicesView;
   protected StatisticsSelectorView mSelectorView;
@@ -31,7 +33,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mGameListActivity = (BaseGameListActivity) activity;
+    mGameListActivity = (BaseTriplesActivity) activity;
   }
 
   @Override
@@ -48,15 +50,28 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
     mSelectorView.setOnPeriodChangeListener(this);
     listView.addHeaderView(mSelectorView, null, false);
 
+    int accentColor = getAccentColor();
+    mSelectorView.setAccentColor(accentColor);
+
     mSummaryView = createStatisticsSummaryView();
+    mSummaryView.setAccentColor(accentColor);
     listView.addHeaderView(mSummaryView, null, false);
 
     mListHeaderView = createStatisticsListHeaderView();
+    mListHeaderView.setAccentColor(accentColor);
     mListHeaderView.setOnComparatorChangeListener(this);
     listView.addHeaderView(mListHeaderView, null, false);
 
     return listView;
   }
+
+  protected int getAccentColor() {
+    return ContextCompat.getColor(
+        getActivity(),
+        getGameType().equals("Arcade") ? R.color.arcade_accent : R.color.classic_accent);
+  }
+
+  protected abstract String getGameType();
 
   protected abstract String getLeaderboardId();
 
