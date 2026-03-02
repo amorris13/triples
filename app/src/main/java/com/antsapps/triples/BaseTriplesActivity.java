@@ -169,6 +169,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
+    AchievementManager.syncAchievements(mGoogleApiClient, com.antsapps.triples.backend.Application.getInstance(this));
   }
 
   public void signIn() {
