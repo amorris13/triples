@@ -87,10 +87,10 @@ public class CardCustomizationUtils {
 
     switch (pattern) {
       case "dots":
-        bm = Bitmap.createBitmap(thickness * 2, thickness * 2, Bitmap.Config.ARGB_8888);
+        bm = Bitmap.createBitmap(thickness * 4, thickness * 4, Bitmap.Config.ARGB_8888);
         for (int i = 0; i < thickness; i++) {
           for (int j = 0; j < thickness; j++) {
-            bm.setPixel(i, j, color);
+            bm.setPixel(i + thickness * 2, j + thickness * 2, color);
           }
         }
         break;
@@ -111,7 +111,8 @@ public class CardCustomizationUtils {
         break;
       case "stripes":
       default:
-        int[] pixels = Ints.concat(initIntArray(color, thickness), initIntArray(0, thickness));
+        // Start with transparent/empty bit
+        int[] pixels = Ints.concat(initIntArray(0, thickness), initIntArray(color, thickness));
         bm = Bitmap.createBitmap(pixels, pixels.length, 1, Bitmap.Config.ARGB_8888);
         break;
     }

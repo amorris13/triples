@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,17 +40,15 @@ public class CardCustomizationPreference extends Preference {
   private Spinner[] shapeSpinners = new Spinner[3];
   private Spinner patternSpinner;
   private SampleCardView[] sampleCards = new SampleCardView[3];
-  private Button resetButton;
+  private View resetButton;
 
   private boolean updating = false;
 
   public static class ColorItemView extends View {
-    private String mColor;
     public ColorItemView(@NonNull Context context) {
       super(context);
     }
     public void setColor(String hex) {
-      mColor = hex;
       setBackgroundColor(Color.parseColor(hex));
     }
     @Override
@@ -66,6 +62,7 @@ public class CardCustomizationPreference extends Preference {
   public CardCustomizationPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     setLayoutResource(R.layout.preference_card_customization);
+    setSelectable(false);
   }
 
   @Override
@@ -85,7 +82,7 @@ public class CardCustomizationPreference extends Preference {
     sampleCards[1] = (SampleCardView) holder.findViewById(R.id.sample_card_1);
     sampleCards[2] = (SampleCardView) holder.findViewById(R.id.sample_card_2);
 
-    resetButton = (Button) holder.findViewById(R.id.reset_button);
+    resetButton = holder.findViewById(R.id.reset_button);
     resetButton.setOnClickListener(v -> resetToDefaults());
 
     setupSpinners();
