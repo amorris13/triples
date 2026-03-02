@@ -1,7 +1,9 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
@@ -24,15 +26,25 @@ public class StatisticsActivity extends BaseTriplesActivity {
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    String gameType = getIntent().getStringExtra(GAME_TYPE);
+    if ("Arcade".equals(gameType)) {
+      setTitle(R.string.arcade_label);
+      if (getSupportActionBar() != null) {
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.arcade_accent)));
+      }
+    } else {
+      setTitle(R.string.classic_label);
+      if (getSupportActionBar() != null) {
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.classic_accent)));
+      }
+    }
+
     if (savedInstanceState == null) {
-      String gameType = getIntent().getStringExtra(GAME_TYPE);
       Fragment fragment;
       if ("Arcade".equals(gameType)) {
         fragment = new ArcadeStatisticsFragment();
-        setTitle(R.string.arcade_label);
       } else {
         fragment = new ClassicStatisticsFragment();
-        setTitle(R.string.classic_label);
       }
 
       FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

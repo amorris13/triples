@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -9,66 +11,160 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Classic Section -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/classic_label"
-            android:textSize="24sp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="Welcome to Triples"
+            android:textColor="#333333"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/classic_resume_button"
+        <!-- Classic Section -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/resume_game"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/classic_new_game_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/new_game" />
-
-        <Button
-            android:id="@+id/classic_statistics_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/statistics" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:background="@android:color/darker_gray" />
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:id="@+id/classic_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/classic_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/classic_label"
+                    android:textColor="@color/classic_accent"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/classic_game_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="No current game"
+                    android:textColor="#666666"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/classic_resume_button"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/resume_game"
+                        android:theme="@style/ClassicButtonTheme"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/classic_new_game_button"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/new_game"
+                        android:theme="@style/ClassicButtonTheme" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/classic_statistics_button"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/statistics"
+                    android:textColor="@color/classic_accent" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- Arcade Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/arcade_label"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/arcade_resume_button"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/resume_game"
-            android:visibility="gone" />
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
 
-        <Button
-            android:id="@+id/arcade_new_game_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/new_game" />
+            <LinearLayout
+                android:id="@+id/arcade_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/arcade_background"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <Button
-            android:id="@+id/arcade_statistics_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/statistics" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/arcade_label"
+                    android:textColor="@color/arcade_accent"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/arcade_game_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="No current game"
+                    android:textColor="#666666"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/arcade_resume_button"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/resume_game"
+                        android:theme="@style/ArcadeButtonTheme"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/arcade_new_game_button"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/new_game"
+                        android:theme="@style/ArcadeButtonTheme" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/arcade_statistics_button"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/statistics"
+                    android:textColor="@color/arcade_accent" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 </ScrollView>

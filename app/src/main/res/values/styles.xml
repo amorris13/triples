@@ -40,4 +40,12 @@
     <item name="android:textStyle">bold</item>
     <item name="android:background">?android:attr/selectableItemBackground</item>
   </style>
+
+  <style name="ClassicButtonTheme" parent="ThemeOverlay.AppCompat.Light">
+    <item name="colorAccent">@color/classic_accent</item>
+  </style>
+
+  <style name="ArcadeButtonTheme" parent="ThemeOverlay.AppCompat.Light">
+    <item name="colorAccent">@color/arcade_accent</item>
+  </style>
 </resources>

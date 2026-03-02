@@ -4,4 +4,10 @@
   <color name="action_bar_background">#00222d</color>
   <color name="action_bar_stacked_background">#202020</color>
 
+  <color name="classic_background">#E3F2FD</color>
+  <color name="classic_accent">#1976D2</color>
+
+  <color name="arcade_background">#F1F8E9</color>
+  <color name="arcade_accent">#388E3C</color>
+
 </resources>

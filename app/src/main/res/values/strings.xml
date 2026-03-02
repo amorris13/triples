@@ -9,7 +9,8 @@
   <string name="games_no_items">No games played yet.\nTap + to create a new game.</string>
   <string name="list_of_games">LIST OF GAMES</string>
   <string name="new_game">New Game</string>
-  <string name="resume_game">Resume Game</string>
+  <string name="resume_game">Resume</string>
+  <string name="start_again">Start Again</string>
   <string name="no_current_games">No Current Games.\nTo start a new game, click +.</string>
   <string name="current">CURRENT</string>
   <string name="completed">COMPLETED</string>
@@ -80,6 +81,9 @@
     <string name="pref_hide_hint_summary">Hide the hint icon in the game action bar</string>
 
     <string name="hint_used_indicator">HINT USED</string>
+
+    <string name="cards_remaining_format">Cards remaining: %1$d</string>
+    <string name="triples_found_format">Triples found: %1$d</string>
 
   <string name="color_0">Color 1</string>
   <string name="color_1">Color 2</string>
