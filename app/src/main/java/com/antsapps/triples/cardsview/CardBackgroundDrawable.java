@@ -64,7 +64,7 @@ class CardBackgroundDrawable extends Drawable {
 
     mBorder = new ShapeDrawable(mCardShape);
     mBorder.getPaint().setStyle(Paint.Style.STROKE);
-    mBorder.getPaint().setColor(ContextCompat.getColor(context, R.color.colorOutline));
+    mBorder.getPaint().setColor(ContextCompat.getColor(context, R.color.colorOutlineVariant));
     mBorder.getPaint().setStrokeWidth(0);
   }
 
