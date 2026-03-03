@@ -24,7 +24,7 @@
   <color name="colorSurface">#FBFCFE</color>
   <color name="colorOnSurface">#191C1D</color>
   <color name="colorSurfaceVariant">#E1E2E5</color>
-  <color name="colorOnSurfaceVariant">#44474E</color>
+  <color name="colorOnSurfaceVariant">#74777F</color>
   <color name="colorOutline">#74777F</color>
 
   <color name="action_bar_background">#00222d</color>

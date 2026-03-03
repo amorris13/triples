@@ -6,8 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.core.graphics.drawable.DrawableCompat;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -234,5 +237,15 @@ public abstract class BaseTriplesActivity extends AppCompatActivity
 
   public GoogleApiClient getApiClient() {
     return mGoogleApiClient;
+  }
+
+  protected void tintMenuIcons(Menu menu) {
+    int tintColor = com.antsapps.triples.backend.Utils.getColorFromAttr(this, com.google.android.material.R.attr.colorOnSurface);
+    for (int i = 0; i < menu.size(); i++) {
+      MenuItem item = menu.getItem(i);
+      if (item.getIcon() != null) {
+        DrawableCompat.setTint(item.getIcon(), tintColor);
+      }
+    }
   }
 }

@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import androidx.core.view.MenuItemCompat;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
@@ -112,6 +113,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game, menu);
+    tintMenuIcons(menu);
     return true;
   }
 
