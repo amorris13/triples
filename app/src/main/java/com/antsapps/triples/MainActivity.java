@@ -129,7 +129,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewClassicGame() {
-    for (ClassicGame game : mApplication.getCurrentClassicGames()) {
+    for (ClassicGame game : new java.util.ArrayList<>(com.google.common.collect.Lists.newArrayList(mApplication.getCurrentClassicGames()))) {
       mApplication.deleteClassicGame(game);
     }
     ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
@@ -140,7 +140,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewArcadeGame() {
-    for (ArcadeGame game : mApplication.getCurrentArcadeGames()) {
+    for (ArcadeGame game : new java.util.ArrayList<>(com.google.common.collect.Lists.newArrayList(mApplication.getCurrentArcadeGames()))) {
       mApplication.deleteArcadeGame(game);
     }
     ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());
@@ -167,6 +167,10 @@ public class MainActivity extends BaseTriplesActivity {
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.signout).setVisible(isSignedIn());
+    MenuItem exportItem = menu.findItem(R.id.export_to_csv);
+    if (exportItem != null) {
+      exportItem.setVisible(false);
+    }
     return true;
   }
 

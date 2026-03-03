@@ -86,4 +86,23 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   protected void updateDataSet() {
     onStatisticsChange(mApplication.getArcadeStatistics(mSelectorView.getPeriod()));
   }
+
+  @Override
+  public void exportToCsv() {
+    StringBuilder csv = new StringBuilder();
+    csv.append("Date,Time Elapsed (ms),Triples Found,Hints Used\n");
+    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
+    for (int i = 0; i < mAdapter.getCount(); i++) {
+      ArcadeGame game = (ArcadeGame) mAdapter.getItem(i);
+      csv.append(dateFormat.format(game.getDateStarted()));
+      csv.append(",");
+      csv.append(game.getTimeElapsed());
+      csv.append(",");
+      csv.append(game.getNumTriplesFound());
+      csv.append(",");
+      csv.append(game.areHintsUsed());
+      csv.append("\n");
+    }
+    shareCsv("arcade_statistics.csv", csv.toString());
+  }
 }

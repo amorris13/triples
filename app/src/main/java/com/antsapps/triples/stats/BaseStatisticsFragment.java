@@ -1,13 +1,18 @@
 package com.antsapps.triples.stats;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.antsapps.triples.BaseGameListFragment;
 import com.antsapps.triples.BaseTriplesActivity;
@@ -78,6 +83,26 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   protected abstract BaseStatisticsListHeaderView createStatisticsListHeaderView();
 
   protected abstract BaseStatisticsSummaryView createStatisticsSummaryView();
+
+  public abstract void exportToCsv();
+
+  protected void shareCsv(String filename, String content) {
+    java.io.File cacheFile = new java.io.File(getActivity().getCacheDir(), filename);
+    try (java.io.FileOutputStream out = new java.io.FileOutputStream(cacheFile)) {
+      out.write(content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    } catch (java.io.IOException e) {
+      Log.e("BaseStatisticsFragment", "Error writing CSV file", e);
+      Toast.makeText(getActivity(), "Error exporting CSV", Toast.LENGTH_SHORT).show();
+      return;
+    }
+
+    Uri contentUri = FileProvider.getUriForFile(getActivity(), "com.antsapps.triples.fileprovider", cacheFile);
+    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+    shareIntent.setType("text/csv");
+    shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    startActivity(Intent.createChooser(shareIntent, "Export Statistics"));
+  }
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
