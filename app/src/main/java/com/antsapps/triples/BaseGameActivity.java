@@ -147,9 +147,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       startActivity(settingsIntent);
       return true;
     } else if (itemId == android.R.id.home) {// app icon in action bar clicked; go up one level
-      Intent intent = new Intent(this, MainActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(intent);
       finish();
       return true;
     }
@@ -418,6 +415,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     Intent newGameIntent = createNewGame();
     logGameEvent(AnalyticsConstants.Event.NEW_GAME);
     startActivity(newGameIntent);
+    finish();
   }
 
   protected abstract Intent createNewGame();
