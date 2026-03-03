@@ -103,13 +103,21 @@
 
   <string name="export_to_csv">Export to CSV</string>
 
-  <string name="performance_new_best">New personal best!</string>
-  <string name="performance_better_than_average">Faster than your average!</string>
-  <string name="performance_worse_than_average">Keep practicing to beat your average!</string>
+  <string name="performance_classic_new_best">New personal best!</string>
+  <string name="performance_classic_better_than_average">Faster than your average!</string>
+  <string name="performance_classic_worse_than_average">Keep practicing to beat your average!</string>
+  <string name="performance_classic_best_year">Best score this year!</string>
+  <string name="performance_classic_best_month">Best score this month!</string>
+  <string name="performance_classic_best_week">Best score this week!</string>
+  <string name="performance_classic_best_day">Best score today!</string>
   <string name="performance_arcade_new_best">New record for triples found!</string>
   <string name="performance_arcade_better_than_average">More triples than your average!</string>
   <string name="performance_arcade_worse_than_average">Keep practicing to beat your average!</string>
+  <string name="performance_arcade_best_year">Most triples this year!</string>
+  <string name="performance_arcade_best_month">Most triples this month!</string>
+  <string name="performance_arcade_best_week">Most triples this week!</string>
+  <string name="performance_arcade_best_day">Most triples today!</string>
   <string name="performance_first_game">Your first game!</string>
-  <string name="performance_hints_used">Hints were used - game not added to all-time statistics.</string>
+  <string name="performance_hints_used">Hints were used - game not added to statistics.</string>
 
 </resources>

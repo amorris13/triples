@@ -10,4 +10,8 @@
   <color name="arcade_background">#F1F8E9</color>
   <color name="arcade_accent">#388E3C</color>
 
+  <color name="color_fastest">#4CAF50</color>
+  <color name="color_slowest">#F44336</color>
+  <color name="color_timeline_point">#33B5E5</color>
+
 </resources>

@@ -23,7 +23,9 @@ import android.widget.ViewAnimator;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.ClassicStatistics;
+import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
@@ -340,47 +342,58 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   private void updatePerformanceDescription() {
     TextView performanceTv = (TextView) findViewById(R.id.performance_description);
-    if (getGame().areHintsUsed()) {
+    Game game = getGame();
+    if (game.areHintsUsed()) {
       performanceTv.setText(R.string.performance_hints_used);
       return;
     }
 
     Application app = Application.getInstance(this);
-    if (getGame().getGameTypeForAnalytics().equals(ArcadeGame.GAME_TYPE_FOR_ANALYTICS)) {
-      ArcadeStatistics stats = app.getArcadeStatistics(Period.ALL_TIME);
-      if (stats.getNumGames() <= 1) {
+    if (game instanceof ArcadeGame) {
+      ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME);
+      if (allTimeStats.getNumGames() <= 1) {
         performanceTv.setText(R.string.performance_first_game);
-      } else {
-        int currentFound = ((ArcadeGame) getGame()).getNumTriplesFound();
-        if (currentFound > stats.getMostFound()) {
-          // This should not happen if the current game is already in stats, but let's be safe.
-          performanceTv.setText(R.string.performance_arcade_new_best);
-        } else {
-          // Check if it's a new record by seeing if it matches the best.
-          // Since the game is already in the stats, we check if it's EQUAL to best.
-          boolean isBest = currentFound >= stats.getMostFound();
-          if (isBest) {
-            performanceTv.setText(R.string.performance_arcade_new_best);
-          } else if (currentFound > stats.getAverageFound()) {
-            performanceTv.setText(R.string.performance_arcade_better_than_average);
-          } else {
-            performanceTv.setText(R.string.performance_arcade_worse_than_average);
-          }
-        }
+        return;
       }
-    } else {
-      ClassicStatistics stats = app.getClassicStatistics(Period.ALL_TIME);
-      if (stats.getNumGames() <= 1) {
-        performanceTv.setText(R.string.performance_first_game);
+
+      int currentFound = ((ArcadeGame) game).getNumTriplesFound();
+      if (currentFound >= allTimeStats.getMostFound()) {
+        performanceTv.setText(R.string.performance_arcade_new_best);
+      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365))).getMostFound()) {
+        performanceTv.setText(R.string.performance_arcade_best_year);
+      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30))).getMostFound()) {
+        performanceTv.setText(R.string.performance_arcade_best_month);
+      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7))).getMostFound()) {
+        performanceTv.setText(R.string.performance_arcade_best_week);
+      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1))).getMostFound()) {
+        performanceTv.setText(R.string.performance_arcade_best_day);
+      } else if (currentFound > allTimeStats.getAverageFound()) {
+        performanceTv.setText(R.string.performance_arcade_better_than_average);
       } else {
-        long currentTime = getGame().getTimeElapsed();
-        if (currentTime <= stats.getFastestTime()) {
-          performanceTv.setText(R.string.performance_new_best);
-        } else if (currentTime < stats.getAverageTime()) {
-          performanceTv.setText(R.string.performance_better_than_average);
-        } else {
-          performanceTv.setText(R.string.performance_worse_than_average);
-        }
+        performanceTv.setText(R.string.performance_arcade_worse_than_average);
+      }
+    } else if (game instanceof ClassicGame) {
+      ClassicStatistics allTimeStats = app.getClassicStatistics(Period.ALL_TIME);
+      if (allTimeStats.getNumGames() <= 1) {
+        performanceTv.setText(R.string.performance_first_game);
+        return;
+      }
+
+      long currentTime = game.getTimeElapsed();
+      if (currentTime <= allTimeStats.getFastestTime()) {
+        performanceTv.setText(R.string.performance_classic_new_best);
+      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365))).getFastestTime()) {
+        performanceTv.setText(R.string.performance_classic_best_year);
+      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30))).getFastestTime()) {
+        performanceTv.setText(R.string.performance_classic_best_month);
+      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7))).getFastestTime()) {
+        performanceTv.setText(R.string.performance_classic_best_week);
+      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1))).getFastestTime()) {
+        performanceTv.setText(R.string.performance_classic_best_day);
+      } else if (currentTime < allTimeStats.getAverageTime()) {
+        performanceTv.setText(R.string.performance_classic_better_than_average);
+      } else {
+        performanceTv.setText(R.string.performance_classic_worse_than_average);
       }
     }
   }

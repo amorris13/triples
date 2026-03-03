@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -54,14 +55,18 @@ public class TimelineView extends View {
     pointPaint.setStrokeWidth(8 * density);
     pointPaint.setStrokeCap(Paint.Cap.ROUND);
 
+    int colorFastest = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_fastest);
+    int colorSlowest = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_slowest);
+    int colorDefault = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_timeline_point);
+
     for (int i = 0; i < mTripleFindTimes.size(); i++) {
       long time = mTripleFindTimes.get(i);
       if (i == mFastestIndex) {
-        pointPaint.setColor(0xFF4CAF50); // Green
+        pointPaint.setColor(colorFastest);
       } else if (i == mSlowestIndex) {
-        pointPaint.setColor(0xFFF44336); // Red
+        pointPaint.setColor(colorSlowest);
       } else {
-        pointPaint.setColor(0xFF33B5E5); // Blue
+        pointPaint.setColor(colorDefault);
       }
       float x = padding + (float) time / mMaxTime * availableWidth;
       canvas.drawPoint(x, height / 2, pointPaint);
