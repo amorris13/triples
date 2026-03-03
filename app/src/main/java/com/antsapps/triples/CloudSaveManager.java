@@ -14,7 +14,7 @@ import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.collect.Iterables;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,7 +93,8 @@ public class CloudSaveManager {
         });
   }
 
-  private static boolean merge(Application application, CloudSaveSerializer.CloudData cloudData) {
+  @VisibleForTesting
+  static boolean merge(Application application, CloudSaveSerializer.CloudData cloudData) {
     boolean changed = false;
 
     // Classic Games

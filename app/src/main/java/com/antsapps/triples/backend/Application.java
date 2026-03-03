@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.antsapps.triples.backend.Game.GameState;
+import com.antsapps.triples.CloudSaveManager;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -102,7 +103,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public void uploadToCloud(android.app.Activity activity) {
-    com.antsapps.triples.CloudSaveManager.saveToCloud(activity, this);
+    CloudSaveManager.saveToCloud(activity, this);
   }
 
   public void deleteClassicGame(ClassicGame game) {

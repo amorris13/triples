@@ -16,6 +16,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.antsapps.triples.backend.Application;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -156,8 +157,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
-    com.antsapps.triples.backend.Application application =
-        com.antsapps.triples.backend.Application.getInstance(this);
+    Application application = Application.getInstance(this);
     AchievementManager.syncAchievements(this, application);
     CloudSaveManager.syncWithCloud(this, application);
   }
