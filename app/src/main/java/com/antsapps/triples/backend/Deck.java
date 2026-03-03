@@ -70,4 +70,21 @@ public class Deck {
       mCards.add(card);
     }
   }
+
+  public void shuffle(Random random) {
+    Collections.shuffle(mCards, random);
+  }
+
+  public static Deck createBeginnerDeck(Random random) {
+    List<Card> cards = Lists.newArrayList();
+    for (int number = 0; number < Card.MAX_VARIABLES; number++) {
+      for (int shape = 0; shape < Card.MAX_VARIABLES; shape++) {
+        for (int color = 0; color < Card.MAX_VARIABLES; color++) {
+          cards.add(new Card(number, shape, 1, color));
+        }
+      }
+    }
+    Collections.shuffle(cards, random);
+    return new Deck(cards);
+  }
 }

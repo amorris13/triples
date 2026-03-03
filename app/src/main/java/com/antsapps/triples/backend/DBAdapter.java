@@ -17,6 +17,7 @@ import java.util.List;
 public class DBAdapter extends SQLiteOpenHelper {
   public static final String TABLE_CLASSIC_GAMES = "games";
   public static final String TABLE_ARCADE_GAMES = "arcade_games";
+  public static final String TABLE_ZEN_GAMES = "zen_games";
   public static final String COLUMN_GAME_ID = "game_id";
   public static final String COLUMN_GAME_STATE = "game_state";
   public static final String COLUMN_GAME_RANDOM = "game_random";
@@ -25,12 +26,13 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_TIME_ELAPSED = "time_elapsed";
   public static final String COLUMN_DATE = "date";
   public static final String COLUMN_NUM_TRIPLES_FOUND = "num_triples_found"; // ARCADE only
+  public static final String COLUMN_IS_BEGINNER = "is_beginner"; // ZEN only
   public static final String COLUMN_TRIPLE_FIND_TIMES = "triple_find_times";
   public static final String COLUMN_HINTS_USED = "hints_used";
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
   /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 6;
+  private static final int DATABASE_VERSION = 7;
 
   private static final String CREATE_CLASSIC_GAMES =
       "CREATE TABLE "
@@ -78,6 +80,30 @@ public class DBAdapter extends SQLiteOpenHelper {
           + " BLOB, " //
           + COLUMN_HINTS_USED
           + " INTEGER)";
+  private static final String CREATE_ZEN_GAMES =
+      "CREATE TABLE "
+          + TABLE_ZEN_GAMES
+          + "("
+          + COLUMN_GAME_ID
+          + " INTEGER PRIMARY KEY AUTOINCREMENT, " //
+          + COLUMN_GAME_STATE
+          + " TEXT, " //
+          + COLUMN_GAME_RANDOM
+          + " INTEGER, " //
+          + COLUMN_CARDS_IN_PLAY
+          + " BLOB, " //
+          + COLUMN_CARDS_IN_DECK
+          + " BLOB, " //
+          + COLUMN_TIME_ELAPSED
+          + " INTEGER, " //
+          + COLUMN_DATE
+          + " INTEGER, " //
+          + COLUMN_IS_BEGINNER
+          + " INTEGER, " //
+          + COLUMN_TRIPLE_FIND_TIMES
+          + " BLOB, " //
+          + COLUMN_HINTS_USED
+          + " INTEGER)";
   private static final String TAG = "DBAdapter";
 
   /** Constructor */
@@ -103,7 +129,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     Log.i("DBAdaptor", "onCreate");
-    String[] sql = new String[] {CREATE_CLASSIC_GAMES, CREATE_ARCADE_GAMES};
+    String[] sql = new String[] {CREATE_CLASSIC_GAMES, CREATE_ARCADE_GAMES, CREATE_ZEN_GAMES};
     db.beginTransaction();
     try {
       // Create tables & test data
@@ -158,12 +184,25 @@ public class DBAdapter extends SQLiteOpenHelper {
         db.endTransaction();
       }
     }
+    if (oldVersion < 7) {
+      String[] sql = new String[] {CREATE_ZEN_GAMES};
+      db.beginTransaction();
+      try {
+        execMultipleSQL(db, sql);
+        db.setTransactionSuccessful();
+      } catch (SQLException e) {
+        Log.e("DBAdapter-Upgrade", e.toString());
+      } finally {
+        db.endTransaction();
+      }
+    }
   }
 
-  public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames) {
+  public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames, List<ZenGame> zenGames) {
     Log.i("DBAdapter", "initialize");
     initClassicGames(classicGames);
     initArcadeGames(arcadeGames);
+    initZenGames(zenGames);
   }
 
   // Classic Game stuff
@@ -321,6 +360,85 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
     values.put(COLUMN_DATE, game.getDateStarted().getTime());
     values.put(COLUMN_NUM_TRIPLES_FOUND, game.getNumTriplesFound());
+    values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
+    values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
+    return values;
+  }
+
+  // Zen Game methods
+
+  private void initZenGames(List<ZenGame> zenGames) {
+    zenGames.clear();
+
+    Cursor zenGamesCursor =
+        getWritableDatabase()
+            .query(
+                TABLE_ZEN_GAMES,
+                new String[] {
+                    COLUMN_GAME_ID,
+                    COLUMN_GAME_STATE,
+                    COLUMN_GAME_RANDOM,
+                    COLUMN_CARDS_IN_PLAY,
+                    COLUMN_CARDS_IN_DECK,
+                    COLUMN_TIME_ELAPSED,
+                    COLUMN_DATE,
+                    COLUMN_IS_BEGINNER,
+                    COLUMN_TRIPLE_FIND_TIMES,
+                    COLUMN_HINTS_USED
+                },
+                null,
+                null,
+                null,
+                null,
+                null);
+    zenGamesCursor.moveToFirst();
+    while (!zenGamesCursor.isAfterLast()) {
+      ZenGame game =
+          new ZenGame(
+              zenGamesCursor.getLong(0),
+              zenGamesCursor.getLong(2),
+              Utils.cardListFromByteArray(zenGamesCursor.getBlob(3)),
+              Utils.longListFromByteArray(zenGamesCursor.getBlob(8)),
+              Deck.fromByteArray(zenGamesCursor.getBlob(4)),
+              zenGamesCursor.getLong(5),
+              new Date(zenGamesCursor.getLong(6)),
+              GameState.valueOf(zenGamesCursor.getString(1)),
+              zenGamesCursor.getInt(9) != 0,
+              zenGamesCursor.getInt(7) != 0);
+      zenGames.add(game);
+      zenGamesCursor.moveToNext();
+    }
+    zenGamesCursor.close();
+
+    Collections.sort(zenGames);
+  }
+
+  public long addZenGame(ZenGame game) {
+    return getWritableDatabase().insert(TABLE_ZEN_GAMES, null, createZenGameValues(game));
+  }
+
+  public void updateZenGame(ZenGame game) {
+    getWritableDatabase()
+        .update(
+            TABLE_ZEN_GAMES,
+            createZenGameValues(game),
+            COLUMN_GAME_ID + " = " + game.getId(),
+            null);
+  }
+
+  public void removeZenGame(ZenGame game) {
+    getWritableDatabase().delete(TABLE_ZEN_GAMES, COLUMN_GAME_ID + " = " + game.getId(), null);
+  }
+
+  private ContentValues createZenGameValues(ZenGame game) {
+    ContentValues values = new ContentValues();
+    values.put(COLUMN_GAME_STATE, game.getGameState().name());
+    values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());
+    values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
+    values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
+    values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
+    values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_IS_BEGINNER, game.isBeginner() ? 1 : 0);
     values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
     values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
     return values;

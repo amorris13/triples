@@ -72,4 +72,8 @@
   <style name="ArcadeButtonTheme" parent="ThemeOverlay.Material3.Light">
     <item name="colorPrimary">@color/arcade_accent</item>
   </style>
+
+  <style name="ZenButtonTheme" parent="ThemeOverlay.Material3.Light">
+    <item name="colorPrimary">@color/zen_accent</item>
+  </style>
 </resources>

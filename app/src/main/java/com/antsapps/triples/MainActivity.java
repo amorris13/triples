@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.ZenGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -26,8 +27,11 @@ public class MainActivity extends BaseTriplesActivity {
 
   private MaterialButton mClassicResumeButton;
   private MaterialButton mArcadeResumeButton;
+  private MaterialButton mZenResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
+  private MaterialButton mZenNewGameButton;
+  private MaterialButton mBeginnerNewGameButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -90,6 +94,30 @@ public class MainActivity extends BaseTriplesActivity {
         showStatistics("Arcade");
       }
     });
+
+    mZenResumeButton = findViewById(R.id.zen_resume_button);
+    mZenResumeButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        resumeGame(mApplication.getCurrentZenGames(), ZenGameActivity.class);
+      }
+    });
+
+    mZenNewGameButton = findViewById(R.id.zen_new_game_button);
+    mZenNewGameButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        startNewZenGame(false);
+      }
+    });
+
+    mBeginnerNewGameButton = findViewById(R.id.beginner_new_game_button);
+    mBeginnerNewGameButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        startNewZenGame(true);
+      }
+    });
   }
 
   @Override
@@ -122,6 +150,14 @@ public class MainActivity extends BaseTriplesActivity {
     }
     int numArcadeCompleted = Iterables.size(mApplication.getCompletedArcadeGames());
     mArcadeStatisticsButton.setText(getString(R.string.statistics_format, numArcadeCompleted));
+
+    ZenGame zenGame = Iterables.getFirst(mApplication.getCurrentZenGames(), null);
+    if (zenGame != null) {
+      mZenResumeButton.setVisibility(View.VISIBLE);
+      mZenResumeButton.setText(zenGame.isBeginner() ? R.string.resume_beginner : R.string.resume_zen);
+    } else {
+      mZenResumeButton.setVisibility(View.GONE);
+    }
   }
 
   private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {
@@ -140,6 +176,17 @@ public class MainActivity extends BaseTriplesActivity {
     ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
     mApplication.addClassicGame(game);
     Intent intent = new Intent(this, ClassicGameActivity.class);
+    intent.putExtra(Game.ID_TAG, game.getId());
+    startActivity(intent);
+  }
+
+  private void startNewZenGame(boolean isBeginner) {
+    for (ZenGame game : Lists.newArrayList(mApplication.getCurrentZenGames())) {
+      mApplication.deleteZenGame(game);
+    }
+    ZenGame game = ZenGame.createFromSeed(System.currentTimeMillis(), isBeginner);
+    mApplication.addZenGame(game);
+    Intent intent = new Intent(this, ZenGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
     startActivity(intent);
   }

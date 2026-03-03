@@ -36,6 +36,9 @@
   <color name="arcade_background">#F1F8E9</color>
   <color name="arcade_accent">#388E3C</color>
 
+  <color name="zen_background">#F3E5F5</color>
+  <color name="zen_accent">#7B1FA2</color>
+
   <color name="color_fastest">#4CAF50</color>
   <color name="color_slowest">#F44336</color>
   <color name="color_timeline_point">#33B5E5</color>

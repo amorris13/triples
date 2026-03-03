@@ -20,13 +20,14 @@ public class Application extends OnStateChangedReporter {
   // Should remain sorted
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
+  private final List<ZenGame> mZenGames = Lists.newArrayList();
 
   public final DBAdapter database;
 
   private Application(Context context) {
     super();
     database = new DBAdapter(context);
-    database.initialize(mClassicGames, mArcadeGames);
+    database.initialize(mClassicGames, mArcadeGames, mZenGames);
     if (isDebug()) {
       prefillDatabaseIfEmpty();
     }
@@ -195,5 +196,43 @@ public class Application extends OnStateChangedReporter {
 
   public ArcadeStatistics getArcadeStatistics(Period period) {
     return new ArcadeStatistics(getCompletedArcadeGames(), period);
+  }
+
+  public void addZenGame(ZenGame game) {
+    game.setId(database.addZenGame(game));
+    mZenGames.add(game);
+    notifyStateChanged();
+  }
+
+  public void saveZenGame(ZenGame game) {
+    database.updateZenGame(game);
+    notifyStateChanged();
+  }
+
+  public void deleteZenGame(ZenGame game) {
+    mZenGames.remove(game);
+    database.removeZenGame(game);
+    notifyStateChanged();
+  }
+
+  public ZenGame getZenGame(long id) {
+    for (ZenGame game : mZenGames) {
+      if (game.getId() == id) {
+        return game;
+      }
+    }
+    return null;
+  }
+
+  public Iterable<ZenGame> getCurrentZenGames() {
+    return Iterables.filter(
+        mZenGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.ACTIVE
+                || game.getGameState() == GameState.PAUSED;
+          }
+        });
   }
 }
