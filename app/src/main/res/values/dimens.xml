@@ -10,4 +10,5 @@
 
   <dimen name="stats_side_padding">16dp</dimen>
   <dimen name="stats_vert_padding">8dp</dimen>
+  <dimen name="triple_dot_padding">10dp</dimen>
 </resources>

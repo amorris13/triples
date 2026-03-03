@@ -59,7 +59,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/game_completed"
-          android:textColor="#33B5E5"
+          android:textColor="#424242"
           android:textSize="@dimen/game_paused_text_size"
           />
 
@@ -99,12 +99,37 @@
           android:layout_marginTop="10dp"
           android:layout_marginBottom="10dp"/>
 
-      <com.google.android.material.button.MaterialButton
+      <TextView
+          android:id="@+id/performance_description"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/new_game"
-          android:textAllCaps="true"
-          android:onClick="newGame"/>
+          android:layout_marginBottom="16dp"
+          android:gravity="center"
+          android:textColor="#424242"
+          android:textSize="16sp"
+          android:padding="10dp"/>
+
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics"
+            android:textAllCaps="true"
+            android:onClick="showStatistics"
+            android:layout_marginRight="10dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_game"
+            android:textAllCaps="true"
+            android:onClick="newGame"/>
+
+      </LinearLayout>
 
     </LinearLayout>
   </ViewAnimator>
