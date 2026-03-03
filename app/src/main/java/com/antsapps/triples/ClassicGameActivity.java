@@ -13,11 +13,9 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesStatusCodes;
+import com.google.android.gms.games.GamesClientStatusCodes;
+import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
-import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.common.collect.ImmutableList;
 
 import java.util.concurrent.TimeUnit;
@@ -90,43 +88,43 @@ public class ClassicGameActivity extends BaseGameActivity
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
-    Games.Leaderboards.submitScoreImmediate(
-            mGoogleApiClient, GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed())
-        .setResultCallback(
-            new ResultCallback<Leaderboards.SubmitScoreResult>() {
-              @Override
-              public void onResult(@NonNull Leaderboards.SubmitScoreResult submitScoreResult) {
-                String message = null;
-                switch (submitScoreResult.getStatus().getStatusCode()) {
-                  case GamesStatusCodes.STATUS_OK:
-                    if (submitScoreResult
-                        .getScoreData()
-                        .getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME)
-                        .newBest) {
-                      message = "Congratulations! That's your best score ever.";
-                    } else if (submitScoreResult
-                        .getScoreData()
-                        .getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY)
-                        .newBest) {
-                      message = "Well Done! That's your best score this week.";
-                    } else if (submitScoreResult
-                        .getScoreData()
-                        .getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY)
-                        .newBest) {
-                      message = "Nice! That's your best score today.";
-                    } else {
-                      message = "You've done better today - keep trying!";
-                    }
-                    break;
-                  case GamesStatusCodes.STATUS_NETWORK_ERROR_OPERATION_DEFERRED:
-                    message = "Score will be submitted when next connected.";
-                    break;
-                  default:
-                    message = "Score could not be submitted";
-                    break;
+    PlayGames.getLeaderboardsClient(this)
+        .submitScoreImmediate(GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed())
+        .addOnCompleteListener(
+            task -> {
+              String message = null;
+              if (task.isSuccessful()) {
+                com.google.android.gms.games.leaderboard.ScoreSubmissionData
+                    submitScoreResult = task.getResult();
+                if (submitScoreResult
+                    .getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME)
+                    .newBest) {
+                  message = "Congratulations! That's your best score ever.";
+                } else if (submitScoreResult
+                    .getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY)
+                    .newBest) {
+                  message = "Well Done! That's your best score this week.";
+                } else if (submitScoreResult
+                    .getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY)
+                    .newBest) {
+                  message = "Nice! That's your best score today.";
+                } else {
+                  message = "You've done better today - keep trying!";
                 }
-                Toast.makeText(ClassicGameActivity.this, message, Toast.LENGTH_LONG).show();
+              } else {
+                Exception e = task.getException();
+                if (e instanceof com.google.android.gms.common.api.ApiException) {
+                  int statusCode = ((com.google.android.gms.common.api.ApiException) e).getStatusCode();
+                  if (statusCode == GamesClientStatusCodes.NETWORK_ERROR_OPERATION_FAILED) {
+                    message = "Score will be submitted when next connected.";
+                  } else {
+                    message = "Score could not be submitted";
+                  }
+                } else {
+                  message = "Score could not be submitted";
+                }
               }
+              Toast.makeText(ClassicGameActivity.this, message, Toast.LENGTH_LONG).show();
             });
   }
 

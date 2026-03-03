@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 
 import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
-import com.google.android.gms.games.Games;
+import com.google.android.gms.games.PlayGames;
 
 class StatisticsGamesServicesView extends FrameLayout
     implements View.OnClickListener, BaseTriplesActivity.OnSignInListener {
@@ -47,9 +47,12 @@ class StatisticsGamesServicesView extends FrameLayout
       // start the asynchronous sign in flow
       mActivity.signIn();
     } else if (view.getId() == R.id.leaderboards) {
-      Intent leaderboardIntent =
-          Games.Leaderboards.getLeaderboardIntent(mActivity.getApiClient(), mLeaderboardId);
-      ((Activity) getContext()).startActivityForResult(leaderboardIntent, 26);
+      PlayGames.getLeaderboardsClient(mActivity)
+          .getLeaderboardIntent(mLeaderboardId)
+          .addOnSuccessListener(
+              intent -> {
+                ((Activity) getContext()).startActivityForResult(intent, 26);
+              });
     }
   }
 
