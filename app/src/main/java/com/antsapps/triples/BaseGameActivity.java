@@ -420,6 +420,14 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   protected abstract Intent createNewGame();
 
+  public void showStatistics(View view) {
+    Intent intent = new Intent(this, StatisticsActivity.class);
+    intent.putExtra(
+        StatisticsActivity.GAME_TYPE,
+        getGame() instanceof ArcadeGame ? "Arcade" : "Classic");
+    startActivity(intent);
+  }
+
   private void logGameEvent(String event) {
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());

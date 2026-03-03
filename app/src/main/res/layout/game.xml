@@ -58,7 +58,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/game_completed"
-          android:textColor="#33B5E5"
+          android:textColor="#424242"
           android:textSize="@dimen/game_paused_text_size"
           />
 
@@ -105,16 +105,31 @@
           android:layout_marginTop="16dp"
           android:layout_marginBottom="16dp"
           android:gravity="center"
-          android:textColor="#33B5E5"
+          android:textColor="#424242"
           android:textSize="16sp"
           android:padding="10dp"/>
 
-      <Button
+      <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/new_game"
-          android:textAllCaps="true"
-          android:onClick="newGame"/>
+          android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics"
+            android:textAllCaps="true"
+            android:onClick="showStatistics"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_game"
+            android:textAllCaps="true"
+            android:onClick="newGame"/>
+
+      </LinearLayout>
 
     </LinearLayout>
   </ViewAnimator>

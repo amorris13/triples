@@ -76,11 +76,11 @@ public class TimelineView extends View {
     textPaint.setColor(Color.GRAY);
     textPaint.setTextSize(10 * density);
     textPaint.setAntiAlias(true);
+    textPaint.setTextAlign(Paint.Align.CENTER);
 
     canvas.drawText("0:00", padding, height / 2 + 20 * density, textPaint);
 
     String endTime = android.text.format.DateUtils.formatElapsedTime(mMaxTime / 1000);
-    float endTimeWidth = textPaint.measureText(endTime);
-    canvas.drawText(endTime, width - padding - endTimeWidth, height / 2 + 20 * density, textPaint);
+    canvas.drawText(endTime, width - padding, height / 2 + 20 * density, textPaint);
   }
 }
