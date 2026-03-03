@@ -100,7 +100,7 @@ public class MainActivity extends BaseTriplesActivity {
 
   private void updateResumeButtons() {
     ClassicGame classicGame = Iterables.getFirst(mApplication.getCurrentClassicGames(), null);
-    if (classicGame != null) {
+    if (classicGame != null && !classicGame.getTripleFindTimes().isEmpty()) {
       mClassicResumeButton.setVisibility(View.VISIBLE);
       mClassicResumeButton.setText(getString(R.string.resume_game_classic_format, classicGame.getCardsRemaining()));
       mClassicNewGameButton.setText(R.string.start_again);
@@ -112,7 +112,7 @@ public class MainActivity extends BaseTriplesActivity {
     mClassicStatisticsButton.setText(getString(R.string.statistics_format, numClassicCompleted));
 
     ArcadeGame arcadeGame = Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
-    if (arcadeGame != null) {
+    if (arcadeGame != null && !arcadeGame.getTripleFindTimes().isEmpty()) {
       mArcadeResumeButton.setVisibility(View.VISIBLE);
       mArcadeResumeButton.setText(getString(R.string.resume_game_arcade_format, arcadeGame.getNumTriplesFound()));
       mArcadeNewGameButton.setText(R.string.start_again);
