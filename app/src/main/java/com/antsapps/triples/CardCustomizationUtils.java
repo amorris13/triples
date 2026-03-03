@@ -29,15 +29,15 @@ public class CardCustomizationUtils {
     switch (id) {
       case 0:
         key = context.getString(R.string.pref_color_0);
-        defaultHex = "#33B5E5";
+        defaultHex = "#2196F3";
         break;
       case 1:
         key = context.getString(R.string.pref_color_1);
-        defaultHex = "#FFBB33";
+        defaultHex = "#FF9800";
         break;
       case 2:
         key = context.getString(R.string.pref_color_2);
-        defaultHex = "#FF4444";
+        defaultHex = "#F44336";
         break;
       default:
         return 0;
