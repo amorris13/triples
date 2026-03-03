@@ -6,16 +6,12 @@ import androidx.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.ArcadeStatistics;
-import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.OnTimerTickListener;
-import com.antsapps.triples.backend.Period;
 import com.google.android.gms.games.PlayGames;
 import com.google.common.collect.ImmutableList;
 
@@ -86,31 +82,6 @@ public class ArcadeGameActivity extends BaseGameActivity
 
   @Override
   public void onCardHinted(Card hintedCard) {}
-
-  @Override
-  protected void showSuccessToast() {
-    if (mGame.areHintsUsed()) {
-      return;
-    }
-
-    String message = null;
-    if (isNewBest(Period.ALL_TIME)) {
-      message = "Congratulations! That's your best score ever.";
-    } else if (isNewBest(DatePeriod.fromTimePeriod(DateUtils.WEEK_IN_MILLIS))) {
-      message = "Well Done! That's your best score this week.";
-    } else if (isNewBest(DatePeriod.fromTimePeriod(DateUtils.DAY_IN_MILLIS))) {
-      message = "Nice! That's your best score today.";
-    } else {
-      message = "You've done better today - keep trying!";
-    }
-
-    Toast.makeText(ArcadeGameActivity.this, message, Toast.LENGTH_LONG).show();
-  }
-
-  private boolean isNewBest(Period period) {
-    ArcadeStatistics stats = mApplication.getArcadeStatistics(period, mGame.getId());
-    return stats.getNumGames() == 0 || mGame.getNumTriplesFound() > stats.getMostFound();
-  }
 
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
