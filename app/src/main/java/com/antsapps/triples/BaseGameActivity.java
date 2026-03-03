@@ -220,6 +220,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     } else {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
+    if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+      mCardsView.refreshDrawables();
+    }
     updateViewSwitcher();
   }
 
