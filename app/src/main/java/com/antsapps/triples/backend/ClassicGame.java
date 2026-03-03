@@ -25,7 +25,7 @@ public class ClassicGame extends Game {
     return game;
   }
 
-  ClassicGame(
+  public ClassicGame(
       long id,
       long seed,
       List<Card> cardsInPlay,

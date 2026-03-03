@@ -14,6 +14,9 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 
 public class MainActivity extends BaseTriplesActivity {
 
@@ -129,7 +132,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewClassicGame() {
-    for (ClassicGame game : mApplication.getCurrentClassicGames()) {
+    for (ClassicGame game : new ArrayList<>(Lists.newArrayList(mApplication.getCurrentClassicGames()))) {
       mApplication.deleteClassicGame(game);
     }
     ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
@@ -140,7 +143,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewArcadeGame() {
-    for (ArcadeGame game : mApplication.getCurrentArcadeGames()) {
+    for (ArcadeGame game : new ArrayList<>(Lists.newArrayList(mApplication.getCurrentArcadeGames()))) {
       mApplication.deleteArcadeGame(game);
     }
     ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());
@@ -167,6 +170,10 @@ public class MainActivity extends BaseTriplesActivity {
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.signout).setVisible(isSignedIn());
+    MenuItem exportItem = menu.findItem(R.id.export_to_csv);
+    if (exportItem != null) {
+      exportItem.setVisible(false);
+    }
     return true;
   }
 

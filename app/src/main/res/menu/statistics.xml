@@ -14,4 +14,8 @@
       android:id="@+id/settings"
       app:showAsAction="never"
       android:title="@string/settings" />
+  <item
+      android:id="@+id/export_to_csv"
+      app:showAsAction="never"
+      android:title="@string/export_to_csv" />
 </menu>

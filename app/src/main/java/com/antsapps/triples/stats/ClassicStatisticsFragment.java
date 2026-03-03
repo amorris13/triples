@@ -13,8 +13,10 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
+import com.antsapps.triples.util.CsvUtil;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -87,5 +89,14 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
   @Override
   protected void updateDataSet() {
     onStatisticsChange(mApplication.getClassicStatistics(mSelectorView.getPeriod()));
+  }
+
+  @Override
+  public void exportToCsv() {
+    List<Game> games = new ArrayList<>();
+    for (int i = 0; i < mAdapter.getCount(); i++) {
+      games.add(mAdapter.getItem(i));
+    }
+    shareCsv("classic_statistics.csv", CsvUtil.getClassicCsvContent(games));
   }
 }
