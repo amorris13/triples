@@ -198,13 +198,4 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     super.onStop();
   }
 
-  protected void tintMenuIcons(Menu menu) {
-    int tintColor = com.antsapps.triples.backend.Utils.getColorFromAttr(this, com.google.android.material.R.attr.colorOnSurface);
-    for (int i = 0; i < menu.size(); i++) {
-      MenuItem item = menu.getItem(i);
-      if (item.getIcon() != null) {
-        DrawableCompat.setTint(item.getIcon(), tintColor);
-      }
-    }
-  }
 }

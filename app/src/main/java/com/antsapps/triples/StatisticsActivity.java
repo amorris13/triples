@@ -79,7 +79,6 @@ public class StatisticsActivity extends BaseTriplesActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.statistics, menu);
-    tintMenuIcons(menu);
     return super.onCreateOptionsMenu(menu);
   }
 

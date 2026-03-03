@@ -4,12 +4,12 @@
 
   <item
       android:id="@+id/new_game"
-      android:icon="@drawable/content_new_holo_dark"
+      android:icon="@drawable/ic_add"
       app:showAsAction="ifRoom|withText"
       android:title="@string/new_game" />
   <item
       android:id="@+id/help"
-      android:icon="@drawable/action_help_holo_dark"
+      android:icon="@drawable/ic_help"
       app:showAsAction="ifRoom|withText"
       android:title="@string/help" />
   <item
