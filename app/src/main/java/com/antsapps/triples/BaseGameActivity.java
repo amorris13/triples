@@ -119,7 +119,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game, menu);
-    tintMenuIcons(menu);
     return true;
   }
 

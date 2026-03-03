@@ -165,7 +165,6 @@ public class MainActivity extends BaseTriplesActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.statistics, menu); // Reuse statistics menu for main activity
-    tintMenuIcons(menu);
     return super.onCreateOptionsMenu(menu);
   }
 
