@@ -269,6 +269,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     Log.i("BaseGameActivity", "game finished");
     updateViewSwitcher();
     logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
+    showSuccessToast();
     if (isSignedIn()) {
       submitScore();
       AchievementManager.awardAchievementsForGame(this, getGame());
@@ -277,6 +278,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       shouldSubmitScoreOnSignIn = true;
     }
   }
+
+  protected abstract void showSuccessToast();
 
   protected abstract void submitScore();
 

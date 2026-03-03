@@ -107,6 +107,12 @@ public class Application extends OnStateChangedReporter {
     notifyStateChanged();
   }
 
+  public void clearClassicGames() {
+    for (ClassicGame game : Lists.newArrayList(mClassicGames)) {
+      deleteClassicGame(game);
+    }
+  }
+
   public ClassicGame getClassicGame(long id) {
     for (ClassicGame game : mClassicGames) {
       if (game.getId() == id) {
@@ -141,6 +147,21 @@ public class Application extends OnStateChangedReporter {
 
   public ClassicStatistics getClassicStatistics(Period period) {
     return new ClassicStatistics(getCompletedClassicGames(), period);
+  }
+
+  public Iterable<ClassicGame> getCompletedClassicGamesExcluding(final long excludeId) {
+    return Iterables.filter(
+        mClassicGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.COMPLETED && game.getId() != excludeId;
+          }
+        });
+  }
+
+  public ClassicStatistics getClassicStatistics(Period period, long excludeId) {
+    return new ClassicStatistics(getCompletedClassicGamesExcluding(excludeId), period);
   }
 
   public void addArcadeGame(ArcadeGame game) {
@@ -195,5 +216,20 @@ public class Application extends OnStateChangedReporter {
 
   public ArcadeStatistics getArcadeStatistics(Period period) {
     return new ArcadeStatistics(getCompletedArcadeGames(), period);
+  }
+
+  public Iterable<ArcadeGame> getCompletedArcadeGamesExcluding(final long excludeId) {
+    return Iterables.filter(
+        mArcadeGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.COMPLETED && game.getId() != excludeId;
+          }
+        });
+  }
+
+  public ArcadeStatistics getArcadeStatistics(Period period, long excludeId) {
+    return new ArcadeStatistics(getCompletedArcadeGamesExcluding(excludeId), period);
   }
 }

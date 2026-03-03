@@ -12,10 +12,11 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.ArcadeStatistics;
+import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.OnTimerTickListener;
-import com.google.android.gms.games.GamesClientStatusCodes;
+import com.antsapps.triples.backend.Period;
 import com.google.android.gms.games.PlayGames;
-import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.common.collect.ImmutableList;
 
 import java.util.concurrent.TimeUnit;
@@ -86,50 +87,38 @@ public class ArcadeGameActivity extends BaseGameActivity
   @Override
   public void onCardHinted(Card hintedCard) {}
 
+  @Override
+  protected void showSuccessToast() {
+    if (mGame.areHintsUsed()) {
+      return;
+    }
+
+    String message = null;
+    if (isNewBest(Period.ALL_TIME)) {
+      message = "Congratulations! That's your best score ever.";
+    } else if (isNewBest(DatePeriod.fromTimePeriod(DateUtils.WEEK_IN_MILLIS))) {
+      message = "Well Done! That's your best score this week.";
+    } else if (isNewBest(DatePeriod.fromTimePeriod(DateUtils.DAY_IN_MILLIS))) {
+      message = "Nice! That's your best score today.";
+    } else {
+      message = "You've done better today - keep trying!";
+    }
+
+    Toast.makeText(ArcadeGameActivity.this, message, Toast.LENGTH_LONG).show();
+  }
+
+  private boolean isNewBest(Period period) {
+    ArcadeStatistics stats = mApplication.getArcadeStatistics(period, mGame.getId());
+    return stats.getNumGames() == 0 || mGame.getNumTriplesFound() > stats.getMostFound();
+  }
+
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
 
     PlayGames.getLeaderboardsClient(this)
-        .submitScoreImmediate(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound())
-        .addOnCompleteListener(
-            task -> {
-              String message = null;
-              if (task.isSuccessful()) {
-                com.google.android.gms.games.leaderboard.ScoreSubmissionData
-                    submitScoreResult = task.getResult();
-                if (submitScoreResult
-                    .getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME)
-                    .newBest) {
-                  message = "Congratulations! That's your best score ever.";
-                } else if (submitScoreResult
-                    .getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY)
-                    .newBest) {
-                  message = "Well Done! That's your best score this week.";
-                } else if (submitScoreResult
-                    .getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY)
-                    .newBest) {
-                  message = "Nice! That's your best score today.";
-                } else {
-                  message = "You've done better today - keep trying!";
-                }
-              } else {
-                Exception e = task.getException();
-                if (e instanceof com.google.android.gms.common.api.ApiException) {
-                  int statusCode =
-                      ((com.google.android.gms.common.api.ApiException) e).getStatusCode();
-                  if (statusCode == GamesClientStatusCodes.NETWORK_ERROR_OPERATION_FAILED) {
-                    message = "Score will be submitted when next connected.";
-                  } else {
-                    message = "Score could not be submitted";
-                  }
-                } else {
-                  message = "Score could not be submitted";
-                }
-              }
-              Toast.makeText(ArcadeGameActivity.this, message, Toast.LENGTH_LONG).show();
-            });
+        .submitScore(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound());
   }
 
   @Override
