@@ -1,8 +1,13 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,15 +32,29 @@ public class StatisticsActivity extends BaseTriplesActivity {
     }
 
     String gameType = getIntent().getStringExtra(GAME_TYPE);
+    int accentColor;
+    String title;
     if ("Arcade".equals(gameType)) {
-      setTitle(R.string.arcade_label);
-      if (getSupportActionBar() != null) {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.arcade_accent)));
-      }
+      accentColor = ContextCompat.getColor(this, R.color.arcade_accent);
+      title = getString(R.string.arcade_label);
     } else {
-      setTitle(R.string.classic_label);
-      if (getSupportActionBar() != null) {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.classic_accent)));
+      accentColor = ContextCompat.getColor(this, R.color.classic_accent);
+      title = getString(R.string.classic_label);
+    }
+
+    SpannableString spannableTitle = new SpannableString(title);
+    spannableTitle.setSpan(new ForegroundColorSpan(accentColor), 0, spannableTitle.length(), 0);
+    setTitle(spannableTitle);
+
+    if (getSupportActionBar() != null) {
+      final Drawable upArrow = ContextCompat.getDrawable(this, androidx.appcompat.R.drawable.abc_ic_ab_back_material);
+      if (upArrow != null) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+          upArrow.setColorFilter(new BlendModeColorFilter(accentColor, BlendMode.SRC_ATOP));
+        } else {
+          upArrow.setColorFilter(accentColor, PorterDuff.Mode.SRC_ATOP);
+        }
+        getSupportActionBar().setHomeAsUpIndicator(upArrow);
       }
     }
 

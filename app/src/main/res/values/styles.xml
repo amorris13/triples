@@ -28,6 +28,9 @@
   </style>
 
   <style name="AppTheme" parent="Theme.Material3.Light">
+    <item name="colorControlNormal">?attr/colorOnSurface</item>
+    <item name="android:actionMenuTextColor">?attr/colorOnSurface</item>
+    <item name="actionMenuTextColor">?attr/colorOnSurface</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorOnPrimary">@color/colorOnPrimary</item>
     <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>
