@@ -49,6 +49,8 @@
     <item name="colorOnErrorContainer">@color/colorOnErrorContainer</item>
     <item name="colorSurface">@color/colorSurface</item>
     <item name="colorOnSurface">@color/colorOnSurface</item>
+    <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+    <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariant</item>
     <item name="colorOutline">@color/colorOutline</item>
     <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
   </style>
