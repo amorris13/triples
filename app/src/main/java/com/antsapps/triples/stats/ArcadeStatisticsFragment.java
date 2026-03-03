@@ -13,8 +13,10 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
+import com.antsapps.triples.util.CsvUtil;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
@@ -85,5 +87,14 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   @Override
   protected void updateDataSet() {
     onStatisticsChange(mApplication.getArcadeStatistics(mSelectorView.getPeriod()));
+  }
+
+  @Override
+  public void exportToCsv() {
+    List<Game> games = new ArrayList<>();
+    for (int i = 0; i < mAdapter.getCount(); i++) {
+      games.add(mAdapter.getItem(i));
+    }
+    shareCsv("arcade_statistics.csv", CsvUtil.getArcadeCsvContent(games));
   }
 }

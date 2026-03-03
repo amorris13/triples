@@ -222,6 +222,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     } else {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
+    if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+      mCardsView.refreshDrawables();
+    }
     updateViewSwitcher();
   }
 
@@ -270,8 +273,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
     if (isSignedIn()) {
       submitScore();
-      AchievementManager.awardAchievementsForGame(mGoogleApiClient, getGame());
-      AchievementManager.awardCountAchievements(mGoogleApiClient, Application.getInstance(this));
+      AchievementManager.awardAchievementsForGame(this, getGame());
+      AchievementManager.awardCountAchievements(this, Application.getInstance(this));
     } else {
       shouldSubmitScoreOnSignIn = true;
     }

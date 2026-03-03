@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.antsapps.triples.stats.BaseStatisticsFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -104,6 +106,12 @@ public class StatisticsActivity extends BaseTriplesActivity {
       return true;
     } else if (itemId == R.id.signout) {
       signOut();
+      return true;
+    } else if (itemId == R.id.export_to_csv) {
+      Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.statistics_container);
+      if (fragment instanceof BaseStatisticsFragment) {
+        ((BaseStatisticsFragment) fragment).exportToCsv();
+      }
       return true;
     }
     return super.onOptionsItemSelected(item);

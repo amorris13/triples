@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-class Deck {
+public class Deck {
 
   List<Card> mCards;
 
