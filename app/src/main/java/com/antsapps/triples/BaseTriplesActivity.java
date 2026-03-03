@@ -156,7 +156,10 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
-    AchievementManager.syncAchievements(this, com.antsapps.triples.backend.Application.getInstance(this));
+    com.antsapps.triples.backend.Application application =
+        com.antsapps.triples.backend.Application.getInstance(this);
+    AchievementManager.syncAchievements(this, application);
+    CloudSaveManager.syncWithCloud(this, application);
   }
 
   public void signIn() {

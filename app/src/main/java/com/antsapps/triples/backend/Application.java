@@ -101,6 +101,10 @@ public class Application extends OnStateChangedReporter {
     notifyStateChanged();
   }
 
+  public void uploadToCloud(android.app.Activity activity) {
+    com.antsapps.triples.CloudSaveManager.saveToCloud(activity, this);
+  }
+
   public void deleteClassicGame(ClassicGame game) {
     mClassicGames.remove(game);
     database.removeClassicGame(game);
