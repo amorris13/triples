@@ -13,8 +13,10 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
+import com.antsapps.triples.util.CsvUtil;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -91,18 +93,10 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   public void exportToCsv() {
-    StringBuilder csv = new StringBuilder();
-    csv.append("Date,Time Elapsed (ms),Hints Used\n");
-    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
+    List<Game> games = new ArrayList<>();
     for (int i = 0; i < mAdapter.getCount(); i++) {
-      Game game = mAdapter.getItem(i);
-      csv.append(dateFormat.format(game.getDateStarted()));
-      csv.append(",");
-      csv.append(game.getTimeElapsed());
-      csv.append(",");
-      csv.append(game.areHintsUsed());
-      csv.append("\n");
+      games.add(mAdapter.getItem(i));
     }
-    shareCsv("classic_statistics.csv", csv.toString());
+    shareCsv("classic_statistics.csv", CsvUtil.getClassicCsvContent(games));
   }
 }

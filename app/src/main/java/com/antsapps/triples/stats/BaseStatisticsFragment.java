@@ -21,6 +21,10 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 
 /** Created by anthony on 1/12/13. */
@@ -87,10 +91,10 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   public abstract void exportToCsv();
 
   protected void shareCsv(String filename, String content) {
-    java.io.File cacheFile = new java.io.File(getActivity().getCacheDir(), filename);
-    try (java.io.FileOutputStream out = new java.io.FileOutputStream(cacheFile)) {
-      out.write(content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-    } catch (java.io.IOException e) {
+    File cacheFile = new File(getActivity().getCacheDir(), filename);
+    try (FileOutputStream out = new FileOutputStream(cacheFile)) {
+      out.write(content.getBytes(StandardCharsets.UTF_8));
+    } catch (IOException e) {
       Log.e("BaseStatisticsFragment", "Error writing CSV file", e);
       Toast.makeText(getActivity(), "Error exporting CSV", Toast.LENGTH_SHORT).show();
       return;

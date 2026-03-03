@@ -13,8 +13,10 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
+import com.antsapps.triples.util.CsvUtil;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
@@ -89,20 +91,10 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   public void exportToCsv() {
-    StringBuilder csv = new StringBuilder();
-    csv.append("Date,Time Elapsed (ms),Triples Found,Hints Used\n");
-    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
+    List<Game> games = new ArrayList<>();
     for (int i = 0; i < mAdapter.getCount(); i++) {
-      ArcadeGame game = (ArcadeGame) mAdapter.getItem(i);
-      csv.append(dateFormat.format(game.getDateStarted()));
-      csv.append(",");
-      csv.append(game.getTimeElapsed());
-      csv.append(",");
-      csv.append(game.getNumTriplesFound());
-      csv.append(",");
-      csv.append(game.areHintsUsed());
-      csv.append("\n");
+      games.add(mAdapter.getItem(i));
     }
-    shareCsv("arcade_statistics.csv", csv.toString());
+    shareCsv("arcade_statistics.csv", CsvUtil.getArcadeCsvContent(games));
   }
 }
