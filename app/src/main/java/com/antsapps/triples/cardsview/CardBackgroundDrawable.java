@@ -19,7 +19,7 @@ class CardBackgroundDrawable extends Drawable {
 
   private static final int SHADOW_OFFSET_HORIZONTAL = 4;
 
-  private static final int CORNER_RADIUS = 0;
+  private static final int CORNER_RADIUS = 8;
 
   private static final int INSET_PX = 15;
 

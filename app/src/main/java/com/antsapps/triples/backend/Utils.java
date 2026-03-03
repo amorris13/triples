@@ -1,5 +1,8 @@
 package com.antsapps.triples.backend;
 
+import android.content.Context;
+import android.util.TypedValue;
+
 import com.google.common.collect.Lists;
 
 import java.nio.ByteBuffer;
@@ -70,6 +73,12 @@ public class Utils {
       longs.add(bb.getLong());
     }
     return longs;
+  }
+
+  public static int getColorFromAttr(Context context, int attr) {
+    TypedValue typedValue = new TypedValue();
+    context.getTheme().resolveAttribute(attr, typedValue, true);
+    return typedValue.data;
   }
 
   private Utils() {}

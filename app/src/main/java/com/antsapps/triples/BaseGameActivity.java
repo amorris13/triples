@@ -1,6 +1,5 @@
 package com.antsapps.triples;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import androidx.core.view.MenuItemCompat;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
 import com.antsapps.triples.backend.Application;
@@ -32,6 +32,7 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
@@ -118,6 +119,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game, menu);
+    tintMenuIcons(menu);
     return true;
   }
 
@@ -165,7 +167,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox);
       checkBox.setText(R.string.dont_ask_again);
 
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
       builder.setTitle(R.string.hint_confirmation_title);
       builder.setMessage(R.string.hint_confirmation_message);
       builder.setView(checkBoxView);

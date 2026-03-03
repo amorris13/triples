@@ -12,7 +12,7 @@
         android:padding="16dp">
 
         <!-- Classic Section -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -41,9 +41,9 @@
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal">
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/classic_resume_button"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
@@ -52,9 +52,9 @@
                         android:theme="@style/ClassicButtonTheme"
                         android:visibility="gone" />
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/classic_new_game_button"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -63,9 +63,9 @@
                         android:theme="@style/ClassicButtonTheme" />
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/classic_statistics_button"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -73,10 +73,10 @@
                     android:textColor="@color/classic_accent" />
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Arcade Section -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"
@@ -104,9 +104,9 @@
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal">
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/arcade_resume_button"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
@@ -115,9 +115,9 @@
                         android:theme="@style/ArcadeButtonTheme"
                         android:visibility="gone" />
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/arcade_new_game_button"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -126,9 +126,9 @@
                         android:theme="@style/ArcadeButtonTheme" />
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/arcade_statistics_button"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -136,7 +136,7 @@
                     android:textColor="@color/arcade_accent" />
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>
