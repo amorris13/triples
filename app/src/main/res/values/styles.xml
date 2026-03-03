@@ -9,29 +9,53 @@
   <style name="selector_title">
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
-    <item name="android:textColor">#33B5E5</item>
+    <item name="android:textColor">?attr/colorSecondary</item>
     <item name="android:textStyle">bold</item>
   </style>
 
-  <style name="status_bar_key" parent="android:Widget.Holo.Light.TextView">
+  <style name="status_bar_key" parent="android:Widget.TextView">
     <item name="android:textColor">#404040</item>
     <item name="android:textSize">12sp</item>
   </style>
 
-  <style name="status_bar_value" parent="android:Widget.Holo.Light.TextView">
+  <style name="status_bar_value" parent="android:Widget.TextView">
     <item name="android:textColor">#000000</item>
     <item name="android:textSize">30sp</item>
   </style>
 
-  <style name="HelpDialog" parent="Theme.AppCompat.Light.Dialog">
+  <style name="HelpDialog" parent="Theme.Material3.Light.Dialog">
     <item name="android:windowNoTitle">true</item>
   </style>
 
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="AppTheme" parent="Theme.Material3.Light">
+    <item name="colorControlNormal">?attr/colorOnSurface</item>
+    <item name="android:actionMenuTextColor">?attr/colorOnSurface</item>
+    <item name="actionMenuTextColor">?attr/colorOnSurface</item>
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorOnPrimary">@color/colorOnPrimary</item>
+    <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>
+    <item name="colorOnPrimaryContainer">@color/colorOnPrimaryContainer</item>
+    <item name="colorSecondary">@color/colorSecondary</item>
+    <item name="colorOnSecondary">@color/colorOnSecondary</item>
+    <item name="colorSecondaryContainer">@color/colorSecondaryContainer</item>
+    <item name="colorOnSecondaryContainer">@color/colorOnSecondaryContainer</item>
+    <item name="colorTertiary">@color/colorTertiary</item>
+    <item name="colorOnTertiary">@color/colorOnTertiary</item>
+    <item name="colorTertiaryContainer">@color/colorTertiaryContainer</item>
+    <item name="colorOnTertiaryContainer">@color/colorOnTertiaryContainer</item>
+    <item name="colorError">@color/colorError</item>
+    <item name="colorOnError">@color/colorOnError</item>
+    <item name="colorErrorContainer">@color/colorErrorContainer</item>
+    <item name="colorOnErrorContainer">@color/colorOnErrorContainer</item>
+    <item name="colorSurface">@color/colorSurface</item>
+    <item name="colorOnSurface">@color/colorOnSurface</item>
+    <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+    <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariant</item>
+    <item name="colorOutline">@color/colorOutline</item>
     <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
   </style>
 
-  <style name="stats_list_header" parent="android:Widget.Holo.Light.TextView">
+  <style name="stats_list_header" parent="android:Widget.TextView">
     <item name="android:paddingTop">5dp</item>
     <item name="android:paddingBottom">5dp</item>
     <item name="android:singleLine">true</item>
@@ -41,11 +65,11 @@
     <item name="android:background">?android:attr/selectableItemBackground</item>
   </style>
 
-  <style name="ClassicButtonTheme" parent="ThemeOverlay.AppCompat.Light">
-    <item name="colorAccent">@color/classic_accent</item>
+  <style name="ClassicButtonTheme" parent="ThemeOverlay.Material3.Light">
+    <item name="colorPrimary">@color/classic_accent</item>
   </style>
 
-  <style name="ArcadeButtonTheme" parent="ThemeOverlay.AppCompat.Light">
-    <item name="colorAccent">@color/arcade_accent</item>
+  <style name="ArcadeButtonTheme" parent="ThemeOverlay.Material3.Light">
+    <item name="colorPrimary">@color/arcade_accent</item>
   </style>
 </resources>

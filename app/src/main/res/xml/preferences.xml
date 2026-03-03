@@ -2,7 +2,7 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                                                 xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <androidx.preference.CheckBoxPreference
+  <androidx.preference.SwitchPreferenceCompat
     android:defaultValue="true"
     android:key="@string/pref_orientation_lock"
     android:summaryOff="Screen will auto rotate"
@@ -19,14 +19,14 @@
       android:layout="?android:attr/preferenceLayoutChild"
       android:title="Orientation" />
 
-  <androidx.preference.CheckBoxPreference
+  <androidx.preference.SwitchPreferenceCompat
     android:defaultValue="false"
     android:key="@string/pref_screen_lock"
     android:summaryOff="Use default sleep timeout"
     android:summaryOn="Never sleep while playing"
     android:title="Stay Awake" />
 
-  <androidx.preference.CheckBoxPreference
+  <androidx.preference.SwitchPreferenceCompat
       android:defaultValue="false"
       android:key="@string/pref_hide_hint"
       android:summary="@string/pref_hide_hint_summary"
