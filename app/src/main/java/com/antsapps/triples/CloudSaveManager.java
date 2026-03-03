@@ -28,6 +28,20 @@ public class CloudSaveManager {
 
   public static void saveToCloud(final Activity activity, final Application application) {
     Log.d(TAG, "saveToCloud");
+    PlayGames.getGamesSignInClient(activity)
+        .isAuthenticated()
+        .addOnCompleteListener(
+            task -> {
+              boolean isAuthenticated = (task.isSuccessful() && task.getResult().isAuthenticated());
+              if (isAuthenticated) {
+                doSaveToCloud(activity, application);
+              } else {
+                Log.d(TAG, "saveToCloud: not authenticated, skipping");
+              }
+            });
+  }
+
+  private static void doSaveToCloud(final Activity activity, final Application application) {
     final SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(activity);
     snapshotsClient.open(SNAPSHOT_NAME, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
         .addOnCompleteListener(new OnCompleteListener<SnapshotsClient.DataOrConflict<Snapshot>>() {
@@ -57,6 +71,20 @@ public class CloudSaveManager {
 
   public static void syncWithCloud(final Activity activity, final Application application) {
     Log.d(TAG, "syncWithCloud");
+    PlayGames.getGamesSignInClient(activity)
+        .isAuthenticated()
+        .addOnCompleteListener(
+            task -> {
+              boolean isAuthenticated = (task.isSuccessful() && task.getResult().isAuthenticated());
+              if (isAuthenticated) {
+                doSyncWithCloud(activity, application);
+              } else {
+                Log.d(TAG, "syncWithCloud: not authenticated, skipping");
+              }
+            });
+  }
+
+  private static void doSyncWithCloud(final Activity activity, final Application application) {
     final SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(activity);
     snapshotsClient.open(SNAPSHOT_NAME, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
         .addOnCompleteListener(new OnCompleteListener<SnapshotsClient.DataOrConflict<Snapshot>>() {
