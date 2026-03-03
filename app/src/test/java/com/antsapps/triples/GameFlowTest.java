@@ -60,6 +60,7 @@ public class GameFlowTest extends BaseRobolectricTest {
         }
     }
 
+
     private void clickCardAtPosition(VerticalCardsView cardsView, int index) {
         int widthOfCard = cardsView.getWidth() / VerticalCardsView.COLUMNS;
         // height of card calculation from VerticalCardsView

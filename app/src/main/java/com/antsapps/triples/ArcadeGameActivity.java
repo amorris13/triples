@@ -6,16 +6,13 @@ import androidx.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
-import com.google.android.gms.games.GamesClientStatusCodes;
 import com.google.android.gms.games.PlayGames;
-import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.common.collect.ImmutableList;
 
 import java.util.concurrent.TimeUnit;
@@ -92,44 +89,7 @@ public class ArcadeGameActivity extends BaseGameActivity
     }
 
     PlayGames.getLeaderboardsClient(this)
-        .submitScoreImmediate(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound())
-        .addOnCompleteListener(
-            task -> {
-              String message = null;
-              if (task.isSuccessful()) {
-                com.google.android.gms.games.leaderboard.ScoreSubmissionData
-                    submitScoreResult = task.getResult();
-                if (submitScoreResult
-                    .getScoreResult(LeaderboardVariant.TIME_SPAN_ALL_TIME)
-                    .newBest) {
-                  message = "Congratulations! That's your best score ever.";
-                } else if (submitScoreResult
-                    .getScoreResult(LeaderboardVariant.TIME_SPAN_WEEKLY)
-                    .newBest) {
-                  message = "Well Done! That's your best score this week.";
-                } else if (submitScoreResult
-                    .getScoreResult(LeaderboardVariant.TIME_SPAN_DAILY)
-                    .newBest) {
-                  message = "Nice! That's your best score today.";
-                } else {
-                  message = "You've done better today - keep trying!";
-                }
-              } else {
-                Exception e = task.getException();
-                if (e instanceof com.google.android.gms.common.api.ApiException) {
-                  int statusCode =
-                      ((com.google.android.gms.common.api.ApiException) e).getStatusCode();
-                  if (statusCode == GamesClientStatusCodes.NETWORK_ERROR_OPERATION_FAILED) {
-                    message = "Score will be submitted when next connected.";
-                  } else {
-                    message = "Score could not be submitted";
-                  }
-                } else {
-                  message = "Score could not be submitted";
-                }
-              }
-              Toast.makeText(ArcadeGameActivity.this, message, Toast.LENGTH_LONG).show();
-            });
+        .submitScore(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound());
   }
 
   @Override
