@@ -12,6 +12,8 @@ import java.util.List;
 public class TimelineView extends View {
   private List<Long> mTripleFindTimes;
   private long mMaxTime;
+  private int mFastestIndex = -1;
+  private int mSlowestIndex = -1;
 
   public TimelineView(Context context) {
     super(context);
@@ -21,9 +23,11 @@ public class TimelineView extends View {
     super(context, attrs);
   }
 
-  public void setTripleFindTimes(List<Long> tripleFindTimes, long maxTime) {
+  public void setTripleFindTimes(List<Long> tripleFindTimes, long maxTime, int fastestIndex, int slowestIndex) {
     mTripleFindTimes = tripleFindTimes;
     mMaxTime = maxTime;
+    mFastestIndex = fastestIndex;
+    mSlowestIndex = slowestIndex;
     invalidate();
   }
 
@@ -47,13 +51,31 @@ public class TimelineView extends View {
     canvas.drawLine(padding, height / 2, width - padding, height / 2, linePaint);
 
     Paint pointPaint = new Paint();
-    pointPaint.setColor(0xFF33B5E5);
     pointPaint.setStrokeWidth(8 * density);
     pointPaint.setStrokeCap(Paint.Cap.ROUND);
 
-    for (long time : mTripleFindTimes) {
+    for (int i = 0; i < mTripleFindTimes.size(); i++) {
+      long time = mTripleFindTimes.get(i);
+      if (i == mFastestIndex) {
+        pointPaint.setColor(0xFF4CAF50); // Green
+      } else if (i == mSlowestIndex) {
+        pointPaint.setColor(0xFFF44336); // Red
+      } else {
+        pointPaint.setColor(0xFF33B5E5); // Blue
+      }
       float x = padding + (float) time / mMaxTime * availableWidth;
       canvas.drawPoint(x, height / 2, pointPaint);
     }
+
+    Paint textPaint = new Paint();
+    textPaint.setColor(Color.GRAY);
+    textPaint.setTextSize(10 * density);
+    textPaint.setAntiAlias(true);
+
+    canvas.drawText("0:00", padding, height / 2 + 20 * density, textPaint);
+
+    String endTime = android.text.format.DateUtils.formatElapsedTime(mMaxTime / 1000);
+    float endTimeWidth = textPaint.measureText(endTime);
+    canvas.drawText(endTime, width - padding - endTimeWidth, height / 2 + 20 * density, textPaint);
   }
 }

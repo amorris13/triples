@@ -20,10 +20,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.antsapps.triples.backend.ArcadeGame;
+import com.antsapps.triples.backend.ArcadeStatistics;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
+import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -300,21 +304,84 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     if (!findTimes.isEmpty()) {
       long fastest = Long.MAX_VALUE;
       long slowest = 0;
+      int fastestIndex = -1;
+      int slowestIndex = -1;
       long lastTime = 0;
-      for (long time : findTimes) {
+      for (int i = 0; i < findTimes.size(); i++) {
+        long time = findTimes.get(i);
         long duration = time - lastTime;
-        fastest = Math.min(fastest, duration);
-        slowest = Math.max(slowest, duration);
+        if (duration < fastest) {
+          fastest = duration;
+          fastestIndex = i;
+        }
+        if (duration > slowest) {
+          slowest = duration;
+          slowestIndex = i;
+        }
         lastTime = time;
       }
 
-      ((TextView) findViewById(R.id.fastest_triple))
-          .setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(fastest)));
-      ((TextView) findViewById(R.id.slowest_triple))
-          .setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(slowest)));
+      TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
+      fastestTv.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(fastest)));
+      fastestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.green_dot, 0, 0, 0);
+      fastestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
+
+      TextView slowestTv = (TextView) findViewById(R.id.slowest_triple);
+      slowestTv.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(slowest)));
+      slowestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.red_dot, 0, 0, 0);
+      slowestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
       ((TimelineView) findViewById(R.id.timeline))
-          .setTripleFindTimes(findTimes, getGame().getTimeElapsed());
+          .setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
+
+      updatePerformanceDescription();
+    }
+  }
+
+  private void updatePerformanceDescription() {
+    TextView performanceTv = (TextView) findViewById(R.id.performance_description);
+    if (getGame().areHintsUsed()) {
+      performanceTv.setText(R.string.performance_hints_used);
+      return;
+    }
+
+    Application app = Application.getInstance(this);
+    if (getGame().getGameTypeForAnalytics().equals(ArcadeGame.GAME_TYPE_FOR_ANALYTICS)) {
+      ArcadeStatistics stats = app.getArcadeStatistics(Period.ALL_TIME);
+      if (stats.getNumGames() <= 1) {
+        performanceTv.setText(R.string.performance_first_game);
+      } else {
+        int currentFound = ((ArcadeGame) getGame()).getNumTriplesFound();
+        if (currentFound > stats.getMostFound()) {
+          // This should not happen if the current game is already in stats, but let's be safe.
+          performanceTv.setText(R.string.performance_arcade_new_best);
+        } else {
+          // Check if it's a new record by seeing if it matches the best.
+          // Since the game is already in the stats, we check if it's EQUAL to best.
+          boolean isBest = currentFound >= stats.getMostFound();
+          if (isBest) {
+            performanceTv.setText(R.string.performance_arcade_new_best);
+          } else if (currentFound > stats.getAverageFound()) {
+            performanceTv.setText(R.string.performance_arcade_better_than_average);
+          } else {
+            performanceTv.setText(R.string.performance_arcade_worse_than_average);
+          }
+        }
+      }
+    } else {
+      ClassicStatistics stats = app.getClassicStatistics(Period.ALL_TIME);
+      if (stats.getNumGames() <= 1) {
+        performanceTv.setText(R.string.performance_first_game);
+      } else {
+        long currentTime = getGame().getTimeElapsed();
+        if (currentTime <= stats.getFastestTime()) {
+          performanceTv.setText(R.string.performance_new_best);
+        } else if (currentTime < stats.getAverageTime()) {
+          performanceTv.setText(R.string.performance_better_than_average);
+        } else {
+          performanceTv.setText(R.string.performance_worse_than_average);
+        }
+      }
     }
   }
 
