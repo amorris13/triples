@@ -21,9 +21,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     SeekBarPreference animationDurationPref = findPreference(getString(R.string.pref_animation_speed));
     if (animationDurationPref != null) {
-      animationDurationPref.setSummaryProvider(
-          (Preference.SummaryProvider<SeekBarPreference>)
-              preference -> getString(R.string.pref_animation_duration_summary, preference.getValue()));
+      animationDurationPref.setSummary(
+          getString(R.string.pref_animation_duration_summary, animationDurationPref.getValue()));
     }
   }
 
@@ -40,6 +39,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
   @Override
   public boolean onPreferenceChange(Preference preference, Object newValue) {
+    if (preference.getKey().equals(getString(R.string.pref_animation_speed))) {
+      preference.setSummary(getString(R.string.pref_animation_duration_summary, (Integer) newValue));
+    }
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.SETTING_NAME, preference.getKey());
     bundle.putString(AnalyticsConstants.Param.SETTING_VALUE, String.valueOf(newValue));
