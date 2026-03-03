@@ -168,6 +168,10 @@ public class MainActivity extends BaseTriplesActivity {
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.signout).setVisible(isSignedIn());
+    MenuItem exportItem = menu.findItem(R.id.export_to_csv);
+    if (exportItem != null) {
+      exportItem.setVisible(false);
+    }
     return true;
   }
 

@@ -29,7 +29,7 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
     return game;
   }
 
-  ArcadeGame(
+  public ArcadeGame(
       long id,
       long seed,
       List<Card> cardsInPlay,

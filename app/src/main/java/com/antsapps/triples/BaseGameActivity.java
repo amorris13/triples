@@ -271,8 +271,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
     if (isSignedIn()) {
       submitScore();
-      AchievementManager.awardAchievementsForGame(mGoogleApiClient, getGame());
-      AchievementManager.awardCountAchievements(mGoogleApiClient, Application.getInstance(this));
+      AchievementManager.awardAchievementsForGame(this, getGame());
+      AchievementManager.awardCountAchievements(this, Application.getInstance(this));
     } else {
       shouldSubmitScoreOnSignIn = true;
     }
