@@ -14,6 +14,7 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class MainActivity extends BaseTriplesActivity {
 
@@ -129,7 +130,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewClassicGame() {
-    for (ClassicGame game : mApplication.getCurrentClassicGames()) {
+    for (ClassicGame game : Lists.newArrayList(mApplication.getCurrentClassicGames())) {
       mApplication.deleteClassicGame(game);
     }
     ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
@@ -140,7 +141,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void startNewArcadeGame() {
-    for (ArcadeGame game : mApplication.getCurrentArcadeGames()) {
+    for (ArcadeGame game : Lists.newArrayList(mApplication.getCurrentArcadeGames())) {
       mApplication.deleteArcadeGame(game);
     }
     ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());
