@@ -289,16 +289,25 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   private void updateViewSwitcher() {
     int childToDisplay = VIEW_CARDS;
-    if (mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
-      childToDisplay = VIEW_PAUSED;
-    } else if (mGameState == GameState.COMPLETED) {
+    if (mGameState == GameState.COMPLETED) {
       childToDisplay = VIEW_COMPLETED;
       updateStatistics();
+    } else if (mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
+      childToDisplay = VIEW_PAUSED;
     } else {
       childToDisplay = VIEW_CARDS;
     }
     if (mViewAnimator.getDisplayedChild() != childToDisplay) {
       mViewAnimator.setDisplayedChild(childToDisplay);
+    }
+  }
+
+  private static String formatElapsedTime(long elapsedMillis) {
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis);
+    if (seconds < 3600) {
+      return String.format("%d:%02d", seconds / 60, seconds % 60);
+    } else {
+      return DateUtils.formatElapsedTime(seconds);
     }
   }
 
@@ -324,13 +333,24 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         lastTime = time;
       }
 
+      TextView labelTv = (TextView) findViewById(R.id.game_output_label);
+      TextView valueTv = (TextView) findViewById(R.id.game_output_value);
+      Game game = getGame();
+      if (game instanceof ClassicGame) {
+        labelTv.setText(R.string.time_taken_field);
+        valueTv.setText(formatElapsedTime(game.getTimeElapsed()));
+      } else if (game instanceof ArcadeGame) {
+        labelTv.setText(R.string.triples_found_field);
+        valueTv.setText(String.valueOf(((ArcadeGame) game).getNumTriplesFound()));
+      }
+
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
-      fastestTv.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(fastest)));
+      fastestTv.setText(formatElapsedTime(fastest));
       fastestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.green_dot, 0, 0, 0);
       fastestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
       TextView slowestTv = (TextView) findViewById(R.id.slowest_triple);
-      slowestTv.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(slowest)));
+      slowestTv.setText(formatElapsedTime(slowest));
       slowestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.red_dot, 0, 0, 0);
       slowestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
