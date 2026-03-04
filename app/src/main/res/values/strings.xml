@@ -120,4 +120,5 @@
   <string name="performance_first_game">Your first game!</string>
   <string name="performance_hints_used">Hints were used - game not added to statistics.</string>
 
+  <string name="rate_app">Rate App</string>
 </resources>

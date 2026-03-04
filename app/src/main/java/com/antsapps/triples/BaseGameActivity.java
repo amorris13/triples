@@ -32,6 +32,9 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -425,6 +428,24 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         StatisticsActivity.GAME_TYPE,
         getGame() instanceof ArcadeGame ? "Arcade" : "Classic");
     startActivity(intent);
+  }
+
+  public void rateApp(View view) {
+    ReviewManager manager = ReviewManagerFactory.create(this);
+    manager.requestReviewFlow().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        // We can get the ReviewInfo object
+        ReviewInfo reviewInfo = task.getResult();
+        manager.launchReviewFlow(this, reviewInfo).addOnCompleteListener(t -> {
+          // The flow has finished. The API does not indicate whether the user
+          // reviewed or not, or even whether the review dialog was shown. Thus, no
+          // matter the result, we continue our app flow.
+        });
+      } else {
+        // There was some problem, log or handle
+        Log.e("BaseGameActivity", "In-app review request failed", task.getException());
+      }
+    });
   }
 
   private void logGameEvent(String event) {
