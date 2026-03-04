@@ -436,11 +436,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       if (task.isSuccessful()) {
         // We can get the ReviewInfo object
         ReviewInfo reviewInfo = task.getResult();
-        manager.launchReviewFlow(this, reviewInfo).addOnCompleteListener(t -> {
-          // The flow has finished. The API does not indicate whether the user
-          // reviewed or not, or even whether the review dialog was shown. Thus, no
-          // matter the result, we continue our app flow.
-        });
+        manager.launchReviewFlow(this, reviewInfo);
       } else {
         // There was some problem, log or handle
         Log.e("BaseGameActivity", "In-app review request failed", task.getException());
