@@ -2,6 +2,7 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewStub;
 import android.widget.TextView;
 
@@ -28,11 +29,7 @@ public class ZenGameActivity extends BaseGameActivity {
     }
 
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
-    stub.setLayoutResource(R.layout.zen_statusbar);
-    stub.inflate();
-
-    TextView modeLabel = (TextView) findViewById(R.id.zen_mode_label);
-    modeLabel.setText(mGame.isBeginner() ? R.string.beginner_label : R.string.zen_label);
+    stub.setVisibility(View.GONE);
   }
 
   @Override

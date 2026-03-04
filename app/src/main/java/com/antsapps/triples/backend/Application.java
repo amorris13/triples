@@ -27,7 +27,7 @@ public class Application extends OnStateChangedReporter {
   private Application(Context context) {
     super();
     database = new DBAdapter(context);
-    database.initialize(mClassicGames, mArcadeGames, mZenGames);
+    database.initialize(mClassicGames, mArcadeGames);
     if (isDebug()) {
       prefillDatabaseIfEmpty();
     }
@@ -199,19 +199,23 @@ public class Application extends OnStateChangedReporter {
   }
 
   public void addZenGame(ZenGame game) {
-    game.setId(database.addZenGame(game));
+    // Ephemeral, just give it an ID that's unique among current Zen games
+    long maxId = 0;
+    for (ZenGame zg : mZenGames) {
+      maxId = Math.max(maxId, zg.getId());
+    }
+    game.setId(maxId + 1);
     mZenGames.add(game);
     notifyStateChanged();
   }
 
   public void saveZenGame(ZenGame game) {
-    database.updateZenGame(game);
+    // Do nothing, Zen games are ephemeral
     notifyStateChanged();
   }
 
   public void deleteZenGame(ZenGame game) {
     mZenGames.remove(game);
-    database.removeZenGame(game);
     notifyStateChanged();
   }
 

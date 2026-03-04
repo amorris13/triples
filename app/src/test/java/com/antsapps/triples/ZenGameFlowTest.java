@@ -35,9 +35,6 @@ public class ZenGameFlowTest extends BaseRobolectricTest {
                 VerticalCardsView cardsView = activity.findViewById(R.id.cards_view);
                 assertThat(cardsView).isNotNull();
 
-                TextView modeLabel = activity.findViewById(R.id.zen_mode_label);
-                assertThat(modeLabel.getText().toString()).isEqualTo("Zen");
-
                 // Force layout so cards have bounds
                 cardsView.measure(1080, 1920);
                 cardsView.layout(0, 0, 1080, 1920);
@@ -75,9 +72,6 @@ public class ZenGameFlowTest extends BaseRobolectricTest {
 
         try (ActivityScenario<ZenGameActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                TextView modeLabel = activity.findViewById(R.id.zen_mode_label);
-                assertThat(modeLabel.getText().toString()).isEqualTo("Beginner");
-
                 List<Card> cardsInPlay = game.getCardsInPlay();
                 for (Card card : cardsInPlay) {
                     assertThat(card.mPattern).isEqualTo(1);
@@ -87,20 +81,6 @@ public class ZenGameFlowTest extends BaseRobolectricTest {
     }
 
     private void clickCardAtPosition(VerticalCardsView cardsView, int index) {
-        int widthOfCard = cardsView.getWidth() / VerticalCardsView.COLUMNS;
-        int heightOfCard = (int) (widthOfCard * ((Math.sqrt(5) - 1) / 2));
-
-        int x = (index % VerticalCardsView.COLUMNS) * widthOfCard + widthOfCard / 2;
-        int y = (index / VerticalCardsView.COLUMNS) * heightOfCard + heightOfCard / 2;
-
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis();
-        MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
-        cardsView.dispatchTouchEvent(event);
-        event.recycle();
-
-        event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, y, 0);
-        cardsView.dispatchTouchEvent(event);
-        event.recycle();
+        TestUtils.clickCardAtPosition(cardsView, index);
     }
 }

@@ -27,11 +27,10 @@ public class MainActivity extends BaseTriplesActivity {
 
   private MaterialButton mClassicResumeButton;
   private MaterialButton mArcadeResumeButton;
-  private MaterialButton mZenResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
-  private MaterialButton mZenNewGameButton;
-  private MaterialButton mBeginnerNewGameButton;
+  private MaterialButton mZenButton;
+  private MaterialButton mBeginnerButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -95,27 +94,19 @@ public class MainActivity extends BaseTriplesActivity {
       }
     });
 
-    mZenResumeButton = findViewById(R.id.zen_resume_button);
-    mZenResumeButton.setOnClickListener(new View.OnClickListener() {
+    mZenButton = findViewById(R.id.zen_button);
+    mZenButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        resumeGame(mApplication.getCurrentZenGames(), ZenGameActivity.class);
+        playZenGame(false);
       }
     });
 
-    mZenNewGameButton = findViewById(R.id.zen_new_game_button);
-    mZenNewGameButton.setOnClickListener(new View.OnClickListener() {
+    mBeginnerButton = findViewById(R.id.beginner_button);
+    mBeginnerButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        startNewZenGame(false);
-      }
-    });
-
-    mBeginnerNewGameButton = findViewById(R.id.beginner_new_game_button);
-    mBeginnerNewGameButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        startNewZenGame(true);
+        playZenGame(true);
       }
     });
   }
@@ -150,14 +141,6 @@ public class MainActivity extends BaseTriplesActivity {
     }
     int numArcadeCompleted = Iterables.size(mApplication.getCompletedArcadeGames());
     mArcadeStatisticsButton.setText(getString(R.string.statistics_format, numArcadeCompleted));
-
-    ZenGame zenGame = Iterables.getFirst(mApplication.getCurrentZenGames(), null);
-    if (zenGame != null) {
-      mZenResumeButton.setVisibility(View.VISIBLE);
-      mZenResumeButton.setText(zenGame.isBeginner() ? R.string.resume_beginner : R.string.resume_zen);
-    } else {
-      mZenResumeButton.setVisibility(View.GONE);
-    }
   }
 
   private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {
@@ -180,15 +163,26 @@ public class MainActivity extends BaseTriplesActivity {
     startActivity(intent);
   }
 
-  private void startNewZenGame(boolean isBeginner) {
-    for (ZenGame game : Lists.newArrayList(mApplication.getCurrentZenGames())) {
-      mApplication.deleteZenGame(game);
+  private void playZenGame(boolean isBeginner) {
+    ZenGame existingGame = null;
+    for (ZenGame game : mApplication.getCurrentZenGames()) {
+      if (game.isBeginner() == isBeginner) {
+        existingGame = game;
+        break;
+      }
     }
-    ZenGame game = ZenGame.createFromSeed(System.currentTimeMillis(), isBeginner);
-    mApplication.addZenGame(game);
-    Intent intent = new Intent(this, ZenGameActivity.class);
-    intent.putExtra(Game.ID_TAG, game.getId());
-    startActivity(intent);
+
+    if (existingGame != null) {
+      Intent intent = new Intent(this, ZenGameActivity.class);
+      intent.putExtra(Game.ID_TAG, existingGame.getId());
+      startActivity(intent);
+    } else {
+      ZenGame game = ZenGame.createFromSeed(System.currentTimeMillis(), isBeginner);
+      mApplication.addZenGame(game);
+      Intent intent = new Intent(this, ZenGameActivity.class);
+      intent.putExtra(Game.ID_TAG, game.getId());
+      startActivity(intent);
+    }
   }
 
   private void startNewArcadeGame() {

@@ -21,19 +21,13 @@
 
             <LinearLayout
                 android:id="@+id/classic_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/classic_background"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/MainCardContainer"
+                android:background="@color/classic_background">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MainCardLabel"
                     android:text="@string/classic_label"
-                    android:textColor="@color/classic_accent"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/classic_accent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -85,19 +79,13 @@
 
             <LinearLayout
                 android:id="@+id/arcade_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/arcade_background"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/MainCardContainer"
+                android:background="@color/arcade_background">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MainCardLabel"
                     android:text="@string/arcade_label"
-                    android:textColor="@color/arcade_accent"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/arcade_accent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -148,19 +136,13 @@
 
             <LinearLayout
                 android:id="@+id/zen_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/zen_background"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/MainCardContainer"
+                android:background="@color/zen_background">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MainCardLabel"
                     android:text="@string/zen_label"
-                    android:textColor="@color/zen_accent"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/zen_accent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -169,29 +151,17 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/zen_resume_button"
+                        android:id="@+id/beginner_button"
                         style="@style/Widget.Material3.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:text="@string/resume_game"
-                        android:theme="@style/ZenButtonTheme"
-                        android:visibility="gone" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/beginner_new_game_button"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
                         android:text="@string/beginner_label"
                         android:theme="@style/ZenButtonTheme" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/zen_new_game_button"
+                        android:id="@+id/zen_button"
                         style="@style/Widget.Material3.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
