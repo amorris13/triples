@@ -5,13 +5,6 @@
   android:layout_height="fill_parent"
   android:background="?attr/colorSurface">
 
-  <View
-    android:id="@+id/top_separator"
-    android:layout_width="fill_parent"
-    android:layout_height="1sp"
-    android:layout_alignParentTop="true"
-    android:background="#33B5E5" />
-
   <ViewStub
     android:id="@+id/status_bar"
     android:inflatedId="@+id/status_bar"
@@ -33,7 +26,7 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:layout_above="@id/bottom_separator"
-    android:layout_below="@id/top_separator">
+    android:layout_alignParentTop="true">
 
     <include
       android:layout_width="fill_parent"
@@ -115,6 +108,7 @@
           android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/statistics_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/statistics"
@@ -123,6 +117,7 @@
             android:layout_marginRight="10dp"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/new_game_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/new_game"

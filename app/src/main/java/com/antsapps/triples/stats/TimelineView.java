@@ -15,6 +15,7 @@ public class TimelineView extends View {
   private long mMaxTime;
   private int mFastestIndex = -1;
   private int mSlowestIndex = -1;
+  private int mPointColor = Color.TRANSPARENT;
 
   public TimelineView(Context context) {
     super(context);
@@ -29,6 +30,11 @@ public class TimelineView extends View {
     mMaxTime = maxTime;
     mFastestIndex = fastestIndex;
     mSlowestIndex = slowestIndex;
+    invalidate();
+  }
+
+  public void setPointColor(int pointColor) {
+    mPointColor = pointColor;
     invalidate();
   }
 
@@ -57,7 +63,7 @@ public class TimelineView extends View {
 
     int colorFastest = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_fastest);
     int colorSlowest = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_slowest);
-    int colorDefault = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_timeline_point);
+    int colorDefault = mPointColor != Color.TRANSPARENT ? mPointColor : ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_timeline_point);
 
     for (int i = 0; i < mTripleFindTimes.size(); i++) {
       long time = mTripleFindTimes.get(i);

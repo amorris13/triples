@@ -85,6 +85,12 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     getGame().begin();
 
+    colorActionBar(getAccentColor());
+    findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
+    ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
+    findViewById(R.id.statistics_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.new_game_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
     }
@@ -93,6 +99,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected abstract Game getGame();
+
+  protected abstract int getAccentColor();
 
   /**
    * This must initialize the game (so that getGame() doesn't return null) and set the content view
@@ -111,6 +119,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
     menu.findItem(R.id.hint).setVisible(!hideHint);
+
+    tintMenuIcons(menu, getAccentColor());
 
     return true;
   }
@@ -331,8 +341,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       slowestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.red_dot, 0, 0, 0);
       slowestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
-      ((TimelineView) findViewById(R.id.timeline))
-          .setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
+      TimelineView timelineView = (TimelineView) findViewById(R.id.timeline);
+      timelineView.setPointColor(getAccentColor());
+      timelineView.setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
 
       updatePerformanceDescription();
     }

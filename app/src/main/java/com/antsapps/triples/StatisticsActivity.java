@@ -1,13 +1,7 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
@@ -45,21 +39,8 @@ public class StatisticsActivity extends BaseTriplesActivity {
       title = getString(R.string.classic_label);
     }
 
-    SpannableString spannableTitle = new SpannableString(title);
-    spannableTitle.setSpan(new ForegroundColorSpan(accentColor), 0, spannableTitle.length(), 0);
-    setTitle(spannableTitle);
-
-    if (getSupportActionBar() != null) {
-      final Drawable upArrow = ContextCompat.getDrawable(this, androidx.appcompat.R.drawable.abc_ic_ab_back_material);
-      if (upArrow != null) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-          upArrow.setColorFilter(new BlendModeColorFilter(accentColor, BlendMode.SRC_ATOP));
-        } else {
-          upArrow.setColorFilter(accentColor, PorterDuff.Mode.SRC_ATOP);
-        }
-        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-      }
-    }
+    setTitle(title);
+    colorActionBar(accentColor);
 
     if (savedInstanceState == null) {
       Fragment fragment;
@@ -86,6 +67,16 @@ public class StatisticsActivity extends BaseTriplesActivity {
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.signout).setVisible(isSignedIn());
+
+    String gameType = getIntent().getStringExtra(GAME_TYPE);
+    int accentColor;
+    if ("Arcade".equals(gameType)) {
+      accentColor = ContextCompat.getColor(this, R.color.arcade_accent);
+    } else {
+      accentColor = ContextCompat.getColor(this, R.color.classic_accent);
+    }
+    tintMenuIcons(menu, accentColor);
+
     return true;
   }
 
