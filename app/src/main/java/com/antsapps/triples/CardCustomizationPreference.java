@@ -172,7 +172,7 @@ public class CardCustomizationPreference extends Preference {
 
       final ColorAdapter colorAdapter = new ColorAdapter(getContext(), colors);
       colorSpinners[i].setAdapter(colorAdapter);
-      colorSpinners[i].setText(currentColor, false);
+      colorSpinners[i].setText("", false);
       updateColorIcon(i, currentColor);
       colorSpinners[i].setOnItemClickListener((parent, view, position, id) -> {
         if (!updating) {
@@ -185,7 +185,7 @@ public class CardCustomizationPreference extends Preference {
       ArrayAdapter<String> shapeAdapter = new ShapeAdapter(getContext(), Arrays.asList(SHAPES));
       shapeSpinners[i].setAdapter(shapeAdapter);
       String currentShape = prefs.getString(getContext().getString(getShapeKey(i)), SHAPES[i]);
-      shapeSpinners[i].setText(currentShape, false);
+      shapeSpinners[i].setText("", false);
       updateShapeIcon(i, currentShape);
       shapeSpinners[i].setOnItemClickListener((parent, view, position, id) -> {
         if (!updating) {
@@ -199,12 +199,13 @@ public class CardCustomizationPreference extends Preference {
     ArrayAdapter<String> patternAdapter = new PatternAdapter(getContext(), Arrays.asList(PATTERNS));
     patternSpinner.setAdapter(patternAdapter);
     String currentPattern = prefs.getString(getContext().getString(R.string.pref_shaded_pattern), PATTERNS[0]);
-    patternSpinner.setText(currentPattern, false);
+    patternSpinner.setText("", false);
     updatePatternIcon(currentPattern);
     patternSpinner.setOnItemClickListener((parent, view, position, id) -> {
       if (!updating) {
         String selectedPattern = (String) parent.getItemAtPosition(position);
         prefs.edit().putString(getContext().getString(R.string.pref_shaded_pattern), selectedPattern).apply();
+        patternSpinner.setText("", false);
         updatePatternIcon(selectedPattern);
         updateSampleCards();
       }
@@ -260,14 +261,14 @@ public class CardCustomizationPreference extends Preference {
         String oldColor = prefs.getString(getContext().getString(getColorKey(index)), PRESET_COLORS[index]);
         prefs.edit().putString(getContext().getString(getColorKey(i)), oldColor).apply();
         updating = true;
-        colorSpinners[i].setText(oldColor, false);
+        colorSpinners[i].setText("", false);
         updateColorIcon(i, oldColor);
         updating = false;
       }
     }
     prefs.edit().putString(getContext().getString(getColorKey(index)), selectedColor).apply();
     updating = true;
-    colorSpinners[index].setText(selectedColor, false);
+    colorSpinners[index].setText("", false);
     updateColorIcon(index, selectedColor);
     updating = false;
   }
@@ -281,14 +282,14 @@ public class CardCustomizationPreference extends Preference {
         String oldShape = prefs.getString(getContext().getString(getShapeKey(index)), SHAPES[index]);
         prefs.edit().putString(getContext().getString(getShapeKey(i)), oldShape).apply();
         updating = true;
-        shapeSpinners[i].setText(oldShape, false);
+        shapeSpinners[i].setText("", false);
         updateShapeIcon(i, oldShape);
         updating = false;
       }
     }
     prefs.edit().putString(getContext().getString(getShapeKey(index)), selectedShape).apply();
     updating = true;
-    shapeSpinners[index].setText(selectedShape, false);
+    shapeSpinners[index].setText("", false);
     updateShapeIcon(index, selectedShape);
     updating = false;
   }
