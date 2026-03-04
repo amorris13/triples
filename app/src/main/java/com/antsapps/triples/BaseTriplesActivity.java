@@ -1,13 +1,7 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -197,42 +190,6 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected void onSignOut() {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
-    }
-  }
-
-  protected void colorActionBar(int color) {
-    CharSequence title = getTitle();
-    if (title != null) {
-      SpannableString spannableTitle = new SpannableString(title);
-      spannableTitle.setSpan(new ForegroundColorSpan(color), 0, spannableTitle.length(), 0);
-      setTitle(spannableTitle);
-    }
-
-    if (getSupportActionBar() != null) {
-      final Drawable upArrow =
-          ContextCompat.getDrawable(this, androidx.appcompat.R.drawable.abc_ic_ab_back_material);
-      if (upArrow != null) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-          upArrow.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_ATOP));
-        } else {
-          upArrow.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-        }
-        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-      }
-    }
-  }
-
-  protected void tintMenuIcons(Menu menu, int color) {
-    for (int i = 0; i < menu.size(); i++) {
-      MenuItem item = menu.getItem(i);
-      Drawable icon = item.getIcon();
-      if (icon != null) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-          icon.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_ATOP));
-        } else {
-          icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-        }
-      }
     }
   }
 

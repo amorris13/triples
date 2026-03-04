@@ -40,7 +40,6 @@ public class StatisticsActivity extends BaseTriplesActivity {
     }
 
     setTitle(title);
-    colorActionBar(accentColor);
 
     if (savedInstanceState == null) {
       Fragment fragment;
@@ -67,15 +66,6 @@ public class StatisticsActivity extends BaseTriplesActivity {
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.signout).setVisible(isSignedIn());
-
-    String gameType = getIntent().getStringExtra(GAME_TYPE);
-    int accentColor;
-    if ("Arcade".equals(gameType)) {
-      accentColor = ContextCompat.getColor(this, R.color.arcade_accent);
-    } else {
-      accentColor = ContextCompat.getColor(this, R.color.classic_accent);
-    }
-    tintMenuIcons(menu, accentColor);
 
     return true;
   }

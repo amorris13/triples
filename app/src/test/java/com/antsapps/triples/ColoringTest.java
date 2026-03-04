@@ -32,13 +32,13 @@ public class ColoringTest extends BaseRobolectricTest {
 
         try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                // Check Action Bar Title color
+                // Check Action Bar Title is not colored
                 CharSequence title = activity.getTitle();
-                assertThat(title).isInstanceOf(SpannableString.class);
-                SpannableString ss = (SpannableString) title;
-                ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
-                assertThat(spans).isNotEmpty();
-                assertThat(spans[0].getForegroundColor()).isEqualTo(expectedColor);
+                if (title instanceof SpannableString) {
+                    SpannableString ss = (SpannableString) title;
+                    ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
+                    assertThat(spans).isEmpty();
+                }
 
                 // Check bottom separator color
                 View bottomSeparator = activity.findViewById(R.id.bottom_separator);
@@ -68,13 +68,13 @@ public class ColoringTest extends BaseRobolectricTest {
 
         try (ActivityScenario<ArcadeGameActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                // Check Action Bar Title color
+                // Check Action Bar Title is not colored
                 CharSequence title = activity.getTitle();
-                assertThat(title).isInstanceOf(SpannableString.class);
-                SpannableString ss = (SpannableString) title;
-                ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
-                assertThat(spans).isNotEmpty();
-                assertThat(spans[0].getForegroundColor()).isEqualTo(expectedColor);
+                if (title instanceof SpannableString) {
+                    SpannableString ss = (SpannableString) title;
+                    ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
+                    assertThat(spans).isEmpty();
+                }
 
                 // Check bottom separator color
                 View bottomSeparator = activity.findViewById(R.id.bottom_separator);
@@ -96,32 +96,29 @@ public class ColoringTest extends BaseRobolectricTest {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), StatisticsActivity.class);
         intent.putExtra(StatisticsActivity.GAME_TYPE, "Classic");
 
-        final int classicExpectedColor = ContextCompat.getColor(ApplicationProvider.getApplicationContext(), R.color.classic_accent);
-
         try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                // Check Action Bar Title color
+                // Check Action Bar Title is not colored
                 CharSequence title = activity.getTitle();
-                assertThat(title).isInstanceOf(SpannableString.class);
-                SpannableString ss = (SpannableString) title;
-                ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
-                assertThat(spans).isNotEmpty();
-                assertThat(spans[0].getForegroundColor()).isEqualTo(classicExpectedColor);
+                if (title instanceof SpannableString) {
+                    SpannableString ss = (SpannableString) title;
+                    ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
+                    assertThat(spans).isEmpty();
+                }
             });
         }
 
         intent.putExtra(StatisticsActivity.GAME_TYPE, "Arcade");
-        final int arcadeExpectedColor = ContextCompat.getColor(ApplicationProvider.getApplicationContext(), R.color.arcade_accent);
 
         try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                // Check Action Bar Title color
+                // Check Action Bar Title is not colored
                 CharSequence title = activity.getTitle();
-                assertThat(title).isInstanceOf(SpannableString.class);
-                SpannableString ss = (SpannableString) title;
-                ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
-                assertThat(spans).isNotEmpty();
-                assertThat(spans[0].getForegroundColor()).isEqualTo(arcadeExpectedColor);
+                if (title instanceof SpannableString) {
+                    SpannableString ss = (SpannableString) title;
+                    ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
+                    assertThat(spans).isEmpty();
+                }
             });
         }
     }
