@@ -46,6 +46,11 @@ public class ArcadeGameActivity extends BaseGameActivity
   }
 
   @Override
+  protected int getAccentColor() {
+    return androidx.core.content.ContextCompat.getColor(this, R.color.arcade_accent);
+  }
+
+  @Override
   protected Game getGame() {
     return mGame;
   }
