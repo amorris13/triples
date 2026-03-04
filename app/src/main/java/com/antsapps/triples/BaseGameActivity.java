@@ -333,15 +333,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         lastTime = time;
       }
 
-      TextView labelTv = (TextView) findViewById(R.id.game_output_label);
-      TextView valueTv = (TextView) findViewById(R.id.game_output_value);
+      TextView outputTv = (TextView) findViewById(R.id.game_output);
       Game game = getGame();
       if (game instanceof ClassicGame) {
-        labelTv.setText(R.string.time_taken_field);
-        valueTv.setText(formatElapsedTime(game.getTimeElapsed()));
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(game.getTimeElapsed());
+        if (seconds < 60) {
+          outputTv.setText(getString(R.string.classic_completed_stats_seconds_format, seconds));
+        } else {
+          outputTv.setText(getString(R.string.classic_completed_stats_format, seconds / 60, seconds % 60));
+        }
       } else if (game instanceof ArcadeGame) {
-        labelTv.setText(R.string.triples_found_field);
-        valueTv.setText(String.valueOf(((ArcadeGame) game).getNumTriplesFound()));
+        outputTv.setText(getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
       }
 
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
