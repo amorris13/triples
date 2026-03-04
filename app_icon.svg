@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card 1 (Top-Left) -->
+  <path d="M 5 38 L 62 38 L 62 5" fill="none" stroke="#74777F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="10" y="10" width="12" height="12" fill="#2196F3"/>
+  <rect x="26" y="10" width="12" height="12" fill="#2196F3"/>
+  <rect x="42" y="10" width="12" height="12" fill="#2196F3"/>
+
+  <!-- Card 2 (Middle) -->
+  <path d="M 35 68 L 82 68 L 82 35" fill="none" stroke="#74777F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 42 55 L 48 44 L 54 55 Z" fill="#FF9800"/>
+  <path d="M 58 55 L 64 44 L 70 55 Z" fill="#FF9800"/>
+
+  <!-- Card 3 (Bottom-Right) -->
+  <path d="M 65 98 L 100 98 L 100 65" fill="none" stroke="#74777F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="68" cy="78" r="7" fill="#F44336"/>
+</svg>

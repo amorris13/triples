@@ -1,4 +1,4 @@
-vpackage com.antsapps.triples;
+package com.antsapps.triples;
 
 import android.content.DialogInterface;
 import android.content.Intent;
