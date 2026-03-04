@@ -71,6 +71,8 @@
   <string name="drawer_close">Close navigation drawer</string>
   <string name="arcade_label">Arcade</string>
   <string name="classic_label">Classic</string>
+  <string name="zen_label">Zen</string>
+  <string name="beginner_label">Beginner</string>
   <string name="game_completed">GAME COMPLETED</string>
     <string name="hint">Hint</string>
     <string name="fastest_triple">Fastest triple:</string>
@@ -121,4 +123,12 @@
   <string name="performance_hints_used">Hints were used - game not added to statistics.</string>
 
   <string name="rate_app">Rate App</string>
+
+  <string name="zen_description">Unlimited play with a continuously recycled and reshuffled deck. No timer or counts are tracked.</string>
+  <string name="beginner_tutorial_button">Beginner Tutorial</string>
+
+  <string name="beginner_title">Beginner Mode</string>
+  <string name="zen_title">Zen</string>
+  <string name="beginner_note">Beginner Mode: All cards have the same pattern (outline only).</string>
+
 </resources>

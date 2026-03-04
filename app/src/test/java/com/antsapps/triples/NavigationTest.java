@@ -61,4 +61,38 @@ public class NavigationTest extends BaseRobolectricTest {
             });
         }
     }
+
+    @Test
+    public void testNavigateToZenGame() {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity -> {
+                Button zenButton = activity.findViewById(R.id.zen_button);
+                assertThat(zenButton).isNotNull();
+
+                zenButton.performClick();
+
+                ShadowActivity shadowActivity = shadowOf(activity);
+                Intent nextIntent = shadowActivity.getNextStartedActivity();
+                assertThat(nextIntent.getComponent().getClassName()).isEqualTo(ZenGameActivity.class.getName());
+                assertThat(nextIntent.getBooleanExtra(ZenGameActivity.IS_BEGINNER, true)).isFalse();
+            });
+        }
+    }
+
+    @Test
+    public void testNavigateToBeginnerTutorial() {
+        try (ActivityScenario<HelpActivity> scenario = ActivityScenario.launch(HelpActivity.class)) {
+            scenario.onActivity(activity -> {
+                Button beginnerButton = activity.findViewById(R.id.beginner_tutorial_button);
+                assertThat(beginnerButton).isNotNull();
+
+                beginnerButton.performClick();
+
+                ShadowActivity shadowActivity = shadowOf(activity);
+                Intent nextIntent = shadowActivity.getNextStartedActivity();
+                assertThat(nextIntent.getComponent().getClassName()).isEqualTo(ZenGameActivity.class.getName());
+                assertThat(nextIntent.getBooleanExtra(ZenGameActivity.IS_BEGINNER, false)).isTrue();
+            });
+        }
+    }
 }
