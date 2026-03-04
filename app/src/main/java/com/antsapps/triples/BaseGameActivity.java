@@ -339,7 +339,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       slowestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
       TimelineView timelineView = (TimelineView) findViewById(R.id.timeline);
-      timelineView.setPointColor(getAccentColor());
       timelineView.setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
 
       updatePerformanceDescription();
