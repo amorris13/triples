@@ -25,9 +25,16 @@ public class ZenGameActivity extends BaseGameActivity {
     boolean isBeginner = getIntent().getBooleanExtra(IS_BEGINNER, false);
     mGame = mApplication.getZenGame(isBeginner);
 
+    setTitle(isBeginner ? R.string.beginner_title : R.string.zen_title);
+
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
-    stub.setVisibility(View.GONE);
-    findViewById(R.id.bottom_separator).setVisibility(View.GONE);
+    if (isBeginner) {
+      stub.setLayoutResource(R.layout.beginner_statusbar);
+      stub.inflate();
+    } else {
+      stub.setVisibility(View.GONE);
+      findViewById(R.id.bottom_separator).setVisibility(View.GONE);
+    }
   }
 
   @Override

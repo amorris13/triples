@@ -64,7 +64,7 @@ public class ZenGameFlowTest extends BaseRobolectricTest {
             scenario.onActivity(activity -> {
                 List<Card> cardsInPlay = game.getCardsInPlay();
                 for (Card card : cardsInPlay) {
-                    assertThat(card.mPattern).isEqualTo(1);
+                    assertThat(card.mPattern).isEqualTo(0);
                 }
             });
         }

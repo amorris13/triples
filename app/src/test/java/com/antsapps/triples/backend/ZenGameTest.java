@@ -56,13 +56,13 @@ public class ZenGameTest {
 
     List<Card> cardsInPlay = game.getCardsInPlay();
     for (Card card : cardsInPlay) {
-      assertEquals(1, card.mPattern);
+      assertEquals(0, card.mPattern);
     }
 
     // Check deck as well
     while (!game.mDeck.isEmpty()) {
       Card card = game.mDeck.getNextCard();
-      assertEquals(1, card.mPattern);
+      assertEquals(0, card.mPattern);
     }
   }
 }

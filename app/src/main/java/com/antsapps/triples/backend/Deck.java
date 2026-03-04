@@ -80,7 +80,7 @@ public class Deck {
     for (int number = 0; number < Card.MAX_VARIABLES; number++) {
       for (int shape = 0; shape < Card.MAX_VARIABLES; shape++) {
         for (int color = 0; color < Card.MAX_VARIABLES; color++) {
-          cards.add(new Card(number, shape, 1, color));
+          cards.add(new Card(number, shape, 0, color));
         }
       }
     }

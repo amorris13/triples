@@ -125,4 +125,8 @@
   <string name="zen_description">Unlimited play with a continuously recycled and reshuffled deck. No timer or counts are tracked.</string>
   <string name="beginner_tutorial_button">Beginner Tutorial</string>
 
+  <string name="beginner_title">Beginner Mode</string>
+  <string name="zen_title">Zen</string>
+  <string name="beginner_note">Beginner Mode: All cards have the same pattern (outline only).</string>
+
 </resources>
