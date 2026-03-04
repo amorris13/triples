@@ -56,11 +56,21 @@
           android:textSize="@dimen/game_paused_text_size"
           />
 
+      <TextView
+          android:id="@+id/game_output"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="24sp"
+          android:textStyle="bold"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"/>
+
       <GridLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:columnCount="2"
-          android:rowCount="2">
+          android:rowCount="2"
+          android:paddingBottom="4dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +80,8 @@
             android:id="@+id/fastest_triple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:paddingRight="4dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,7 +91,8 @@
             android:id="@+id/slowest_triple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:paddingRight="4dp"/>
       </GridLayout>
 
       <com.antsapps.triples.stats.TimelineView
