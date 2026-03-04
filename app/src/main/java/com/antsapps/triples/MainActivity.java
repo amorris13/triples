@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.ZenGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -28,6 +29,7 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mArcadeResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
+  private MaterialButton mZenButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -90,6 +92,14 @@ public class MainActivity extends BaseTriplesActivity {
         showStatistics("Arcade");
       }
     });
+
+    mZenButton = findViewById(R.id.zen_button);
+    mZenButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        playZenGame(false);
+      }
+    });
   }
 
   @Override
@@ -141,6 +151,12 @@ public class MainActivity extends BaseTriplesActivity {
     mApplication.addClassicGame(game);
     Intent intent = new Intent(this, ClassicGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
+    startActivity(intent);
+  }
+
+  private void playZenGame(boolean isBeginner) {
+    Intent intent = new Intent(this, ZenGameActivity.class);
+    intent.putExtra(ZenGameActivity.IS_BEGINNER, isBeginner);
     startActivity(intent);
   }
 

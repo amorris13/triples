@@ -200,7 +200,33 @@
           android:layout_height="wrap_content"
           android:text="Find as many triples as you can in 60 seconds."/>
       </TableRow>
+
+      <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingRight="5dp"
+          android:textStyle="bold"
+          android:text="Zen" />
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/zen_description"/>
+      </TableRow>
     </TableLayout>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/beginner_tutorial_button"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="@string/beginner_tutorial_button"
+      style="@style/Widget.Material3.Button"
+      android:theme="@style/ZenButtonTheme" />
   </LinearLayout>
 
 </ScrollView>

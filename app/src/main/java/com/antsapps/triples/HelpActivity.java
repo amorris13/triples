@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -49,6 +50,15 @@ public class HelpActivity extends Activity implements OnValidTripleSelectedListe
     mHelpCardsView.updateCardsInPlay(newCards);
     mCardsShown = newCards;
     updateTextExplanation();
+
+    findViewById(R.id.beginner_tutorial_button).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(HelpActivity.this, ZenGameActivity.class);
+        intent.putExtra(ZenGameActivity.IS_BEGINNER, true);
+        startActivity(intent);
+      }
+    });
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.VIEW_HELP, null);
