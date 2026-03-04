@@ -21,19 +21,13 @@
 
             <LinearLayout
                 android:id="@+id/classic_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/classic_background"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/MainCardContainer"
+                android:background="@color/classic_background">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MainCardLabel"
                     android:text="@string/classic_label"
-                    android:textColor="@color/classic_accent"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/classic_accent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -79,24 +73,19 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp">
 
             <LinearLayout
                 android:id="@+id/arcade_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/arcade_background"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/MainCardContainer"
+                android:background="@color/arcade_background">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MainCardLabel"
                     android:text="@string/arcade_label"
-                    android:textColor="@color/arcade_accent"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/arcade_accent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,6 +123,36 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/statistics"
                     android:textColor="@color/arcade_accent" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Zen Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:id="@+id/zen_container"
+                style="@style/MainCardContainer"
+                android:background="@color/zen_background">
+
+                <TextView
+                    style="@style/MainCardLabel"
+                    android:text="@string/zen_label"
+                    android:textColor="@color/zen_accent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/zen_button"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/play"
+                    android:theme="@style/ZenButtonTheme" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
