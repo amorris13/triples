@@ -122,6 +122,8 @@
   <string name="performance_first_game">Your first game!</string>
   <string name="performance_hints_used">Hints were used - game not added to statistics.</string>
 
+  <string name="rate_app">Rate App</string>
+
   <string name="zen_description">Unlimited play with a continuously recycled and reshuffled deck. No timer or counts are tracked.</string>
   <string name="beginner_tutorial_button">Beginner Tutorial</string>
 
