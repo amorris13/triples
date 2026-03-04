@@ -20,7 +20,9 @@ public class Application extends OnStateChangedReporter {
   // Should remain sorted
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
-  private final List<ZenGame> mZenGames = Lists.newArrayList();
+
+  private ZenGame mZenGame;
+  private ZenGame mBeginnerGame;
 
   public final DBAdapter database;
 
@@ -198,45 +200,26 @@ public class Application extends OnStateChangedReporter {
     return new ArcadeStatistics(getCompletedArcadeGames(), period);
   }
 
-  public void addZenGame(ZenGame game) {
-    // Ephemeral, just give it an ID that's unique among current Zen games
-    long maxId = 0;
-    for (ZenGame zg : mZenGames) {
-      maxId = Math.max(maxId, zg.getId());
-    }
-    game.setId(maxId + 1);
-    mZenGames.add(game);
-    notifyStateChanged();
-  }
-
-  public void saveZenGame(ZenGame game) {
-    // Do nothing, Zen games are ephemeral
-    notifyStateChanged();
-  }
-
-  public void deleteZenGame(ZenGame game) {
-    mZenGames.remove(game);
-    notifyStateChanged();
-  }
-
-  public ZenGame getZenGame(long id) {
-    for (ZenGame game : mZenGames) {
-      if (game.getId() == id) {
-        return game;
+  public ZenGame getZenGame(boolean isBeginner) {
+    if (isBeginner) {
+      if (mBeginnerGame == null) {
+        mBeginnerGame = ZenGame.createFromSeed(System.currentTimeMillis(), true);
       }
+      return mBeginnerGame;
+    } else {
+      if (mZenGame == null) {
+        mZenGame = ZenGame.createFromSeed(System.currentTimeMillis(), false);
+      }
+      return mZenGame;
     }
-    return null;
   }
 
-  public Iterable<ZenGame> getCurrentZenGames() {
-    return Iterables.filter(
-        mZenGames,
-        new Predicate<Game>() {
-          @Override
-          public boolean apply(Game game) {
-            return game.getGameState() == GameState.ACTIVE
-                || game.getGameState() == GameState.PAUSED;
-          }
-        });
+  public void resetZenGame(boolean isBeginner) {
+    if (isBeginner) {
+      mBeginnerGame = null;
+    } else {
+      mZenGame = null;
+    }
+    notifyStateChanged();
   }
 }

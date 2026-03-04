@@ -164,25 +164,9 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void playZenGame(boolean isBeginner) {
-    ZenGame existingGame = null;
-    for (ZenGame game : mApplication.getCurrentZenGames()) {
-      if (game.isBeginner() == isBeginner) {
-        existingGame = game;
-        break;
-      }
-    }
-
-    if (existingGame != null) {
-      Intent intent = new Intent(this, ZenGameActivity.class);
-      intent.putExtra(Game.ID_TAG, existingGame.getId());
-      startActivity(intent);
-    } else {
-      ZenGame game = ZenGame.createFromSeed(System.currentTimeMillis(), isBeginner);
-      mApplication.addZenGame(game);
-      Intent intent = new Intent(this, ZenGameActivity.class);
-      intent.putExtra(Game.ID_TAG, game.getId());
-      startActivity(intent);
-    }
+    Intent intent = new Intent(this, ZenGameActivity.class);
+    intent.putExtra(ZenGameActivity.IS_BEGINNER, isBeginner);
+    startActivity(intent);
   }
 
   private void startNewArcadeGame() {

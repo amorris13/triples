@@ -13,6 +13,8 @@ import com.antsapps.triples.backend.ZenGame;
 /** Zen/Beginner Game */
 public class ZenGameActivity extends BaseGameActivity {
 
+  public static final String IS_BEGINNER = "is_beginner";
+
   private ZenGame mGame;
   private Application mApplication;
 
@@ -20,13 +22,8 @@ public class ZenGameActivity extends BaseGameActivity {
   protected void init(Bundle savedInstanceState) {
     mApplication = Application.getInstance(this);
 
-    if (getIntent().hasExtra(Game.ID_TAG)) {
-      mGame = mApplication.getZenGame(getIntent().getLongExtra(Game.ID_TAG, 0));
-    } else if (savedInstanceState != null) {
-      mGame = mApplication.getZenGame(savedInstanceState.getLong(Game.ID_TAG));
-    } else {
-      throw new IllegalArgumentException("No savedInstanceState or intent containing key");
-    }
+    boolean isBeginner = getIntent().getBooleanExtra(IS_BEGINNER, false);
+    mGame = mApplication.getZenGame(isBeginner);
 
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
     stub.setVisibility(View.GONE);
@@ -39,7 +36,7 @@ public class ZenGameActivity extends BaseGameActivity {
 
   @Override
   protected void saveGame() {
-    mApplication.saveZenGame(mGame);
+    // Zen games are ephemeral and not saved to the database.
   }
 
   @Override
@@ -49,10 +46,9 @@ public class ZenGameActivity extends BaseGameActivity {
 
   @Override
   protected Intent createNewGame() {
-    ZenGame game = ZenGame.createFromSeed(System.currentTimeMillis(), mGame.isBeginner());
-    mApplication.addZenGame(game);
+    mApplication.resetZenGame(mGame.isBeginner());
     Intent newGameIntent = new Intent(getBaseContext(), ZenGameActivity.class);
-    newGameIntent.putExtra(Game.ID_TAG, game.getId());
+    newGameIntent.putExtra(IS_BEGINNER, mGame.isBeginner());
     return newGameIntent;
   }
 }
