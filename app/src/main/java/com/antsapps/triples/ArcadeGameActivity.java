@@ -89,7 +89,7 @@ public class ArcadeGameActivity extends BaseGameActivity
     }
 
     PlayGames.getLeaderboardsClient(this)
-        .submitScore(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound());
+        .submitScore(getString(GamesServices.Leaderboard.ARCADE), mGame.getNumTriplesFound());
   }
 
   @Override

@@ -72,7 +72,7 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   }
 
   protected String getLeaderboardId() {
-    return GamesServices.Leaderboard.ARCADE;
+    return getString(GamesServices.Leaderboard.ARCADE);
   }
 
   protected void deleteGame(Game game) {

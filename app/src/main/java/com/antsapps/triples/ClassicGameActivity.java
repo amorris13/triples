@@ -86,7 +86,7 @@ public class ClassicGameActivity extends BaseGameActivity
       return;
     }
     PlayGames.getLeaderboardsClient(this)
-        .submitScore(GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed());
+        .submitScore(getString(GamesServices.Leaderboard.CLASSIC), mGame.getTimeElapsed());
   }
 
   @Override

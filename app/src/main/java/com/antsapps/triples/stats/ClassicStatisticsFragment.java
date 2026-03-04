@@ -74,7 +74,7 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
   }
 
   protected String getLeaderboardId() {
-    return GamesServices.Leaderboard.CLASSIC;
+    return getString(GamesServices.Leaderboard.CLASSIC);
   }
 
   protected void deleteGame(Game game) {
