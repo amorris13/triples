@@ -8,6 +8,8 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.CloudSaveSerializer;
 import com.antsapps.triples.backend.Game;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.games.GamesClientStatusCodes;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.SnapshotsClient;
 import com.google.android.gms.games.snapshot.Snapshot;
@@ -61,9 +63,10 @@ public class CloudSaveManager {
                 Log.d(TAG, "Cloud save successful");
               } catch (IOException e) {
                 Log.e(TAG, "Error serializing cloud data", e);
+                snapshotsClient.discardAndClose(snapshot);
               }
             } else {
-              Log.e(TAG, "Error opening snapshot for save", task.getException());
+              handleSnapshotError("save", task.getException());
             }
           }
         });
@@ -115,10 +118,22 @@ public class CloudSaveManager {
                 snapshotsClient.discardAndClose(snapshot);
               }
             } else {
-              Log.e(TAG, "Error opening snapshot for sync", task.getException());
+              handleSnapshotError("sync", task.getException());
             }
           }
         });
+  }
+
+  private static void handleSnapshotError(String operation, Exception exception) {
+    if (exception instanceof ApiException) {
+      ApiException apiException = (ApiException) exception;
+      if (apiException.getStatusCode() == GamesClientStatusCodes.SIGN_IN_REQUIRED) {
+        Log.w(TAG, "Cloud " + operation + " skipped: User is not fully signed in for Saved Games. " +
+            "Ensure 'Saved Games' is enabled in the Google Play Console.");
+        return;
+      }
+    }
+    Log.e(TAG, "Error opening snapshot for " + operation, exception);
   }
 
   @VisibleForTesting
