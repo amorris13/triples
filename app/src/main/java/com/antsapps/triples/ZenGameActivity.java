@@ -27,6 +27,7 @@ public class ZenGameActivity extends BaseGameActivity {
 
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
     stub.setVisibility(View.GONE);
+    findViewById(R.id.bottom_separator).setVisibility(View.GONE);
   }
 
   @Override

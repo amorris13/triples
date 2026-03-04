@@ -131,6 +131,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp">
 
@@ -144,32 +145,14 @@
                     android:text="@string/zen_label"
                     android:textColor="@color/zen_accent" />
 
-                <LinearLayout
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/zen_button"
+                    style="@style/Widget.Material3.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/beginner_button"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:text="@string/beginner_label"
-                        android:theme="@style/ZenButtonTheme" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/zen_button"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
-                        android:text="@string/zen_label"
-                        android:theme="@style/ZenButtonTheme" />
-                </LinearLayout>
+                    android:text="@string/play"
+                    android:theme="@style/ZenButtonTheme" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

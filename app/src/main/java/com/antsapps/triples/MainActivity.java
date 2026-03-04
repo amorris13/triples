@@ -30,7 +30,6 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
   private MaterialButton mZenButton;
-  private MaterialButton mBeginnerButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -99,14 +98,6 @@ public class MainActivity extends BaseTriplesActivity {
       @Override
       public void onClick(View v) {
         playZenGame(false);
-      }
-    });
-
-    mBeginnerButton = findViewById(R.id.beginner_button);
-    mBeginnerButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        playZenGame(true);
       }
     });
   }
