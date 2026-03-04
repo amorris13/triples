@@ -186,7 +186,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Config.ARGB_8888);
     Canvas tmpCanvas = new Canvas(bitmap);
 
-    CardBackgroundDrawable mCardBackground = new CardBackgroundDrawable();
+    CardBackgroundDrawable mCardBackground = new CardBackgroundDrawable(mContext);
     mCardBackground.setBounds(bounds);
     mCardBackground.setSelected(mSelected || mShakeAnimating);
     mCardBackground.setHinted(mHinted);

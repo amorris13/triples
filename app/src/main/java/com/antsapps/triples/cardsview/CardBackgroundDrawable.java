@@ -9,7 +9,11 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.content.Context;
+import androidx.core.content.ContextCompat;
 import android.graphics.drawable.shapes.RoundRectShape;
+
+import com.antsapps.triples.R;
 
 import java.util.Arrays;
 
@@ -31,11 +35,12 @@ class CardBackgroundDrawable extends Drawable {
 
   private final ShapeDrawable mOutline;
   private final ShapeDrawable mHintOutline;
+  private final ShapeDrawable mBorder;
 
   private boolean mSelected;
   private boolean mHinted;
 
-  CardBackgroundDrawable() {
+  CardBackgroundDrawable(Context context) {
     float[] outerR = new float[8];
     Arrays.fill(outerR, CORNER_RADIUS);
     mCardShape = new RoundRectShape(outerR, null, null);
@@ -56,6 +61,11 @@ class CardBackgroundDrawable extends Drawable {
     mHintOutline.getPaint().setColor((0x400000FF));
     mHintOutline.getPaint().setStrokeWidth(15);
     mHintOutline.getPaint().setPathEffect(new DashPathEffect(new float[] {20, 10}, 0));
+
+    mBorder = new ShapeDrawable(mCardShape);
+    mBorder.getPaint().setStyle(Paint.Style.STROKE);
+    mBorder.getPaint().setColor(ContextCompat.getColor(context, R.color.colorOutlineVariant));
+    mBorder.getPaint().setStrokeWidth(0);
   }
 
   @Override
@@ -65,6 +75,7 @@ class CardBackgroundDrawable extends Drawable {
     }
     mShadow.draw(canvas);
     mBackground.draw(canvas);
+    mBorder.draw(canvas);
     if (mSelected) {
       mOutline.draw(canvas);
     }
@@ -81,6 +92,7 @@ class CardBackgroundDrawable extends Drawable {
     mHintOutline.setAlpha(alpha);
     mBackground.setAlpha(alpha);
     mShadow.setAlpha(alpha);
+    mBorder.setAlpha(alpha);
   }
 
   @Override
@@ -89,6 +101,7 @@ class CardBackgroundDrawable extends Drawable {
     mHintOutline.setColorFilter(cf);
     mBackground.setColorFilter(cf);
     mShadow.setColorFilter(cf);
+    mBorder.setColorFilter(cf);
   }
 
   void setSelected(boolean selected) {
@@ -106,6 +119,7 @@ class CardBackgroundDrawable extends Drawable {
     mBackground.setBounds(cardBounds);
     mOutline.setBounds(cardBounds);
     mHintOutline.setBounds(cardBounds);
+    mBorder.setBounds(cardBounds);
 
     cardBounds.offset(SHADOW_OFFSET_HORIZONTAL, SHADOW_OFFSET_VERTICAL);
     mShadow.setBounds(cardBounds);
