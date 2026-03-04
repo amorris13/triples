@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+vpackage com.antsapps.triples;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -90,6 +90,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
     ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
+    findViewById(R.id.rate_app).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.statistics_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.new_game_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
 
