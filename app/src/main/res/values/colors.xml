@@ -44,4 +44,36 @@
   <color name="color_slowest">#F44336</color>
   <color name="color_timeline_point">#757575</color>
 
+  <!-- Semantic colors for dark mode support -->
+  <color name="color_separator">#33B5E5</color>
+  <color name="color_critical">#FF4444</color>
+  <color name="color_text_primary">#424242</color>
+  <color name="color_text_secondary">#808080</color>
+  <color name="color_background_main">#FAFAFA</color>
+  <color name="color_background_secondary">#E0E0E0</color>
+  <color name="color_background_tertiary">#f0f0f0</color>
+
+  <color name="status_bar_key_color">#404040</color>
+  <color name="status_bar_value_color">#000000</color>
+
+  <!-- Card Colors -->
+  <color name="card_background">#FFFFFF</color>
+  <color name="card_shadow">#20202020</color>
+  <color name="card_selected_outline">#0000FF</color>
+  <color name="card_hint_outline">#400000FF</color>
+
+  <!-- Card Symbol Presets -->
+  <color name="preset_color_0">#2196F3</color>
+  <color name="preset_color_1">#FF9800</color>
+  <color name="preset_color_2">#F44336</color>
+  <color name="preset_color_3">#4CAF50</color>
+  <color name="preset_color_4">#9C27B0</color>
+  <color name="preset_color_5">#00BCD4</color>
+  <color name="preset_color_6">#E91E63</color>
+  <color name="preset_color_7">#FF5722</color>
+  <color name="preset_color_8">#FFC107</color>
+  <color name="preset_color_9">#3F51B5</color>
+  <color name="preset_color_10">#009688</color>
+  <color name="preset_color_11">#000000</color>
+
 </resources>

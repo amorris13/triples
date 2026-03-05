@@ -14,6 +14,7 @@ import com.antsapps.triples.cardsview.TriangleShape;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
+import androidx.core.content.ContextCompat;
 import com.google.common.primitives.Ints;
 import java.util.Arrays;
 
@@ -22,6 +23,10 @@ public class CardCustomizationUtils {
   private static final float STRIPE_WIDTH = 1.5f;
   public static final int ICON_MARGIN_DP = 8;
 
+  private static String getHexForRes(Context context, int resId) {
+    return String.format("#%06X", (0xFFFFFF & ContextCompat.getColor(context, resId)));
+  }
+
   public static int getColorForId(Context context, int id) {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
     String key;
@@ -29,15 +34,15 @@ public class CardCustomizationUtils {
     switch (id) {
       case 0:
         key = context.getString(R.string.pref_color_0);
-        defaultHex = "#2196F3";
+        defaultHex = getHexForRes(context, R.color.preset_color_0);
         break;
       case 1:
         key = context.getString(R.string.pref_color_1);
-        defaultHex = "#FF9800";
+        defaultHex = getHexForRes(context, R.color.preset_color_1);
         break;
       case 2:
         key = context.getString(R.string.pref_color_2);
-        defaultHex = "#F44336";
+        defaultHex = getHexForRes(context, R.color.preset_color_2);
         break;
       default:
         return 0;

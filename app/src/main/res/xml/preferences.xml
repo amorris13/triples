@@ -33,6 +33,14 @@
       android:title="@string/pref_hide_hint_title" />
 
 
+  <androidx.preference.ListPreference
+      android:defaultValue="system"
+      android:entries="@array/entries_theme_pref"
+      android:entryValues="@array/entryvalues_theme_pref"
+      android:key="@string/pref_theme"
+      android:title="Theme"
+      android:summary="%s" />
+
   <androidx.preference.SeekBarPreference
       android:defaultValue="800"
       android:key="@string/pref_animation_speed"

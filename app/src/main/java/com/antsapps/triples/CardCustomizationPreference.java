@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +32,13 @@ import java.util.List;
 public class CardCustomizationPreference extends Preference {
 
   private static final String[] SHAPES = {"square", "circle", "triangle", "diamond", "hexagon", "star"};
-  private static final String[] PRESET_COLORS = {
-    "#2196F3", "#FF9800", "#F44336", "#4CAF50", "#9C27B0", "#00BCD4",
-    "#E91E63", "#FF5722", "#FFC107", "#3F51B5", "#009688", "#000000"
+  private static final int[] PRESET_COLOR_RES = {
+      R.color.preset_color_0, R.color.preset_color_1, R.color.preset_color_2,
+      R.color.preset_color_3, R.color.preset_color_4, R.color.preset_color_5,
+      R.color.preset_color_6, R.color.preset_color_7, R.color.preset_color_8,
+      R.color.preset_color_9, R.color.preset_color_10, R.color.preset_color_11
   };
+  private String[] PRESET_COLORS;
   private static final String[] PATTERNS = {"stripes", "dots", "lighter", "crosshatch"};
 
   private Spinner[] colorSpinners = new Spinner[3];
@@ -81,6 +85,14 @@ public class CardCustomizationPreference extends Preference {
     super(context, attrs);
     setLayoutResource(R.layout.preference_card_customization);
     setSelectable(false);
+    initPresetColors(context);
+  }
+
+  private void initPresetColors(Context context) {
+    PRESET_COLORS = new String[PRESET_COLOR_RES.length];
+    for (int i = 0; i < PRESET_COLOR_RES.length; i++) {
+      PRESET_COLORS[i] = String.format("#%06X", (0xFFFFFF & ContextCompat.getColor(context, PRESET_COLOR_RES[i])));
+    }
   }
 
   @Override
@@ -287,7 +299,7 @@ public class CardCustomizationPreference extends Preference {
       }
       ShapeIconView siv = (ShapeIconView) convertView;
       siv.setShape(getItem(position));
-      siv.setColor(Color.BLACK);
+      siv.setColor(ContextCompat.getColor(getContext(), R.color.color_text_primary));
       return siv;
     }
     @Override
