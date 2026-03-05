@@ -1,16 +1,31 @@
-<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <!-- Card 1 (Top-Left) -->
-  <rect x="5" y="5" width="57" height="33" rx="2" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="0.5"/>
-  <rect x="10" y="15.5" width="12" height="12" fill="#2196F3"/>
-  <rect x="26" y="15.5" width="12" height="12" fill="#2196F3"/>
-  <rect x="42" y="15.5" width="12" height="12" fill="#2196F3"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="4" dy="4" stdDeviation="3" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Card 1 (Back-Left) -->
+  <g filter="url(#shadow)">
+    <rect x="86" y="86" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
+    <!-- Card 1 Center X: 86+120=206, Y: 86+80=166. Symbols: (156,146), (206,146), (256,146) -->
+    <rect x="136" y="146" width="40" height="40" fill="#2196F3"/>
+    <rect x="186" y="146" width="40" height="40" fill="#2196F3"/>
+    <rect x="236" y="146" width="40" height="40" fill="#2196F3"/>
+  </g>
 
   <!-- Card 2 (Middle) -->
-  <rect x="35" y="35" width="47" height="33" rx="2" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="0.5"/>
-  <path d="M 44.5 57 L 50.5 46 L 56.5 57 Z" fill="#FF9800"/>
-  <path d="M 60.5 57 L 66.5 46 L 72.5 57 Z" fill="#FF9800"/>
+  <g filter="url(#shadow)">
+    <rect x="136" y="176" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
+    <!-- Card 2 Center X: 136+120=256, Y: 176+80=256. Symbols: (231,256), (281,256) -->
+    <path d="M 231 236 L 251 276 L 211 276 Z" fill="#FF9800"/>
+    <path d="M 281 236 L 301 276 L 261 276 Z" fill="#FF9800"/>
+  </g>
 
-  <!-- Card 3 (Bottom-Right) -->
-  <rect x="65" y="65" width="30" height="33" rx="2" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="0.5"/>
-  <circle cx="80" cy="81.5" r="7" fill="#F44336"/>
+  <!-- Card 3 (Front-Right) -->
+  <g filter="url(#shadow)">
+    <rect x="186" y="266" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
+    <!-- Card 3 Center X: 186+120=306, Y: 266+80=346. -->
+    <circle cx="306" cy="346" r="30" fill="#F44336"/>
+  </g>
 </svg>
