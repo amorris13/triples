@@ -4,19 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-
-import com.google.android.material.textfield.TextInputLayout;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,56 +37,14 @@ public class CardCustomizationPreference extends Preference {
   };
   private static final String[] PATTERNS = {"stripes", "dots", "lighter", "crosshatch"};
 
-  private AutoCompleteTextView[] colorSpinners = new AutoCompleteTextView[3];
-  private TextInputLayout[] colorLayouts = new TextInputLayout[3];
-  private AutoCompleteTextView[] shapeSpinners = new AutoCompleteTextView[3];
-  private TextInputLayout[] shapeLayouts = new TextInputLayout[3];
-  private AutoCompleteTextView patternSpinner;
-  private TextInputLayout patternLayout;
+  private Spinner[] colorSpinners = new Spinner[3];
+  private Spinner[] shapeSpinners = new Spinner[3];
+  private Spinner patternSpinner;
   private SampleCardView[] sampleCards = new SampleCardView[3];
   private View resetButton;
 
   private boolean updating = false;
 
-  public static class ViewDrawable extends Drawable {
-    private final View mView;
-
-    public ViewDrawable(View view) {
-      mView = view;
-      int size = view.getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-      setBounds(0, 0, size, size);
-    }
-
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-      mView.measure(
-          View.MeasureSpec.makeMeasureSpec(getBounds().width(), View.MeasureSpec.EXACTLY),
-          View.MeasureSpec.makeMeasureSpec(getBounds().height(), View.MeasureSpec.EXACTLY));
-      mView.layout(0, 0, getBounds().width(), getBounds().height());
-      mView.draw(canvas);
-    }
-
-    @Override
-    public void setAlpha(int alpha) {}
-
-    @Override
-    public void setColorFilter(@Nullable ColorFilter colorFilter) {}
-
-    @Override
-    public int getOpacity() {
-      return PixelFormat.TRANSLUCENT;
-    }
-
-    @Override
-    public int getIntrinsicWidth() {
-      return getBounds().width();
-    }
-
-    @Override
-    public int getIntrinsicHeight() {
-      return getBounds().height();
-    }
-  }
 
   public static class ColorItemView extends View {
     private int mColor;
@@ -133,22 +86,15 @@ public class CardCustomizationPreference extends Preference {
   @Override
   public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
     super.onBindViewHolder(holder);
-    colorSpinners[0] = (AutoCompleteTextView) holder.findViewById(R.id.color_spinner_0);
-    colorSpinners[1] = (AutoCompleteTextView) holder.findViewById(R.id.color_spinner_1);
-    colorSpinners[2] = (AutoCompleteTextView) holder.findViewById(R.id.color_spinner_2);
-    colorLayouts[0] = (TextInputLayout) holder.findViewById(R.id.color_layout_0);
-    colorLayouts[1] = (TextInputLayout) holder.findViewById(R.id.color_layout_1);
-    colorLayouts[2] = (TextInputLayout) holder.findViewById(R.id.color_layout_2);
+    colorSpinners[0] = (Spinner) holder.findViewById(R.id.color_spinner_0);
+    colorSpinners[1] = (Spinner) holder.findViewById(R.id.color_spinner_1);
+    colorSpinners[2] = (Spinner) holder.findViewById(R.id.color_spinner_2);
 
-    shapeSpinners[0] = (AutoCompleteTextView) holder.findViewById(R.id.shape_spinner_0);
-    shapeSpinners[1] = (AutoCompleteTextView) holder.findViewById(R.id.shape_spinner_1);
-    shapeSpinners[2] = (AutoCompleteTextView) holder.findViewById(R.id.shape_spinner_2);
-    shapeLayouts[0] = (TextInputLayout) holder.findViewById(R.id.shape_layout_0);
-    shapeLayouts[1] = (TextInputLayout) holder.findViewById(R.id.shape_layout_1);
-    shapeLayouts[2] = (TextInputLayout) holder.findViewById(R.id.shape_layout_2);
+    shapeSpinners[0] = (Spinner) holder.findViewById(R.id.shape_spinner_0);
+    shapeSpinners[1] = (Spinner) holder.findViewById(R.id.shape_spinner_1);
+    shapeSpinners[2] = (Spinner) holder.findViewById(R.id.shape_spinner_2);
 
-    patternSpinner = (AutoCompleteTextView) holder.findViewById(R.id.pattern_spinner);
-    patternLayout = (TextInputLayout) holder.findViewById(R.id.pattern_layout);
+    patternSpinner = (Spinner) holder.findViewById(R.id.pattern_spinner);
 
     sampleCards[0] = (SampleCardView) holder.findViewById(R.id.sample_card_0);
     sampleCards[1] = (SampleCardView) holder.findViewById(R.id.sample_card_1);
@@ -172,71 +118,55 @@ public class CardCustomizationPreference extends Preference {
 
       final ColorAdapter colorAdapter = new ColorAdapter(getContext(), colors);
       colorSpinners[i].setAdapter(colorAdapter);
-      colorSpinners[i].setText("", false);
-      updateColorIcon(i, currentColor);
-      colorSpinners[i].setOnItemClickListener((parent, view, position, id) -> {
-        if (!updating) {
-          String selectedColor = (String) parent.getItemAtPosition(position);
-          ensureUniqueColor(index, selectedColor);
-          updateSampleCards();
+      colorSpinners[i].setSelection(colors.indexOf(currentColor));
+      colorSpinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+          if (!updating) {
+            String selectedColor = (String) parent.getItemAtPosition(position);
+            ensureUniqueColor(index, selectedColor);
+            updateSampleCards();
+          }
         }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {}
       });
 
       ArrayAdapter<String> shapeAdapter = new ShapeAdapter(getContext(), Arrays.asList(SHAPES));
       shapeSpinners[i].setAdapter(shapeAdapter);
       String currentShape = prefs.getString(getContext().getString(getShapeKey(i)), SHAPES[i]);
-      shapeSpinners[i].setText("", false);
-      updateShapeIcon(i, currentShape);
-      shapeSpinners[i].setOnItemClickListener((parent, view, position, id) -> {
-        if (!updating) {
-          String selectedShape = SHAPES[position];
-          ensureUniqueShape(index, selectedShape);
-          updateSampleCards();
+      shapeSpinners[i].setSelection(Arrays.asList(SHAPES).indexOf(currentShape));
+      shapeSpinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+          if (!updating) {
+            String selectedShape = SHAPES[position];
+            ensureUniqueShape(index, selectedShape);
+            updateSampleCards();
+          }
         }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {}
       });
     }
 
     ArrayAdapter<String> patternAdapter = new PatternAdapter(getContext(), Arrays.asList(PATTERNS));
     patternSpinner.setAdapter(patternAdapter);
     String currentPattern = prefs.getString(getContext().getString(R.string.pref_shaded_pattern), PATTERNS[0]);
-    patternSpinner.setText("", false);
-    updatePatternIcon(currentPattern);
-    patternSpinner.setOnItemClickListener((parent, view, position, id) -> {
-      if (!updating) {
-        String selectedPattern = (String) parent.getItemAtPosition(position);
-        prefs.edit().putString(getContext().getString(R.string.pref_shaded_pattern), selectedPattern).apply();
-        patternSpinner.setText("", false);
-        updatePatternIcon(selectedPattern);
-        updateSampleCards();
+    patternSpinner.setSelection(Arrays.asList(PATTERNS).indexOf(currentPattern));
+    patternSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (!updating) {
+          prefs.edit().putString(getContext().getString(R.string.pref_shaded_pattern), PATTERNS[position]).apply();
+          updateSampleCards();
+        }
       }
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {}
     });
 
     updating = false;
-  }
-
-  private void updateColorIcon(int index, String color) {
-    ColorItemView icon = new ColorItemView(getContext());
-    int size = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-    icon.setLayoutParams(new ViewGroup.LayoutParams(size, size));
-    icon.setColor(color);
-    colorLayouts[index].setStartIconDrawable(new ViewDrawable(icon));
-  }
-
-  private void updateShapeIcon(int index, String shape) {
-    ShapeIconView icon = new ShapeIconView(getContext());
-    int size = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-    icon.setLayoutParams(new ViewGroup.LayoutParams(size, size));
-    icon.setShape(shape);
-    icon.setColor(Color.BLACK);
-    shapeLayouts[index].setStartIconDrawable(new ViewDrawable(icon));
-  }
-
-  private void updatePatternIcon(String pattern) {
-    PatternIconView icon = new PatternIconView(getContext());
-    int size = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-    icon.setLayoutParams(new ViewGroup.LayoutParams(size, size));
-    icon.setPattern(pattern);
-    patternLayout.setStartIconDrawable(new ViewDrawable(icon));
   }
 
   private void resetToDefaults() {
@@ -261,16 +191,22 @@ public class CardCustomizationPreference extends Preference {
         String oldColor = prefs.getString(getContext().getString(getColorKey(index)), PRESET_COLORS[index]);
         prefs.edit().putString(getContext().getString(getColorKey(i)), oldColor).apply();
         updating = true;
-        colorSpinners[i].setText("", false);
-        updateColorIcon(i, oldColor);
+        updateSpinnerSelection(colorSpinners[i], oldColor);
         updating = false;
       }
     }
     prefs.edit().putString(getContext().getString(getColorKey(index)), selectedColor).apply();
     updating = true;
-    colorSpinners[index].setText("", false);
-    updateColorIcon(index, selectedColor);
+    updateSpinnerSelection(colorSpinners[index], selectedColor);
     updating = false;
+  }
+
+  private void updateSpinnerSelection(Spinner spinner, String value) {
+    ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
+    int position = adapter.getPosition(value);
+    if (position != -1) {
+      spinner.setSelection(position);
+    }
   }
 
   private void ensureUniqueShape(int index, String selectedShape) {
@@ -282,15 +218,13 @@ public class CardCustomizationPreference extends Preference {
         String oldShape = prefs.getString(getContext().getString(getShapeKey(index)), SHAPES[index]);
         prefs.edit().putString(getContext().getString(getShapeKey(i)), oldShape).apply();
         updating = true;
-        shapeSpinners[i].setText("", false);
-        updateShapeIcon(i, oldShape);
+        updateSpinnerSelection(shapeSpinners[i], oldShape);
         updating = false;
       }
     }
     prefs.edit().putString(getContext().getString(getShapeKey(index)), selectedShape).apply();
     updating = true;
-    shapeSpinners[index].setText("", false);
-    updateShapeIcon(index, selectedShape);
+    updateSpinnerSelection(shapeSpinners[index], selectedShape);
     updating = false;
   }
 
