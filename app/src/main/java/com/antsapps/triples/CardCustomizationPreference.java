@@ -2,7 +2,9 @@ package com.antsapps.triples;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,8 +32,8 @@ public class CardCustomizationPreference extends Preference {
 
   private static final String[] SHAPES = {"square", "circle", "triangle", "diamond", "hexagon", "star"};
   private static final String[] PRESET_COLORS = {
-    "#33B5E5", "#FFBB33", "#FF4444", "#99CC00", "#AA66CC", "#0099CC",
-    "#FF8800", "#CC0000", "#669900", "#9933CC", "#000000", "#888888"
+    "#2196F3", "#FF9800", "#F44336", "#4CAF50", "#9C27B0", "#00BCD4",
+    "#E91E63", "#FF5722", "#FFC107", "#3F51B5", "#009688", "#000000"
   };
   private static final String[] PATTERNS = {"stripes", "dots", "lighter", "crosshatch"};
 
@@ -44,13 +45,30 @@ public class CardCustomizationPreference extends Preference {
 
   private boolean updating = false;
 
+
   public static class ColorItemView extends View {
+    private int mColor;
+    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     public ColorItemView(@NonNull Context context) {
       super(context);
     }
+
     public void setColor(String hex) {
-      setBackgroundColor(Color.parseColor(hex));
+      mColor = Color.parseColor(hex);
+      invalidate();
     }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+      super.onDraw(canvas);
+      mPaint.setColor(mColor);
+      mPaint.setStyle(Paint.Style.FILL);
+      float density = getResources().getDisplayMetrics().density;
+      int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
+      canvas.drawRect(margin, margin, getWidth() - margin, getHeight() - margin, mPaint);
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
       int width = MeasureSpec.getSize(widthMeasureSpec);
@@ -247,16 +265,11 @@ public class CardCustomizationPreference extends Preference {
         convertView.setLayoutParams(new ViewGroup.LayoutParams(size, size));
       }
       ((ColorItemView) convertView).setColor(getItem(position));
-      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
-      convertView.setPadding(padding, padding, padding, padding);
       return convertView;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      View view = getView(position, convertView, parent);
-      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
-      view.setPadding(padding, padding, padding, padding);
-      return view;
+      return getView(position, convertView, parent);
     }
   }
 
@@ -275,16 +288,11 @@ public class CardCustomizationPreference extends Preference {
       ShapeIconView siv = (ShapeIconView) convertView;
       siv.setShape(getItem(position));
       siv.setColor(Color.BLACK);
-      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
-      siv.setPadding(padding, padding, padding, padding);
       return siv;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      View view = getView(position, convertView, parent);
-      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
-      view.setPadding(padding, padding, padding, padding);
-      return view;
+      return getView(position, convertView, parent);
     }
   }
 
@@ -302,16 +310,11 @@ public class CardCustomizationPreference extends Preference {
       }
       PatternIconView piv = (PatternIconView) convertView;
       piv.setPattern(getItem(position));
-      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
-      piv.setPadding(padding, padding, padding, padding);
       return piv;
     }
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-      View view = getView(position, convertView, parent);
-      int padding = (int) (CardCustomizationUtils.ICON_MARGIN_DP * getContext().getResources().getDisplayMetrics().density);
-      view.setPadding(padding, padding, padding, padding);
-      return view;
+      return getView(position, convertView, parent);
     }
   }
 }
