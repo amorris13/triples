@@ -271,6 +271,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mGameState = state;
 
     updateViewSwitcher();
+    updateHintUsedIndicator();
 
     if (mGameState == GameState.COMPLETED) {
       mCardsView.setAlpha(0.5f);

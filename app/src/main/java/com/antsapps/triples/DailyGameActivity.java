@@ -81,7 +81,7 @@ public class DailyGameActivity extends BaseGameActivity
 
   private void updateTriplesFoundText() {
     TextView triplesFoundText = (TextView) findViewById(R.id.triples_found_text);
-    triplesFoundText.setText(getString(R.string.triples_found_of_format, mGame.getNumTriplesFound(), mGame.getTotalTriplesCount()));
+    triplesFoundText.setText(mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
   }
 
   @Override

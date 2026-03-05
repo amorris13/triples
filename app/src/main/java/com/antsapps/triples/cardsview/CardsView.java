@@ -284,4 +284,16 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     }
     mCurrentlyHinted.clear();
   }
+
+  @Override
+  public void clearSelectedCards() {
+    for (Card card : mCurrentlySelected) {
+      CardDrawable cardDrawable = mCardDrawables.get(card);
+      if (cardDrawable != null) {
+        cardDrawable.setSelected(false);
+      }
+    }
+    mCurrentlySelected.clear();
+    invalidate();
+  }
 }

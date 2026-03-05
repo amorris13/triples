@@ -30,7 +30,9 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
   private MaterialButton mDailyPlayButton;
+  private MaterialButton mDailyStatisticsButton;
   private MaterialButton mZenButton;
+  private MaterialButton mZenStatisticsButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -102,11 +104,27 @@ public class MainActivity extends BaseTriplesActivity {
       }
     });
 
+    mDailyStatisticsButton = findViewById(R.id.daily_statistics_button);
+    mDailyStatisticsButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        showStatistics("Daily");
+      }
+    });
+
     mZenButton = findViewById(R.id.zen_button);
     mZenButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         playZenGame(false);
+      }
+    });
+
+    mZenStatisticsButton = findViewById(R.id.zen_statistics_button);
+    mZenStatisticsButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        showStatistics("Zen"); // User said "Statistics should lead to a Zen Mode statistics page. That page should show a calendar"
       }
     });
   }
@@ -141,6 +159,10 @@ public class MainActivity extends BaseTriplesActivity {
     }
     int numArcadeCompleted = Iterables.size(mApplication.getCompletedArcadeGames());
     mArcadeStatisticsButton.setText(getString(R.string.statistics_format, numArcadeCompleted));
+
+    int numDailyCompleted = Iterables.size(mApplication.getCompletedDailyGames());
+    mDailyStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
+    mZenStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
   }
 
   private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {

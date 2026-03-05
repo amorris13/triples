@@ -154,6 +154,15 @@
                     android:text="@string/play"
                     android:theme="@style/DailyButtonTheme" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/daily_statistics_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/statistics"
+                    android:textColor="@color/daily_accent" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -183,6 +192,15 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/play"
                     android:theme="@style/ZenButtonTheme" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/zen_statistics_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/statistics"
+                    android:textColor="@color/zen_accent" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

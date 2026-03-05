@@ -41,6 +41,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     void clearHintedCards();
 
+    void clearSelectedCards();
+
     Set<Card> getSelectedCards();
   }
 
@@ -71,9 +73,9 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected final List<Long> mTripleFindTimes;
 
-  private final Set<Card> mHintedCards = Sets.newHashSet();
+  protected final Set<Card> mHintedCards = Sets.newHashSet();
 
-  private boolean mHintsUsed;
+  protected boolean mHintsUsed;
 
   protected final Timer mTimer;
 
@@ -83,7 +85,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final Date mDate;
 
-  private GameRenderer mGameRenderer;
+  protected GameRenderer mGameRenderer;
 
   private final List<OnUpdateGameStateListener> mGameStateListeners = Lists.newArrayList();
 
@@ -219,6 +221,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
+    mGameRenderer.clearSelectedCards();
 
     for (int i = 0; i < 3; i++) {
       mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
@@ -495,7 +498,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return true;
   }
 
-  private void dispatchHint(Card card) {
+  protected void dispatchHint(Card card) {
     if (mHintedCards.add(card)) {
       mGameRenderer.addHint(card);
       for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {

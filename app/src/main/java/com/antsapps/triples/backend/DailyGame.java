@@ -84,6 +84,12 @@ public class DailyGame extends Game {
       mNumTriplesFound = mFoundTriples.size();
       mTripleFindTimes.add(mTimer.getElapsed());
 
+      mHintedCards.clear();
+      if (mGameRenderer != null) {
+        mGameRenderer.clearHintedCards();
+        mGameRenderer.clearSelectedCards();
+      }
+
       if (mFoundTriples.size() == mAllTriples.size()) {
         finish();
       } else {
@@ -98,6 +104,22 @@ public class DailyGame extends Game {
 
   public List<Set<Card>> getFoundTriples() {
     return Collections.unmodifiableList(mFoundTriples);
+  }
+
+  @Override
+  public boolean addHint() {
+    for (Set<Card> triple : mAllTriples) {
+      if (!mFoundTriples.contains(triple)) {
+        mHintsUsed = true;
+        mHintedCards.clear();
+        mGameRenderer.clearHintedCards();
+        for (Card card : triple) {
+          dispatchHint(card);
+        }
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
