@@ -8,28 +8,28 @@
   <!-- Card 1 (Back-Left) -->
   <g filter="url(#shadow)">
     <rect x="64" y="64" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
-    <!-- Card 1 Center X: 184, Y: 136. 3 squares of 64px width with 10px spacing: 64+10+64+10+64 = 212px total width.
-         (240 - 212) / 2 = 14px start offset from card X. X starts at 64+14=78.
-         (144 - 64) / 2 = 40px start offset from card Y. Y starts at 64+40=104. -->
-    <rect x="78" y="104" width="64" height="64" fill="#2196F3"/>
-    <rect x="152" y="104" width="64" height="64" fill="#2196F3"/>
-    <rect x="226" y="104" width="64" height="64" fill="#2196F3"/>
+    <!-- Card 1 Center X: 184, Y: 136. 3 squares of 56px width with 10px spacing: 56+10+56+10+56 = 188px total width.
+         (240 - 188) / 2 = 26px start offset from card X. X starts at 64+26=90.
+         (144 - 56) / 2 = 44px start offset from card Y. Y starts at 64+44=108. -->
+    <rect x="90" y="108" width="56" height="56" fill="#2196F3"/>
+    <rect x="156" y="108" width="56" height="56" fill="#2196F3"/>
+    <rect x="222" y="108" width="56" height="56" fill="#2196F3"/>
   </g>
 
   <!-- Card 2 (Middle) -->
   <g filter="url(#shadow)">
     <rect x="136" y="184" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
-    <!-- Card 2 Center X: 256, Y: 256. 2 triangles of 64px width with 10px spacing: 64+10+64 = 138px total width.
-         (240 - 138) / 2 = 51px start offset from card X. X starts at 136+51=187.
-         Y offset remains (144 - 64) / 2 = 40px. Y starts at 184+40=224. -->
-    <path d="M 187 288 L 219 224 L 251 288 Z" fill="#FF9800"/>
-    <path d="M 261 288 L 293 224 L 325 288 Z" fill="#FF9800"/>
+    <!-- Card 2 Center X: 256, Y: 256. 2 triangles of 56px width with 10px spacing: 56+10+56 = 122px total width.
+         (240 - 122) / 2 = 59px start offset from card X. X starts at 136+59=195.
+         Y offset remains (144 - 56) / 2 = 44px. Y starts at 184+44=228. -->
+    <path d="M 195 284 L 223 228 L 251 284 Z" fill="#FF9800"/>
+    <path d="M 261 284 L 289 228 L 317 284 Z" fill="#FF9800"/>
   </g>
 
   <!-- Card 3 (Front-Right) -->
   <g filter="url(#shadow)">
     <rect x="208" y="304" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
-    <!-- Card 3 Center X: 328, Y: 376. Circle radius 32. -->
-    <circle cx="328" cy="376" r="32" fill="#F44336"/>
+    <!-- Card 3 Center X: 328, Y: 376. Circle radius 28. -->
+    <circle cx="328" cy="376" r="28" fill="#F44336"/>
   </g>
 </svg>
