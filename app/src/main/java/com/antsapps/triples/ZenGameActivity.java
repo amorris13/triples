@@ -53,6 +53,11 @@ public class ZenGameActivity extends BaseGameActivity {
   }
 
   @Override
+  protected int getAccentColor() {
+    return getResources().getColor(R.color.zen_accent);
+  }
+
+  @Override
   protected Intent createNewGame() {
     mApplication.resetZenGame(mGame.isBeginner());
     Intent newGameIntent = new Intent(getBaseContext(), ZenGameActivity.class);
