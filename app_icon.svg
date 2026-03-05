@@ -7,25 +7,25 @@
 
   <!-- Card 1 (Back-Left) -->
   <g filter="url(#shadow)">
-    <rect x="86" y="86" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
-    <!-- Card 1 Center X: 86+120=206, Y: 86+80=166. Symbols: (156,146), (206,146), (256,146) -->
-    <rect x="136" y="146" width="40" height="40" fill="#2196F3"/>
-    <rect x="186" y="146" width="40" height="40" fill="#2196F3"/>
-    <rect x="236" y="146" width="40" height="40" fill="#2196F3"/>
+    <rect x="64" y="64" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
+    <!-- Center: 184, 144. Squares 50x50 with 10px gap. -->
+    <rect x="99" y="119" width="50" height="50" fill="#2196F3"/>
+    <rect x="159" y="119" width="50" height="50" fill="#2196F3"/>
+    <rect x="219" y="119" width="50" height="50" fill="#2196F3"/>
   </g>
 
   <!-- Card 2 (Middle) -->
   <g filter="url(#shadow)">
     <rect x="136" y="176" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
-    <!-- Card 2 Center X: 136+120=256, Y: 176+80=256. Symbols: (231,256), (281,256) -->
-    <path d="M 231 236 L 251 276 L 211 276 Z" fill="#FF9800"/>
-    <path d="M 281 236 L 301 276 L 261 276 Z" fill="#FF9800"/>
+    <!-- Center: 256, 256. Triangles 50x50 with 10px gap. -->
+    <path d="M 201 281 L 226 231 L 251 281 Z" fill="#FF9800"/>
+    <path d="M 261 281 L 286 231 L 311 281 Z" fill="#FF9800"/>
   </g>
 
   <!-- Card 3 (Front-Right) -->
   <g filter="url(#shadow)">
-    <rect x="186" y="266" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
-    <!-- Card 3 Center X: 186+120=306, Y: 266+80=346. -->
-    <circle cx="306" cy="346" r="30" fill="#F44336"/>
+    <rect x="208" y="288" width="240" height="160" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="1"/>
+    <!-- Center: 328, 368. Circle radius 40. -->
+    <circle cx="328" cy="368" r="40" fill="#F44336"/>
   </g>
 </svg>
