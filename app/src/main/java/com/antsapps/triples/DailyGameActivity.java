@@ -13,10 +13,11 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.google.common.collect.ImmutableList;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class DailyGameActivity extends BaseGameActivity
-    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener {
+    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener, DailyGame.OnTripleFoundListener {
 
   private DailyGame mGame;
   private Application mApplication;
@@ -38,6 +39,10 @@ public class DailyGameActivity extends BaseGameActivity
     stub.inflate();
     mGame.addOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
+    mGame.setOnTripleFoundListener(this);
+
+    TextView dateText = findViewById(R.id.daily_date_text);
+    dateText.setText(java.text.DateFormat.getDateInstance().format(mGame.getDateStarted()));
   }
 
   @Override
@@ -85,13 +90,36 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
-    updateTriplesFoundText();
+  public void onCardHinted(Card hintedCard) {}
+
+  @Override
+  public void onTripleFound(Set<Card> triple) {
+    com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
+    cardsView.animate().alpha(0).setDuration(200).withEndAction(() -> {
+      cardsView.animate().alpha(1).setDuration(200).start();
+    }).start();
   }
 
   @Override
-  public void onCardHinted(Card hintedCard) {}
+  protected void onResume() {
+    super.onResume();
+    updateTriplesFoundText();
+    updateDailyUi();
+  }
+
+  @Override
+  public void onUpdateGameState(Game.GameState state) {
+    super.onUpdateGameState(state);
+    updateDailyUi();
+  }
+
+  private void updateDailyUi() {
+    if (mGame.getGameState() == Game.GameState.COMPLETED) {
+      findViewById(R.id.status_bar).setVisibility(android.view.View.GONE);
+      findViewById(R.id.bottom_separator).setVisibility(android.view.View.GONE);
+      findViewById(R.id.new_game_button).setVisibility(android.view.View.GONE);
+    }
+  }
 
   @Override
   protected void submitScore() {
@@ -100,11 +128,7 @@ public class DailyGameActivity extends BaseGameActivity
 
   @Override
   protected Intent createNewGame() {
-    // For daily, "New Game" means start the same daily puzzle again?
-    // Usually it would mean tomorrow's, but we only have today's.
-    // Let's just return to the same game for now, or the user can just finish it.
-    Intent intent = new Intent(this, DailyGameActivity.class);
-    intent.putExtra(Game.ID_TAG, mGame.getId());
-    return intent;
+    // Not used in daily mode
+    return null;
   }
 }

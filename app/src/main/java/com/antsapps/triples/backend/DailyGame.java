@@ -42,7 +42,7 @@ public class DailyGame extends Game {
         Collections.<Long>emptyList(),
         new Deck(Collections.<Card>emptyList()),
         0,
-        new Date(),
+        new Date(seed),
         GameState.STARTING,
         false,
         Collections.<Set<Card>>emptyList());
@@ -76,6 +76,16 @@ public class DailyGame extends Game {
     return true;
   }
 
+  public interface OnTripleFoundListener {
+    void onTripleFound(Set<Card> triple);
+  }
+
+  private OnTripleFoundListener mOnTripleFoundListener;
+
+  public void setOnTripleFoundListener(OnTripleFoundListener listener) {
+    mOnTripleFoundListener = listener;
+  }
+
   @Override
   public void commitTriple(Card... cards) {
     Set<Card> triple = Sets.newHashSet(cards);
@@ -88,6 +98,10 @@ public class DailyGame extends Game {
       if (mGameRenderer != null) {
         mGameRenderer.clearHintedCards();
         mGameRenderer.clearSelectedCards();
+      }
+
+      if (mOnTripleFoundListener != null) {
+        mOnTripleFoundListener.onTripleFound(triple);
       }
 
       if (mFoundTriples.size() == mAllTriples.size()) {

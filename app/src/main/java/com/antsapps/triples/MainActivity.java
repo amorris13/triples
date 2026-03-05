@@ -32,7 +32,6 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mDailyPlayButton;
   private MaterialButton mDailyStatisticsButton;
   private MaterialButton mZenButton;
-  private MaterialButton mZenStatisticsButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -119,14 +118,6 @@ public class MainActivity extends BaseTriplesActivity {
         playZenGame(false);
       }
     });
-
-    mZenStatisticsButton = findViewById(R.id.zen_statistics_button);
-    mZenStatisticsButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        showStatistics("Zen"); // User said "Statistics should lead to a Zen Mode statistics page. That page should show a calendar"
-      }
-    });
   }
 
   @Override
@@ -136,6 +127,22 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+    cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    cal.set(java.util.Calendar.MINUTE, 0);
+    cal.set(java.util.Calendar.SECOND, 0);
+    cal.set(java.util.Calendar.MILLISECOND, 0);
+    long todaySeed = cal.getTimeInMillis();
+    boolean dailyCompleted = false;
+    for (com.antsapps.triples.backend.DailyGame dg : mApplication.getCompletedDailyGames()) {
+      if (dg.getRandomSeed() == todaySeed) {
+        dailyCompleted = true;
+        break;
+      }
+    }
+    findViewById(R.id.daily_play_button).setVisibility(dailyCompleted ? View.GONE : View.VISIBLE);
+    findViewById(R.id.daily_completed_text).setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
+
     ClassicGame classicGame = Iterables.getFirst(mApplication.getCurrentClassicGames(), null);
     if (classicGame != null && !classicGame.getTripleFindTimes().isEmpty()) {
       mClassicResumeButton.setVisibility(View.VISIBLE);
@@ -162,7 +169,6 @@ public class MainActivity extends BaseTriplesActivity {
 
     int numDailyCompleted = Iterables.size(mApplication.getCompletedDailyGames());
     mDailyStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
-    mZenStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
   }
 
   private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {
