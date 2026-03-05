@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -111,28 +111,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="8dp">
 
         <com.antsapps.triples.cardsview.SampleCardView
             android:id="@+id/sample_card_0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="2dp" />
+            android:layout_weight="1" />
 
         <com.antsapps.triples.cardsview.SampleCardView
             android:id="@+id/sample_card_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="2dp" />
+            android:layout_weight="1" />
 
         <com.antsapps.triples.cardsview.SampleCardView
             android:id="@+id/sample_card_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="2dp" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -141,7 +138,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="RESET TO DEFAULTS" />
 
 </LinearLayout>
