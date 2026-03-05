@@ -32,6 +32,11 @@
   <color name="arcade_background">#002d00</color>
   <color name="zen_background">#2d002d</color>
 
+  <!-- Dark mode accents (Material 200) -->
+  <color name="classic_accent">#90CAF9</color>
+  <color name="arcade_accent">#A5D6A7</color>
+  <color name="zen_accent">#CE93D8</color>
+
   <!-- Semantic colors for dark mode support -->
   <color name="color_separator">#0097A7</color>
   <color name="color_critical">#FF5252</color>
@@ -41,8 +46,9 @@
   <color name="color_background_secondary">#1E1E1E</color>
   <color name="color_background_tertiary">#2C2C2C</color>
 
-  <color name="status_bar_key_color">#B0BEC5</color>
-  <color name="status_bar_value_color">#FFFFFF</color>
+  <!-- Dimmer status bar colors -->
+  <color name="status_bar_key_color">#90A4AE</color>
+  <color name="status_bar_value_color">#E1E2E3</color>
 
   <!-- Card Colors -->
   <color name="card_background">#2C2C2C</color>

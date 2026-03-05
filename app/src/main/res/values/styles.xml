@@ -28,6 +28,7 @@
   </style>
 
   <style name="AppTheme" parent="Theme.Material3.DayNight">
+    <item name="android:statusBarColor">?attr/colorSurface</item>
     <item name="colorControlNormal">?attr/colorOnSurface</item>
     <item name="android:actionMenuTextColor">?attr/colorOnSurface</item>
     <item name="actionMenuTextColor">?attr/colorOnSurface</item>
