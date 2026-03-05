@@ -77,6 +77,10 @@
     <item name="colorPrimary">@color/zen_accent</item>
   </style>
 
+  <style name="DailyButtonTheme" parent="ThemeOverlay.Material3.Light">
+    <item name="colorPrimary">@color/daily_accent</item>
+  </style>
+
   <style name="MainCardContainer">
     <item name="android:layout_width">match_parent</item>
     <item name="android:layout_height">wrap_content</item>

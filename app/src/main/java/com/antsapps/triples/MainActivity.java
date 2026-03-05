@@ -29,6 +29,7 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mArcadeResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
+  private MaterialButton mDailyPlayButton;
   private MaterialButton mZenButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
@@ -90,6 +91,14 @@ public class MainActivity extends BaseTriplesActivity {
       @Override
       public void onClick(View v) {
         showStatistics("Arcade");
+      }
+    });
+
+    mDailyPlayButton = findViewById(R.id.daily_play_button);
+    mDailyPlayButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        playDailyGame();
       }
     });
 
@@ -157,6 +166,13 @@ public class MainActivity extends BaseTriplesActivity {
   private void playZenGame(boolean isBeginner) {
     Intent intent = new Intent(this, ZenGameActivity.class);
     intent.putExtra(ZenGameActivity.IS_BEGINNER, isBeginner);
+    startActivity(intent);
+  }
+
+  private void playDailyGame() {
+    com.antsapps.triples.backend.DailyGame game = mApplication.getDailyGameForDate(System.currentTimeMillis());
+    Intent intent = new Intent(this, DailyGameActivity.class);
+    intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, game.getId());
     startActivity(intent);
   }
 

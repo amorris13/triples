@@ -17,6 +17,7 @@ import java.util.List;
 public class DBAdapter extends SQLiteOpenHelper {
   public static final String TABLE_CLASSIC_GAMES = "games";
   public static final String TABLE_ARCADE_GAMES = "arcade_games";
+  public static final String TABLE_DAILY_GAMES = "daily_games";
   public static final String COLUMN_GAME_ID = "game_id";
   public static final String COLUMN_GAME_STATE = "game_state";
   public static final String COLUMN_GAME_RANDOM = "game_random";
@@ -27,10 +28,11 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_NUM_TRIPLES_FOUND = "num_triples_found"; // ARCADE only
   public static final String COLUMN_TRIPLE_FIND_TIMES = "triple_find_times";
   public static final String COLUMN_HINTS_USED = "hints_used";
+  public static final String COLUMN_FOUND_TRIPLES = "found_triples"; // DAILY only
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
   /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 6;
+  private static final int DATABASE_VERSION = 7;
 
   private static final String CREATE_CLASSIC_GAMES =
       "CREATE TABLE "
@@ -50,6 +52,28 @@ public class DBAdapter extends SQLiteOpenHelper {
           + " INTEGER, " //
           + COLUMN_DATE
           + " INTEGER, " //
+          + COLUMN_TRIPLE_FIND_TIMES
+          + " BLOB, " //
+          + COLUMN_HINTS_USED
+          + " INTEGER)";
+  private static final String CREATE_DAILY_GAMES =
+      "CREATE TABLE "
+          + TABLE_DAILY_GAMES
+          + "("
+          + COLUMN_GAME_ID
+          + " INTEGER PRIMARY KEY AUTOINCREMENT, " //
+          + COLUMN_GAME_STATE
+          + " TEXT, " //
+          + COLUMN_GAME_RANDOM
+          + " INTEGER, " //
+          + COLUMN_CARDS_IN_PLAY
+          + " BLOB, " //
+          + COLUMN_TIME_ELAPSED
+          + " INTEGER, " //
+          + COLUMN_DATE
+          + " INTEGER, " //
+          + COLUMN_FOUND_TRIPLES
+          + " BLOB, " //
           + COLUMN_TRIPLE_FIND_TIMES
           + " BLOB, " //
           + COLUMN_HINTS_USED
@@ -103,7 +127,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     Log.i("DBAdaptor", "onCreate");
-    String[] sql = new String[] {CREATE_CLASSIC_GAMES, CREATE_ARCADE_GAMES};
+    String[] sql = new String[] {CREATE_CLASSIC_GAMES, CREATE_ARCADE_GAMES, CREATE_DAILY_GAMES};
     db.beginTransaction();
     try {
       // Create tables & test data
@@ -158,12 +182,24 @@ public class DBAdapter extends SQLiteOpenHelper {
         db.endTransaction();
       }
     }
+    if (oldVersion < 7) {
+      db.beginTransaction();
+      try {
+        db.execSQL(CREATE_DAILY_GAMES);
+        db.setTransactionSuccessful();
+      } catch (SQLException e) {
+        Log.e("DBAdapter-Upgrade", e.toString());
+      } finally {
+        db.endTransaction();
+      }
+    }
   }
 
-  public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames) {
+  public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames, List<DailyGame> dailyGames) {
     Log.i("DBAdapter", "initialize");
     initClassicGames(classicGames);
     initArcadeGames(arcadeGames);
+    initDailyGames(dailyGames);
   }
 
   // Classic Game stuff
@@ -321,6 +357,82 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
     values.put(COLUMN_DATE, game.getDateStarted().getTime());
     values.put(COLUMN_NUM_TRIPLES_FOUND, game.getNumTriplesFound());
+    values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
+    values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
+    return values;
+  }
+
+  // Daily Game methods
+
+  private void initDailyGames(List<DailyGame> dailyGames) {
+    dailyGames.clear();
+    Cursor dailyGamesCursor =
+        getWritableDatabase()
+            .query(
+                TABLE_DAILY_GAMES,
+                new String[] {
+                  COLUMN_GAME_ID,
+                  COLUMN_GAME_STATE,
+                  COLUMN_GAME_RANDOM,
+                  COLUMN_CARDS_IN_PLAY,
+                  COLUMN_TIME_ELAPSED,
+                  COLUMN_DATE,
+                  COLUMN_FOUND_TRIPLES,
+                  COLUMN_TRIPLE_FIND_TIMES,
+                  COLUMN_HINTS_USED
+                },
+                null,
+                null,
+                null,
+                null,
+                null);
+    dailyGamesCursor.moveToFirst();
+    while (!dailyGamesCursor.isAfterLast()) {
+      DailyGame game =
+          new DailyGame(
+              dailyGamesCursor.getLong(0),
+              dailyGamesCursor.getLong(2),
+              Utils.cardListFromByteArray(dailyGamesCursor.getBlob(3)),
+              Utils.longListFromByteArray(dailyGamesCursor.getBlob(7)),
+              new Deck(Collections.<Card>emptyList()),
+              dailyGamesCursor.getLong(4),
+              new Date(dailyGamesCursor.getLong(5)),
+              GameState.valueOf(dailyGamesCursor.getString(1)),
+              dailyGamesCursor.getInt(8) != 0,
+              Utils.cardsListFromByteArray(dailyGamesCursor.getBlob(6)));
+      dailyGames.add(game);
+      dailyGamesCursor.moveToNext();
+    }
+    dailyGamesCursor.close();
+
+    Collections.sort(dailyGames);
+  }
+
+  public long addDailyGame(DailyGame game) {
+    return getWritableDatabase().insert(TABLE_DAILY_GAMES, null, createDailyGameValues(game));
+  }
+
+  public void updateDailyGame(DailyGame game) {
+    getWritableDatabase()
+        .update(
+            TABLE_DAILY_GAMES,
+            createDailyGameValues(game),
+            COLUMN_GAME_ID + " = " + game.getId(),
+            null);
+  }
+
+  public void removeDailyGame(DailyGame game) {
+    getWritableDatabase().delete(TABLE_DAILY_GAMES, COLUMN_GAME_ID + " = " + game.getId(), null);
+  }
+
+  private ContentValues createDailyGameValues(DailyGame game) {
+    ContentValues values = new ContentValues();
+    values.put(COLUMN_GAME_STATE, game.getGameState().name());
+    values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());
+    values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
+    values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
+    values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_FOUND_TRIPLES, Utils.cardsListToByteArray(game.getFoundTriples()));
     values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
     values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
     return values;

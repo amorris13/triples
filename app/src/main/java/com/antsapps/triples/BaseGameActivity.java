@@ -352,6 +352,13 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         }
       } else if (game instanceof ArcadeGame) {
         outputTv.setText(getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
+      } else if (game instanceof com.antsapps.triples.backend.DailyGame) {
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(game.getTimeElapsed());
+        if (seconds < 60) {
+          outputTv.setText(getString(R.string.classic_completed_stats_seconds_format, seconds));
+        } else {
+          outputTv.setText(getString(R.string.classic_completed_stats_format, seconds / 60, seconds % 60));
+        }
       }
 
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
@@ -454,9 +461,15 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   public void showStatistics(View view) {
     Intent intent = new Intent(this, StatisticsActivity.class);
-    intent.putExtra(
-        StatisticsActivity.GAME_TYPE,
-        getGame() instanceof ArcadeGame ? "Arcade" : "Classic");
+    String gameType;
+    if (getGame() instanceof ArcadeGame) {
+      gameType = "Arcade";
+    } else if (getGame() instanceof com.antsapps.triples.backend.DailyGame) {
+      gameType = "Daily";
+    } else {
+      gameType = "Classic";
+    }
+    intent.putExtra(StatisticsActivity.GAME_TYPE, gameType);
     startActivity(intent);
   }
 

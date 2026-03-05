@@ -75,5 +75,31 @@ public class Utils {
     return longs;
   }
 
+  public static byte[] cardsListToByteArray(List<java.util.Set<Card>> triples) {
+    ByteBuffer bb = ByteBuffer.allocate(triples.size() * 3);
+    for (java.util.Set<Card> triple : triples) {
+      for (Card card : triple) {
+        bb.put(cardToByte(card));
+      }
+    }
+    return bb.array();
+  }
+
+  public static List<java.util.Set<Card>> cardsListFromByteArray(byte[] b) {
+    if (b == null) {
+      return Lists.newArrayList();
+    }
+    ByteBuffer bb = ByteBuffer.wrap(b);
+    List<java.util.Set<Card>> triples = Lists.newArrayList();
+    while (bb.hasRemaining()) {
+      java.util.Set<Card> triple = com.google.common.collect.Sets.newHashSet();
+      for (int i = 0; i < 3; i++) {
+        triple.add(cardFromByte(bb.get()));
+      }
+      triples.add(triple);
+    }
+    return triples;
+  }
+
   private Utils() {}
 }

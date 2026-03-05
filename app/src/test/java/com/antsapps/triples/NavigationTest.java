@@ -95,4 +95,21 @@ public class NavigationTest extends BaseRobolectricTest {
             });
         }
     }
+
+    @Test
+    public void testNavigateToDailyGame() {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity -> {
+                Button dailyButton = activity.findViewById(R.id.daily_play_button);
+                assertThat(dailyButton).isNotNull();
+
+                dailyButton.performClick();
+
+                ShadowActivity shadowActivity = shadowOf(activity);
+                Intent nextIntent = shadowActivity.getNextStartedActivity();
+                assertThat(nextIntent.getComponent().getClassName()).isEqualTo(DailyGameActivity.class.getName());
+                assertThat(nextIntent.hasExtra(com.antsapps.triples.backend.Game.ID_TAG)).isTrue();
+            });
+        }
+    }
 }
