@@ -45,7 +45,7 @@
   <color name="status_bar_value_color">#FFFFFF</color>
 
   <!-- Card Colors -->
-  <color name="card_background">#1E1E1E</color>
+  <color name="card_background">#2C2C2C</color>
   <color name="card_shadow">#40000000</color>
   <color name="card_selected_outline">#40C4FF</color>
   <color name="card_hint_outline">#8040C4FF</color>
