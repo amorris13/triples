@@ -7,163 +7,266 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.CloudSaveSerializer;
+import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.GamesClientStatusCodes;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.SnapshotsClient;
 import com.google.android.gms.games.snapshot.Snapshot;
+import com.google.android.gms.games.snapshot.SnapshotMetadata;
+import com.google.android.gms.games.snapshot.SnapshotMetadataBuffer;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 public class CloudSaveManager {
   private static final String TAG = "CloudSaveManager";
-  private static final String SNAPSHOT_NAME = "TriplesSaveData";
 
-  public static void saveToCloud(final Activity activity, final Application application) {
-    Log.d(TAG, "saveToCloud");
+  private static final String CLASSIC_COMPLETED = "ClassicCompleted";
+  private static final String ARCADE_COMPLETED = "ArcadeCompleted";
+  private static final String DAILY_COMPLETED = "DailyCompleted";
+  private static final String CLASSIC_CURRENT = "ClassicCurrent";
+  private static final String ARCADE_CURRENT = "ArcadeCurrent";
+  private static final String DAILY_CURRENT_PREFIX = "DailyCurrent_";
+
+  public static void saveAll(final Activity activity, final Application application) {
+    Log.d(TAG, "saveAll");
     PlayGames.getGamesSignInClient(activity)
         .isAuthenticated()
         .addOnCompleteListener(
             task -> {
               boolean isAuthenticated = (task.isSuccessful() && task.getResult().isAuthenticated());
               if (isAuthenticated) {
-                doSaveToCloud(activity, application);
+                doSaveAll(activity, application);
               } else {
-                Log.d(TAG, "saveToCloud: not authenticated, skipping");
+                Log.d(TAG, "saveAll: not authenticated, skipping");
               }
             });
   }
 
-  private static void doSaveToCloud(final Activity activity, final Application application) {
+  private static void doSaveAll(final Activity activity, final Application application) {
+    // Completed games
+    saveToCloud(activity, CLASSIC_COMPLETED, CloudSaveSerializer.serializeClassicCompleted(Lists.newArrayList(application.getCompletedClassicGames())));
+    saveToCloud(activity, ARCADE_COMPLETED, CloudSaveSerializer.serializeArcadeCompleted(Lists.newArrayList(application.getCompletedArcadeGames())));
+    saveToCloud(activity, DAILY_COMPLETED, CloudSaveSerializer.serializeDailyCompleted(Lists.newArrayList(application.getCompletedDailyGames())));
+
+    // Current games
+    ClassicGame classicCurrent = Iterables.getFirst(application.getCurrentClassicGames(), null);
+    if (classicCurrent != null) {
+      saveToCloud(activity, CLASSIC_CURRENT, CloudSaveSerializer.serializeClassicGameState(classicCurrent));
+    }
+
+    ArcadeGame arcadeCurrent = Iterables.getFirst(application.getCurrentArcadeGames(), null);
+    if (arcadeCurrent != null) {
+      saveToCloud(activity, ARCADE_CURRENT, CloudSaveSerializer.serializeArcadeGameState(arcadeCurrent));
+    }
+
+    for (DailyGame dailyCurrent : application.getCurrentDailyGames()) {
+      saveToCloud(activity, DAILY_CURRENT_PREFIX + dailyCurrent.getRandomSeed(), CloudSaveSerializer.serializeDailyGameState(dailyCurrent));
+    }
+  }
+
+  private static void saveToCloud(final Activity activity, final String snapshotName, final byte[] data) {
     final SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(activity);
-    snapshotsClient.open(SNAPSHOT_NAME, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
-        .addOnCompleteListener(new OnCompleteListener<SnapshotsClient.DataOrConflict<Snapshot>>() {
-          @Override
-          public void onComplete(@NonNull Task<SnapshotsClient.DataOrConflict<Snapshot>> task) {
-            if (task.isSuccessful()) {
-              Snapshot snapshot = task.getResult().getData();
-              try {
-                byte[] data = CloudSaveSerializer.serialize(
-                    Lists.newArrayList(application.getCompletedClassicGames()),
-                    Lists.newArrayList(application.getCompletedArcadeGames()));
-                snapshot.getSnapshotContents().writeBytes(data);
-                SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
-                    .setDescription("Triples Game Data")
-                    .build();
-                snapshotsClient.commitAndClose(snapshot, metadataChange);
-                Log.d(TAG, "Cloud save successful");
-              } catch (IOException e) {
-                Log.e(TAG, "Error serializing cloud data", e);
-                snapshotsClient.discardAndClose(snapshot);
-              }
-            } else {
-              handleSnapshotError("save", task.getException());
-            }
+    snapshotsClient.open(snapshotName, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
+        .addOnCompleteListener(task -> {
+          if (task.isSuccessful()) {
+            Snapshot snapshot = task.getResult().getData();
+            snapshot.getSnapshotContents().writeBytes(data);
+            SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
+                .setDescription("Triples Game Data: " + snapshotName)
+                .build();
+            snapshotsClient.commitAndClose(snapshot, metadataChange);
+            Log.d(TAG, "Cloud save successful: " + snapshotName);
+          } else {
+            handleSnapshotError("save " + snapshotName, task.getException());
           }
         });
   }
 
-  public static void syncWithCloud(final Activity activity, final Application application) {
-    Log.d(TAG, "syncWithCloud");
+  public static Task<Void> syncAll(final Activity activity, final Application application) {
+    Log.d(TAG, "syncAll");
+    TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
     PlayGames.getGamesSignInClient(activity)
         .isAuthenticated()
         .addOnCompleteListener(
             task -> {
               boolean isAuthenticated = (task.isSuccessful() && task.getResult().isAuthenticated());
               if (isAuthenticated) {
-                doSyncWithCloud(activity, application);
+                doSyncAll(activity, application).addOnCompleteListener(t -> {
+                    if (t.isSuccessful()) {
+                        tcs.setResult(null);
+                    } else {
+                        tcs.setException(t.getException());
+                    }
+                });
               } else {
-                Log.d(TAG, "syncWithCloud: not authenticated, skipping");
+                Log.d(TAG, "syncAll: not authenticated, skipping");
+                tcs.setResult(null);
               }
             });
+    return tcs.getTask();
   }
 
-  private static void doSyncWithCloud(final Activity activity, final Application application) {
+  private interface Merger {
+    boolean merge(byte[] data) throws IOException;
+    byte[] serializeMerged();
+  }
+
+  private static Task<Void> doSyncAll(final Activity activity, final Application application) {
     final SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(activity);
-    snapshotsClient.open(SNAPSHOT_NAME, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
-        .addOnCompleteListener(new OnCompleteListener<SnapshotsClient.DataOrConflict<Snapshot>>() {
-          @Override
-          public void onComplete(@NonNull Task<SnapshotsClient.DataOrConflict<Snapshot>> task) {
-            if (task.isSuccessful()) {
-              Snapshot snapshot = task.getResult().getData();
-              try {
-                byte[] data = snapshot.getSnapshotContents().readFully();
-                CloudSaveSerializer.CloudData cloudData = CloudSaveSerializer.deserialize(data);
-                boolean changed = merge(application, cloudData);
-                if (changed) {
-                  // Write merged data back to the current snapshot
-                  byte[] mergedData = CloudSaveSerializer.serialize(
-                      Lists.newArrayList(application.getCompletedClassicGames()),
-                      Lists.newArrayList(application.getCompletedArcadeGames()));
+    List<Task<?>> tasks = new ArrayList<>();
+
+    // Sync individual files
+    tasks.add(syncFile(snapshotsClient, CLASSIC_COMPLETED, new Merger() {
+      @Override public boolean merge(byte[] data) throws IOException {
+        return application.mergeClassicCompleted(CloudSaveSerializer.deserializeClassicCompleted(data));
+      }
+      @Override public byte[] serializeMerged() {
+        return CloudSaveSerializer.serializeClassicCompleted(Lists.newArrayList(application.getCompletedClassicGames()));
+      }
+    }));
+
+    tasks.add(syncFile(snapshotsClient, ARCADE_COMPLETED, new Merger() {
+      @Override public boolean merge(byte[] data) throws IOException {
+        return application.mergeArcadeCompleted(CloudSaveSerializer.deserializeArcadeCompleted(data));
+      }
+      @Override public byte[] serializeMerged() {
+        return CloudSaveSerializer.serializeArcadeCompleted(Lists.newArrayList(application.getCompletedArcadeGames()));
+      }
+    }));
+
+    tasks.add(syncFile(snapshotsClient, DAILY_COMPLETED, new Merger() {
+      @Override public boolean merge(byte[] data) throws IOException {
+        return application.mergeDailyCompleted(CloudSaveSerializer.deserializeDailyCompleted(data));
+      }
+      @Override public byte[] serializeMerged() {
+        return CloudSaveSerializer.serializeDailyCompleted(Lists.newArrayList(application.getCompletedDailyGames()));
+      }
+    }));
+
+    tasks.add(syncFile(snapshotsClient, CLASSIC_CURRENT, new Merger() {
+      @Override public boolean merge(byte[] data) throws IOException {
+        return application.mergeClassicCurrent(CloudSaveSerializer.deserializeClassicGameState(data));
+      }
+      @Override public byte[] serializeMerged() {
+        ClassicGame g = Iterables.getFirst(application.getCurrentClassicGames(), null);
+        return g != null ? CloudSaveSerializer.serializeClassicGameState(g) : null;
+      }
+    }));
+
+    tasks.add(syncFile(snapshotsClient, ARCADE_CURRENT, new Merger() {
+      @Override public boolean merge(byte[] data) throws IOException {
+        return application.mergeArcadeCurrent(CloudSaveSerializer.deserializeArcadeGameState(data));
+      }
+      @Override public byte[] serializeMerged() {
+        ArcadeGame g = Iterables.getFirst(application.getCurrentArcadeGames(), null);
+        return g != null ? CloudSaveSerializer.serializeArcadeGameState(g) : null;
+      }
+    }));
+
+    // Sync all DailyCurrent files
+    TaskCompletionSource<Void> dailyTcs = new TaskCompletionSource<>();
+    tasks.add(dailyTcs.getTask());
+
+    snapshotsClient.load(true).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        SnapshotMetadataBuffer buffer = task.getResult().get();
+        List<Task<?>> dailyTasks = new ArrayList<>();
+        try {
+            for (SnapshotMetadata metadata : buffer) {
+              String name = metadata.getUniqueName();
+              if (name.startsWith(DAILY_CURRENT_PREFIX)) {
+                dailyTasks.add(syncFile(snapshotsClient, name, new Merger() {
+                  @Override public boolean merge(byte[] data) throws IOException {
+                    boolean changed = application.mergeDailyCurrent(CloudSaveSerializer.deserializeDailyGameState(data));
+                    // Cleanup if completed
+                    long seed = Long.parseLong(name.substring(DAILY_CURRENT_PREFIX.length()));
+                    DailyGame g = application.getDailyGameBySeed(seed);
+                    if (g != null && g.getGameState() == Game.GameState.COMPLETED) {
+                        snapshotsClient.delete(metadata);
+                    }
+                    return changed;
+                  }
+                  @Override public byte[] serializeMerged() {
+                    long seed = Long.parseLong(name.substring(DAILY_CURRENT_PREFIX.length()));
+                    DailyGame g = application.getDailyGameBySeed(seed);
+                    return (g != null && g.getGameState() != Game.GameState.COMPLETED) ? CloudSaveSerializer.serializeDailyGameState(g) : null;
+                  }
+                }));
+              }
+            }
+            Tasks.whenAll(dailyTasks).addOnCompleteListener(t -> dailyTcs.setResult(null));
+        } finally {
+            buffer.release();
+        }
+      } else {
+          dailyTcs.setResult(null);
+      }
+    });
+
+    return Tasks.whenAll(tasks);
+  }
+
+  private static Task<Void> syncFile(final SnapshotsClient snapshotsClient, final String snapshotName, final Merger merger) {
+    TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
+    snapshotsClient.open(snapshotName, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
+        .addOnCompleteListener(task -> {
+          if (task.isSuccessful()) {
+            Snapshot snapshot = task.getResult().getData();
+            try {
+              byte[] data = snapshot.getSnapshotContents().readFully();
+              boolean changed = merger.merge(data);
+              if (changed) {
+                byte[] mergedData = merger.serializeMerged();
+                if (mergedData != null) {
                   snapshot.getSnapshotContents().writeBytes(mergedData);
                   SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
-                      .setDescription("Triples Game Data")
+                      .setDescription("Triples Game Data: " + snapshotName)
                       .build();
                   snapshotsClient.commitAndClose(snapshot, metadataChange);
                 } else {
                   snapshotsClient.discardAndClose(snapshot);
                 }
-                Log.d(TAG, "Cloud sync successful. Changed: " + changed);
-              } catch (IOException e) {
-                Log.e(TAG, "Error reading/deserializing cloud data", e);
+              } else {
                 snapshotsClient.discardAndClose(snapshot);
               }
-            } else {
-              handleSnapshotError("sync", task.getException());
+              Log.d(TAG, "Cloud sync successful: " + snapshotName + ". Changed: " + changed);
+              tcs.setResult(null);
+            } catch (IOException e) {
+              Log.e(TAG, "Error reading/deserializing cloud data for " + snapshotName, e);
+              snapshotsClient.discardAndClose(snapshot);
+              tcs.setResult(null);
             }
+          } else {
+            handleSnapshotError("sync " + snapshotName, task.getException());
+            tcs.setResult(null);
           }
         });
+    return tcs.getTask();
   }
 
   private static void handleSnapshotError(String operation, Exception exception) {
     if (exception instanceof ApiException) {
       ApiException apiException = (ApiException) exception;
       if (apiException.getStatusCode() == GamesClientStatusCodes.SIGN_IN_REQUIRED) {
-        Log.w(TAG, "Cloud " + operation + " skipped: User is not fully signed in for Saved Games. " +
-            "Ensure 'Saved Games' is enabled in the Google Play Console.");
+        Log.w(TAG, "Cloud " + operation + " skipped: User is not fully signed in for Saved Games.");
         return;
       }
     }
     Log.e(TAG, "Error opening snapshot for " + operation, exception);
-  }
-
-  @VisibleForTesting
-  static boolean merge(Application application, CloudSaveSerializer.CloudData cloudData) {
-    boolean changed = false;
-
-    // Classic Games
-    Set<Long> localClassicDates = new HashSet<>();
-    for (ClassicGame g : application.getCompletedClassicGames()) {
-      localClassicDates.add(g.getDateStarted().getTime());
-    }
-    for (ClassicGame cloudGame : cloudData.classicGames) {
-      if (!localClassicDates.contains(cloudGame.getDateStarted().getTime())) {
-        application.addClassicGame(cloudGame);
-        changed = true;
-      }
-    }
-
-    // Arcade Games
-    Set<Long> localArcadeDates = new HashSet<>();
-    for (ArcadeGame g : application.getCompletedArcadeGames()) {
-      localArcadeDates.add(g.getDateStarted().getTime());
-    }
-    for (ArcadeGame cloudGame : cloudData.arcadeGames) {
-      if (!localArcadeDates.contains(cloudGame.getDateStarted().getTime())) {
-        application.addArcadeGame(cloudGame);
-        changed = true;
-      }
-    }
-
-    return changed;
   }
 }

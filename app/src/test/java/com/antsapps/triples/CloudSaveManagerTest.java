@@ -47,14 +47,14 @@ public class CloudSaveManagerTest {
         Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
         0, new Date(4000), Game.GameState.COMPLETED, 15, false);
 
-    CloudSaveSerializer.CloudData cloudData = new CloudSaveSerializer.CloudData(
-        Lists.newArrayList(cloudClassicNew, cloudClassicExisting),
-        Lists.newArrayList(cloudArcadeNew)
-    );
+    when(application.mergeClassicCompleted(Lists.newArrayList(cloudClassicNew, cloudClassicExisting))).thenCallRealMethod();
+    when(application.mergeArcadeCompleted(Lists.newArrayList(cloudArcadeNew))).thenCallRealMethod();
 
-    boolean changed = CloudSaveManager.merge(application, cloudData);
+    boolean changedClassic = application.mergeClassicCompleted(Lists.newArrayList(cloudClassicNew, cloudClassicExisting));
+    boolean changedArcade = application.mergeArcadeCompleted(Lists.newArrayList(cloudArcadeNew));
 
-    assertThat(changed).isTrue();
+    assertThat(changedClassic).isTrue();
+    assertThat(changedArcade).isTrue();
     verify(application).addClassicGame(cloudClassicNew);
     verify(application).addArcadeGame(cloudArcadeNew);
   }

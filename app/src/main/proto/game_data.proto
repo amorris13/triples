@@ -5,6 +5,13 @@ package com.antsapps.triples.backend;
 option java_package = "com.antsapps.triples.backend";
 option java_multiple_files = true;
 
+enum GameStateProto {
+  STARTING = 0;
+  ACTIVE = 1;
+  PAUSED = 2;
+  COMPLETED = 3;
+}
+
 message ClassicGameSummary {
   int64 date_started_millis = 1;
   int64 time_elapsed_millis = 2;
@@ -17,7 +24,64 @@ message ArcadeGameSummary {
   bool hints_used = 3;
 }
 
+message DailyGameSummary {
+  int64 date_started_millis = 1;
+  int64 time_elapsed_millis = 2;
+  bool hints_used = 3;
+  int64 date_completed_millis = 4;
+}
+
 message CloudSaveData {
   repeated ClassicGameSummary classic_games = 1;
   repeated ArcadeGameSummary arcade_games = 2;
+}
+
+message ClassicCompletedData {
+  repeated ClassicGameSummary classic_games = 1;
+}
+
+message ArcadeCompletedData {
+  repeated ArcadeGameSummary arcade_games = 1;
+}
+
+message DailyCompletedData {
+  repeated DailyGameSummary daily_games = 1;
+}
+
+message ClassicGameState {
+  int64 id = 1;
+  int64 seed = 2;
+  bytes cards_in_play = 3;
+  bytes triple_find_times = 4;
+  bytes cards_in_deck = 5;
+  int64 time_elapsed_millis = 6;
+  int64 date_started_millis = 7;
+  GameStateProto game_state = 8;
+  bool hints_used = 9;
+}
+
+message ArcadeGameState {
+  int64 id = 1;
+  int64 seed = 2;
+  bytes cards_in_play = 3;
+  bytes triple_find_times = 4;
+  bytes cards_in_deck = 5;
+  int64 time_elapsed_millis = 6;
+  int64 date_started_millis = 7;
+  GameStateProto game_state = 8;
+  int32 num_triples_found = 9;
+  bool hints_used = 10;
+}
+
+message DailyGameState {
+  int64 id = 1;
+  int64 seed = 2;
+  bytes cards_in_play = 3;
+  bytes triple_find_times = 4;
+  int64 time_elapsed_millis = 5;
+  int64 date_started_millis = 6;
+  GameStateProto game_state = 7;
+  bool hints_used = 8;
+  bytes found_triples = 9;
+  int64 date_completed_millis = 10;
 }
