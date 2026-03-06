@@ -12,7 +12,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -35,13 +34,18 @@ public class DailyStatisticsFragment extends Fragment {
   private Application mApplication;
   private List<DailyGame> mCompletedGames;
   private Calendar mCurrentMonth;
+  private Calendar mSelectedDate;
   private GridView mCalendarGrid;
   private TextView mMonthTitle;
   private TextView mCurrentStreakTv;
   private TextView mLongestStreakTv;
-  private ListView mGamesListView;
-  private DailyGamesAdapter mGamesAdapter;
-  private Button mNextMonthBtn;
+  private TextView mTotalSolvedTv;
+  private View mNextMonthBtn;
+  private View mPrevMonthBtn;
+
+  private TextView mDetailsDate;
+  private TextView mDetailsStats;
+  private Button mPlayButton;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,8 +56,13 @@ public class DailyStatisticsFragment extends Fragment {
     mCalendarGrid = view.findViewById(R.id.calendar_grid);
     mCurrentStreakTv = view.findViewById(R.id.current_streak_tv);
     mLongestStreakTv = view.findViewById(R.id.longest_streak_tv);
-    mGamesListView = view.findViewById(R.id.daily_games_list);
+    mTotalSolvedTv = view.findViewById(R.id.total_solved_tv);
+    mPrevMonthBtn = view.findViewById(R.id.prev_month);
     mNextMonthBtn = view.findViewById(R.id.next_month);
+
+    mDetailsDate = view.findViewById(R.id.details_date);
+    mDetailsStats = view.findViewById(R.id.details_stats);
+    mPlayButton = view.findViewById(R.id.play_button);
 
     mCurrentMonth = Calendar.getInstance();
     mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
@@ -62,7 +71,13 @@ public class DailyStatisticsFragment extends Fragment {
     mCurrentMonth.set(Calendar.SECOND, 0);
     mCurrentMonth.set(Calendar.MILLISECOND, 0);
 
-    view.findViewById(R.id.prev_month).setOnClickListener(v -> {
+    mSelectedDate = Calendar.getInstance();
+    mSelectedDate.set(Calendar.HOUR_OF_DAY, 0);
+    mSelectedDate.set(Calendar.MINUTE, 0);
+    mSelectedDate.set(Calendar.SECOND, 0);
+    mSelectedDate.set(Calendar.MILLISECOND, 0);
+
+    mPrevMonthBtn.setOnClickListener(v -> {
       mCurrentMonth.add(Calendar.MONTH, -1);
       updateCalendar();
     });
@@ -72,7 +87,7 @@ public class DailyStatisticsFragment extends Fragment {
       updateCalendar();
     });
 
-    view.findViewById(R.id.today_btn).setOnClickListener(v -> {
+    mMonthTitle.setOnClickListener(v -> {
       mCurrentMonth = Calendar.getInstance();
       mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
       mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
@@ -88,11 +103,9 @@ public class DailyStatisticsFragment extends Fragment {
     }
     Collections.sort(mCompletedGames, (g1, g2) -> g2.getDateStarted().compareTo(g1.getDateStarted()));
 
-    mGamesAdapter = new DailyGamesAdapter(getActivity(), mCompletedGames);
-    mGamesListView.setAdapter(mGamesAdapter);
-
     updateCalendar();
     updateStreaks();
+    updateDetails();
 
     return view;
   }
@@ -106,33 +119,53 @@ public class DailyStatisticsFragment extends Fragment {
                              mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
 
     mNextMonthBtn.setEnabled(!isCurrentMonth);
+    mNextMonthBtn.setAlpha(isCurrentMonth ? 0.3f : 1f);
 
-    CalendarAdapter adapter = new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames);
+    CalendarAdapter adapter = new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames, mSelectedDate);
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener((parent, view, position, id) -> {
-        Calendar selectedDate = (Calendar) adapter.getItem(position);
-        if (selectedDate != null) {
-            long daySeed = getStartOfDay(selectedDate.getTimeInMillis());
-            if (daySeed > getStartOfDay(System.currentTimeMillis())) {
-                return;
-            }
-            DailyGame game = null;
-            for (DailyGame dg : mApplication.getCompletedDailyGames()) {
-                if (dg.getRandomSeed() == daySeed) {
-                    game = dg;
-                    break;
-                }
-            }
-            if (game == null || game.getGameState() != DailyGame.GameState.COMPLETED) {
-                // Launch DailyGameActivity for this date
-                android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
-                DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
-                intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, newGame.getId());
-                startActivity(intent);
+        Calendar clickedDate = (Calendar) adapter.getItem(position);
+        if (clickedDate != null && clickedDate.get(Calendar.MONTH) == mCurrentMonth.get(Calendar.MONTH)) {
+            long daySeed = getStartOfDay(clickedDate.getTimeInMillis());
+            if (daySeed <= getStartOfDay(System.currentTimeMillis())) {
+                mSelectedDate = (Calendar) clickedDate.clone();
+                adapter.setSelectedDate(mSelectedDate);
+                updateDetails();
             }
         }
     });
+  }
+
+  private void updateDetails() {
+    DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
+    mDetailsDate.setText(df.format(mSelectedDate.getTime()));
+
+    long daySeed = getStartOfDay(mSelectedDate.getTimeInMillis());
+    DailyGame game = null;
+    for (DailyGame dg : mApplication.getCompletedDailyGames()) {
+        if (getStartOfDay(dg.getRandomSeed()) == daySeed) {
+            game = dg;
+            break;
+        }
+    }
+
+    if (game != null && game.getGameState() == DailyGame.GameState.COMPLETED) {
+        String hintAsterisk = game.areHintsUsed() ? " *" : "";
+        long seconds = game.getTimeElapsed() / 1000;
+        mDetailsStats.setText(String.format("%d triples found in %d:%02d%s",
+                game.getNumTriplesFound(), seconds / 60, seconds % 60, hintAsterisk));
+        mPlayButton.setVisibility(View.GONE);
+    } else {
+        mDetailsStats.setText("Not yet completed");
+        mPlayButton.setVisibility(View.VISIBLE);
+        mPlayButton.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
+            DailyGame dailyGame = mApplication.getDailyGameForDate(daySeed);
+            intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, dailyGame.getId());
+            startActivity(intent);
+        });
+    }
   }
 
   private void updateStreaks() {
@@ -176,8 +209,9 @@ public class DailyStatisticsFragment extends Fragment {
         longestStreak = Math.max(longestStreak, tempStreak);
     }
 
-    mCurrentStreakTv.setText(getString(R.string.current_streak) + " " + currentStreak);
-    mLongestStreakTv.setText(getString(R.string.longest_streak) + " " + longestStreak);
+    mCurrentStreakTv.setText(String.valueOf(currentStreak));
+    mLongestStreakTv.setText(String.valueOf(longestStreak));
+    mTotalSolvedTv.setText(String.valueOf(mCompletedGames.size()));
   }
 
   private static long getStartOfDay(long time) {
@@ -195,19 +229,24 @@ public class DailyStatisticsFragment extends Fragment {
     private final List<Calendar> mDays;
     private final Set<Long> mCompletedOnDaySeeds;
     private final Set<Long> mCompletedLateSeeds;
+    private final Set<Long> mHintUsedSeeds;
     private final long mTodaySeed;
     private final int mMonth;
+    private Calendar mSelectedDate;
 
-    CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames) {
+    CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames, Calendar selectedDate) {
       mContext = context;
       mMonth = month.get(Calendar.MONTH);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
+      mSelectedDate = selectedDate;
 
       mDays = new ArrayList<>();
       Calendar cal = (Calendar) month.clone();
       cal.set(Calendar.DAY_OF_MONTH, 1);
-      int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1; // 0-indexed starting Sunday
-      cal.add(Calendar.DAY_OF_MONTH, -firstDayOfWeek);
+      int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // 1 (Sun) to 7 (Sat)
+      // Adjust to Monday = 1
+      int shift = (firstDayOfWeek + 5) % 7;
+      cal.add(Calendar.DAY_OF_MONTH, -shift);
 
       for (int i = 0; i < 42; i++) {
         mDays.add((Calendar) cal.clone());
@@ -216,6 +255,7 @@ public class DailyStatisticsFragment extends Fragment {
 
       mCompletedOnDaySeeds = new HashSet<>();
       mCompletedLateSeeds = new HashSet<>();
+      mHintUsedSeeds = new HashSet<>();
       for (DailyGame game : completedGames) {
           if (game.getDateCompleted() == null) continue;
           long startSeed = getStartOfDay(game.getDateStarted().getTime());
@@ -224,7 +264,15 @@ public class DailyStatisticsFragment extends Fragment {
           } else {
               mCompletedLateSeeds.add(startSeed);
           }
+          if (game.areHintsUsed()) {
+              mHintUsedSeeds.add(startSeed);
+          }
       }
+    }
+
+    void setSelectedDate(Calendar selectedDate) {
+        mSelectedDate = selectedDate;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -236,88 +284,104 @@ public class DailyStatisticsFragment extends Fragment {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-      TextView tv = (TextView) convertView;
-      if (tv == null) {
-        tv = new TextView(mContext) {
-            private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            {
-                mPaint.setStyle(Paint.Style.STROKE);
-                mPaint.setStrokeWidth(2);
-                mPaint.setColor(Color.BLACK);
-            }
-            @Override
-            protected void onDraw(Canvas canvas) {
-                super.onDraw(canvas);
-                Calendar day = (Calendar) getTag();
-                if (day != null && getStartOfDay(day.getTimeInMillis()) == mTodaySeed) {
-                    canvas.drawCircle(getWidth()/2f, getHeight()/2f, Math.min(getWidth(), getHeight())/2f - 4, mPaint);
-                }
-            }
-        };
-        tv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
-        tv.setGravity(android.view.Gravity.CENTER);
+      if (convertView == null) {
+        convertView = new CalendarDayView(mContext);
       }
-
+      CalendarDayView view = (CalendarDayView) convertView;
       Calendar day = mDays.get(position);
-      tv.setTag(day);
-      tv.setText(String.valueOf(day.get(Calendar.DAY_OF_MONTH)));
-
       long daySeed = getStartOfDay(day.getTimeInMillis());
 
-      if (day.get(Calendar.MONTH) != mMonth) {
-        tv.setTextColor(Color.LTGRAY);
-        tv.setBackgroundColor(Color.TRANSPARENT);
-      } else if (daySeed > mTodaySeed) {
-        tv.setTextColor(Color.LTGRAY);
-        tv.setBackgroundColor(Color.TRANSPARENT);
-      } else {
-        tv.setTextColor(Color.BLACK);
-        if (mCompletedOnDaySeeds.contains(daySeed)) {
-          tv.setBackgroundColor(mContext.getResources().getColor(R.color.daily_accent));
-        } else if (mCompletedLateSeeds.contains(daySeed)) {
-          tv.setBackgroundColor(mContext.getResources().getColor(R.color.daily_background));
-        } else {
-          tv.setBackgroundColor(Color.TRANSPARENT);
-        }
-      }
+      boolean isCurrentMonth = day.get(Calendar.MONTH) == mMonth;
+      boolean isToday = daySeed == mTodaySeed;
+      boolean isSelected = mSelectedDate != null && daySeed == getStartOfDay(mSelectedDate.getTimeInMillis());
+      boolean isSolvedOnDay = mCompletedOnDaySeeds.contains(daySeed);
+      boolean isSolvedLate = mCompletedLateSeeds.contains(daySeed);
+      boolean isHintUsed = mHintUsedSeeds.contains(daySeed);
+      boolean isFuture = daySeed > mTodaySeed;
 
-      return tv;
+      view.setDay(day, isCurrentMonth, isToday, isSelected, isSolvedOnDay, isSolvedLate, isHintUsed, isFuture);
+
+      return view;
     }
   }
 
-  private static class DailyGamesAdapter extends BaseAdapter {
-    private final Context mContext;
-    private final List<DailyGame> mGames;
-    private final DateFormat mDateFormat = DateFormat.getDateInstance();
+  private static class CalendarDayView extends TextView {
+    private boolean mIsToday;
+    private boolean mIsSelected;
+    private boolean mIsSolvedOnDay;
+    private boolean mIsSolvedLate;
+    private boolean mIsHintUsed;
+    private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    DailyGamesAdapter(Context context, List<DailyGame> games) {
-      mContext = context;
-      mGames = games;
+    public CalendarDayView(Context context) {
+      super(context);
+      setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
+      setGravity(android.view.Gravity.CENTER);
+    }
+
+    public void setDay(Calendar day, boolean isCurrentMonth, boolean isToday, boolean isSelected,
+                       boolean isSolvedOnDay, boolean isSolvedLate, boolean isHintUsed, boolean isFuture) {
+      mIsToday = isToday;
+      mIsSelected = isSelected;
+      mIsSolvedOnDay = isSolvedOnDay;
+      mIsSolvedLate = isSolvedLate;
+      mIsHintUsed = isHintUsed;
+
+      if (!isCurrentMonth) {
+        setText("");
+        setBackgroundColor(Color.TRANSPARENT);
+        mIsToday = false;
+        mIsSolvedOnDay = false;
+        mIsSolvedLate = false;
+        mIsHintUsed = false;
+        invalidate();
+        return;
+      }
+
+      String text = String.valueOf(day.get(Calendar.DAY_OF_MONTH));
+      if (isHintUsed) {
+        text += "*";
+      }
+      setText(text);
+
+      if (isFuture) {
+        setTextColor(Color.LTGRAY);
+      } else {
+        setTextColor(Color.BLACK);
+      }
+
+      if (isSelected) {
+        setBackgroundColor(Color.parseColor("#E0E0E0"));
+      } else {
+        setBackgroundColor(Color.TRANSPARENT);
+      }
+      invalidate();
     }
 
     @Override
-    public int getCount() { return mGames.size(); }
-    @Override
-    public Object getItem(int position) { return mGames.get(position); }
-    @Override
-    public long getItemId(int position) { return mGames.get(position).getId(); }
+    protected void onDraw(Canvas canvas) {
+      int width = getWidth();
+      int height = getHeight();
+      int radius = Math.min(width, height) / 2 - 8;
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      if (convertView == null) {
-        convertView = LayoutInflater.from(mContext).inflate(R.layout.stats_game_list_item, parent, false);
+      if (mIsSolvedOnDay) {
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(getResources().getColor(R.color.daily_accent));
+        canvas.drawCircle(width / 2f, height / 2f, radius, mPaint);
+      } else if (mIsSolvedLate) {
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(getResources().getColor(R.color.daily_background));
+        canvas.drawCircle(width / 2f, height / 2f, radius, mPaint);
       }
-      DailyGame game = mGames.get(position);
-      TextView dateTv = convertView.findViewById(R.id.date_played);
-      TextView resultTv = convertView.findViewById(R.id.result);
 
-      String hintAsterisk = game.areHintsUsed() ? "*" : "";
-      dateTv.setText(mDateFormat.format(game.getDateStarted()) + " (" + game.getNumTriplesFound() + " triples)" + hintAsterisk);
+      if (mIsToday) {
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(4);
+        mPaint.setColor(Color.BLACK);
+        canvas.drawCircle(width / 2f, height / 2f, radius, mPaint);
+      }
 
-      long seconds = game.getTimeElapsed() / 1000;
-      resultTv.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
-
-      return convertView;
+      super.onDraw(canvas);
     }
   }
 }
