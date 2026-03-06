@@ -100,7 +100,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mListener = listener;
   }
 
-  private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
+  static List<Rect> getBoundsForNumId(int id, Rect bounds) {
     List<Rect> rects = Lists.newArrayList();
 
     int width = bounds.width();

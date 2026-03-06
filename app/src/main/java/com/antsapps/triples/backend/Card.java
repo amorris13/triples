@@ -3,8 +3,19 @@ package com.antsapps.triples.backend;
 import com.google.common.base.Objects;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ComparisonChain;
+
+import java.util.Comparator;
 
 public final class Card {
+
+  public static final Comparator<Card> COMPARATOR =
+      (c1, c2) -> ComparisonChain.start()
+          .compare(c1.mNumber, c2.mNumber)
+          .compare(c1.mShape, c2.mShape)
+          .compare(c1.mPattern, c2.mPattern)
+          .compare(c1.mColor, c2.mColor)
+          .result();
   public static final int MAX_VARIABLES = 3;
 
   public final int mNumber;

@@ -133,6 +133,10 @@ public class DailyGame extends Game {
     return mAllTriples.size();
   }
 
+  public List<Set<Card>> getAllTriples() {
+    return Collections.unmodifiableList(mAllTriples);
+  }
+
   public List<Set<Card>> getFoundTriples() {
     return Collections.unmodifiableList(mFoundTriples);
   }

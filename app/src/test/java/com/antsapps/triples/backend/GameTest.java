@@ -119,6 +119,8 @@ public class GameTest {
       @Override
       public void clearHintedCards() {}
       @Override
+      public void clearSelectedCards() {}
+      @Override
       public Set<Card> getSelectedCards() { return Collections.emptySet(); }
     });
 
