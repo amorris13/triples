@@ -18,7 +18,6 @@ message ArcadeGameSummary {
 }
 
 message CloudSaveData {
-  reserved 1;
-  repeated ClassicGameSummary classic_games = 2;
-  repeated ArcadeGameSummary arcade_games = 3;
+  repeated ClassicGameSummary classic_games = 1;
+  repeated ArcadeGameSummary arcade_games = 2;
 }
