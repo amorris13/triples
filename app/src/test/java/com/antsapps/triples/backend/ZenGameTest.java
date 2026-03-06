@@ -22,6 +22,7 @@ public class ZenGameTest {
     public void clearHintedCards() {}
     @Override
     public java.util.Set<Card> getSelectedCards() { return Collections.emptySet(); }
+    @Override
     public void clearSelectedCards() {}
   }
 

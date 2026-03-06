@@ -15,4 +15,17 @@ platform :android do
       skip_upload_screenshots: true
     )
   end
+
+  desc "Build and distribute to Firebase"
+  lane :distribute do
+    gradle(
+      task: "assemble",
+      build_type: "Release"
+    )
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID"],
+      service_credentials_file: "service-account-key.json",
+      groups: "testers"
+    )
+  end
 end
