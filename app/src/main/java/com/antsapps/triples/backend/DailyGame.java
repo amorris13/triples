@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import java.util.Calendar;
+
 public class DailyGame extends Game {
 
   public static final String GAME_TYPE_FOR_ANALYTICS = "daily";
@@ -18,6 +20,16 @@ public class DailyGame extends Game {
   private final List<Set<Card>> mAllTriples;
   private final List<Set<Card>> mFoundTriples;
   private Date mDateCompleted;
+
+  public static long getStartOfDaySeed(long dateMillis) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTimeInMillis(dateMillis);
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    return cal.getTimeInMillis();
+  }
 
   public static DailyGame createFromSeed(long seed) {
     Random random = new Random(seed);

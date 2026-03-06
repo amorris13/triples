@@ -245,14 +245,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public DailyGame getDailyGameForDate(long dateMillis) {
-    // Round to start of day
-    java.util.Calendar cal = java.util.Calendar.getInstance();
-    cal.setTimeInMillis(dateMillis);
-    cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    cal.set(java.util.Calendar.MINUTE, 0);
-    cal.set(java.util.Calendar.SECOND, 0);
-    cal.set(java.util.Calendar.MILLISECOND, 0);
-    long daySeed = cal.getTimeInMillis();
+    long daySeed = DailyGame.getStartOfDaySeed(dateMillis);
 
     for (DailyGame game : mDailyGames) {
       if (game.getRandomSeed() == daySeed) {

@@ -75,9 +75,10 @@ public class Utils {
     return longs;
   }
 
-  public static byte[] cardsListToByteArray(List<java.util.Set<Card>> triples) {
+  public static byte[] triplesListToByteArray(List<java.util.Set<Card>> triples) {
     ByteBuffer bb = ByteBuffer.allocate(triples.size() * 3);
     for (java.util.Set<Card> triple : triples) {
+      com.google.common.base.Preconditions.checkArgument(triple.size() == 3, "triple must have 3 cards");
       for (Card card : triple) {
         bb.put(cardToByte(card));
       }
@@ -85,7 +86,7 @@ public class Utils {
     return bb.array();
   }
 
-  public static List<java.util.Set<Card>> cardsListFromByteArray(byte[] b) {
+  public static List<java.util.Set<Card>> triplesListFromByteArray(byte[] b) {
     if (b == null) {
       return Lists.newArrayList();
     }

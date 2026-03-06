@@ -127,12 +127,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
-    java.util.Calendar cal = java.util.Calendar.getInstance();
-    cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    cal.set(java.util.Calendar.MINUTE, 0);
-    cal.set(java.util.Calendar.SECOND, 0);
-    cal.set(java.util.Calendar.MILLISECOND, 0);
-    long todaySeed = cal.getTimeInMillis();
+    long todaySeed = com.antsapps.triples.backend.DailyGame.getStartOfDaySeed(System.currentTimeMillis());
     boolean dailyCompleted = false;
     for (com.antsapps.triples.backend.DailyGame dg : mApplication.getCompletedDailyGames()) {
       if (dg.getRandomSeed() == todaySeed) {

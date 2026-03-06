@@ -33,7 +33,7 @@ public class DBAdapter extends SQLiteOpenHelper {
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
   /** The version of the database that this class understands. */
-  private static final int DATABASE_VERSION = 8;
+  private static final int DATABASE_VERSION = 7;
 
   private static final String CREATE_CLASSIC_GAMES =
       "CREATE TABLE "
@@ -189,17 +189,6 @@ public class DBAdapter extends SQLiteOpenHelper {
       db.beginTransaction();
       try {
         db.execSQL(CREATE_DAILY_GAMES);
-        db.setTransactionSuccessful();
-      } catch (SQLException e) {
-        Log.e("DBAdapter-Upgrade", e.toString());
-      } finally {
-        db.endTransaction();
-      }
-    }
-    if (oldVersion < 8) {
-      db.beginTransaction();
-      try {
-        db.execSQL("ALTER TABLE " + TABLE_DAILY_GAMES + " ADD COLUMN " + COLUMN_DATE_COMPLETED + " INTEGER");
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
@@ -414,7 +403,7 @@ public class DBAdapter extends SQLiteOpenHelper {
               new Date(dailyGamesCursor.getLong(5)),
               GameState.valueOf(dailyGamesCursor.getString(1)),
               dailyGamesCursor.getInt(8) != 0,
-              Utils.cardsListFromByteArray(dailyGamesCursor.getBlob(6)),
+              Utils.triplesListFromByteArray(dailyGamesCursor.getBlob(6)),
               dailyGamesCursor.isNull(9) ? null : new Date(dailyGamesCursor.getLong(9)));
       dailyGames.add(game);
       dailyGamesCursor.moveToNext();
@@ -448,7 +437,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
     values.put(COLUMN_DATE, game.getDateStarted().getTime());
-    values.put(COLUMN_FOUND_TRIPLES, Utils.cardsListToByteArray(game.getFoundTriples()));
+    values.put(COLUMN_FOUND_TRIPLES, Utils.triplesListToByteArray(game.getFoundTriples()));
     values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
     values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
     if (game.getDateCompleted() != null) {
