@@ -6,6 +6,15 @@ const svgFile = 'app_icon.svg';
 const outputDir = 'fastlane/metadata/android/en-US/images';
 const achievementsDir = path.join(outputDir, 'achievements');
 
+const placeholders = [
+  "CgkI3f-DytEMEAIQBg",
+  "CgkI3f-DytEMEAIQCw",
+  "CgkI3f-DytEMEAIQDA",
+  "CgkI3f-DytEMEAIQDQ",
+  "CgkI3f-DytEMEAIQDg",
+  "CgkI3f-DytEMEAIQDw"
+];
+
 if (!fs.existsSync(achievementsDir)) {
   fs.mkdirSync(achievementsDir, { recursive: true });
 }
@@ -14,7 +23,6 @@ async function generateFeatureGraphic() {
   const width = 1024;
   const height = 500;
 
-  // Create a 1024x500 background
   const background = await sharp({
     create: {
       width,
@@ -24,12 +32,10 @@ async function generateFeatureGraphic() {
     }
   }).png().toBuffer();
 
-  // Load the app icon and resize it
   const icon = await sharp(svgFile)
     .resize(400, 400)
     .toBuffer();
 
-  // Create SVG text for "Triples"
   const textSvg = Buffer.from(`
     <svg width="500" height="200" viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
       <text x="0" y="150" font-family="sans-serif" font-size="120" font-weight="bold" fill="#00677C">Triples</text>
@@ -49,22 +55,32 @@ async function generateFeatureGraphic() {
 async function generateAchievements() {
   const csv = fs.readFileSync('AchievementsMetadata.csv', 'utf8');
   const lines = csv.split('\n').filter(line => line.trim() !== '');
+  const mappings = [];
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const parts = line.split(',');
     if (parts.length < 2) continue;
     const name = parts[0];
-    const fileName = name.replace(/[: <]/g, '_').replace(/__/g, '_').toLowerCase() + '.png';
-
+    let fileName = '';
     let template = '';
+
     if (name.startsWith('Classic: ') && name.includes('game')) {
-       template = createClassicTemplate(name.split(' ')[1]);
+       const count = name.split(' ')[1];
+       fileName = `classic_games_${count}.png`;
+       template = createAchievementTemplate(count, 'classic', 'squares');
     } else if (name.startsWith('Arcade: ') && name.includes('game')) {
-       template = createArcadeTemplate(name.split(' ')[1]);
+       const count = name.split(' ')[1];
+       fileName = `arcade_games_${count}.png`;
+       template = createAchievementTemplate(count, 'arcade', 'triangles');
     } else if (name.startsWith('Classic: <')) {
-       template = createSpeedTemplate(name.split(' ')[2]);
+       const time = name.split(' ')[2];
+       fileName = `classic_speed_${time}.png`;
+       template = createAchievementTemplate(`&lt; ${time}`, 'classic', 'circle');
     } else if (name.startsWith('Arcade: ') && name.includes('triples')) {
-       template = createTriplesTemplate(name.split(' ')[1]);
+       const count = name.split(' ')[1];
+       fileName = `arcade_triples_${count}.png`;
+       template = createAchievementTemplate(`${count} Triples`, 'arcade', 'triangles_alt');
     }
 
     if (template) {
@@ -72,63 +88,53 @@ async function generateAchievements() {
         .resize(512, 512)
         .toFile(path.join(achievementsDir, fileName));
       console.log(`Generated achievement icon: ${fileName}`);
+
+      let id = '';
+      if (i < placeholders.length) {
+        id = placeholders[i];
+      }
+      mappings.push(`${name},${fileName},${id}`);
     }
   }
+
+  fs.writeFileSync(path.join(achievementsDir, 'AchievementsIconsMappings.csv'),
+    'Achievement Name,Icon Filename,Play Games ID\n' + mappings.join('\n'));
+
+  // Also copy Metadata
+  fs.copyFileSync('AchievementsMetadata.csv', path.join(achievementsDir, 'AchievementsMetadata.csv'));
+  console.log('Generated AchievementsIconsMappings.csv and copied metadata.');
 }
 
-function createClassicTemplate(count) {
-  return `
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#1976D2"/>
-  <g transform="translate(136, 184)">
-    <rect x="8" y="8" width="240" height="144" rx="8" fill="#B0B0B0" opacity="0.5"/>
-    <rect x="0" y="0" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="2"/>
+function createAchievementTemplate(label, mode, symbolType) {
+  const bgColor = mode === 'classic' ? '#1976D2' : '#388E3C';
+  let symbol = '';
+
+  if (symbolType === 'squares') {
+    symbol = `
     <rect x="26" y="44" width="56" height="56" fill="#2196F3"/>
     <rect x="92" y="44" width="56" height="56" fill="#2196F3"/>
-    <rect x="158" y="44" width="56" height="56" fill="#2196F3"/>
-  </g>
-  <text x="256" y="450" font-family="sans-serif" font-size="60" font-weight="bold" fill="#FFFFFF" text-anchor="middle">${count}</text>
-</svg>`;
-}
-
-function createArcadeTemplate(count) {
-  return `
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#388E3C"/>
-  <g transform="translate(136, 184)">
-    <rect x="8" y="8" width="240" height="144" rx="8" fill="#B0B0B0" opacity="0.5"/>
-    <rect x="0" y="0" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="2"/>
+    <rect x="158" y="44" width="56" height="56" fill="#2196F3"/>`;
+  } else if (symbolType === 'triangles') {
+    symbol = `
     <path d="M 59 100 L 87 44 L 115 100 Z" fill="#FF9800"/>
-    <path d="M 125 100 L 153 44 L 181 100 Z" fill="#FF9800"/>
-  </g>
-  <text x="256" y="450" font-family="sans-serif" font-size="60" font-weight="bold" fill="#FFFFFF" text-anchor="middle">${count}</text>
-</svg>`;
-}
+    <path d="M 125 100 L 153 44 L 181 100 Z" fill="#FF9800"/>`;
+  } else if (symbolType === 'triangles_alt') {
+    symbol = `
+    <path d="M 59 100 L 87 44 L 115 100 Z" fill="#FFFFFF" opacity="0.8"/>
+    <path d="M 125 100 L 153 44 L 181 100 Z" fill="#FFFFFF" opacity="0.8"/>`;
+  } else if (symbolType === 'circle') {
+    symbol = `<circle cx="120" cy="72" r="27" fill="none" stroke="#F44336" stroke-width="8"/>`;
+  }
 
-function createSpeedTemplate(time) {
   return `
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#7B1FA2"/>
+  <rect width="512" height="512" rx="64" fill="${bgColor}"/>
   <g transform="translate(136, 184)">
-    <rect x="8" y="8" width="240" height="144" rx="8" fill="#B0B0B0" opacity="0.5"/>
+    <rect x="8" y="8" width="240" height="144" rx="8" fill="#000000" opacity="0.2"/>
     <rect x="0" y="0" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="2"/>
-    <circle cx="120" cy="72" r="28" fill="#F44336"/>
+    ${symbol}
   </g>
-  <text x="256" y="450" font-family="sans-serif" font-size="60" font-weight="bold" fill="#FFFFFF" text-anchor="middle">&lt; ${time}</text>
-</svg>`;
-}
-
-function createTriplesTemplate(count) {
-  return `
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#FF9800"/>
-  <g transform="translate(136, 184)">
-    <rect x="8" y="8" width="240" height="144" rx="8" fill="#B0B0B0" opacity="0.5"/>
-    <rect x="0" y="0" width="240" height="144" rx="8" fill="#FFFFFF" stroke="#C4C7CC" stroke-width="2"/>
-    <path d="M 59 100 L 87 44 L 115 100 Z" fill="#388E3C"/>
-    <path d="M 125 100 L 153 44 L 181 100 Z" fill="#388E3C"/>
-  </g>
-  <text x="256" y="450" font-family="sans-serif" font-size="60" font-weight="bold" fill="#FFFFFF" text-anchor="middle">${count} Triples</text>
+  <text x="256" y="450" font-family="sans-serif" font-size="60" font-weight="bold" fill="#FFFFFF" text-anchor="middle">${label}</text>
 </svg>`;
 }
 
