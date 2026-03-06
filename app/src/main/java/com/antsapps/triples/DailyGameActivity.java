@@ -90,7 +90,9 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  public void onCardHinted(Card hintedCard) {}
+  public void onCardHinted(Card hintedCard) {
+    updateHintUsedIndicator();
+  }
 
   @Override
   public void onTripleFound(Set<Card> triple) {

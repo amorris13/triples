@@ -50,9 +50,27 @@ public class VerticalCardsView extends CardsView {
   @Override
   protected void updateMeasuredDimensions(final int widthMeasureSpec, final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
-    int rows = mCards.size() / COLUMNS;
-    int heightOfCards = (int) (widthOfCards / COLUMNS * HEIGHT_OVER_WIDTH * rows);
-    setMeasuredDimension(widthOfCards, getDefaultSize(heightOfCards, heightMeasureSpec));
+    if (widthOfCards == 0) {
+        if (getWidth() > 0) {
+            widthOfCards = getWidth();
+        } else {
+            widthOfCards = getResources().getDisplayMetrics().widthPixels;
+        }
+    }
+    mWidthOfCard = widthOfCards / COLUMNS;
+    mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
+
+    int rows = (int) Math.ceil((double) mCards.size() / COLUMNS);
+    int heightOfCards = mHeightOfCard * rows;
+    if (mCards.isEmpty()) {
+        heightOfCards = 0;
+    }
+
+    if (widthOfCards > 0 && heightOfCards > 0) {
+        mOffScreenLocation.set(widthOfCards, heightOfCards, widthOfCards + mWidthOfCard, heightOfCards + mHeightOfCard);
+    }
+
+    setMeasuredDimension(widthOfCards, heightOfCards);
   }
 
   @Override

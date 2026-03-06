@@ -17,6 +17,7 @@ public class DailyGame extends Game {
 
   private final List<Set<Card>> mAllTriples;
   private final List<Set<Card>> mFoundTriples;
+  private Date mDateCompleted;
 
   public static DailyGame createFromSeed(long seed) {
     Random random = new Random(seed);
@@ -45,7 +46,8 @@ public class DailyGame extends Game {
         new Date(seed),
         GameState.STARTING,
         false,
-        Collections.<Set<Card>>emptyList());
+        Collections.<Set<Card>>emptyList(),
+        null);
     return game;
   }
 
@@ -59,11 +61,13 @@ public class DailyGame extends Game {
       Date date,
       GameState gameState,
       boolean hintsUsed,
-      List<Set<Card>> foundTriples) {
+      List<Set<Card>> foundTriples,
+      Date dateCompleted) {
     super(id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
     mAllTriples = Game.getAllValidTriples(mCardsInPlay);
     mFoundTriples = Lists.newArrayList(foundTriples);
     mNumTriplesFound = mFoundTriples.size();
+    mDateCompleted = dateCompleted;
   }
 
   @Override
@@ -105,6 +109,7 @@ public class DailyGame extends Game {
       }
 
       if (mFoundTriples.size() == mAllTriples.size()) {
+        mDateCompleted = new Date();
         finish();
       } else {
         dispatchCardsInPlayUpdate(ImmutableList.copyOf(mCardsInPlay));
@@ -118,6 +123,10 @@ public class DailyGame extends Game {
 
   public List<Set<Card>> getFoundTriples() {
     return Collections.unmodifiableList(mFoundTriples);
+  }
+
+  public Date getDateCompleted() {
+    return mDateCompleted;
   }
 
   @Override

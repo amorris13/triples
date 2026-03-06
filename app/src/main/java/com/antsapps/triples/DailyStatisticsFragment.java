@@ -138,12 +138,9 @@ public class DailyStatisticsFragment extends Fragment {
   private void updateStreaks() {
     Set<Long> completedOnDaySeeds = new HashSet<>();
     for (DailyGame game : mCompletedGames) {
+        if (game.getDateCompleted() == null) continue;
         long startSeed = getStartOfDay(game.getDateStarted().getTime());
-        List<Long> findTimes = game.getTripleFindTimes();
-        if (findTimes.isEmpty()) continue;
-        long lastFindTime = findTimes.get(findTimes.size() - 1);
-        long finishTime = game.getDateStarted().getTime() + lastFindTime;
-        if (getStartOfDay(finishTime) == startSeed) {
+        if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
             completedOnDaySeeds.add(startSeed);
         }
     }
@@ -220,15 +217,9 @@ public class DailyStatisticsFragment extends Fragment {
       mCompletedOnDaySeeds = new HashSet<>();
       mCompletedLateSeeds = new HashSet<>();
       for (DailyGame game : completedGames) {
+          if (game.getDateCompleted() == null) continue;
           long startSeed = getStartOfDay(game.getDateStarted().getTime());
-          List<Long> findTimes = game.getTripleFindTimes();
-          if (findTimes.isEmpty()) {
-              mCompletedOnDaySeeds.add(startSeed); // Should not happen for completed games
-              continue;
-          }
-          long lastFindTime = findTimes.get(findTimes.size() - 1);
-          long finishTime = game.getDateStarted().getTime() + lastFindTime;
-          if (getStartOfDay(finishTime) == startSeed) {
+          if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
               mCompletedOnDaySeeds.add(startSeed);
           } else {
               mCompletedLateSeeds.add(startSeed);

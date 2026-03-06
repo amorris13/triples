@@ -37,9 +37,6 @@ public class StatisticsActivity extends BaseTriplesActivity {
     } else if ("Daily".equals(gameType)) {
       accentColor = ContextCompat.getColor(this, R.color.daily_accent);
       title = getString(R.string.daily_label);
-    } else if ("Zen".equals(gameType)) {
-      accentColor = ContextCompat.getColor(this, R.color.zen_accent);
-      title = getString(R.string.zen_label);
     } else {
       accentColor = ContextCompat.getColor(this, R.color.classic_accent);
       title = getString(R.string.classic_label);
@@ -51,7 +48,7 @@ public class StatisticsActivity extends BaseTriplesActivity {
       Fragment fragment;
       if ("Arcade".equals(gameType)) {
         fragment = new ArcadeStatisticsFragment();
-    } else if ("Daily".equals(gameType)) {
+      } else if ("Daily".equals(gameType)) {
         fragment = new DailyStatisticsFragment();
       } else {
         fragment = new ClassicStatisticsFragment();

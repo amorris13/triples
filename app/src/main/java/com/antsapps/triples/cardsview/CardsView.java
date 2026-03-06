@@ -123,12 +123,15 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
         CardDrawable cardDrawable = mCardDrawables.get(oldCard);
-        cardDrawable.updateBounds(mOffScreenLocation);
+        if (cardDrawable != null) {
+          cardDrawable.updateBounds(mOffScreenLocation);
+        }
         mCurrentlySelected.remove(oldCard);
       }
     }
 
     mCards = newCards;
+    updateMeasuredDimensions(0, 0);
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
@@ -141,7 +144,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         cardDrawable.updateBounds(calcBounds(i));
       }
     }
-    updateMeasuredDimensions(0, 0);
+    requestLayout();
     invalidate();
     logValidTriple();
     long end = System.currentTimeMillis();
@@ -151,6 +154,9 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   protected abstract void logValidTriple();
 
   public void updateBounds() {
+    if (mOffScreenLocation.isEmpty() && getWidth() > 0 && getHeight() > 0) {
+      updateMeasuredDimensions(0, 0); // Trigger dimension calculation if needed
+    }
     long start = System.currentTimeMillis();
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
@@ -299,20 +305,16 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   }
 
   public void animateTripleFound(final Set<Card> triple) {
-    final ImmutableList<Card> originalCards = mCards;
-
-    // Fly off: filter out the triple cards
-    ImmutableList.Builder<Card> builder = ImmutableList.builder();
-    for (Card c : mCards) {
-      if (!triple.contains(c)) {
-        builder.add(c);
+    for (Card c : triple) {
+      CardDrawable cd = mCardDrawables.get(c);
+      if (cd != null) {
+        cd.updateBounds(mOffScreenLocation);
       }
     }
-    updateCardsInPlay(builder.build());
 
     // Fly back after animation duration
     mHandler.postDelayed(() -> {
-      updateCardsInPlay(originalCards);
+      updateBounds();
     }, 1000); // 1s to ensure animation finishes
   }
 }

@@ -207,7 +207,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  private void updateHintUsedIndicator() {
+  protected void updateHintUsedIndicator() {
     View hintUsedIndicator = findViewById(R.id.hint_used_text);
     if (hintUsedIndicator != null) {
       hintUsedIndicator.setVisibility(getGame().areHintsUsed() ? View.VISIBLE : View.GONE);
