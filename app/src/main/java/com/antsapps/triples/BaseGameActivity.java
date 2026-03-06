@@ -292,7 +292,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     if (isSignedIn()) {
       submitScore();
       AchievementManager.awardAchievementsForGame(this, getGame());
-      AchievementManager.awardCountAchievements(this, Application.getInstance(this));
+      Application application = Application.getInstance(this);
+      AchievementManager.awardCountAchievements(this, application);
+      application.uploadToCloud(this);
     } else {
       shouldSubmitScoreOnSignIn = true;
     }
