@@ -59,7 +59,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
    * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
    * view is completely opaque.
    */
-  private float mAlpha = 1;
+  private float mDimAlpha = 1;
 
   public CardsView(Context context) {
     this(context, null);
@@ -99,8 +99,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
     }
-    if (mAlpha != 1) {
-      canvas.drawColor(Color.argb((int) ((1 - mAlpha) * 255), 0xF3, 0xF3, 0xF3));
+    if (mDimAlpha != 1) {
+      canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
     }
     boolean invalidated = false;
     if (mNumAnimating > 0) {
@@ -150,7 +150,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   protected abstract void logValidTriple();
 
-  void updateBounds() {
+  public void updateBounds() {
     long start = System.currentTimeMillis();
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
@@ -182,7 +182,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   @Override
   public void setAlpha(float opacity) {
-    mAlpha = opacity;
+    super.setAlpha(opacity);
+    mDimAlpha = opacity;
     invalidate();
   }
 
@@ -295,5 +296,23 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     }
     mCurrentlySelected.clear();
     invalidate();
+  }
+
+  public void animateTripleFound(final Set<Card> triple) {
+    final ImmutableList<Card> originalCards = mCards;
+
+    // Fly off: filter out the triple cards
+    ImmutableList.Builder<Card> builder = ImmutableList.builder();
+    for (Card c : mCards) {
+      if (!triple.contains(c)) {
+        builder.add(c);
+      }
+    }
+    updateCardsInPlay(builder.build());
+
+    // Fly back after animation duration
+    mHandler.postDelayed(() -> {
+      updateCardsInPlay(originalCards);
+    }, 1000); // 1s to ensure animation finishes
   }
 }

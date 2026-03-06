@@ -76,6 +76,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
             // Ensure width and height are greater than 0 before refreshing drawables
             if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
                 mCardsView.refreshDrawables();
+                mCardsView.updateBounds();
                 mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }

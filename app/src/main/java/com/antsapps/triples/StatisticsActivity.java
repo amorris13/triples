@@ -51,7 +51,7 @@ public class StatisticsActivity extends BaseTriplesActivity {
       Fragment fragment;
       if ("Arcade".equals(gameType)) {
         fragment = new ArcadeStatisticsFragment();
-      } else if ("Daily".equals(gameType) || "Zen".equals(gameType)) {
+    } else if ("Daily".equals(gameType)) {
         fragment = new DailyStatisticsFragment();
       } else {
         fragment = new ClassicStatisticsFragment();

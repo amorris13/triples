@@ -41,6 +41,7 @@ public class DailyStatisticsFragment extends Fragment {
   private TextView mLongestStreakTv;
   private ListView mGamesListView;
   private DailyGamesAdapter mGamesAdapter;
+  private Button mNextMonthBtn;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,17 +53,21 @@ public class DailyStatisticsFragment extends Fragment {
     mCurrentStreakTv = view.findViewById(R.id.current_streak_tv);
     mLongestStreakTv = view.findViewById(R.id.longest_streak_tv);
     mGamesListView = view.findViewById(R.id.daily_games_list);
+    mNextMonthBtn = view.findViewById(R.id.next_month);
 
     mCurrentMonth = Calendar.getInstance();
     mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
+    mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
+    mCurrentMonth.set(Calendar.MINUTE, 0);
+    mCurrentMonth.set(Calendar.SECOND, 0);
+    mCurrentMonth.set(Calendar.MILLISECOND, 0);
 
     view.findViewById(R.id.prev_month).setOnClickListener(v -> {
       mCurrentMonth.add(Calendar.MONTH, -1);
       updateCalendar();
     });
 
-    Button nextMonthBtn = view.findViewById(R.id.next_month);
-    nextMonthBtn.setOnClickListener(v -> {
+    mNextMonthBtn.setOnClickListener(v -> {
       mCurrentMonth.add(Calendar.MONTH, 1);
       updateCalendar();
     });
@@ -70,6 +75,10 @@ public class DailyStatisticsFragment extends Fragment {
     view.findViewById(R.id.today_btn).setOnClickListener(v -> {
       mCurrentMonth = Calendar.getInstance();
       mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
+      mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
+      mCurrentMonth.set(Calendar.MINUTE, 0);
+      mCurrentMonth.set(Calendar.SECOND, 0);
+      mCurrentMonth.set(Calendar.MILLISECOND, 0);
       updateCalendar();
     });
 
@@ -96,7 +105,7 @@ public class DailyStatisticsFragment extends Fragment {
     boolean isCurrentMonth = mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
                              mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
 
-    getView().findViewById(R.id.next_month).setEnabled(!isCurrentMonth);
+    mNextMonthBtn.setEnabled(!isCurrentMonth);
 
     CalendarAdapter adapter = new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames);
     mCalendarGrid.setAdapter(adapter);
@@ -104,20 +113,21 @@ public class DailyStatisticsFragment extends Fragment {
     mCalendarGrid.setOnItemClickListener((parent, view, position, id) -> {
         Calendar selectedDate = (Calendar) adapter.getItem(position);
         if (selectedDate != null) {
-            long seed = getStartOfDay(selectedDate.getTimeInMillis());
+            long daySeed = getStartOfDay(selectedDate.getTimeInMillis());
+            if (daySeed > getStartOfDay(System.currentTimeMillis())) {
+                return;
+            }
             DailyGame game = null;
             for (DailyGame dg : mApplication.getCompletedDailyGames()) {
-                if (dg.getRandomSeed() == seed) {
+                if (dg.getRandomSeed() == daySeed) {
                     game = dg;
                     break;
                 }
             }
-            // If not completed, we could potentially launch it, but let's stick to showing in list for now or directly launching if requested.
-            // The requirement says "allow you to attempt previous day's puzzles".
             if (game == null || game.getGameState() != DailyGame.GameState.COMPLETED) {
                 // Launch DailyGameActivity for this date
                 android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
-                DailyGame newGame = mApplication.getDailyGameForDate(seed);
+                DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
                 intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, newGame.getId());
                 startActivity(intent);
             }
@@ -128,19 +138,14 @@ public class DailyStatisticsFragment extends Fragment {
   private void updateStreaks() {
     Set<Long> completedOnDaySeeds = new HashSet<>();
     for (DailyGame game : mCompletedGames) {
-        Calendar startCal = Calendar.getInstance();
-        startCal.setTime(game.getDateStarted());
-
-        Calendar finishCal = Calendar.getInstance();
-        // We need to know when it was finished. DailyGame doesn't store finish date explicitly besides the last triple find time relative to start?
-        // Actually, the DB has a COLUMN_DATE which is when it was started.
-        // Let's assume for now that if it's completed, we check if it was completed on the same day.
-        // Wait, I didn't add a finish date to the DB.
-        // I'll use the date of the last triple found as an approximation if needed, but the requirement says "Puzzles completed on the day".
-        // I will assume games in mCompletedGames are "completed on day" if I don't have better info,
-        // but I should probably have added a finish date.
-        // Let's just calculate streak based on any completion for now, or assume they are all "on day" for this exercise since I can't change history.
-        completedOnDaySeeds.add(getStartOfDay(game.getDateStarted().getTime()));
+        long startSeed = getStartOfDay(game.getDateStarted().getTime());
+        List<Long> findTimes = game.getTripleFindTimes();
+        if (findTimes.isEmpty()) continue;
+        long lastFindTime = findTimes.get(findTimes.size() - 1);
+        long finishTime = game.getDateStarted().getTime() + lastFindTime;
+        if (getStartOfDay(finishTime) == startSeed) {
+            completedOnDaySeeds.add(startSeed);
+        }
     }
 
     int currentStreak = 0;
@@ -154,15 +159,24 @@ public class DailyStatisticsFragment extends Fragment {
     int tempStreak = 0;
     List<Long> sortedSeeds = new ArrayList<>(completedOnDaySeeds);
     Collections.sort(sortedSeeds);
-    Long lastSeed = null;
+    Calendar lastCal = null;
     for (Long seed : sortedSeeds) {
-        if (lastSeed != null && seed == lastSeed + 24 * 60 * 60 * 1000) {
-            tempStreak++;
+        Calendar currentCal = Calendar.getInstance();
+        currentCal.setTimeInMillis(seed);
+        if (lastCal != null) {
+            Calendar expectedCal = (Calendar) lastCal.clone();
+            expectedCal.add(Calendar.DAY_OF_YEAR, 1);
+            if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
+                expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
+                tempStreak++;
+            } else {
+                tempStreak = 1;
+            }
         } else {
             tempStreak = 1;
         }
+        lastCal = currentCal;
         longestStreak = Math.max(longestStreak, tempStreak);
-        lastSeed = seed;
     }
 
     mCurrentStreakTv.setText(getString(R.string.current_streak) + " " + currentStreak);
@@ -206,9 +220,19 @@ public class DailyStatisticsFragment extends Fragment {
       mCompletedOnDaySeeds = new HashSet<>();
       mCompletedLateSeeds = new HashSet<>();
       for (DailyGame game : completedGames) {
-          long seed = getStartOfDay(game.getDateStarted().getTime());
-          // For now, treat all as completed on day. In a real app we'd check completion time.
-          mCompletedOnDaySeeds.add(seed);
+          long startSeed = getStartOfDay(game.getDateStarted().getTime());
+          List<Long> findTimes = game.getTripleFindTimes();
+          if (findTimes.isEmpty()) {
+              mCompletedOnDaySeeds.add(startSeed); // Should not happen for completed games
+              continue;
+          }
+          long lastFindTime = findTimes.get(findTimes.size() - 1);
+          long finishTime = game.getDateStarted().getTime() + lastFindTime;
+          if (getStartOfDay(finishTime) == startSeed) {
+              mCompletedOnDaySeeds.add(startSeed);
+          } else {
+              mCompletedLateSeeds.add(startSeed);
+          }
       }
     }
 

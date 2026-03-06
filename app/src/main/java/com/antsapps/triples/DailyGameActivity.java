@@ -95,9 +95,7 @@ public class DailyGameActivity extends BaseGameActivity
   @Override
   public void onTripleFound(Set<Card> triple) {
     com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
-    cardsView.animate().alpha(0).setDuration(200).withEndAction(() -> {
-      cardsView.animate().alpha(1).setDuration(200).start();
-    }).start();
+    cardsView.animateTripleFound(triple);
   }
 
   @Override
