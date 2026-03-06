@@ -22,6 +22,9 @@ public class Application extends OnStateChangedReporter {
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
 
+  private ZenGame mZenGame;
+  private ZenGame mBeginnerGame;
+
   public final DBAdapter database;
 
   private Application(Context context) {
@@ -200,5 +203,28 @@ public class Application extends OnStateChangedReporter {
 
   public ArcadeStatistics getArcadeStatistics(Period period) {
     return new ArcadeStatistics(getCompletedArcadeGames(), period);
+  }
+
+  public ZenGame getZenGame(boolean isBeginner) {
+    if (isBeginner) {
+      if (mBeginnerGame == null) {
+        mBeginnerGame = ZenGame.createFromSeed(System.currentTimeMillis(), true);
+      }
+      return mBeginnerGame;
+    } else {
+      if (mZenGame == null) {
+        mZenGame = ZenGame.createFromSeed(System.currentTimeMillis(), false);
+      }
+      return mZenGame;
+    }
+  }
+
+  public void resetZenGame(boolean isBeginner) {
+    if (isBeginner) {
+      mBeginnerGame = null;
+    } else {
+      mZenGame = null;
+    }
+    notifyStateChanged();
   }
 }

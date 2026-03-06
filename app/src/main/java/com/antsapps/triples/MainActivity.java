@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.ZenGame;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -28,6 +29,7 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mArcadeResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
+  private MaterialButton mZenButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
 
@@ -38,7 +40,7 @@ public class MainActivity extends BaseTriplesActivity {
 
     if (getSupportActionBar() != null) {
       getSupportActionBar().setDisplayShowHomeEnabled(true);
-      getSupportActionBar().setIcon(R.drawable.launcher);
+      getSupportActionBar().setIcon(R.drawable.ic_launcher_foreground_48dp);
     }
 
     mApplication = Application.getInstance(getApplication());
@@ -88,6 +90,14 @@ public class MainActivity extends BaseTriplesActivity {
       @Override
       public void onClick(View v) {
         showStatistics("Arcade");
+      }
+    });
+
+    mZenButton = findViewById(R.id.zen_button);
+    mZenButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        playZenGame(false);
       }
     });
   }
@@ -144,6 +154,12 @@ public class MainActivity extends BaseTriplesActivity {
     startActivity(intent);
   }
 
+  private void playZenGame(boolean isBeginner) {
+    Intent intent = new Intent(this, ZenGameActivity.class);
+    intent.putExtra(ZenGameActivity.IS_BEGINNER, isBeginner);
+    startActivity(intent);
+  }
+
   private void startNewArcadeGame() {
     for (ArcadeGame game : Lists.newArrayList(mApplication.getCurrentArcadeGames())) {
       mApplication.deleteArcadeGame(game);
@@ -165,7 +181,6 @@ public class MainActivity extends BaseTriplesActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.statistics, menu); // Reuse statistics menu for main activity
-    tintMenuIcons(menu);
     return super.onCreateOptionsMenu(menu);
   }
 

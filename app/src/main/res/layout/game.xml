@@ -5,13 +5,6 @@
   android:layout_height="fill_parent"
   android:background="?attr/colorSurface">
 
-  <View
-    android:id="@+id/top_separator"
-    android:layout_width="fill_parent"
-    android:layout_height="1sp"
-    android:layout_alignParentTop="true"
-    android:background="#33B5E5" />
-
   <ViewStub
     android:id="@+id/status_bar"
     android:inflatedId="@+id/status_bar"
@@ -24,7 +17,7 @@
     android:layout_width="fill_parent"
     android:layout_height="1sp"
     android:layout_above="@id/status_bar"
-    android:background="#33B5E5" />
+    android:background="@color/color_separator" />
 
   <ViewAnimator
     android:id="@+id/view_switcher"
@@ -33,7 +26,7 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:layout_above="@id/bottom_separator"
-    android:layout_below="@id/top_separator">
+    android:layout_alignParentTop="true">
 
     <include
       android:layout_width="fill_parent"
@@ -46,7 +39,7 @@
       android:layout_height="fill_parent"
       android:gravity="center"
       android:text="@string/paused"
-      android:textColor="#33B5E5"
+      android:textColor="@color/color_separator"
       android:textSize="@dimen/game_paused_text_size" />
 
     <LinearLayout
@@ -59,15 +52,25 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/game_completed"
-          android:textColor="#424242"
+          android:textColor="@color/color_text_primary"
           android:textSize="@dimen/game_paused_text_size"
           />
+
+      <TextView
+          android:id="@+id/game_output"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="24sp"
+          android:textStyle="bold"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"/>
 
       <GridLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:columnCount="2"
-          android:rowCount="2">
+          android:rowCount="2"
+          android:paddingBottom="4dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -77,7 +80,8 @@
             android:id="@+id/fastest_triple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:paddingRight="4dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -87,7 +91,8 @@
             android:id="@+id/slowest_triple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:paddingRight="4dp"/>
       </GridLayout>
 
       <com.antsapps.triples.stats.TimelineView
@@ -105,7 +110,7 @@
           android:layout_height="wrap_content"
           android:layout_marginBottom="16dp"
           android:gravity="center"
-          android:textColor="#424242"
+          android:textColor="@color/color_text_primary"
           android:textSize="16sp"
           android:padding="10dp"/>
 
@@ -115,6 +120,16 @@
           android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/rate_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rate_app"
+            android:textAllCaps="true"
+            android:onClick="rateApp"
+            android:layout_marginRight="10dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/statistics_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/statistics"
@@ -123,6 +138,7 @@
             android:layout_marginRight="10dp"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/new_game_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/new_game"

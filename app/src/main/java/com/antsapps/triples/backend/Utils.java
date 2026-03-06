@@ -75,11 +75,5 @@ public class Utils {
     return longs;
   }
 
-  public static int getColorFromAttr(Context context, int attr) {
-    TypedValue typedValue = new TypedValue();
-    context.getTheme().resolveAttribute(attr, typedValue, true);
-    return typedValue.data;
-  }
-
   private Utils() {}
 }

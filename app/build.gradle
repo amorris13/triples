@@ -57,6 +57,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-auth:21.3.0'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.protobuf:protobuf-javalite:3.25.1'
 }
 
@@ -74,6 +75,7 @@ protobuf {
         }
     }
 }
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)

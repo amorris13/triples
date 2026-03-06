@@ -14,10 +14,18 @@ import com.antsapps.triples.cardsview.TriangleShape;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
+import androidx.core.content.ContextCompat;
 import com.google.common.primitives.Ints;
 import java.util.Arrays;
 
 public class CardCustomizationUtils {
+
+  public static final int[] PRESET_COLOR_RES = {
+      R.color.preset_color_0, R.color.preset_color_1, R.color.preset_color_2,
+      R.color.preset_color_3, R.color.preset_color_4, R.color.preset_color_5,
+      R.color.preset_color_6, R.color.preset_color_7, R.color.preset_color_8,
+      R.color.preset_color_9, R.color.preset_color_10, R.color.preset_color_11
+  };
 
   private static final float STRIPE_WIDTH = 1.5f;
   public static final int ICON_MARGIN_DP = 8;
@@ -25,29 +33,34 @@ public class CardCustomizationUtils {
   public static int getColorForId(Context context, int id) {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
     String key;
-    String defaultHex;
+    int defaultIndex;
     switch (id) {
       case 0:
         key = context.getString(R.string.pref_color_0);
-        defaultHex = "#33B5E5";
+        defaultIndex = 0;
         break;
       case 1:
         key = context.getString(R.string.pref_color_1);
-        defaultHex = "#FFBB33";
+        defaultIndex = 1;
         break;
       case 2:
         key = context.getString(R.string.pref_color_2);
-        defaultHex = "#FF4444";
+        defaultIndex = 2;
         break;
       default:
         return 0;
     }
-    String hex = sharedPref.getString(key, defaultHex);
+    String indexStr = sharedPref.getString(key, String.valueOf(defaultIndex));
+    int index;
     try {
-      return Color.parseColor(hex);
-    } catch (IllegalArgumentException e) {
-      return Color.parseColor(defaultHex);
+      index = Integer.parseInt(indexStr);
+    } catch (NumberFormatException e) {
+      index = defaultIndex;
     }
+    if (index < 0 || index >= PRESET_COLOR_RES.length) {
+      index = defaultIndex;
+    }
+    return ContextCompat.getColor(context, PRESET_COLOR_RES[index]);
   }
 
   public static Shape getShapeForId(Context context, int id) {

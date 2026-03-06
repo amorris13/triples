@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
@@ -41,6 +42,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
   public boolean onPreferenceChange(Preference preference, Object newValue) {
     if (preference.getKey().equals(getString(R.string.pref_animation_speed))) {
       preference.setSummary(getString(R.string.pref_animation_duration_summary, (Integer) newValue));
+    }
+    if (preference.getKey().equals(getString(R.string.pref_theme))) {
+      String theme = (String) newValue;
+      switch (theme) {
+        case "light":
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+          break;
+        case "dark":
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+          break;
+        case "system":
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+          break;
+      }
     }
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.SETTING_NAME, preference.getKey());

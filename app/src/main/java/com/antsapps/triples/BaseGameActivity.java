@@ -32,6 +32,9 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -85,6 +88,12 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     getGame().begin();
 
+    findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
+    ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
+    findViewById(R.id.rate_app).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.statistics_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.new_game_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
     }
@@ -93,6 +102,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected abstract Game getGame();
+
+  protected abstract int getAccentColor();
 
   /**
    * This must initialize the game (so that getGame() doesn't return null) and set the content view
@@ -107,6 +118,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.pause).setVisible(mGameState == GameState.ACTIVE);
     menu.findItem(R.id.play).setVisible(mGameState == GameState.PAUSED);
+    menu.findItem(R.id.shuffle).setVisible(mGameState == GameState.ACTIVE);
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
@@ -119,7 +131,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.game, menu);
-    tintMenuIcons(menu);
     return true;
   }
 
@@ -129,6 +140,10 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     int itemId = item.getItemId();
     if (itemId == R.id.hint) {
       handleHintSelection();
+      return true;
+    } else if (itemId == R.id.shuffle) {
+      getGame().shuffleCardsInPlay();
+      logGameEvent(AnalyticsConstants.Event.SHUFFLE_CARDS);
       return true;
     } else if (itemId == R.id.pause) {
       getGame().pause();
@@ -289,16 +304,25 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   private void updateViewSwitcher() {
     int childToDisplay = VIEW_CARDS;
-    if (mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
-      childToDisplay = VIEW_PAUSED;
-    } else if (mGameState == GameState.COMPLETED) {
+    if (mGameState == GameState.COMPLETED) {
       childToDisplay = VIEW_COMPLETED;
       updateStatistics();
+    } else if (mGameState == GameState.PAUSED || !getGame().getActivityLifecycleActive()) {
+      childToDisplay = VIEW_PAUSED;
     } else {
       childToDisplay = VIEW_CARDS;
     }
     if (mViewAnimator.getDisplayedChild() != childToDisplay) {
       mViewAnimator.setDisplayedChild(childToDisplay);
+    }
+  }
+
+  private static String formatElapsedTime(long elapsedMillis) {
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis);
+    if (seconds < 3600) {
+      return String.format("%d:%02d", seconds / 60, seconds % 60);
+    } else {
+      return DateUtils.formatElapsedTime(seconds);
     }
   }
 
@@ -324,18 +348,31 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         lastTime = time;
       }
 
+      TextView outputTv = (TextView) findViewById(R.id.game_output);
+      Game game = getGame();
+      if (game instanceof ClassicGame) {
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(game.getTimeElapsed());
+        if (seconds < 60) {
+          outputTv.setText(getString(R.string.classic_completed_stats_seconds_format, seconds));
+        } else {
+          outputTv.setText(getString(R.string.classic_completed_stats_format, seconds / 60, seconds % 60));
+        }
+      } else if (game instanceof ArcadeGame) {
+        outputTv.setText(getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
+      }
+
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
-      fastestTv.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(fastest)));
+      fastestTv.setText(formatElapsedTime(fastest));
       fastestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.green_dot, 0, 0, 0);
       fastestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
       TextView slowestTv = (TextView) findViewById(R.id.slowest_triple);
-      slowestTv.setText(DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(slowest)));
+      slowestTv.setText(formatElapsedTime(slowest));
       slowestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.red_dot, 0, 0, 0);
       slowestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
-      ((TimelineView) findViewById(R.id.timeline))
-          .setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
+      TimelineView timelineView = (TimelineView) findViewById(R.id.timeline);
+      timelineView.setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
 
       updatePerformanceDescription();
     }
@@ -428,6 +465,20 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         StatisticsActivity.GAME_TYPE,
         getGame() instanceof ArcadeGame ? "Arcade" : "Classic");
     startActivity(intent);
+  }
+
+  public void rateApp(View view) {
+    ReviewManager manager = ReviewManagerFactory.create(this);
+    manager.requestReviewFlow().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        // We can get the ReviewInfo object
+        ReviewInfo reviewInfo = task.getResult();
+        manager.launchReviewFlow(this, reviewInfo);
+      } else {
+        // There was some problem, log or handle
+        Log.e("BaseGameActivity", "In-app review request failed", task.getException());
+      }
+    });
   }
 
   private void logGameEvent(String event) {

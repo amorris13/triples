@@ -75,4 +75,16 @@
     <item>crosshatch</item>
   </string-array>
 
+  <string-array name="entries_theme_pref">
+    <item>Light</item>
+    <item>Dark</item>
+    <item>System default</item>
+  </string-array>
+
+  <string-array name="entryvalues_theme_pref">
+    <item>light</item>
+    <item>dark</item>
+    <item>system</item>
+  </string-array>
+
 </resources>
