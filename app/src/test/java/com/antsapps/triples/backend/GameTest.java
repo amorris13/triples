@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -89,5 +91,40 @@ public class GameTest {
 
     List<Integer> positions = Game.getValidTriplePositions(cards);
     assertThat(positions).containsExactly(0, 2, 3);
+  }
+
+  @Test
+  public void shuffleCardsInPlay_rearrangesCards() {
+    Card c1 = new Card(0, 0, 0, 0);
+    Card c2 = new Card(1, 1, 1, 1);
+    Card c3 = new Card(2, 2, 2, 2);
+    Card c4 = new Card(0, 0, 0, 1);
+    List<Card> cardsInPlay = ImmutableList.of(c1, c2, c3, c4);
+
+    Game game = new Game(0, 0, cardsInPlay, Collections.emptyList(), new Deck(Collections.emptyList()), 0, new Date(), Game.GameState.ACTIVE, false) {
+      @Override
+      protected boolean isGameInValidState() {
+        return true;
+      }
+      @Override
+      public String getGameTypeForAnalytics() {
+        return "Test";
+      }
+    };
+    game.setGameRenderer(new Game.GameRenderer() {
+      @Override
+      public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+      @Override
+      public void addHint(Card card) {}
+      @Override
+      public void clearHintedCards() {}
+      @Override
+      public Set<Card> getSelectedCards() { return Collections.emptySet(); }
+    });
+
+    // We can't guarantee a shuffle will change order with only 4 cards, but it usually does.
+    // To be more robust, we check that it still contains the same cards.
+    game.shuffleCardsInPlay();
+    assertThat(game.getCardsInPlay()).containsExactly(c1, c2, c3, c4);
   }
 }

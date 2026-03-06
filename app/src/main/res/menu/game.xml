@@ -8,6 +8,11 @@
       app:showAsAction="always"
       android:title="@string/hint" />
   <item
+      android:id="@+id/shuffle"
+      android:icon="@drawable/ic_shuffle"
+      app:showAsAction="ifRoom"
+      android:title="@string/shuffle" />
+  <item
       android:id="@+id/pause"
       android:icon="@drawable/ic_pause"
       app:showAsAction="always"
