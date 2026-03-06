@@ -198,7 +198,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   public boolean isSignedIn() {
-    return mIsSignedIn;
+    return mIsSignedIn || mFirebaseAuth.getCurrentUser() != null;
   }
 
   protected void signOut() {

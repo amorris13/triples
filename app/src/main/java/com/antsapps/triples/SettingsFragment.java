@@ -1,8 +1,12 @@
 package com.antsapps.triples;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
@@ -64,17 +68,22 @@ public class SettingsFragment extends PreferenceFragmentCompat
   }
 
   private void showDeleteDataConfirmation() {
-    new MaterialAlertDialogBuilder(getContext())
+    AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
         .setTitle(R.string.account_delete_data_dialog_title)
         .setMessage(R.string.account_delete_data_dialog_message)
-        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.account_delete_button, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             deleteData();
           }
         })
         .setNegativeButton(R.string.no, null)
-        .show();
+        .create();
+    dialog.show();
+    Button deleteButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+    if (deleteButton != null) {
+      deleteButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorError));
+    }
   }
 
   private void deleteData() {

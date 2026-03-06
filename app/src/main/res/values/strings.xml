@@ -152,5 +152,6 @@
   <string name="account_delete_data_summary">Permanently delete all local and cloud game data</string>
   <string name="account_delete_data_dialog_title">Delete all data?</string>
   <string name="account_delete_data_dialog_message">This will permanently delete all your game statistics and progress from both this device and the cloud. This action cannot be undone. Are you sure?</string>
+  <string name="account_delete_button">Delete</string>
 
 </resources>
