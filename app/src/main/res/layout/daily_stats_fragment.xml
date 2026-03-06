@@ -22,7 +22,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CURRENT"
+                android:text="@string/current_streak"
                 android:textSize="10sp"
                 android:textColor="?attr/colorOnSurfaceVariant" />
             <TextView
@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="LONGEST"
+                android:text="@string/longest_streak"
                 android:textSize="10sp"
                 android:textColor="?attr/colorOnSurfaceVariant" />
             <TextView
@@ -64,7 +64,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SOLVED"
+                android:text="@string/total_solved"
                 android:textSize="10sp"
                 android:textColor="?attr/colorOnSurfaceVariant" />
             <TextView
@@ -89,14 +89,14 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <ImageButton
+        <Button
             android:id="@+id/prev_month"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_media_previous"
+            android:text="&lt;"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Previous Month"
-            app:tint="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            style="@style/Widget.AppCompat.Button.Borderless" />
 
         <TextView
             android:id="@+id/month_title"
@@ -111,14 +111,14 @@
             android:clickable="true"
             android:focusable="true" />
 
-        <ImageButton
+        <Button
             android:id="@+id/next_month"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_media_next"
+            android:text="&gt;"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Next Month"
-            app:tint="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            style="@style/Widget.AppCompat.Button.Borderless" />
     </LinearLayout>
 
     <LinearLayout

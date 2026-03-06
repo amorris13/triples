@@ -37,6 +37,11 @@
   <color name="arcade_accent">#A5D6A7</color>
   <color name="zen_accent">#CE93D8</color>
 
+  <color name="daily_calendar_selected">#3D3D3D</color>
+  <color name="daily_calendar_solved_on_day">#FF9800</color>
+  <color name="daily_calendar_solved_late">#40FF9800</color>
+  <color name="daily_calendar_today_outline">#E1E2E3</color>
+
   <!-- Semantic colors for dark mode support -->
   <color name="color_separator">#0097A7</color>
   <color name="color_critical">#FF5252</color>

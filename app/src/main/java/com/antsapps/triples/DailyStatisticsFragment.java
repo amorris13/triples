@@ -22,9 +22,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import android.os.Bundle;
@@ -33,6 +35,7 @@ public class DailyStatisticsFragment extends Fragment {
 
   private Application mApplication;
   private List<DailyGame> mCompletedGames;
+  private Map<Long, DailyGame> mCompletedGamesMap;
   private Calendar mCurrentMonth;
   private Calendar mSelectedDate;
   private GridView mCalendarGrid;
@@ -98,8 +101,10 @@ public class DailyStatisticsFragment extends Fragment {
     });
 
     mCompletedGames = new ArrayList<>();
+    mCompletedGamesMap = new HashMap<>();
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
       mCompletedGames.add(game);
+      mCompletedGamesMap.put(getStartOfDay(game.getRandomSeed()), game);
     }
     Collections.sort(mCompletedGames, (g1, g2) -> g2.getDateStarted().compareTo(g1.getDateStarted()));
 
@@ -126,13 +131,10 @@ public class DailyStatisticsFragment extends Fragment {
 
     mCalendarGrid.setOnItemClickListener((parent, view, position, id) -> {
         Calendar clickedDate = (Calendar) adapter.getItem(position);
-        if (clickedDate != null && clickedDate.get(Calendar.MONTH) == mCurrentMonth.get(Calendar.MONTH)) {
-            long daySeed = getStartOfDay(clickedDate.getTimeInMillis());
-            if (daySeed <= getStartOfDay(System.currentTimeMillis())) {
-                mSelectedDate = (Calendar) clickedDate.clone();
-                adapter.setSelectedDate(mSelectedDate);
-                updateDetails();
-            }
+        if (clickedDate != null) {
+            mSelectedDate = (Calendar) clickedDate.clone();
+            adapter.setSelectedDate(mSelectedDate);
+            updateDetails();
         }
     });
   }
@@ -142,13 +144,7 @@ public class DailyStatisticsFragment extends Fragment {
     mDetailsDate.setText(df.format(mSelectedDate.getTime()));
 
     long daySeed = getStartOfDay(mSelectedDate.getTimeInMillis());
-    DailyGame game = null;
-    for (DailyGame dg : mApplication.getCompletedDailyGames()) {
-        if (getStartOfDay(dg.getRandomSeed()) == daySeed) {
-            game = dg;
-            break;
-        }
-    }
+    DailyGame game = mCompletedGamesMap.get(daySeed);
 
     if (game != null && game.getGameState() == DailyGame.GameState.COMPLETED) {
         String hintAsterisk = game.areHintsUsed() ? " *" : "";
@@ -283,6 +279,13 @@ public class DailyStatisticsFragment extends Fragment {
     public long getItemId(int position) { return position; }
 
     @Override
+    public boolean isEnabled(int position) {
+        Calendar day = mDays.get(position);
+        long daySeed = getStartOfDay(day.getTimeInMillis());
+        return day.get(Calendar.MONTH) == mMonth && daySeed <= mTodaySeed;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       if (convertView == null) {
         convertView = new CalendarDayView(mContext);
@@ -347,11 +350,11 @@ public class DailyStatisticsFragment extends Fragment {
       if (isFuture) {
         setTextColor(Color.LTGRAY);
       } else {
-        setTextColor(Color.BLACK);
+        setTextColor(getResources().getColor(R.color.color_text_primary));
       }
 
       if (isSelected) {
-        setBackgroundColor(Color.parseColor("#E0E0E0"));
+        setBackgroundColor(getResources().getColor(R.color.daily_calendar_selected));
       } else {
         setBackgroundColor(Color.TRANSPARENT);
       }
@@ -366,18 +369,18 @@ public class DailyStatisticsFragment extends Fragment {
 
       if (mIsSolvedOnDay) {
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(getResources().getColor(R.color.daily_accent));
+        mPaint.setColor(getResources().getColor(R.color.daily_calendar_solved_on_day));
         canvas.drawCircle(width / 2f, height / 2f, radius, mPaint);
       } else if (mIsSolvedLate) {
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(getResources().getColor(R.color.daily_background));
+        mPaint.setColor(getResources().getColor(R.color.daily_calendar_solved_late));
         canvas.drawCircle(width / 2f, height / 2f, radius, mPaint);
       }
 
       if (mIsToday) {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(4);
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(getResources().getColor(R.color.daily_calendar_today_outline));
         canvas.drawCircle(width / 2f, height / 2f, radius, mPaint);
       }
 

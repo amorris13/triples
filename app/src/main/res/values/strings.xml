@@ -138,8 +138,9 @@
   <string name="beginner_title">Beginner Mode</string>
   <string name="zen_title">Zen</string>
   <string name="beginner_note">Beginner Mode: All cards have the same pattern (outline only).</string>
-  <string name="current_streak">Current Streak:</string>
-  <string name="longest_streak">Longest Streak:</string>
+  <string name="current_streak">Current Streak</string>
+  <string name="longest_streak">Longest Streak</string>
+  <string name="total_solved">Total Solved</string>
   <string name="today">Today</string>
 
 </resources>
