@@ -12,7 +12,7 @@
     android:layout_height="wrap_content"
     android:singleLine="true"
     android:text="@string/statistics_for"
-    android:textColor="#33B5E5"
+    android:textColor="@color/color_separator"
     android:textStyle="bold"
     android:layout_gravity="center_vertical" />
 

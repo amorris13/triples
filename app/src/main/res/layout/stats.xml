@@ -3,7 +3,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="#E0E0E0"
+  android:background="@color/color_background_secondary"
   android:padding="10dp"
   tools:context="com.antsapps.triples.BaseGameListActivity">
 
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:text="@string/statistics_for"
-        android:textColor="#33B5E5"
+        android:textColor="@color/color_separator"
         android:textStyle="bold" />
 
       <Spinner
@@ -41,13 +41,13 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:text="@string/graph"
-        android:textColor="#33B5E5"
+        android:textColor="@color/color_separator"
         android:textStyle="bold" />
 
       <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="#33B5E5" />
+        android:background="@color/color_separator" />
 
       <com.antsapps.triples.stats.HistogramView
         android:id="@+id/graph"
@@ -68,7 +68,7 @@
         android:paddingTop="10dp"
         android:singleLine="true"
         android:text="@string/summary"
-        android:textColor="#33B5E5"
+        android:textColor="@color/color_separator"
         android:textStyle="bold" />
 
       <View

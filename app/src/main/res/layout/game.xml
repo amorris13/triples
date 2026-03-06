@@ -17,7 +17,7 @@
     android:layout_width="fill_parent"
     android:layout_height="1sp"
     android:layout_above="@id/status_bar"
-    android:background="#33B5E5" />
+    android:background="@color/color_separator" />
 
   <ViewAnimator
     android:id="@+id/view_switcher"
@@ -39,7 +39,7 @@
       android:layout_height="fill_parent"
       android:gravity="center"
       android:text="@string/paused"
-      android:textColor="#33B5E5"
+      android:textColor="@color/color_separator"
       android:textSize="@dimen/game_paused_text_size" />
 
     <LinearLayout
@@ -52,7 +52,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/game_completed"
-          android:textColor="#424242"
+          android:textColor="@color/color_text_primary"
           android:textSize="@dimen/game_paused_text_size"
           />
 
@@ -110,7 +110,7 @@
           android:layout_height="wrap_content"
           android:layout_marginBottom="16dp"
           android:gravity="center"
-          android:textColor="#424242"
+          android:textColor="@color/color_text_primary"
           android:textSize="16sp"
           android:padding="10dp"/>
 

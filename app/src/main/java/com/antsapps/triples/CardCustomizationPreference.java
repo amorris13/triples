@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +32,6 @@ import java.util.List;
 public class CardCustomizationPreference extends Preference {
 
   private static final String[] SHAPES = {"square", "circle", "triangle", "diamond", "hexagon", "star"};
-  private static final String[] PRESET_COLORS = {
-    "#2196F3", "#FF9800", "#F44336", "#4CAF50", "#9C27B0", "#00BCD4",
-    "#E91E63", "#FF5722", "#FFC107", "#3F51B5", "#009688", "#000000"
-  };
   private static final String[] PATTERNS = {"stripes", "dots", "lighter", "crosshatch"};
 
   private Spinner[] colorSpinners = new Spinner[3];
@@ -54,8 +51,8 @@ public class CardCustomizationPreference extends Preference {
       super(context);
     }
 
-    public void setColor(String hex) {
-      mColor = Color.parseColor(hex);
+    public void setColor(int color) {
+      mColor = color;
       invalidate();
     }
 
@@ -111,20 +108,24 @@ public class CardCustomizationPreference extends Preference {
     updating = true;
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
+    List<Integer> colorIndices = new ArrayList<>();
+    for (int i = 0; i < CardCustomizationUtils.PRESET_COLOR_RES.length; i++) {
+        colorIndices.add(i);
+    }
+
     for (int i = 0; i < 3; i++) {
       final int index = i;
-      String currentColor = prefs.getString(getContext().getString(getColorKey(i)), PRESET_COLORS[i]);
-      List<String> colors = new ArrayList<>(Arrays.asList(PRESET_COLORS));
+      String currentIndexStr = prefs.getString(getContext().getString(getColorKey(i)), String.valueOf(i));
+      int currentIndex = Integer.parseInt(currentIndexStr);
 
-      final ColorAdapter colorAdapter = new ColorAdapter(getContext(), colors);
+      final ColorAdapter colorAdapter = new ColorAdapter(getContext(), colorIndices);
       colorSpinners[i].setAdapter(colorAdapter);
-      colorSpinners[i].setSelection(colors.indexOf(currentColor));
+      colorSpinners[i].setSelection(currentIndex);
       colorSpinners[i].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
           if (!updating) {
-            String selectedColor = (String) parent.getItemAtPosition(position);
-            ensureUniqueColor(index, selectedColor);
+            ensureUniqueColor(index, position);
             updateSampleCards();
           }
         }
@@ -173,7 +174,7 @@ public class CardCustomizationPreference extends Preference {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     SharedPreferences.Editor editor = prefs.edit();
     for (int i = 0; i < 3; i++) {
-      editor.putString(getContext().getString(getColorKey(i)), PRESET_COLORS[i]);
+      editor.putString(getContext().getString(getColorKey(i)), String.valueOf(i));
       editor.putString(getContext().getString(getShapeKey(i)), SHAPES[i]);
     }
     editor.putString(getContext().getString(R.string.pref_shaded_pattern), PATTERNS[0]);
@@ -182,22 +183,23 @@ public class CardCustomizationPreference extends Preference {
     updateSampleCards();
   }
 
-  private void ensureUniqueColor(int index, String selectedColor) {
+  private void ensureUniqueColor(int index, int selectedIndex) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     for (int i = 0; i < 3; i++) {
       if (i == index) continue;
-      String otherColor = prefs.getString(getContext().getString(getColorKey(i)), PRESET_COLORS[i]);
-      if (otherColor.equalsIgnoreCase(selectedColor)) {
-        String oldColor = prefs.getString(getContext().getString(getColorKey(index)), PRESET_COLORS[index]);
-        prefs.edit().putString(getContext().getString(getColorKey(i)), oldColor).apply();
+      String otherIndexStr = prefs.getString(getContext().getString(getColorKey(i)), String.valueOf(i));
+      int otherIndex = Integer.parseInt(otherIndexStr);
+      if (otherIndex == selectedIndex) {
+        String oldIndexStr = prefs.getString(getContext().getString(getColorKey(index)), String.valueOf(index));
+        prefs.edit().putString(getContext().getString(getColorKey(i)), oldIndexStr).apply();
         updating = true;
-        updateSpinnerSelection(colorSpinners[i], oldColor);
+        colorSpinners[i].setSelection(Integer.parseInt(oldIndexStr));
         updating = false;
       }
     }
-    prefs.edit().putString(getContext().getString(getColorKey(index)), selectedColor).apply();
+    prefs.edit().putString(getContext().getString(getColorKey(index)), String.valueOf(selectedIndex)).apply();
     updating = true;
-    updateSpinnerSelection(colorSpinners[index], selectedColor);
+    colorSpinners[index].setSelection(selectedIndex);
     updating = false;
   }
 
@@ -252,8 +254,8 @@ public class CardCustomizationPreference extends Preference {
     sampleCards[2].setCard(new Card(1, 2, 2, 2));
   }
 
-  private class ColorAdapter extends ArrayAdapter<String> {
-    public ColorAdapter(@NonNull Context context, @NonNull List<String> objects) {
+  private class ColorAdapter extends ArrayAdapter<Integer> {
+    public ColorAdapter(@NonNull Context context, @NonNull List<Integer> objects) {
       super(context, 0, objects);
     }
     @NonNull
@@ -264,7 +266,8 @@ public class CardCustomizationPreference extends Preference {
         int size = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
         convertView.setLayoutParams(new ViewGroup.LayoutParams(size, size));
       }
-      ((ColorItemView) convertView).setColor(getItem(position));
+      int colorIndex = getItem(position);
+      ((ColorItemView) convertView).setColor(ContextCompat.getColor(getContext(), CardCustomizationUtils.PRESET_COLOR_RES[colorIndex]));
       return convertView;
     }
     @Override
@@ -287,7 +290,7 @@ public class CardCustomizationPreference extends Preference {
       }
       ShapeIconView siv = (ShapeIconView) convertView;
       siv.setShape(getItem(position));
-      siv.setColor(Color.BLACK);
+      siv.setColor(ContextCompat.getColor(getContext(), R.color.color_text_primary));
       return siv;
     }
     @Override
