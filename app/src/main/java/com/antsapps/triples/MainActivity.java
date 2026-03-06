@@ -29,6 +29,8 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mArcadeResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
+  private MaterialButton mDailyPlayButton;
+  private MaterialButton mDailyStatisticsButton;
   private MaterialButton mZenButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
@@ -93,6 +95,22 @@ public class MainActivity extends BaseTriplesActivity {
       }
     });
 
+    mDailyPlayButton = findViewById(R.id.daily_play_button);
+    mDailyPlayButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        playDailyGame();
+      }
+    });
+
+    mDailyStatisticsButton = findViewById(R.id.daily_statistics_button);
+    mDailyStatisticsButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        showStatistics("Daily");
+      }
+    });
+
     mZenButton = findViewById(R.id.zen_button);
     mZenButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -109,6 +127,17 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
+    long todaySeed = com.antsapps.triples.backend.DailyGame.getStartOfDaySeed(System.currentTimeMillis());
+    boolean dailyCompleted = false;
+    for (com.antsapps.triples.backend.DailyGame dg : mApplication.getCompletedDailyGames()) {
+      if (dg.getRandomSeed() == todaySeed) {
+        dailyCompleted = true;
+        break;
+      }
+    }
+    findViewById(R.id.daily_play_button).setVisibility(dailyCompleted ? View.GONE : View.VISIBLE);
+    findViewById(R.id.daily_completed_text).setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
+
     ClassicGame classicGame = Iterables.getFirst(mApplication.getCurrentClassicGames(), null);
     if (classicGame != null && !classicGame.getTripleFindTimes().isEmpty()) {
       mClassicResumeButton.setVisibility(View.VISIBLE);
@@ -132,6 +161,9 @@ public class MainActivity extends BaseTriplesActivity {
     }
     int numArcadeCompleted = Iterables.size(mApplication.getCompletedArcadeGames());
     mArcadeStatisticsButton.setText(getString(R.string.statistics_format, numArcadeCompleted));
+
+    int numDailyCompleted = Iterables.size(mApplication.getCompletedDailyGames());
+    mDailyStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
   }
 
   private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {
@@ -157,6 +189,13 @@ public class MainActivity extends BaseTriplesActivity {
   private void playZenGame(boolean isBeginner) {
     Intent intent = new Intent(this, ZenGameActivity.class);
     intent.putExtra(ZenGameActivity.IS_BEGINNER, isBeginner);
+    startActivity(intent);
+  }
+
+  private void playDailyGame() {
+    com.antsapps.triples.backend.DailyGame game = mApplication.getDailyGameForDate(System.currentTimeMillis());
+    Intent intent = new Intent(this, DailyGameActivity.class);
+    intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, game.getId());
     startActivity(intent);
   }
 

@@ -34,6 +34,9 @@
       android:name=".ArcadeGameActivity"
       android:label="Arcade" />
     <activity
+      android:name=".DailyGameActivity"
+      android:label="Daily Puzzle" />
+    <activity
       android:name=".ZenGameActivity" />
     <activity
       android:name=".HelpActivity"

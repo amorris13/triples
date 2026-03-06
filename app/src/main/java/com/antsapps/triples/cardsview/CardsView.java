@@ -59,7 +59,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
    * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
    * view is completely opaque.
    */
-  private float mAlpha = 1;
+  private float mDimAlpha = 1;
 
   public CardsView(Context context) {
     this(context, null);
@@ -99,8 +99,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
     }
-    if (mAlpha != 1) {
-      canvas.drawColor(Color.argb((int) ((1 - mAlpha) * 255), 0xF3, 0xF3, 0xF3));
+    if (mDimAlpha != 1) {
+      canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
     }
     boolean invalidated = false;
     if (mNumAnimating > 0) {
@@ -123,12 +123,15 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
         CardDrawable cardDrawable = mCardDrawables.get(oldCard);
-        cardDrawable.updateBounds(mOffScreenLocation);
+        if (cardDrawable != null) {
+          cardDrawable.updateBounds(mOffScreenLocation);
+        }
         mCurrentlySelected.remove(oldCard);
       }
     }
 
     mCards = newCards;
+    updateMeasuredDimensions(0, 0);
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
@@ -141,7 +144,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         cardDrawable.updateBounds(calcBounds(i));
       }
     }
-    updateMeasuredDimensions(0, 0);
+    requestLayout();
     invalidate();
     logValidTriple();
     long end = System.currentTimeMillis();
@@ -150,7 +153,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   protected abstract void logValidTriple();
 
-  void updateBounds() {
+  public void updateBounds() {
+    if (mOffScreenLocation.isEmpty() && getWidth() > 0 && getHeight() > 0) {
+      updateMeasuredDimensions(0, 0); // Trigger dimension calculation if needed
+    }
     long start = System.currentTimeMillis();
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
@@ -182,7 +188,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   @Override
   public void setAlpha(float opacity) {
-    mAlpha = opacity;
+    super.setAlpha(opacity);
+    mDimAlpha = opacity;
     invalidate();
   }
 
@@ -283,5 +290,31 @@ public abstract class CardsView extends View implements Game.GameRenderer {
       }
     }
     mCurrentlyHinted.clear();
+  }
+
+  @Override
+  public void clearSelectedCards() {
+    for (Card card : mCurrentlySelected) {
+      CardDrawable cardDrawable = mCardDrawables.get(card);
+      if (cardDrawable != null) {
+        cardDrawable.setSelected(false);
+      }
+    }
+    mCurrentlySelected.clear();
+    invalidate();
+  }
+
+  public void animateTripleFound(final Set<Card> triple) {
+    for (Card c : triple) {
+      CardDrawable cd = mCardDrawables.get(c);
+      if (cd != null) {
+        cd.updateBounds(mOffScreenLocation);
+      }
+    }
+
+    // Fly back after animation duration
+    mHandler.postDelayed(() -> {
+      updateBounds();
+    }, 1000); // 1s to ensure animation finishes
   }
 }

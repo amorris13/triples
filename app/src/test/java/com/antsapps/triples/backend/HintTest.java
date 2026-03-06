@@ -42,6 +42,7 @@ public class HintTest {
     }
     @Override public void clearHintedCards() { hinted.clear(); }
     @Override public Set<Card> getSelectedCards() { return selected; }
+    @Override public void clearSelectedCards() { selected.clear(); }
   }
 
   @Test

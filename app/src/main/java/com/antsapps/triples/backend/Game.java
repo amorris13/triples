@@ -42,6 +42,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     void clearHintedCards();
 
+    void clearSelectedCards();
+
     Set<Card> getSelectedCards();
   }
 
@@ -64,7 +66,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private boolean mActivitiyLifecycleActive;
 
-  private int mNumTriplesFound;
+  protected int mNumTriplesFound;
 
   protected final Deck mDeck;
 
@@ -72,9 +74,9 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected final List<Long> mTripleFindTimes;
 
-  private final Set<Card> mHintedCards = Sets.newHashSet();
+  protected final Set<Card> mHintedCards = Sets.newHashSet();
 
-  private boolean mHintsUsed;
+  protected boolean mHintsUsed;
 
   protected final Timer mTimer;
 
@@ -84,7 +86,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final Date mDate;
 
-  private GameRenderer mGameRenderer;
+  protected GameRenderer mGameRenderer;
 
   private final List<OnUpdateGameStateListener> mGameStateListeners = Lists.newArrayList();
 
@@ -225,6 +227,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
+    mGameRenderer.clearSelectedCards();
 
     for (int i = 0; i < 3; i++) {
       mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
@@ -344,6 +347,18 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return null;
   }
 
+  public static List<Set<Card>> getAllValidTriples(List<Card> cards) {
+    List<Set<Card>> validTriples = Lists.newArrayList();
+    Set<Card> distinctCards = Sets.newHashSet(cards);
+    distinctCards.remove(null);
+    for (Set<Card> subset : Sets.combinations(distinctCards, 3)) {
+      if (isValidTriple(subset)) {
+        validTriples.add(subset);
+      }
+    }
+    return validTriples;
+  }
+
   private static int numNotNull(Iterable<Card> cards) {
     int countNotNull = 0;
     for (Card card : cards) {
@@ -363,9 +378,11 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
   }
 
-  private void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
+  protected void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
     ImmutableList<Card> newCards = ImmutableList.copyOf(mCardsInPlay);
-    mGameRenderer.updateCardsInPlay(newCards);
+    if (mGameRenderer != null) {
+      mGameRenderer.updateCardsInPlay(newCards);
+    }
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
       listener.onUpdateCardsInPlay(newCards, oldCards, getCardsRemaining(), mNumTriplesFound);
     }
@@ -410,6 +427,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   public List<Long> getTripleFindTimes() {
     return ImmutableList.copyOf(mTripleFindTimes);
+  }
+
+  public int getNumTriplesFound() {
+    return mNumTriplesFound;
   }
 
   public Date getDateStarted() {
@@ -483,7 +504,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return true;
   }
 
-  private void dispatchHint(Card card) {
+  protected void dispatchHint(Card card) {
     if (mHintedCards.add(card)) {
       mGameRenderer.addHint(card);
       for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {

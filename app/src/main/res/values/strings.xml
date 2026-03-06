@@ -71,6 +71,7 @@
   <string name="drawer_close">Close navigation drawer</string>
   <string name="arcade_label">Arcade</string>
   <string name="classic_label">Classic</string>
+  <string name="daily_label">Daily Puzzle</string>
   <string name="zen_label">Zen</string>
   <string name="beginner_label">Beginner</string>
   <string name="game_completed">GAME COMPLETED</string>
@@ -95,6 +96,7 @@
 
     <string name="cards_remaining_format">Cards remaining: %1$d</string>
     <string name="triples_found_format">Triples found: %1$d</string>
+    <string name="triples_found_of_format">Triples found: %1$d / %2$d</string>
 
   <string name="color_0">Color 1</string>
   <string name="color_1">Color 2</string>
@@ -136,5 +138,8 @@
   <string name="beginner_title">Beginner Mode</string>
   <string name="zen_title">Zen</string>
   <string name="beginner_note">Beginner Mode: All cards have the same pattern (outline only).</string>
+  <string name="current_streak">Current Streak:</string>
+  <string name="longest_streak">Longest Streak:</string>
+  <string name="today">Today</string>
 
 </resources>

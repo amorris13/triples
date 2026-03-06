@@ -23,6 +23,13 @@
     <item name="android:textSize">30sp</item>
   </style>
 
+  <style name="StatusBarContainer">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:padding">5dp</item>
+    <item name="android:paddingBottom">@dimen/status_bar_padding_bottom</item>
+  </style>
+
   <style name="HelpDialog" parent="Theme.Material3.DayNight.Dialog">
     <item name="android:windowNoTitle">true</item>
   </style>
@@ -77,6 +84,10 @@
 
   <style name="ZenButtonTheme" parent="ThemeOverlay.Material3">
     <item name="colorPrimary">@color/zen_accent</item>
+  </style>
+
+  <style name="DailyButtonTheme" parent="ThemeOverlay.Material3.Light">
+    <item name="colorPrimary">@color/daily_accent</item>
   </style>
 
   <style name="MainCardContainer">

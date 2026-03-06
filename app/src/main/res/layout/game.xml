@@ -26,7 +26,8 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:layout_above="@id/bottom_separator"
-    android:layout_alignParentTop="true">
+    android:layout_alignParentTop="true"
+    android:measureAllChildren="false">
 
     <include
       android:layout_width="fill_parent"

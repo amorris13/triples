@@ -127,6 +127,56 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Daily Puzzle Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:id="@+id/daily_container"
+                style="@style/MainCardContainer"
+                android:background="@color/daily_background">
+
+                <TextView
+                    style="@style/MainCardLabel"
+                    android:text="@string/daily_label"
+                    android:textColor="@color/daily_accent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/daily_play_button"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/play"
+                    android:theme="@style/DailyButtonTheme" />
+
+                <TextView
+                    android:id="@+id/daily_completed_text"
+                    style="@style/MainCardLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="@string/completed"
+                    android:textColor="@color/daily_accent"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/daily_statistics_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/statistics"
+                    android:textColor="@color/daily_accent" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Zen Section -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

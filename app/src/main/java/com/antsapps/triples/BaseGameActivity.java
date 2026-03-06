@@ -23,6 +23,7 @@ import androidx.core.view.MenuItemCompat;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.DatePeriod;
@@ -76,6 +77,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
             // Ensure width and height are greater than 0 before refreshing drawables
             if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
                 mCardsView.refreshDrawables();
+                mCardsView.updateBounds();
                 mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }
@@ -211,7 +213,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  private void updateHintUsedIndicator() {
+  protected void updateHintUsedIndicator() {
     View hintUsedIndicator = findViewById(R.id.hint_used_text);
     if (hintUsedIndicator != null) {
       hintUsedIndicator.setVisibility(getGame().areHintsUsed() ? View.VISIBLE : View.GONE);
@@ -276,6 +278,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mGameState = state;
 
     updateViewSwitcher();
+    updateHintUsedIndicator();
 
     if (mGameState == GameState.COMPLETED) {
       mCardsView.setAlpha(0.5f);
@@ -326,6 +329,15 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
+  private String formatClassicCompletedStats(long timeElapsed) {
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(timeElapsed);
+    if (seconds < 60) {
+      return getString(R.string.classic_completed_stats_seconds_format, seconds);
+    } else {
+      return getString(R.string.classic_completed_stats_format, seconds / 60, seconds % 60);
+    }
+  }
+
   private void updateStatistics() {
     List<Long> findTimes = getGame().getTripleFindTimes();
     if (!findTimes.isEmpty()) {
@@ -351,14 +363,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       TextView outputTv = (TextView) findViewById(R.id.game_output);
       Game game = getGame();
       if (game instanceof ClassicGame) {
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(game.getTimeElapsed());
-        if (seconds < 60) {
-          outputTv.setText(getString(R.string.classic_completed_stats_seconds_format, seconds));
-        } else {
-          outputTv.setText(getString(R.string.classic_completed_stats_format, seconds / 60, seconds % 60));
-        }
+        outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
       } else if (game instanceof ArcadeGame) {
         outputTv.setText(getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
+      } else if (game instanceof DailyGame) {
+        outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
       }
 
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
@@ -461,9 +470,15 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   public void showStatistics(View view) {
     Intent intent = new Intent(this, StatisticsActivity.class);
-    intent.putExtra(
-        StatisticsActivity.GAME_TYPE,
-        getGame() instanceof ArcadeGame ? "Arcade" : "Classic");
+    String gameType;
+    if (getGame() instanceof ArcadeGame) {
+      gameType = "Arcade";
+    } else if (getGame() instanceof DailyGame) {
+      gameType = "Daily";
+    } else {
+      gameType = "Classic";
+    }
+    intent.putExtra(StatisticsActivity.GAME_TYPE, gameType);
     startActivity(intent);
   }
 

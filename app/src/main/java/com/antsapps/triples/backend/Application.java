@@ -21,6 +21,7 @@ public class Application extends OnStateChangedReporter {
   // Should remain sorted
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
+  private final List<DailyGame> mDailyGames = Lists.newArrayList();
 
   private ZenGame mZenGame;
   private ZenGame mBeginnerGame;
@@ -30,7 +31,7 @@ public class Application extends OnStateChangedReporter {
   private Application(Context context) {
     super();
     database = new DBAdapter(context);
-    database.initialize(mClassicGames, mArcadeGames);
+    database.initialize(mClassicGames, mArcadeGames, mDailyGames);
     if (isDebug()) {
       prefillDatabaseIfEmpty();
     }
@@ -226,5 +227,50 @@ public class Application extends OnStateChangedReporter {
       mZenGame = null;
     }
     notifyStateChanged();
+  }
+
+  public void addDailyGame(DailyGame game) {
+    game.setId(database.addDailyGame(game));
+    mDailyGames.add(game);
+    notifyStateChanged();
+  }
+
+  public void saveDailyGame(DailyGame game) {
+    database.updateDailyGame(game);
+    notifyStateChanged();
+  }
+
+  public DailyGame getDailyGame(long id) {
+    for (DailyGame game : mDailyGames) {
+      if (game.getId() == id) {
+        return game;
+      }
+    }
+    return null;
+  }
+
+  public DailyGame getDailyGameForDate(long dateMillis) {
+    long daySeed = DailyGame.getStartOfDaySeed(dateMillis);
+
+    for (DailyGame game : mDailyGames) {
+      if (game.getRandomSeed() == daySeed) {
+        return game;
+      }
+    }
+
+    DailyGame game = DailyGame.createFromSeed(daySeed);
+    addDailyGame(game);
+    return game;
+  }
+
+  public Iterable<DailyGame> getCompletedDailyGames() {
+    return Iterables.filter(
+        mDailyGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.COMPLETED;
+          }
+        });
   }
 }
