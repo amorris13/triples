@@ -42,7 +42,7 @@
       android:layout_centerHorizontal="true"
       android:layout_centerVertical="true"
       android:text="@string/hint_used_indicator"
-      android:textColor="#FF4444"
+      android:textColor="@color/color_critical"
       android:visibility="gone"/>
 
 </RelativeLayout>

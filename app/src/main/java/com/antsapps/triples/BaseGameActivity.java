@@ -120,6 +120,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     super.onPrepareOptionsMenu(menu);
     menu.findItem(R.id.pause).setVisible(mGameState == GameState.ACTIVE);
     menu.findItem(R.id.play).setVisible(mGameState == GameState.PAUSED);
+    menu.findItem(R.id.shuffle).setVisible(mGameState == GameState.ACTIVE);
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
@@ -141,6 +142,10 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     int itemId = item.getItemId();
     if (itemId == R.id.hint) {
       handleHintSelection();
+      return true;
+    } else if (itemId == R.id.shuffle) {
+      getGame().shuffleCardsInPlay();
+      logGameEvent(AnalyticsConstants.Event.SHUFFLE_CARDS);
       return true;
     } else if (itemId == R.id.pause) {
       getGame().pause();
@@ -290,7 +295,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     if (isSignedIn()) {
       submitScore();
       AchievementManager.awardAchievementsForGame(this, getGame());
-      AchievementManager.awardCountAchievements(this, Application.getInstance(this));
+      Application application = Application.getInstance(this);
+      AchievementManager.awardCountAchievements(this, application);
+      application.uploadToCloud(this);
     } else {
       shouldSubmitScoreOnSignIn = true;
     }

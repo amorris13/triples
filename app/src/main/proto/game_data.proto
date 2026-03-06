@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.antsapps.triples.backend;
+
+option java_package = "com.antsapps.triples.backend";
+option java_multiple_files = true;
+
+message ClassicGameSummary {
+  int64 date_started_millis = 1;
+  int64 time_elapsed_millis = 2;
+  bool hints_used = 3;
+}
+
+message ArcadeGameSummary {
+  int64 date_started_millis = 1;
+  int32 num_triples_found = 2;
+  bool hints_used = 3;
+}
+
+message CloudSaveData {
+  repeated ClassicGameSummary classic_games = 1;
+  repeated ArcadeGameSummary arcade_games = 2;
+}

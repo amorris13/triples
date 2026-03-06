@@ -47,7 +47,7 @@ public class TimelineView extends View {
     float availableWidth = width - 2 * padding;
 
     Paint linePaint = new Paint();
-    linePaint.setColor(Color.GRAY);
+    linePaint.setColor(ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_text_secondary));
     linePaint.setStrokeWidth(2 * density);
     canvas.drawLine(padding, height / 2, width - padding, height / 2, linePaint);
 
@@ -73,7 +73,7 @@ public class TimelineView extends View {
     }
 
     Paint textPaint = new Paint();
-    textPaint.setColor(Color.GRAY);
+    textPaint.setColor(ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_text_secondary));
     textPaint.setTextSize(10 * density);
     textPaint.setAntiAlias(true);
     textPaint.setTextAlign(Paint.Align.CENTER);

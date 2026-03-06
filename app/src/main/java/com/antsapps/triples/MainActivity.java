@@ -42,7 +42,7 @@ public class MainActivity extends BaseTriplesActivity {
 
     if (getSupportActionBar() != null) {
       getSupportActionBar().setDisplayShowHomeEnabled(true);
-      getSupportActionBar().setIcon(R.drawable.launcher);
+      getSupportActionBar().setIcon(R.drawable.ic_launcher_foreground_48dp);
     }
 
     mApplication = Application.getInstance(getApplication());

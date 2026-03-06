@@ -7,15 +7,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.drawable.DrawableCompat;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.antsapps.triples.backend.Application;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,11 +47,28 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
+    applyTheme();
     super.onCreate(savedInstanceState);
     PlayGamesSdk.initialize(this);
 
     mFirebaseAuth = FirebaseAuth.getInstance();
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+  }
+
+  private void applyTheme() {
+    String theme = PreferenceManager.getDefaultSharedPreferences(this)
+        .getString(getString(R.string.pref_theme), "system");
+    switch (theme) {
+      case "light":
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        break;
+      case "dark":
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        break;
+      case "system":
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        break;
+    }
   }
 
   @Override
@@ -156,7 +176,9 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
-    AchievementManager.syncAchievements(this, com.antsapps.triples.backend.Application.getInstance(this));
+    Application application = Application.getInstance(this);
+    AchievementManager.syncAchievements(this, application);
+    CloudSaveManager.syncWithCloud(this, application);
   }
 
   public void signIn() {

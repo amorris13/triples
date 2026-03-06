@@ -1,6 +1,6 @@
 package com.antsapps.triples;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +19,7 @@ import java.util.Random;
 
 import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
-public class HelpActivity extends Activity implements OnValidTripleSelectedListener {
+public class HelpActivity extends HelpActivityBase implements OnValidTripleSelectedListener {
 
   private FirebaseAnalytics mFirebaseAnalytics;
 

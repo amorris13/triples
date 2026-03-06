@@ -75,7 +75,8 @@
   <string name="zen_label">Zen</string>
   <string name="beginner_label">Beginner</string>
   <string name="game_completed">GAME COMPLETED</string>
-    <string name="hint">Hint</string>
+  <string name="hint">Hint</string>
+  <string name="shuffle">Shuffle</string>
     <string name="fastest_triple">Fastest triple:</string>
     <string name="slowest_triple">Slowest triple:</string>
     <string name="time_taken_field">Time taken:</string>

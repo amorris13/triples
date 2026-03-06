@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <color name="colorPrimary">#55D6F3</color>
+  <color name="colorOnPrimary">#003642</color>
+  <color name="colorPrimaryContainer">#004E5E</color>
+  <color name="colorOnPrimaryContainer">#B0ECFF</color>
+
+  <color name="colorSecondary">#B3CAD5</color>
+  <color name="colorOnSecondary">#1E333C</color>
+  <color name="colorSecondaryContainer">#354A53</color>
+  <color name="colorOnSecondaryContainer">#CFE6F1</color>
+
+  <color name="colorTertiary">#C1C4EB</color>
+  <color name="colorOnTertiary">#2B2E4D</color>
+  <color name="colorTertiaryContainer">#414465</color>
+  <color name="colorOnTertiaryContainer">#E0E0FF</color>
+
+  <color name="colorError">#FFB4AB</color>
+  <color name="colorOnError">#690005</color>
+  <color name="colorErrorContainer">#93000A</color>
+  <color name="colorOnErrorContainer">#FFDAD6</color>
+
+  <color name="colorSurface">#191C1D</color>
+  <color name="colorOnSurface">#E1E2E3</color>
+  <color name="colorSurfaceVariant">#40484B</color>
+  <color name="colorOnSurfaceVariant">#C0C8CC</color>
+  <color name="colorOutline">#8A9296</color>
+  <color name="colorOutlineVariant">#40484B</color>
+
+  <color name="classic_background">#00222d</color>
+  <color name="arcade_background">#002d00</color>
+  <color name="zen_background">#2d002d</color>
+
+  <!-- Dark mode accents (Material 200) -->
+  <color name="classic_accent">#90CAF9</color>
+  <color name="arcade_accent">#A5D6A7</color>
+  <color name="zen_accent">#CE93D8</color>
+
+  <!-- Semantic colors for dark mode support -->
+  <color name="color_separator">#0097A7</color>
+  <color name="color_critical">#FF5252</color>
+  <color name="color_text_primary">#E1E2E3</color>
+  <color name="color_text_secondary">#B0BEC5</color>
+  <color name="color_background_main">#121212</color>
+  <color name="color_background_secondary">#1E1E1E</color>
+  <color name="color_background_tertiary">#2C2C2C</color>
+
+  <!-- Dimmer status bar colors -->
+  <color name="status_bar_key_color">#90A4AE</color>
+  <color name="status_bar_value_color">#E1E2E3</color>
+
+  <!-- Card Colors -->
+  <color name="card_background">#2C2C2C</color>
+  <color name="card_shadow">#40000000</color>
+  <color name="card_selected_outline">#40C4FF</color>
+  <color name="card_hint_outline">#8040C4FF</color>
+
+  <!-- Card Symbol Presets for Dark Mode (slightly adjusted for visibility if needed) -->
+  <color name="preset_color_0">#42A5F5</color>
+  <color name="preset_color_1">#FFA726</color>
+  <color name="preset_color_2">#EF5350</color>
+  <color name="preset_color_3">#66BB6A</color>
+  <color name="preset_color_4">#AB47BC</color>
+  <color name="preset_color_5">#26C6DA</color>
+  <color name="preset_color_6">#EC407A</color>
+  <color name="preset_color_7">#FF7043</color>
+  <color name="preset_color_8">#FFCA28</color>
+  <color name="preset_color_9">#5C6BC0</color>
+  <color name="preset_color_10">#26A69A</color>
+  <color name="preset_color_11">#FFFFFF</color>
+
+</resources>

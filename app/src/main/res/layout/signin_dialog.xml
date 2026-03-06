@@ -3,7 +3,7 @@
   android:id="@+id/sign_in_bar"
   android:layout_height="wrap_content"
   android:layout_width="match_parent"
-  android:background="#f0f0f0"
+  android:background="@color/color_background_tertiary"
   android:orientation="horizontal"
   android:gravity="center"
   android:padding="10dp">
@@ -19,6 +19,6 @@
     android:layout_height="wrap_content"
     android:text="@string/sign_in_why"
     android:layout_marginLeft="10dp"
-    android:textColor="#808080" />
+    android:textColor="@color/color_text_secondary" />
 
 </LinearLayout>

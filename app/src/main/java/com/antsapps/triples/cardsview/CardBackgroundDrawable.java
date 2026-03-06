@@ -46,19 +46,19 @@ class CardBackgroundDrawable extends Drawable {
     mCardShape = new RoundRectShape(outerR, null, null);
 
     mBackground = new ShapeDrawable(mCardShape);
-    mBackground.getPaint().setColor(Color.WHITE);
+    mBackground.getPaint().setColor(ContextCompat.getColor(context, R.color.card_background));
 
     mShadow = new ShapeDrawable(mCardShape);
-    mShadow.getPaint().setColor(0x20202020);
+    mShadow.getPaint().setColor(ContextCompat.getColor(context, R.color.card_shadow));
 
     mOutline = new ShapeDrawable(mCardShape);
     mOutline.getPaint().setStyle(Paint.Style.STROKE);
-    mOutline.getPaint().setColor(Color.BLUE);
+    mOutline.getPaint().setColor(ContextCompat.getColor(context, R.color.card_selected_outline));
     mOutline.getPaint().setStrokeWidth(5);
 
     mHintOutline = new ShapeDrawable(mCardShape);
     mHintOutline.getPaint().setStyle(Paint.Style.STROKE);
-    mHintOutline.getPaint().setColor((0x400000FF));
+    mHintOutline.getPaint().setColor(ContextCompat.getColor(context, R.color.card_hint_outline));
     mHintOutline.getPaint().setStrokeWidth(15);
     mHintOutline.getPaint().setPathEffect(new DashPathEffect(new float[] {20, 10}, 0));
 
