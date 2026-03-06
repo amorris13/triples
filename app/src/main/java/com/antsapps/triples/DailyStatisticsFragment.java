@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
@@ -192,6 +193,8 @@ public class DailyStatisticsFragment extends Fragment {
 
   private static class CalendarAdapter extends BaseAdapter {
     private final Context mContext;
+    private final int mTextPrimaryColor;
+    private final int mTextSecondaryColor;
     private final List<Calendar> mDays;
     private final Set<Long> mCompletedOnDaySeeds;
     private final Set<Long> mCompletedLateSeeds;
@@ -200,6 +203,8 @@ public class DailyStatisticsFragment extends Fragment {
 
     CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames) {
       mContext = context;
+      mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
+      mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
       mMonth = month.get(Calendar.MONTH);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
 
@@ -243,7 +248,7 @@ public class DailyStatisticsFragment extends Fragment {
             {
                 mPaint.setStyle(Paint.Style.STROKE);
                 mPaint.setStrokeWidth(2);
-                mPaint.setColor(Color.BLACK);
+                mPaint.setColor(mTextPrimaryColor);
             }
             @Override
             protected void onDraw(Canvas canvas) {
@@ -265,17 +270,17 @@ public class DailyStatisticsFragment extends Fragment {
       long daySeed = getStartOfDay(day.getTimeInMillis());
 
       if (day.get(Calendar.MONTH) != mMonth) {
-        tv.setTextColor(Color.LTGRAY);
-        tv.setBackgroundColor(Color.TRANSPARENT);
+        tv.setTextColor(mTextSecondaryColor);
+        tv.setBackgroundColor(android.graphics.Color.TRANSPARENT);
       } else if (daySeed > mTodaySeed) {
-        tv.setTextColor(Color.LTGRAY);
-        tv.setBackgroundColor(Color.TRANSPARENT);
+        tv.setTextColor(mTextSecondaryColor);
+        tv.setBackgroundColor(android.graphics.Color.TRANSPARENT);
       } else {
-        tv.setTextColor(Color.BLACK);
+        tv.setTextColor(mTextPrimaryColor);
         if (mCompletedOnDaySeeds.contains(daySeed)) {
-          tv.setBackgroundColor(mContext.getResources().getColor(R.color.daily_accent));
+          tv.setBackgroundColor(ContextCompat.getColor(mContext, R.color.daily_accent));
         } else if (mCompletedLateSeeds.contains(daySeed)) {
-          tv.setBackgroundColor(mContext.getResources().getColor(R.color.daily_background));
+          tv.setBackgroundColor(ContextCompat.getColor(mContext, R.color.daily_background));
         } else {
           tv.setBackgroundColor(Color.TRANSPARENT);
         }
