@@ -1,1 +1,1 @@
-Triples - A Set-style card game. Find triples where properties match or differ.
+A beautiful, Set-style card game with Zen, Arcade, and Classic modes.
