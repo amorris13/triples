@@ -2,7 +2,6 @@ package com.antsapps.triples;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -15,9 +14,11 @@ import androidx.core.content.ContextCompat;
 
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.SymbolDrawable;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +26,7 @@ import java.util.Set;
 public class FoundTriplesView extends View {
 
   private static final float CARD_ASPECT_RATIO = (float) ((Math.sqrt(5) - 1) / 2);
-  private static final int STACK_OVERLAP_FACTOR = 4; // 1/4 of card height
+  private static final int STACK_OVERLAP_FACTOR = 3; // 1/3 of card height
   private static final int COLUMNS = 5;
   private static final int PADDING_DP = 8;
   private static final int HIGHLIGHT_DURATION_MS = 1000;
@@ -92,9 +93,9 @@ public class FoundTriplesView extends View {
     }, HIGHLIGHT_DURATION_MS);
   }
 
-  public Rect getTripleLocation(Set<Card> triple) {
+  public Map<Card, Rect> getCardLocations(Set<Card> triple) {
     int index = mAllTriples.indexOf(triple);
-    if (index == -1) return null;
+    if (index == -1) return Collections.emptyMap();
 
     int column = index % COLUMNS;
     int row = index / COLUMNS;
@@ -103,16 +104,25 @@ public class FoundTriplesView extends View {
     int availableWidth = width - (COLUMNS + 1) * mPadding;
     int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
-    int stackHeight = cardHeight + (cardHeight / STACK_OVERLAP_FACTOR) * 2;
+    int overlap = cardHeight / STACK_OVERLAP_FACTOR;
+    int stackHeight = cardHeight + overlap * 2;
 
     int x = mPadding + column * (cardWidth + mPadding);
     int y = mPadding + row * (stackHeight + mPadding);
 
-    Rect rect = new Rect(x, y, x + cardWidth, y + stackHeight);
     int[] location = new int[2];
     getLocationInWindow(location);
-    rect.offset(location[0], location[1]);
-    return rect;
+
+    List<Card> cards = Lists.newArrayList(triple);
+    Collections.sort(cards, Card.COMPARATOR);
+
+    ImmutableMap.Builder<Card, Rect> builder = ImmutableMap.builder();
+    for (int i = 0; i < 3; i++) {
+      Rect rect = new Rect(x, y + i * overlap, x + cardWidth, y + i * overlap + cardHeight);
+      rect.offset(location[0], location[1]);
+      builder.put(cards.get(i), rect);
+    }
+    return builder.build();
   }
 
   @Override
@@ -125,7 +135,8 @@ public class FoundTriplesView extends View {
     int availableWidth = width - (COLUMNS + 1) * mPadding;
     int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
-    int stackHeight = cardHeight + (cardHeight / STACK_OVERLAP_FACTOR) * 2;
+    int overlap = cardHeight / STACK_OVERLAP_FACTOR;
+    int stackHeight = cardHeight + overlap * 2;
 
     int rows = (int) Math.ceil((double) mAllTriples.size() / COLUMNS);
     int height = rows * (stackHeight + mPadding) + mPadding;
@@ -165,53 +176,23 @@ public class FoundTriplesView extends View {
   private void drawTripleStack(Canvas canvas, Set<Card> triple, int x, int y, int w, int h, int overlap) {
     List<Card> cards = Lists.newArrayList(triple);
     // Sort to ensure consistent stack order
-    java.util.Collections.sort(cards, Card.COMPARATOR);
+    Collections.sort(cards, Card.COMPARATOR);
 
     for (int i = 0; i < 3; i++) {
       Rect cardRect = new Rect(x, y + i * overlap, x + w, y + i * overlap + h);
       canvas.drawRoundRect(new RectF(cardRect), 8, 8, mBackgroundPaint);
+      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // thin border
 
       SymbolDrawable symbol = mSymbolDrawables.get(cards.get(i));
-      // Reusing CardDrawable's logic for symbol bounds would be better, but we'll approximate for now
-      // or we can use the actual method if we pass a scaled rect.
-      List<Rect> symbolBounds = getSymbolBounds(cards.get(i), cardRect);
+      // CardDrawable's getBoundsForNumId expects bounds relative to card itself.
+      Rect relativeCardRect = new Rect(0, 0, w, h);
+      List<Rect> symbolBounds = com.antsapps.triples.cardsview.CardDrawable.getBoundsForNumId(cards.get(i).mNumber, relativeCardRect);
       for (Rect sb : symbolBounds) {
+        sb.offset(cardRect.left, cardRect.top);
         symbol.setBounds(sb);
         symbol.draw(canvas);
       }
     }
-  }
-
-  private List<Rect> getSymbolBounds(Card card, Rect cardRect) {
-    // This is a simplified version of CardDrawable.getBoundsForNumId
-    List<Rect> rects = Lists.newArrayList();
-    int width = cardRect.width();
-    int height = cardRect.height();
-    int halfSideLength = width / 10;
-    int gap = halfSideLength / 2;
-
-    int centerX = cardRect.left + width / 2;
-    int centerY = cardRect.top + height / 2;
-
-    switch (card.mNumber) {
-      case 0:
-        rects.add(squareFromCenterAndRadius(centerX, centerY, halfSideLength));
-        break;
-      case 1:
-        rects.add(squareFromCenterAndRadius(centerX - gap / 2 - halfSideLength, centerY, halfSideLength));
-        rects.add(squareFromCenterAndRadius(centerX + gap / 2 + halfSideLength, centerY, halfSideLength));
-        break;
-      case 2:
-        rects.add(squareFromCenterAndRadius(centerX - gap - halfSideLength * 2, centerY, halfSideLength));
-        rects.add(squareFromCenterAndRadius(centerX, centerY, halfSideLength));
-        rects.add(squareFromCenterAndRadius(centerX + gap + halfSideLength * 2, centerY, halfSideLength));
-        break;
-    }
-    return rects;
-  }
-
-  private static Rect squareFromCenterAndRadius(int centerX, int centerY, int radius) {
-    return new Rect(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
   }
 
   private void drawPlaceholderStack(Canvas canvas, int x, int y, int w, int h, int overlap) {

@@ -106,13 +106,17 @@ public class DailyGameActivity extends BaseGameActivity
   public void onTripleFound(Set<Card> triple) {
     com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
     FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
-    Rect targetRect = foundTriplesView.getTripleLocation(triple);
-    if (targetRect != null) {
-      // The targetRect is in window coordinates, CardsView.animateTripleFound expects view coordinates.
+    java.util.Map<Card, Rect> cardLocations = foundTriplesView.getCardLocations(triple);
+    if (!cardLocations.isEmpty()) {
       int[] location = new int[2];
       cardsView.getLocationInWindow(location);
-      targetRect.offset(-location[0], -location[1]);
-      cardsView.animateTripleFound(triple, targetRect);
+      java.util.Map<Card, Rect> offsetLocations = com.google.common.collect.Maps.newHashMap();
+      for (java.util.Map.Entry<Card, Rect> entry : cardLocations.entrySet()) {
+        Rect rect = entry.getValue();
+        rect.offset(-location[0], -location[1]);
+        offsetLocations.put(entry.getKey(), rect);
+      }
+      cardsView.animateTripleFound(offsetLocations);
     } else {
       cardsView.animateTripleFound(triple);
     }

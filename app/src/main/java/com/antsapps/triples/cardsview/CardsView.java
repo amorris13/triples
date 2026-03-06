@@ -321,4 +321,18 @@ public abstract class CardsView extends View implements Game.GameRenderer {
       updateBounds();
     }, 1000); // 1s to ensure animation finishes
   }
+
+  public void animateTripleFound(final Map<Card, Rect> cardToTargetRect) {
+    for (Map.Entry<Card, Rect> entry : cardToTargetRect.entrySet()) {
+      CardDrawable cd = mCardDrawables.get(entry.getKey());
+      if (cd != null) {
+        cd.updateBounds(entry.getValue());
+      }
+    }
+
+    // Fly back after animation duration
+    mHandler.postDelayed(() -> {
+      updateBounds();
+    }, 1000); // 1s to ensure animation finishes
+  }
 }
