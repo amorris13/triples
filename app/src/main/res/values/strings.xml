@@ -142,4 +142,15 @@
   <string name="longest_streak">Longest Streak:</string>
   <string name="today">Today</string>
 
+  <string name="account_settings">Account</string>
+  <string name="account_user_title">User</string>
+  <string name="account_not_signed_in">Not signed in</string>
+  <string name="account_signed_in_as">Signed in as %1$s</string>
+  <string name="account_sign_in">Sign In</string>
+  <string name="account_sign_out">Sign Out</string>
+  <string name="account_delete_data_title">Delete All Data</string>
+  <string name="account_delete_data_summary">Permanently delete all local and cloud game data</string>
+  <string name="account_delete_data_dialog_title">Delete all data?</string>
+  <string name="account_delete_data_dialog_message">This will permanently delete all your game statistics and progress from both this device and the cloud. This action cannot be undone. Are you sure?</string>
+
 </resources>

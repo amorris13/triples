@@ -151,6 +151,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
                   // Sign in success, update UI with the signed-in user's information
                   Log.d(TAG, "signInWithCredential:success");
                   FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                  onSignInSucceeded();
                 } else {
                   // If sign in fails, display a message to the user.
                   Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -207,6 +208,12 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SIGN_OUT, null);
     mIsSignedIn = false;
     onSignOut();
+  }
+
+  @Nullable
+  public String getSignedInUserEmail() {
+    FirebaseUser user = mFirebaseAuth.getCurrentUser();
+    return user != null ? user.getEmail() : null;
   }
 
   protected void onSignOut() {
