@@ -13,12 +13,10 @@ import java.util.List;
  */
 public class CloudSaveSerializer {
   private static final String TAG = "CloudSaveSerializer";
-  private static final int CURRENT_VERSION = 1;
 
   public static byte[] serialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames)
       throws IOException {
-    CloudSaveData.Builder dataBuilder = CloudSaveData.newBuilder()
-        .setVersion(CURRENT_VERSION);
+    CloudSaveData.Builder dataBuilder = CloudSaveData.newBuilder();
 
     for (ClassicGame g : classicGames) {
       if (g.getGameState() == Game.GameState.COMPLETED) {
@@ -63,11 +61,6 @@ public class CloudSaveSerializer {
       cloudSaveData = CloudSaveData.parseFrom(data);
     } catch (InvalidProtocolBufferException e) {
       throw new IOException("Failed to parse protobuf data", e);
-    }
-
-    int version = cloudSaveData.getVersion();
-    if (version > CURRENT_VERSION) {
-      Log.w(TAG, "Cloud data version " + version + " is newer than supported " + CURRENT_VERSION);
     }
 
     List<ClassicGame> classicGames = new ArrayList<>(cloudSaveData.getClassicGamesCount());
