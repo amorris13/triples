@@ -31,6 +31,7 @@ public class FoundTriplesView extends View {
   private static final int STACK_OVERLAP_DP = 16;
   private static final int STACK_WIDTH_REDUCTION_DP = 10;
   private static final int HIGHLIGHT_DURATION_MS = 1000;
+  private static final int MAX_HEIGHT_DP = 120;
 
   private final Paint mPlaceholderPaint;
   private final Paint mBackgroundPaint;
@@ -38,6 +39,7 @@ public class FoundTriplesView extends View {
   private final int mPadding;
   private final int mOverlap;
   private final int mWidthReduction;
+  private final int mMaxHeight;
 
   private List<Set<Card>> mAllTriples = Lists.newArrayList();
   private List<Set<Card>> mFoundTriples = Lists.newArrayList();
@@ -56,6 +58,7 @@ public class FoundTriplesView extends View {
     mPadding = (int) (PADDING_DP * density);
     mOverlap = (int) (STACK_OVERLAP_DP * density);
     mWidthReduction = (int) (STACK_WIDTH_REDUCTION_DP * density);
+    mMaxHeight = (int) (MAX_HEIGHT_DP * density);
 
     mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
@@ -148,6 +151,10 @@ public class FoundTriplesView extends View {
 
     int rows = (int) Math.ceil((double) mAllTriples.size() / COLUMNS);
     int height = rows * (stackHeight + mPadding) + mPadding;
+
+    if (height > mMaxHeight) {
+      height = mMaxHeight;
+    }
 
     setMeasuredDimension(width, height);
   }
