@@ -41,6 +41,7 @@ public class MultiplayerGameActivity extends BaseGameActivity {
   private String mMyId;
   private String mOpponentId;
   private ChildEventListener mTriplesFoundListener;
+  private ValueEventListener mRoomUpdateListener;
 
   @Override
   protected void init(Bundle savedInstanceState) {
@@ -61,32 +62,24 @@ public class MultiplayerGameActivity extends BaseGameActivity {
     // Initial dummy game, will be updated via sync
     mGame = new MultiplayerGame(mRoomCode, mMyId, 0, new ArrayList<>(), new ArrayList<>(), new Deck(new ArrayList<>()), 0, new Date(), Game.GameState.STARTING);
 
-    mRoomRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    mRoomUpdateListener = new ValueEventListener() {
+      private boolean firstChange = true;
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
         Room room = snapshot.getValue(Room.class);
         if (room != null) {
           updateScores(room);
-          setupTriplesFoundListener();
+          if (firstChange) {
+            setupTriplesFoundListener();
+            firstChange = false;
+          }
         }
       }
 
       @Override
       public void onCancelled(@NonNull DatabaseError error) {}
-    });
-
-    mRoomRef.addValueEventListener(new ValueEventListener() {
-      @Override
-      public void onDataChange(@NonNull DataSnapshot snapshot) {
-        Room room = snapshot.getValue(Room.class);
-        if (room != null) {
-          updateScores(room);
-        }
-      }
-
-      @Override
-      public void onCancelled(@NonNull DatabaseError error) {}
-    });
+    };
+    mRoomRef.addValueEventListener(mRoomUpdateListener);
   }
 
   private void setupTriplesFoundListener() {
@@ -124,14 +117,11 @@ public class MultiplayerGameActivity extends BaseGameActivity {
       mTvPlayer2Score.getGlobalVisibleRect(targetRect);
     }
 
-    // Convert global to local
+    // Convert global target Rect to local coordinates within CardsView
     int[] location = new int[2];
     cardsView.getLocationOnScreen(location);
     targetRect.offset(-location[0], -location[1]);
 
-    // We need to trigger animation in CardsView.
-    // The current CardsView.animateTripleFound uses mOffScreenLocation.
-    // We should probably modify it to accept a target Rect.
     animateTripleToTarget(triple, targetRect);
   }
 
@@ -189,6 +179,9 @@ public class MultiplayerGameActivity extends BaseGameActivity {
     super.onDestroy();
     if (mTriplesFoundListener != null) {
       mRoomRef.child("triplesFound").removeEventListener(mTriplesFoundListener);
+    }
+    if (mRoomUpdateListener != null) {
+      mRoomRef.removeEventListener(mRoomUpdateListener);
     }
     if (mGame != null) {
       mGame.cleanup();
