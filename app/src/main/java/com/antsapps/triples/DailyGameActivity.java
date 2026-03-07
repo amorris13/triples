@@ -13,9 +13,13 @@ import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
+import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +48,7 @@ public class DailyGameActivity extends BaseGameActivity
     mGame.addOnUpdateCardsInPlayListener(this);
     mGame.setOnTripleFoundListener(this);
 
-    com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
+    CardsView cardsView = findViewById(R.id.cards_view);
     cardsView.setOnValidTripleSelectedListener(this);
 
     TextView dateText = findViewById(R.id.daily_date_text);
@@ -104,14 +108,14 @@ public class DailyGameActivity extends BaseGameActivity
 
   @Override
   public void onTripleFound(Set<Card> triple) {
-    com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
+    CardsView cardsView = findViewById(R.id.cards_view);
     FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
-    java.util.Map<Card, Rect> cardLocations = foundTriplesView.getCardLocations(triple);
+    Map<Card, Rect> cardLocations = foundTriplesView.getCardLocations(triple);
     if (!cardLocations.isEmpty()) {
       int[] location = new int[2];
       cardsView.getLocationInWindow(location);
-      java.util.Map<Card, Rect> offsetLocations = com.google.common.collect.Maps.newHashMap();
-      for (java.util.Map.Entry<Card, Rect> entry : cardLocations.entrySet()) {
+      Map<Card, Rect> offsetLocations = Maps.newHashMap();
+      for (Map.Entry<Card, Rect> entry : cardLocations.entrySet()) {
         Rect rect = entry.getValue();
         rect.offset(-location[0], -location[1]);
         offsetLocations.put(entry.getKey(), rect);
@@ -124,11 +128,11 @@ public class DailyGameActivity extends BaseGameActivity
 
   @Override
   public void onValidTripleSelected(Collection<Card> cards) {
-    Set<Card> triple = com.google.common.collect.Sets.newHashSet(cards);
+    Set<Card> triple = Sets.newHashSet(cards);
     if (mGame.getFoundTriples().contains(triple)) {
       FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
       foundTriplesView.highlightTriple(triple);
-      com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
+      CardsView cardsView = findViewById(R.id.cards_view);
       cardsView.clearSelectedCards();
     } else {
       mGame.onValidTripleSelected(cards);
