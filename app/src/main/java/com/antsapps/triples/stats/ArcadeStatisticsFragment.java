@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.antsapps.triples.GamesServices;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
@@ -72,7 +71,7 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   }
 
   protected String getLeaderboardId() {
-    return GamesServices.Leaderboard.ARCADE;
+    return getString(R.string.leaderboard_arcade_game);
   }
 
   protected void deleteGame(Game game) {
