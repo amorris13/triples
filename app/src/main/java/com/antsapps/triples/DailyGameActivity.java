@@ -94,8 +94,10 @@ public class DailyGameActivity extends BaseGameActivity
       ImmutableList<Card> oldCards,
       int numRemaining,
       int numTriplesFound) {
-    // If a triple was found, the onTripleFound listener will handle updating after animation
-    // But we still want to update summary immediately
+    updateSummaryText();
+  }
+
+  private void updateSummaryText() {
     TextView summary = findViewById(R.id.triples_found_summary);
     if (summary != null) {
       summary.setText(getString(R.string.triples_found) + ": " + mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
@@ -128,7 +130,7 @@ public class DailyGameActivity extends BaseGameActivity
       cardsView.getLocationInWindow(location);
       Map<Card, Rect> offsetLocations = Maps.newHashMap();
       for (Map.Entry<Card, Rect> entry : cardLocations.entrySet()) {
-        Rect rect = entry.getValue();
+        Rect rect = new Rect(entry.getValue());
         rect.offset(-location[0], -location[1]);
         offsetLocations.put(entry.getKey(), rect);
       }

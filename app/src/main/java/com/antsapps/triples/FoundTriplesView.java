@@ -28,7 +28,7 @@ public class FoundTriplesView extends View {
   private static final float CARD_ASPECT_RATIO = (float) ((Math.sqrt(5) - 1) / 2);
   private static final int COLUMNS = 6;
   private static final int PADDING_DP = 8;
-  private static final int STACK_OVERLAP_DP = 12;
+  private static final int STACK_OVERLAP_DP = 16;
   private static final int HIGHLIGHT_DURATION_MS = 1000;
 
   private final Paint mPlaceholderPaint;
@@ -97,11 +97,17 @@ public class FoundTriplesView extends View {
   }
 
   public Map<Card, Rect> getCardLocations(Set<Card> triple) {
-    int index = mAllTriples.indexOf(triple);
-    if (index == -1) return Collections.emptyMap();
+    // Left-to-right logic: Found triples occupy the first available slots.
+    // If it's already in mFoundTriples, use its index there.
+    // If it's a NEW found triple, it will occupy index = mFoundTriples.size().
+    int visualIndex = mFoundTriples.indexOf(triple);
+    if (visualIndex == -1) {
+      visualIndex = mFoundTriples.size();
+    }
+    if (visualIndex >= mAllTriples.size()) return Collections.emptyMap();
 
-    int column = index % COLUMNS;
-    int row = index / COLUMNS;
+    int column = visualIndex % COLUMNS;
+    int row = visualIndex / COLUMNS;
 
     int width = getWidth();
     int availableWidth = width - (COLUMNS + 1) * mPadding;
@@ -152,39 +158,44 @@ public class FoundTriplesView extends View {
     int availableWidth = getWidth() - (COLUMNS + 1) * mPadding;
     int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
+    int stackHeight = cardHeight + mOverlap * 2;
 
-    for (int i = 0; i < mAllTriples.size(); i++) {
+    // First draw found triples
+    for (int i = 0; i < mFoundTriples.size(); i++) {
       int column = i % COLUMNS;
       int row = i / COLUMNS;
-
       int x = mPadding + column * (cardWidth + mPadding);
-      int y = mPadding + row * (cardHeight + mOverlap * 2 + mPadding);
+      int y = mPadding + row * (stackHeight + mPadding);
 
-      Set<Card> triple = mAllTriples.get(i);
-      if (mFoundTriples.contains(triple)) {
-        drawTripleStack(canvas, triple, x, y, cardWidth, cardHeight);
-      } else {
-        drawPlaceholderStack(canvas, x, y, cardWidth, cardHeight);
-      }
+      Set<Card> triple = mFoundTriples.get(i);
+      drawTripleStack(canvas, triple, x, y, cardWidth, cardHeight);
 
       if (triple.equals(mHighlightedTriple)) {
-        canvas.drawRoundRect(new RectF(x - 2, y - 2, x + cardWidth + 2, y + cardHeight + mOverlap * 2 + 2), 8, 8, mHighlightPaint);
+        canvas.drawRoundRect(new RectF(x - 2, y - 2, x + cardWidth + 2, y + stackHeight + 2), 8, 8, mHighlightPaint);
       }
+    }
+
+    // Then draw placeholders for remaining triples
+    for (int i = mFoundTriples.size(); i < mAllTriples.size(); i++) {
+      int column = i % COLUMNS;
+      int row = i / COLUMNS;
+      int x = mPadding + column * (cardWidth + mPadding);
+      int y = mPadding + row * (stackHeight + mPadding);
+
+      drawPlaceholderStack(canvas, x, y, cardWidth, cardHeight);
     }
   }
 
   private void drawTripleStack(Canvas canvas, Set<Card> triple, int x, int y, int w, int h) {
     List<Card> cards = Lists.newArrayList(triple);
-    // Sort to ensure consistent stack order
     Collections.sort(cards, Card.COMPARATOR);
 
     for (int i = 0; i < 3; i++) {
       Rect cardRect = new Rect(x, y + i * mOverlap, x + w, y + i * mOverlap + h);
       canvas.drawRoundRect(new RectF(cardRect), 8, 8, mBackgroundPaint);
-      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // thin border
+      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // border
 
       SymbolDrawable symbol = mSymbolDrawables.get(cards.get(i));
-      // CardDrawable's getBoundsForNumId expects bounds relative to card itself.
       Rect relativeCardRect = new Rect(0, 0, w, h);
       List<Rect> symbolBounds = com.antsapps.triples.cardsview.CardDrawable.getBoundsForNumId(cards.get(i).mNumber, relativeCardRect);
       for (Rect sb : symbolBounds) {

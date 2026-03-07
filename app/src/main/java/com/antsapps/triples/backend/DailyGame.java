@@ -123,8 +123,6 @@ public class DailyGame extends Game {
       if (mFoundTriples.size() == mAllTriples.size()) {
         mDateCompleted = new Date();
         finish();
-      } else {
-        dispatchCardsInPlayUpdate(ImmutableList.copyOf(mCardsInPlay));
       }
     }
   }
@@ -147,18 +145,53 @@ public class DailyGame extends Game {
 
   @Override
   public boolean addHint() {
-    for (Set<Card> triple : mAllTriples) {
-      if (!mFoundTriples.contains(triple)) {
-        mHintsUsed = true;
-        mHintedCards.clear();
-        mGameRenderer.clearHintedCards();
-        for (Card card : triple) {
-          dispatchHint(card);
-        }
+    mHintsUsed = true;
+    if (mHintedCards.size() == 3) {
+      return false;
+    }
+
+    Set<Card> selectedCards = mGameRenderer.getSelectedCards();
+
+    // Find an unfound triple that includes as many selected cards as possible
+    Set<Card> targetTriple = null;
+    for (int i = selectedCards.size(); i >= 0; i--) {
+      for (Set<Card> subset : Sets.combinations(selectedCards, i)) {
+        targetTriple = getAnUnfoundTripleIncluding(subset);
+        if (targetTriple != null) break;
+      }
+      if (targetTriple != null) break;
+    }
+
+    if (targetTriple == null) {
+      return false;
+    }
+
+    // Now hint one card from targetTriple that isn't already hinted
+    // Prefer hinting selected cards that aren't hinted yet (to keep them selected)
+    for (Card c : targetTriple) {
+      if (selectedCards.contains(c) && !mHintedCards.contains(c)) {
+        dispatchHint(c);
         return true;
       }
     }
+    // Then hint a non-selected card
+    for (Card c : targetTriple) {
+      if (!mHintedCards.contains(c)) {
+        dispatchHint(c);
+        return true;
+      }
+    }
+
     return false;
+  }
+
+  private Set<Card> getAnUnfoundTripleIncluding(Set<Card> subset) {
+    for (Set<Card> triple : mAllTriples) {
+      if (!mFoundTriples.contains(triple) && triple.containsAll(subset)) {
+        return triple;
+      }
+    }
+    return null;
   }
 
   @Override

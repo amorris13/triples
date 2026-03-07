@@ -315,11 +315,6 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         cd.updateBounds(targetRect);
       }
     }
-
-    // Fly back after animation duration
-    mHandler.postDelayed(() -> {
-      updateBounds();
-    }, 1000); // 1s to ensure animation finishes
   }
 
   public void animateTripleFound(final Map<Card, Rect> cardToTargetRect) {
@@ -329,10 +324,5 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         cd.updateBounds(entry.getValue());
       }
     }
-
-    // Fly back after animation duration
-    mHandler.postDelayed(() -> {
-      updateBounds();
-    }, 1000); // 1s to ensure animation finishes
   }
 }
