@@ -43,6 +43,11 @@
   <color name="daily_background">#FFF3E0</color>
   <color name="daily_accent">#FF9800</color>
 
+  <color name="daily_calendar_selected">#E0E0E0</color>
+  <color name="daily_calendar_solved_on_day">#FF9800</color>
+  <color name="daily_calendar_solved_late">#80FF9800</color>
+  <color name="daily_calendar_today_outline">#000000</color>
+
   <color name="color_fastest">#4CAF50</color>
   <color name="color_slowest">#F44336</color>
   <color name="color_timeline_point">#757575</color>

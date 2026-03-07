@@ -86,7 +86,7 @@
     <item name="colorPrimary">@color/zen_accent</item>
   </style>
 
-  <style name="DailyButtonTheme" parent="ThemeOverlay.Material3">
+  <style name="DailyButtonTheme" parent="ThemeOverlay.Material3.Light">
     <item name="colorPrimary">@color/daily_accent</item>
   </style>
 
@@ -101,6 +101,16 @@
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
     <item name="android:textSize">20sp</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+
+  <style name="DailyCalendarDayHeader">
+    <item name="android:layout_width">0dp</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_weight">1</item>
+    <item name="android:gravity">center</item>
+    <item name="android:textSize">12sp</item>
+    <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     <item name="android:textStyle">bold</item>
   </style>
 </resources>
