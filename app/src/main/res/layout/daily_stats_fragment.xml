@@ -126,13 +126,34 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="8dp">
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="M" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="W" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="F" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="S" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="S" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:textStyle="bold" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="M" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="T" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="W" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="T" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="F" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="S" />
+
+        <TextView
+            style="@style/DailyCalendarDayHeader"
+            android:text="S" />
     </LinearLayout>
 
     <GridView

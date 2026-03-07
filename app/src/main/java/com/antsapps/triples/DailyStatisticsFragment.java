@@ -121,7 +121,7 @@ public class DailyStatisticsFragment extends Fragment {
 
     Calendar today = Calendar.getInstance();
     boolean isCurrentMonth = mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-                             mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
+        mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
 
     mNextMonthBtn.setEnabled(!isCurrentMonth);
     mNextMonthBtn.setAlpha(isCurrentMonth ? 0.3f : 1f);
@@ -130,12 +130,12 @@ public class DailyStatisticsFragment extends Fragment {
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener((parent, view, position, id) -> {
-        Calendar clickedDate = (Calendar) adapter.getItem(position);
-        if (clickedDate != null) {
-            mSelectedDate = (Calendar) clickedDate.clone();
-            adapter.setSelectedDate(mSelectedDate);
-            updateDetails();
-        }
+      Calendar clickedDate = (Calendar) adapter.getItem(position);
+      if (clickedDate != null) {
+        mSelectedDate = (Calendar) clickedDate.clone();
+        adapter.setSelectedDate(mSelectedDate);
+        updateDetails();
+      }
     });
   }
 
@@ -147,38 +147,38 @@ public class DailyStatisticsFragment extends Fragment {
     DailyGame game = mCompletedGamesMap.get(daySeed);
 
     if (game != null && game.getGameState() == DailyGame.GameState.COMPLETED) {
-        String hintAsterisk = game.areHintsUsed() ? " *" : "";
-        long seconds = game.getTimeElapsed() / 1000;
-        mDetailsStats.setText(String.format("%d triples found in %d:%02d%s",
-                game.getNumTriplesFound(), seconds / 60, seconds % 60, hintAsterisk));
-        mPlayButton.setVisibility(View.GONE);
+      String hintAsterisk = game.areHintsUsed() ? " *" : "";
+      long seconds = game.getTimeElapsed() / 1000;
+      mDetailsStats.setText(String.format("%d triples found in %d:%02d%s",
+          game.getNumTriplesFound(), seconds / 60, seconds % 60, hintAsterisk));
+      mPlayButton.setVisibility(View.GONE);
     } else {
-        mDetailsStats.setText("Not yet completed");
-        mPlayButton.setVisibility(View.VISIBLE);
-        mPlayButton.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
-            DailyGame dailyGame = mApplication.getDailyGameForDate(daySeed);
-            intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, dailyGame.getId());
-            startActivity(intent);
-        });
+      mDetailsStats.setText("Not yet completed");
+      mPlayButton.setVisibility(View.VISIBLE);
+      mPlayButton.setOnClickListener(v -> {
+        android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
+        DailyGame dailyGame = mApplication.getDailyGameForDate(daySeed);
+        intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, dailyGame.getId());
+        startActivity(intent);
+      });
     }
   }
 
   private void updateStreaks() {
     Set<Long> completedOnDaySeeds = new HashSet<>();
     for (DailyGame game : mCompletedGames) {
-        if (game.getDateCompleted() == null) continue;
-        long startSeed = getStartOfDay(game.getDateStarted().getTime());
-        if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
-            completedOnDaySeeds.add(startSeed);
-        }
+      if (game.getDateCompleted() == null) continue;
+      long startSeed = getStartOfDay(game.getDateStarted().getTime());
+      if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
+        completedOnDaySeeds.add(startSeed);
+      }
     }
 
     int currentStreak = 0;
     Calendar cal = Calendar.getInstance();
     while (completedOnDaySeeds.contains(getStartOfDay(cal.getTimeInMillis()))) {
-        currentStreak++;
-        cal.add(Calendar.DAY_OF_YEAR, -1);
+      currentStreak++;
+      cal.add(Calendar.DAY_OF_YEAR, -1);
     }
 
     int longestStreak = 0;
@@ -187,22 +187,22 @@ public class DailyStatisticsFragment extends Fragment {
     Collections.sort(sortedSeeds);
     Calendar lastCal = null;
     for (Long seed : sortedSeeds) {
-        Calendar currentCal = Calendar.getInstance();
-        currentCal.setTimeInMillis(seed);
-        if (lastCal != null) {
-            Calendar expectedCal = (Calendar) lastCal.clone();
-            expectedCal.add(Calendar.DAY_OF_YEAR, 1);
-            if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
-                expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
-                tempStreak++;
-            } else {
-                tempStreak = 1;
-            }
+      Calendar currentCal = Calendar.getInstance();
+      currentCal.setTimeInMillis(seed);
+      if (lastCal != null) {
+        Calendar expectedCal = (Calendar) lastCal.clone();
+        expectedCal.add(Calendar.DAY_OF_YEAR, 1);
+        if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
+            expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
+          tempStreak++;
         } else {
-            tempStreak = 1;
+          tempStreak = 1;
         }
-        lastCal = currentCal;
-        longestStreak = Math.max(longestStreak, tempStreak);
+      } else {
+        tempStreak = 1;
+      }
+      lastCal = currentCal;
+      longestStreak = Math.max(longestStreak, tempStreak);
     }
 
     mCurrentStreakTv.setText(String.valueOf(currentStreak));
@@ -253,22 +253,22 @@ public class DailyStatisticsFragment extends Fragment {
       mCompletedLateSeeds = new HashSet<>();
       mHintUsedSeeds = new HashSet<>();
       for (DailyGame game : completedGames) {
-          if (game.getDateCompleted() == null) continue;
-          long startSeed = getStartOfDay(game.getDateStarted().getTime());
-          if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
-              mCompletedOnDaySeeds.add(startSeed);
-          } else {
-              mCompletedLateSeeds.add(startSeed);
-          }
-          if (game.areHintsUsed()) {
-              mHintUsedSeeds.add(startSeed);
-          }
+        if (game.getDateCompleted() == null) continue;
+        long startSeed = getStartOfDay(game.getDateStarted().getTime());
+        if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
+          mCompletedOnDaySeeds.add(startSeed);
+        } else {
+          mCompletedLateSeeds.add(startSeed);
+        }
+        if (game.areHintsUsed()) {
+          mHintUsedSeeds.add(startSeed);
+        }
       }
     }
 
     void setSelectedDate(Calendar selectedDate) {
-        mSelectedDate = selectedDate;
-        notifyDataSetChanged();
+      mSelectedDate = selectedDate;
+      notifyDataSetChanged();
     }
 
     @Override
@@ -280,9 +280,9 @@ public class DailyStatisticsFragment extends Fragment {
 
     @Override
     public boolean isEnabled(int position) {
-        Calendar day = mDays.get(position);
-        long daySeed = getStartOfDay(day.getTimeInMillis());
-        return day.get(Calendar.MONTH) == mMonth && daySeed <= mTodaySeed;
+      Calendar day = mDays.get(position);
+      long daySeed = getStartOfDay(day.getTimeInMillis());
+      return day.get(Calendar.MONTH) == mMonth && daySeed <= mTodaySeed;
     }
 
     @Override
@@ -323,7 +323,7 @@ public class DailyStatisticsFragment extends Fragment {
     }
 
     public void setDay(Calendar day, boolean isCurrentMonth, boolean isToday, boolean isSelected,
-                       boolean isSolvedOnDay, boolean isSolvedLate, boolean isHintUsed, boolean isFuture) {
+        boolean isSolvedOnDay, boolean isSolvedLate, boolean isHintUsed, boolean isFuture) {
       mIsToday = isToday;
       mIsSelected = isSelected;
       mIsSolvedOnDay = isSolvedOnDay;
