@@ -14,6 +14,7 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
@@ -222,6 +223,8 @@ public class DailyStatisticsFragment extends Fragment {
 
   private static class CalendarAdapter extends BaseAdapter {
     private final Context mContext;
+    private final int mTextPrimaryColor;
+    private final int mTextSecondaryColor;
     private final List<Calendar> mDays;
     private final Set<Long> mCompletedOnDaySeeds;
     private final Set<Long> mCompletedLateSeeds;
@@ -232,6 +235,8 @@ public class DailyStatisticsFragment extends Fragment {
 
     CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames, Calendar selectedDate) {
       mContext = context;
+      mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
+      mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
       mMonth = month.get(Calendar.MONTH);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
       mSelectedDate = selectedDate;

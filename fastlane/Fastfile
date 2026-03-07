@@ -9,10 +9,26 @@ platform :android do
     )
     upload_to_play_store(
       track: 'beta',
+      rollout: '1.0',
       aab: 'app/build/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build and distribute to Firebase"
+  lane :distribute do
+    gradle(
+      task: "clean assemble",
+      build_type: "Release"
+    )
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID"],
+      service_credentials_file: "service-account-key.json",
+      apk_path: "app/build/outputs/apk/release/app-release.apk",
+      groups: "dev",
+      release_notes: ENV["RELEASE_NOTES"]
     )
   end
 end
