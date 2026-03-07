@@ -48,6 +48,14 @@ public class Deck {
     return mCards.size();
   }
 
+  public List<Card> getCardsRemainingList() {
+    return Collections.unmodifiableList(mCards);
+  }
+
+  public void setCards(List<Card> cards) {
+    mCards = Lists.newArrayList(cards);
+  }
+
   public byte[] toByteArray() {
     byte[] b = new byte[mCards.size()];
     for (int i = 0; i < mCards.size(); i++) {

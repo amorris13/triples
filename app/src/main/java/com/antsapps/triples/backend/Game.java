@@ -92,7 +92,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final List<OnUpdateCardsInPlayListener> mCardsInPlayListeners = Lists.newArrayList();
 
-  Game(
+  public Game(
       long id,
       long seed,
       List<Card> cardsInPlay,
