@@ -108,6 +108,8 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   private void fetchTokenAndSignInToFirebase() {
     GoogleSignInOptions gso =
         new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+            .requestEmail()
+            .requestProfile()
             .requestIdToken(getString(R.string.default_web_client_id))
             .build();
     GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -211,9 +213,17 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   @Nullable
-  public String getSignedInUserEmail() {
+  public String getSignedInUserInfo() {
     FirebaseUser user = mFirebaseAuth.getCurrentUser();
-    return user != null ? user.getEmail() : null;
+    if (user != null) {
+      if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+        return user.getEmail();
+      }
+      if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+        return user.getDisplayName();
+      }
+    }
+    return null;
   }
 
   protected void onSignOut() {

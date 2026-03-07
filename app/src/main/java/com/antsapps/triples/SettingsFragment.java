@@ -44,8 +44,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
     Preference deleteDataPref = findPreference("account_delete_data");
 
     if (activity.isSignedIn()) {
-      String email = activity.getSignedInUserEmail();
-      userPref.setSummary(getString(R.string.account_signed_in_as, email != null ? email : ""));
+      String info = activity.getSignedInUserInfo();
+      userPref.setSummary(getString(R.string.account_signed_in_as, info != null ? info : ""));
       signInOutPref.setTitle(R.string.account_sign_out);
       signInOutPref.setOnPreferenceClickListener(preference -> {
         activity.signOut();
