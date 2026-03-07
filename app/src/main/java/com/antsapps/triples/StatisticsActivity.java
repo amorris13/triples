@@ -70,7 +70,6 @@ public class StatisticsActivity extends BaseTriplesActivity {
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
-    menu.findItem(R.id.signout).setVisible(isSignedIn());
 
     return true;
   }
@@ -88,9 +87,6 @@ public class StatisticsActivity extends BaseTriplesActivity {
     } else if (itemId == R.id.settings) {
       Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
       startActivity(settingsIntent);
-      return true;
-    } else if (itemId == R.id.signout) {
-      signOut();
       return true;
     } else if (itemId == R.id.export_to_csv) {
       Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.statistics_container);

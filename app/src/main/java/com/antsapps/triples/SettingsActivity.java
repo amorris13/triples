@@ -6,7 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseTriplesActivity {
   private SharedPreferences mSharedPref;
 
   @Override
@@ -16,6 +16,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
+
+    setSignInListener(new OnSignInListener() {
+      @Override
+      public void onSignInStateChanged(boolean signedInAndConnected) {
+        SettingsFragment fragment = (SettingsFragment) getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
+        if (fragment != null) {
+          fragment.updateAccountPreferences();
+        }
+      }
+    });
   }
 
   @Override
