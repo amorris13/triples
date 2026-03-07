@@ -166,4 +166,35 @@ public class CloudSaveManager {
 
     return changed;
   }
+
+  public static void deleteFromCloud(final Activity activity) {
+    Log.d(TAG, "deleteFromCloud");
+    PlayGames.getGamesSignInClient(activity)
+        .isAuthenticated()
+        .addOnCompleteListener(
+            task -> {
+              boolean isAuthenticated = (task.isSuccessful() && task.getResult().isAuthenticated());
+              if (isAuthenticated) {
+                SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(activity);
+                snapshotsClient.open(SNAPSHOT_NAME, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
+                    .addOnCompleteListener(openTask -> {
+                      if (openTask.isSuccessful()) {
+                        Snapshot snapshot = openTask.getResult().getData();
+                        snapshotsClient.delete(snapshot.getMetadata())
+                            .addOnCompleteListener(deleteTask -> {
+                              if (deleteTask.isSuccessful()) {
+                                Log.d(TAG, "Cloud data deleted successfully");
+                              } else {
+                                Log.e(TAG, "Error deleting cloud data", deleteTask.getException());
+                              }
+                            });
+                      } else {
+                        handleSnapshotError("delete", openTask.getException());
+                      }
+                    });
+              } else {
+                Log.d(TAG, "deleteFromCloud: not authenticated, skipping");
+              }
+            });
+  }
 }

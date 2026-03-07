@@ -1,10 +1,16 @@
 package com.antsapps.triples;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
+import com.antsapps.triples.backend.Application;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class SettingsFragment extends PreferenceFragmentCompat
@@ -25,6 +31,62 @@ public class SettingsFragment extends PreferenceFragmentCompat
       animationDurationPref.setSummary(
           getString(R.string.pref_animation_duration_summary, animationDurationPref.getValue()));
     }
+
+    updateAccountPreferences();
+  }
+
+  public void updateAccountPreferences() {
+    BaseTriplesActivity activity = (BaseTriplesActivity) getActivity();
+    if (activity == null) return;
+
+    Preference userPref = findPreference("account_user");
+    Preference signInOutPref = findPreference("account_signin_out");
+    Preference deleteDataPref = findPreference("account_delete_data");
+
+    if (activity.isSignedIn()) {
+      String info = activity.getSignedInUserInfo();
+      userPref.setSummary(getString(R.string.account_signed_in_as, info != null ? info : ""));
+      signInOutPref.setTitle(R.string.account_sign_out);
+      signInOutPref.setOnPreferenceClickListener(preference -> {
+        activity.signOut();
+        return true;
+      });
+    } else {
+      userPref.setSummary(R.string.account_not_signed_in);
+      signInOutPref.setTitle(R.string.account_sign_in);
+      signInOutPref.setOnPreferenceClickListener(preference -> {
+        activity.signIn();
+        return true;
+      });
+    }
+
+    deleteDataPref.setOnPreferenceClickListener(preference -> {
+      showDeleteDataConfirmation();
+      return true;
+    });
+  }
+
+  private void showDeleteDataConfirmation() {
+    AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
+        .setTitle(R.string.account_delete_data_dialog_title)
+        .setMessage(R.string.account_delete_data_dialog_message)
+        .setPositiveButton(R.string.account_delete_button, (dialogInterface, which) -> deleteData())
+        .setNegativeButton(R.string.no, null)
+        .create();
+    dialog.show();
+    Button deleteButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+    if (deleteButton != null) {
+      deleteButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorError));
+    }
+  }
+
+  private void deleteData() {
+    BaseTriplesActivity activity = (BaseTriplesActivity) getActivity();
+    if (activity == null) return;
+
+    Application application = Application.getInstance(getContext());
+    application.clearAllData();
+    CloudSaveManager.deleteFromCloud(activity);
   }
 
   private void setupListeners(androidx.preference.PreferenceGroup group) {
