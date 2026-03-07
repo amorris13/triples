@@ -1,7 +1,6 @@
 package com.antsapps.triples;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import androidx.appcompat.app.AlertDialog;
@@ -71,12 +70,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
         .setTitle(R.string.account_delete_data_dialog_title)
         .setMessage(R.string.account_delete_data_dialog_message)
-        .setPositiveButton(R.string.account_delete_button, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            deleteData();
-          }
-        })
+        .setPositiveButton(R.string.account_delete_button, (dialogInterface, which) -> deleteData())
         .setNegativeButton(R.string.no, null)
         .create();
     dialog.show();
