@@ -349,9 +349,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   public static List<Set<Card>> getAllValidTriples(List<Card> cards) {
     List<Set<Card>> validTriples = Lists.newArrayList();
-    Set<Card> distinctCards = Sets.newHashSet(cards);
+    List<Card> distinctCards = Lists.newArrayList(Sets.newHashSet(cards));
     distinctCards.remove(null);
-    for (Set<Card> subset : Sets.combinations(distinctCards, 3)) {
+    Collections.sort(distinctCards, Card.COMPARATOR);
+    for (Set<Card> subset : Sets.combinations(Sets.newLinkedHashSet(distinctCards), 3)) {
       if (isValidTriple(subset)) {
         validTriples.add(subset);
       }

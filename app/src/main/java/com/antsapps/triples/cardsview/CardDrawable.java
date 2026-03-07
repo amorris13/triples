@@ -32,7 +32,7 @@ import com.google.common.primitives.Ints;
 
 import java.util.List;
 
-class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final int DEFAULT_ANIMATION_DURATION_MS = 800;
 
@@ -100,7 +100,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mListener = listener;
   }
 
-  private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
+  public static List<Rect> getBoundsForNumId(int id, Rect bounds) {
     List<Rect> rects = Lists.newArrayList();
 
     int width = bounds.width();
@@ -271,6 +271,10 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   void updateBounds(Rect bounds) {
+    updateBounds(bounds, false);
+  }
+
+  void updateBounds(Rect bounds, boolean animateScale) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
@@ -301,9 +305,19 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       }
     } else {
       // This CardDrawable is old
-      transitionAnimation =
-          new TranslateAnimation(
-              oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
+      if (animateScale) {
+        android.view.animation.AnimationSet set = new android.view.animation.AnimationSet(true);
+        set.addAnimation(new TranslateAnimation(
+            oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0));
+        float scaleX = (float) oldBounds.width() / bounds.width();
+        float scaleY = (float) oldBounds.height() / bounds.height();
+        set.addAnimation(new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, 0, 0));
+        transitionAnimation = set;
+      } else {
+        transitionAnimation =
+            new TranslateAnimation(
+                oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
+      }
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
