@@ -45,6 +45,12 @@
     <activity
       android:name=".SettingsActivity"
       android:label="@string/settings" />
+    <activity
+        android:name=".MatchmakingActivity"
+        android:label="@string/matchmaking_title" />
+    <activity
+        android:name=".MultiplayerGameActivity"
+        android:label="@string/multiplayer_label" />
 
     <provider
         android:name="androidx.core.content.FileProvider"
