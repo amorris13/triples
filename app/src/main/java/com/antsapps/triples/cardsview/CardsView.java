@@ -321,7 +321,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (Map.Entry<Card, Rect> entry : cardToTargetRect.entrySet()) {
       CardDrawable cd = mCardDrawables.get(entry.getKey());
       if (cd != null) {
-        cd.updateBounds(entry.getValue());
+        cd.updateBounds(entry.getValue(), true);
       }
     }
   }

@@ -100,7 +100,7 @@ public class DailyGameActivity extends BaseGameActivity
   private void updateSummaryText() {
     TextView summary = findViewById(R.id.triples_found_summary);
     if (summary != null) {
-      summary.setText(getString(R.string.triples_found) + ": " + mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
+      summary.setText(mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
     }
   }
 
@@ -109,10 +109,7 @@ public class DailyGameActivity extends BaseGameActivity
     if (foundTriplesView != null) {
       foundTriplesView.setTriples(mGame.getAllTriples(), mGame.getFoundTriples());
     }
-    TextView summary = findViewById(R.id.triples_found_summary);
-    if (summary != null) {
-      summary.setText(getString(R.string.triples_found) + ": " + mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
-    }
+    updateSummaryText();
   }
 
   @Override

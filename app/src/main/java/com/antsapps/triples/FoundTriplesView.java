@@ -29,6 +29,7 @@ public class FoundTriplesView extends View {
   private static final int COLUMNS = 6;
   private static final int PADDING_DP = 8;
   private static final int STACK_OVERLAP_DP = 16;
+  private static final int STACK_WIDTH_REDUCTION_DP = 10;
   private static final int HIGHLIGHT_DURATION_MS = 1000;
 
   private final Paint mPlaceholderPaint;
@@ -36,6 +37,7 @@ public class FoundTriplesView extends View {
   private final Paint mHighlightPaint;
   private final int mPadding;
   private final int mOverlap;
+  private final int mWidthReduction;
 
   private List<Set<Card>> mAllTriples = Lists.newArrayList();
   private List<Set<Card>> mFoundTriples = Lists.newArrayList();
@@ -53,11 +55,12 @@ public class FoundTriplesView extends View {
     float density = getResources().getDisplayMetrics().density;
     mPadding = (int) (PADDING_DP * density);
     mOverlap = (int) (STACK_OVERLAP_DP * density);
+    mWidthReduction = (int) (STACK_WIDTH_REDUCTION_DP * density);
 
     mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
     mPlaceholderPaint.setColor(ContextCompat.getColor(context, R.color.colorOutlineVariant));
-    mPlaceholderPaint.setStrokeWidth(2);
+    mPlaceholderPaint.setStrokeWidth(density); // thin border
     mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
 
     mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -67,7 +70,7 @@ public class FoundTriplesView extends View {
     mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mHighlightPaint.setColor(ContextCompat.getColor(context, R.color.card_selected_outline));
     mHighlightPaint.setStyle(Paint.Style.STROKE);
-    mHighlightPaint.setStrokeWidth(6);
+    mHighlightPaint.setStrokeWidth(density * 3);
 
     setLayerType(LAYER_TYPE_SOFTWARE, null);
   }
@@ -97,9 +100,6 @@ public class FoundTriplesView extends View {
   }
 
   public Map<Card, Rect> getCardLocations(Set<Card> triple) {
-    // Left-to-right logic: Found triples occupy the first available slots.
-    // If it's already in mFoundTriples, use its index there.
-    // If it's a NEW found triple, it will occupy index = mFoundTriples.size().
     int visualIndex = mFoundTriples.indexOf(triple);
     if (visualIndex == -1) {
       visualIndex = mFoundTriples.size();
@@ -109,13 +109,13 @@ public class FoundTriplesView extends View {
     int column = visualIndex % COLUMNS;
     int row = visualIndex / COLUMNS;
 
-    int width = getWidth();
-    int availableWidth = width - (COLUMNS + 1) * mPadding;
-    int cardWidth = availableWidth / COLUMNS;
+    int availableWidth = getWidth() - (COLUMNS + 1) * mPadding;
+    int colWidth = availableWidth / COLUMNS;
+    int cardWidth = colWidth - mWidthReduction;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
     int stackHeight = cardHeight + mOverlap * 2;
 
-    int x = mPadding + column * (cardWidth + mPadding);
+    int x = mPadding + column * (colWidth + mPadding) + mWidthReduction / 2;
     int y = mPadding + row * (stackHeight + mPadding);
 
     int[] location = new int[2];
@@ -141,7 +141,8 @@ public class FoundTriplesView extends View {
     }
 
     int availableWidth = width - (COLUMNS + 1) * mPadding;
-    int cardWidth = availableWidth / COLUMNS;
+    int colWidth = availableWidth / COLUMNS;
+    int cardWidth = colWidth - mWidthReduction;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
     int stackHeight = cardHeight + mOverlap * 2;
 
@@ -156,15 +157,15 @@ public class FoundTriplesView extends View {
     if (mAllTriples.isEmpty()) return;
 
     int availableWidth = getWidth() - (COLUMNS + 1) * mPadding;
-    int cardWidth = availableWidth / COLUMNS;
+    int colWidth = availableWidth / COLUMNS;
+    int cardWidth = colWidth - mWidthReduction;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
     int stackHeight = cardHeight + mOverlap * 2;
 
-    // First draw found triples
     for (int i = 0; i < mFoundTriples.size(); i++) {
       int column = i % COLUMNS;
       int row = i / COLUMNS;
-      int x = mPadding + column * (cardWidth + mPadding);
+      int x = mPadding + column * (colWidth + mPadding) + mWidthReduction / 2;
       int y = mPadding + row * (stackHeight + mPadding);
 
       Set<Card> triple = mFoundTriples.get(i);
@@ -175,11 +176,10 @@ public class FoundTriplesView extends View {
       }
     }
 
-    // Then draw placeholders for remaining triples
     for (int i = mFoundTriples.size(); i < mAllTriples.size(); i++) {
       int column = i % COLUMNS;
       int row = i / COLUMNS;
-      int x = mPadding + column * (cardWidth + mPadding);
+      int x = mPadding + column * (colWidth + mPadding) + mWidthReduction / 2;
       int y = mPadding + row * (stackHeight + mPadding);
 
       drawPlaceholderStack(canvas, x, y, cardWidth, cardHeight);
@@ -193,7 +193,7 @@ public class FoundTriplesView extends View {
     for (int i = 0; i < 3; i++) {
       Rect cardRect = new Rect(x, y + i * mOverlap, x + w, y + i * mOverlap + h);
       canvas.drawRoundRect(new RectF(cardRect), 8, 8, mBackgroundPaint);
-      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // border
+      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // thin border
 
       SymbolDrawable symbol = mSymbolDrawables.get(cards.get(i));
       Rect relativeCardRect = new Rect(0, 0, w, h);
