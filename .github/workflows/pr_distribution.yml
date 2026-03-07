@@ -41,4 +41,5 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           GPC_JSON_KEY_FILE: "service-account-key.json"
           VERSION_NAME: "1.3-${{ github.head_ref }}-${{ github.event.pull_request.head.sha }}"
+          RELEASE_NOTES: "${{ github.event.pull_request.title }}\n\n${{ github.event.pull_request.body }}"
         run: bundle exec fastlane distribute

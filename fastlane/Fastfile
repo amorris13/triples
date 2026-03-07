@@ -27,7 +27,8 @@ platform :android do
       app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "service-account-key.json",
       apk_path: "app/build/outputs/apk/release/app-release.apk",
-      groups: "dev"
+      groups: "dev",
+      release_notes: ENV["RELEASE_NOTES"]
     )
   end
 end
