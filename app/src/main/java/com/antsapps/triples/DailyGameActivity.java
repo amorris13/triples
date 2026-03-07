@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
@@ -53,6 +54,8 @@ public class DailyGameActivity extends BaseGameActivity
 
     TextView dateText = findViewById(R.id.daily_date_text);
     dateText.setText(java.text.DateFormat.getDateInstance().format(mGame.getDateStarted()));
+
+    updateFoundTriplesView();
   }
 
   @Override
@@ -91,13 +94,22 @@ public class DailyGameActivity extends BaseGameActivity
       ImmutableList<Card> oldCards,
       int numRemaining,
       int numTriplesFound) {
-    updateFoundTriplesView();
+    // If a triple was found, the onTripleFound listener will handle updating after animation
+    // But we still want to update summary immediately
+    TextView summary = findViewById(R.id.triples_found_summary);
+    if (summary != null) {
+      summary.setText(getString(R.string.triples_found) + ": " + mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
+    }
   }
 
   private void updateFoundTriplesView() {
     FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
     if (foundTriplesView != null) {
       foundTriplesView.setTriples(mGame.getAllTriples(), mGame.getFoundTriples());
+    }
+    TextView summary = findViewById(R.id.triples_found_summary);
+    if (summary != null) {
+      summary.setText(getString(R.string.triples_found) + ": " + mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
     }
   }
 
@@ -124,12 +136,18 @@ public class DailyGameActivity extends BaseGameActivity
     } else {
       cardsView.animateTripleFound(triple);
     }
+
+    // Delay updating the FoundTriplesView until animation is finished
+    findViewById(R.id.status_bar).postDelayed(() -> {
+      updateFoundTriplesView();
+    }, 1000);
   }
 
   @Override
   public void onValidTripleSelected(Collection<Card> cards) {
     Set<Card> triple = Sets.newHashSet(cards);
     if (mGame.getFoundTriples().contains(triple)) {
+      Toast.makeText(this, "Triple already found!", Toast.LENGTH_SHORT).show();
       FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
       foundTriplesView.highlightTriple(triple);
       CardsView cardsView = findViewById(R.id.cards_view);

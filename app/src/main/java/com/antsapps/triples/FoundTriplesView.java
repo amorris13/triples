@@ -26,15 +26,16 @@ import java.util.Set;
 public class FoundTriplesView extends View {
 
   private static final float CARD_ASPECT_RATIO = (float) ((Math.sqrt(5) - 1) / 2);
-  private static final int STACK_OVERLAP_FACTOR = 3; // 1/3 of card height
-  private static final int COLUMNS = 5;
+  private static final int COLUMNS = 6;
   private static final int PADDING_DP = 8;
+  private static final int STACK_OVERLAP_DP = 12;
   private static final int HIGHLIGHT_DURATION_MS = 1000;
 
   private final Paint mPlaceholderPaint;
   private final Paint mBackgroundPaint;
   private final Paint mHighlightPaint;
   private final int mPadding;
+  private final int mOverlap;
 
   private List<Set<Card>> mAllTriples = Lists.newArrayList();
   private List<Set<Card>> mFoundTriples = Lists.newArrayList();
@@ -49,7 +50,9 @@ public class FoundTriplesView extends View {
 
   public FoundTriplesView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    mPadding = (int) (PADDING_DP * getResources().getDisplayMetrics().density);
+    float density = getResources().getDisplayMetrics().density;
+    mPadding = (int) (PADDING_DP * density);
+    mOverlap = (int) (STACK_OVERLAP_DP * density);
 
     mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
@@ -104,8 +107,7 @@ public class FoundTriplesView extends View {
     int availableWidth = width - (COLUMNS + 1) * mPadding;
     int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
-    int overlap = cardHeight / STACK_OVERLAP_FACTOR;
-    int stackHeight = cardHeight + overlap * 2;
+    int stackHeight = cardHeight + mOverlap * 2;
 
     int x = mPadding + column * (cardWidth + mPadding);
     int y = mPadding + row * (stackHeight + mPadding);
@@ -118,7 +120,7 @@ public class FoundTriplesView extends View {
 
     ImmutableMap.Builder<Card, Rect> builder = ImmutableMap.builder();
     for (int i = 0; i < 3; i++) {
-      Rect rect = new Rect(x, y + i * overlap, x + cardWidth, y + i * overlap + cardHeight);
+      Rect rect = new Rect(x, y + i * mOverlap, x + cardWidth, y + i * mOverlap + cardHeight);
       rect.offset(location[0], location[1]);
       builder.put(cards.get(i), rect);
     }
@@ -135,8 +137,7 @@ public class FoundTriplesView extends View {
     int availableWidth = width - (COLUMNS + 1) * mPadding;
     int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
-    int overlap = cardHeight / STACK_OVERLAP_FACTOR;
-    int stackHeight = cardHeight + overlap * 2;
+    int stackHeight = cardHeight + mOverlap * 2;
 
     int rows = (int) Math.ceil((double) mAllTriples.size() / COLUMNS);
     int height = rows * (stackHeight + mPadding) + mPadding;
@@ -151,35 +152,34 @@ public class FoundTriplesView extends View {
     int availableWidth = getWidth() - (COLUMNS + 1) * mPadding;
     int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
-    int overlap = cardHeight / STACK_OVERLAP_FACTOR;
 
     for (int i = 0; i < mAllTriples.size(); i++) {
       int column = i % COLUMNS;
       int row = i / COLUMNS;
 
       int x = mPadding + column * (cardWidth + mPadding);
-      int y = mPadding + row * (cardHeight + overlap * 2 + mPadding);
+      int y = mPadding + row * (cardHeight + mOverlap * 2 + mPadding);
 
       Set<Card> triple = mAllTriples.get(i);
       if (mFoundTriples.contains(triple)) {
-        drawTripleStack(canvas, triple, x, y, cardWidth, cardHeight, overlap);
+        drawTripleStack(canvas, triple, x, y, cardWidth, cardHeight);
       } else {
-        drawPlaceholderStack(canvas, x, y, cardWidth, cardHeight, overlap);
+        drawPlaceholderStack(canvas, x, y, cardWidth, cardHeight);
       }
 
       if (triple.equals(mHighlightedTriple)) {
-        canvas.drawRoundRect(new RectF(x - 2, y - 2, x + cardWidth + 2, y + cardHeight + overlap * 2 + 2), 8, 8, mHighlightPaint);
+        canvas.drawRoundRect(new RectF(x - 2, y - 2, x + cardWidth + 2, y + cardHeight + mOverlap * 2 + 2), 8, 8, mHighlightPaint);
       }
     }
   }
 
-  private void drawTripleStack(Canvas canvas, Set<Card> triple, int x, int y, int w, int h, int overlap) {
+  private void drawTripleStack(Canvas canvas, Set<Card> triple, int x, int y, int w, int h) {
     List<Card> cards = Lists.newArrayList(triple);
     // Sort to ensure consistent stack order
     Collections.sort(cards, Card.COMPARATOR);
 
     for (int i = 0; i < 3; i++) {
-      Rect cardRect = new Rect(x, y + i * overlap, x + w, y + i * overlap + h);
+      Rect cardRect = new Rect(x, y + i * mOverlap, x + w, y + i * mOverlap + h);
       canvas.drawRoundRect(new RectF(cardRect), 8, 8, mBackgroundPaint);
       canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // thin border
 
@@ -195,8 +195,8 @@ public class FoundTriplesView extends View {
     }
   }
 
-  private void drawPlaceholderStack(Canvas canvas, int x, int y, int w, int h, int overlap) {
-    RectF rect = new RectF(x, y, x + w, y + h + overlap * 2);
+  private void drawPlaceholderStack(Canvas canvas, int x, int y, int w, int h) {
+    RectF rect = new RectF(x, y, x + w, y + h + mOverlap * 2);
     canvas.drawRoundRect(rect, 8, 8, mPlaceholderPaint);
   }
 }
