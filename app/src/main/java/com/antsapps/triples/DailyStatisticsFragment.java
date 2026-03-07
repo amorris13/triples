@@ -5,7 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,7 +16,6 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
@@ -49,6 +50,10 @@ public class DailyStatisticsFragment extends Fragment {
 
   private TextView mDetailsDate;
   private TextView mDetailsStats;
+  private View mProminentResults;
+  private TextView mDetailsTriples;
+  private TextView mDetailsTime;
+  private TextView mHintsUsedTv;
   private Button mPlayButton;
 
   @Override
@@ -66,6 +71,10 @@ public class DailyStatisticsFragment extends Fragment {
 
     mDetailsDate = view.findViewById(R.id.details_date);
     mDetailsStats = view.findViewById(R.id.details_stats);
+    mProminentResults = view.findViewById(R.id.prominent_results);
+    mDetailsTriples = view.findViewById(R.id.details_triples);
+    mDetailsTime = view.findViewById(R.id.details_time);
+    mHintsUsedTv = view.findViewById(R.id.hints_used_tv);
     mPlayButton = view.findViewById(R.id.play_button);
 
     mCurrentMonth = Calendar.getInstance();
@@ -100,6 +109,31 @@ public class DailyStatisticsFragment extends Fragment {
       mCurrentMonth.set(Calendar.MILLISECOND, 0);
       updateCalendar();
     });
+
+    final GestureDetector gestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
+      @Override
+      public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        if (Math.abs(velocityX) > Math.abs(velocityY)) {
+          if (velocityX > 0) {
+            mCurrentMonth.add(Calendar.MONTH, -1);
+            updateCalendar();
+            return true;
+          } else {
+            Calendar today = Calendar.getInstance();
+            if (mCurrentMonth.get(Calendar.YEAR) < today.get(Calendar.YEAR) ||
+                (mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                 mCurrentMonth.get(Calendar.MONTH) < today.get(Calendar.MONTH))) {
+              mCurrentMonth.add(Calendar.MONTH, 1);
+              updateCalendar();
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+    });
+
+    mCalendarGrid.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
     mCompletedGames = new ArrayList<>();
     mCompletedGamesMap = new HashMap<>();
@@ -148,13 +182,19 @@ public class DailyStatisticsFragment extends Fragment {
     DailyGame game = mCompletedGamesMap.get(daySeed);
 
     if (game != null && game.getGameState() == DailyGame.GameState.COMPLETED) {
-      String hintAsterisk = game.areHintsUsed() ? " *" : "";
       long seconds = game.getTimeElapsed() / 1000;
-      mDetailsStats.setText(String.format("%d triples found in %d:%02d%s",
-          game.getNumTriplesFound(), seconds / 60, seconds % 60, hintAsterisk));
+      mProminentResults.setVisibility(View.VISIBLE);
+      mDetailsTriples.setText(String.valueOf(game.getNumTriplesFound()));
+      mDetailsTime.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
+
+      mDetailsStats.setVisibility(View.GONE);
+      mHintsUsedTv.setVisibility(game.areHintsUsed() ? View.VISIBLE : View.GONE);
       mPlayButton.setVisibility(View.GONE);
     } else {
+      mProminentResults.setVisibility(View.GONE);
+      mDetailsStats.setVisibility(View.VISIBLE);
       mDetailsStats.setText("Not yet completed");
+      mHintsUsedTv.setVisibility(View.GONE);
       mPlayButton.setVisibility(View.VISIBLE);
       mPlayButton.setOnClickListener(v -> {
         android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
@@ -167,7 +207,11 @@ public class DailyStatisticsFragment extends Fragment {
 
   private void updateStreaks() {
     Set<Long> completedOnDaySeeds = new HashSet<>();
+    int totalSolvedNoHints = 0;
     for (DailyGame game : mCompletedGames) {
+      if (!game.areHintsUsed()) {
+        totalSolvedNoHints++;
+      }
       if (game.getDateCompleted() == null) continue;
       long startSeed = getStartOfDay(game.getDateStarted().getTime());
       if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
@@ -208,7 +252,7 @@ public class DailyStatisticsFragment extends Fragment {
 
     mCurrentStreakTv.setText(String.valueOf(currentStreak));
     mLongestStreakTv.setText(String.valueOf(longestStreak));
-    mTotalSolvedTv.setText(String.valueOf(mCompletedGames.size()));
+    mTotalSolvedTv.setText(String.valueOf(totalSolvedNoHints));
   }
 
   private static long getStartOfDay(long time) {
@@ -223,8 +267,6 @@ public class DailyStatisticsFragment extends Fragment {
 
   private static class CalendarAdapter extends BaseAdapter {
     private final Context mContext;
-    private final int mTextPrimaryColor;
-    private final int mTextSecondaryColor;
     private final List<Calendar> mDays;
     private final Set<Long> mCompletedOnDaySeeds;
     private final Set<Long> mCompletedLateSeeds;
@@ -235,8 +277,6 @@ public class DailyStatisticsFragment extends Fragment {
 
     CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames, Calendar selectedDate) {
       mContext = context;
-      mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
-      mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
       mMonth = month.get(Calendar.MONTH);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
       mSelectedDate = selectedDate;

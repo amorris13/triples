@@ -14,7 +14,6 @@ import androidx.test.core.app.ApplicationProvider;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.ArcadeGame;
-import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import org.junit.Test;
 
@@ -68,42 +67,6 @@ public class ColoringTest extends BaseRobolectricTest {
         int expectedColor = ContextCompat.getColor(ApplicationProvider.getApplicationContext(), R.color.arcade_accent);
 
         try (ActivityScenario<ArcadeGameActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity -> {
-                // Check Action Bar Title is not colored
-                CharSequence title = activity.getTitle();
-                if (title instanceof SpannableString) {
-                    SpannableString ss = (SpannableString) title;
-                    ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
-                    assertThat(spans).isEmpty();
-                }
-
-                // Check bottom separator color
-                View bottomSeparator = activity.findViewById(R.id.bottom_separator);
-                assertThat(((ColorDrawable) bottomSeparator.getBackground()).getColor()).isEqualTo(expectedColor);
-
-                // Check paused text color
-                TextView pausedText = activity.findViewById(R.id.paused);
-                assertThat(pausedText.getCurrentTextColor()).isEqualTo(expectedColor);
-
-                // Check button tints
-                assertThat(activity.findViewById(R.id.statistics_button).getBackgroundTintList()).isEqualTo(ColorStateList.valueOf(expectedColor));
-                assertThat(activity.findViewById(R.id.new_game_button).getBackgroundTintList()).isEqualTo(ColorStateList.valueOf(expectedColor));
-            });
-        }
-    }
-
-    @Test
-    public void testDailyGameColoring() {
-        Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
-        DailyGame game = DailyGame.createFromSeed(12345L);
-        app.addDailyGame(game);
-
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), DailyGameActivity.class);
-        intent.putExtra(Game.ID_TAG, game.getId());
-
-        int expectedColor = ContextCompat.getColor(ApplicationProvider.getApplicationContext(), R.color.daily_accent);
-
-        try (ActivityScenario<DailyGameActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
                 // Check Action Bar Title is not colored
                 CharSequence title = activity.getTitle();

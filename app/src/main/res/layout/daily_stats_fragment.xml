@@ -1,209 +1,280 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:padding="16dp">
+
+  <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:gravity="center">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_streak"
+        android:textSize="10sp"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+      <TextView
+        android:id="@+id/current_streak_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:gravity="center">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/longest_streak"
+        android:textSize="10sp"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+      <TextView
+        android:id="@+id/longest_streak_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:gravity="center">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/total_solved"
+        android:textSize="10sp"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+      <TextView
+        android:id="@+id/total_solved_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface" />
+    </LinearLayout>
+  </LinearLayout>
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="?attr/colorOutlineVariant"
+    android:layout_marginBottom="16dp"/>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <Button
+      android:id="@+id/prev_month"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:text="&lt;"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      android:background="?android:attr/selectableItemBackgroundBorderless"
+      android:textColor="?attr/colorOnSurface"
+      android:minWidth="0dp"
+      android:minHeight="0dp"
+      android:padding="0dp" />
+
+    <TextView
+      android:id="@+id/month_title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      android:padding="8dp"
+      android:background="?android:attr/selectableItemBackground"
+      android:clickable="true"
+      android:focusable="true" />
+
+    <Button
+      android:id="@+id/next_month"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:text="&gt;"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      android:background="?android:attr/selectableItemBackgroundBorderless"
+      android:textColor="?attr/colorOnSurface"
+      android:minWidth="0dp"
+      android:minHeight="0dp"
+      android:padding="0dp" />
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="8dp">
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="M" />
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="T" />
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="W" />
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="T" />
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="F" />
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="S" />
+
+    <TextView
+      style="@style/DailyCalendarDayHeader"
+      android:text="S" />
+  </LinearLayout>
+
+  <GridView
+    android:id="@+id/calendar_grid"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:numColumns="7"
+    android:verticalSpacing="2dp"
+    android:horizontalSpacing="2dp"
+    android:layout_marginTop="4dp" />
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="?attr/colorOutlineVariant"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"/>
+
+  <LinearLayout
+    android:id="@+id/details_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:gravity="center_horizontal"
+    android:padding="8dp">
+
+    <TextView
+      android:id="@+id/details_date"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      android:textColor="?attr/colorOnSurface" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+      android:id="@+id/prominent_results"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_marginTop="12dp"
+      android:gravity="center"
+      android:visibility="gone">
+
+      <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:paddingBottom="16dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/current_streak"
-                android:textSize="10sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-            <TextView
-                android:id="@+id/current_streak_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/longest_streak"
-                android:textSize="10sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-            <TextView
-                android:id="@+id/longest_streak_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/total_solved"
-                android:textSize="10sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-            <TextView
-                android:id="@+id/total_solved_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/colorOutlineVariant"
-        android:layout_marginBottom="16dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/prev_month"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:text="&lt;"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:textColor="?attr/colorOnSurface"
-            style="@style/Widget.AppCompat.Button.Borderless" />
-
-        <TextView
-            android:id="@+id/month_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:padding="8dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true" />
-
-        <Button
-            android:id="@+id/next_month"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:text="&gt;"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:textColor="?attr/colorOnSurface"
-            style="@style/Widget.AppCompat.Button.Borderless" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="M" />
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="T" />
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="W" />
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="T" />
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="F" />
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="S" />
-
-        <TextView
-            style="@style/DailyCalendarDayHeader"
-            android:text="S" />
-    </LinearLayout>
-
-    <GridView
-        android:id="@+id/calendar_grid"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
         android:layout_weight="1"
-        android:numColumns="7"
-        android:verticalSpacing="2dp"
-        android:horizontalSpacing="2dp"
-        android:layout_marginTop="4dp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/colorOutlineVariant"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
-
-    <LinearLayout
-        android:id="@+id/details_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="8dp">
-
+        android:gravity="center">
         <TextView
-            android:id="@+id/details_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
-
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="TRIPLES"
+          android:textSize="10sp"
+          android:textColor="?attr/colorOnSurfaceVariant" />
         <TextView
-            android:id="@+id/details_stats"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="14sp"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+          android:id="@+id/details_triples"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="24sp"
+          android:textStyle="bold"
+          android:textColor="?attr/colorOnSurface" />
+      </LinearLayout>
 
-        <Button
-            android:id="@+id/play_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="PLAY"
-            style="@style/Widget.Material3.Button" />
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="TIME"
+          android:textSize="10sp"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+        <TextView
+          android:id="@+id/details_time"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="24sp"
+          android:textStyle="bold"
+          android:textColor="?attr/colorOnSurface" />
+      </LinearLayout>
     </LinearLayout>
+
+    <TextView
+      android:id="@+id/details_stats"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:textSize="14sp"
+      android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <TextView
+      android:id="@+id/hints_used_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="HINTS USED"
+      android:textSize="12sp"
+      android:textStyle="bold"
+      android:textColor="@color/color_slowest"
+      android:visibility="gone" />
+
+    <Button
+      android:id="@+id/play_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="PLAY"
+      style="@style/Widget.Material3.Button" />
+  </LinearLayout>
 
 </LinearLayout>

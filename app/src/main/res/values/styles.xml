@@ -86,7 +86,7 @@
     <item name="colorPrimary">@color/zen_accent</item>
   </style>
 
-  <style name="DailyButtonTheme" parent="ThemeOverlay.Material3">
+  <style name="DailyButtonTheme" parent="ThemeOverlay.Material3.Light">
     <item name="colorPrimary">@color/daily_accent</item>
   </style>
 
