@@ -274,6 +274,10 @@ public class Application extends OnStateChangedReporter {
         });
   }
 
+  public List<DailyGame> getDailyGames() {
+    return Lists.newArrayList(mDailyGames);
+  }
+
   public void clearAllData() {
     mClassicGames.clear();
     mArcadeGames.clear();
