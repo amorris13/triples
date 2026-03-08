@@ -149,6 +149,7 @@
   <string name="join_room">Join Room</string>
   <string name="create_room">Create Room</string>
   <string name="enter_room_code">Enter Room Code</string>
+  <string name="connecting_multiplayer">Connecting to multiplayer…</string>
   <string name="searching_for_opponent">Searching for opponent…</string>
   <string name="waiting_for_players">Waiting for players…</string>
   <string name="room_code_format">Room Code: %1$s</string>

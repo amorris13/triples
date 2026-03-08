@@ -32,6 +32,8 @@ public class MatchmakingActivity extends BaseTriplesActivity {
   private static final int STATE_FRIENDS = 1;
   private static final int STATE_SEARCHING = 2;
 
+  private static final int STATE_CONNECTING = 3;
+
   private ViewAnimator mAnimator;
   private TextView mTvStatus;
   private TextView mTvRoomCodeDisplay;
@@ -53,13 +55,6 @@ public class MatchmakingActivity extends BaseTriplesActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-      Toast.makeText(this, "Please sign in to play multiplayer", Toast.LENGTH_SHORT).show();
-      finish();
-      return;
-    }
-
     setContentView(R.layout.matchmaking);
 
     mAnimator = findViewById(R.id.matchmaking_animator);
@@ -67,6 +62,26 @@ public class MatchmakingActivity extends BaseTriplesActivity {
     mTvRoomCodeDisplay = findViewById(R.id.tv_room_code_display);
     mEtRoomCode = findViewById(R.id.et_room_code);
     mBtnStartGame = findViewById(R.id.btn_start_game);
+
+    if (!isFirebaseSignedIn()) {
+      if (isSignedIn()) {
+        // PGS is signed in, but Firebase isn't yet. Show connecting state.
+        mAnimator.setDisplayedChild(STATE_SEARCHING);
+        mTvStatus.setText(R.string.connecting_multiplayer);
+        mTvRoomCodeDisplay.setVisibility(View.GONE);
+        mBtnStartGame.setVisibility(View.GONE);
+        setSignInListener(signedIn -> {
+          if (isFirebaseSignedIn()) {
+            mAnimator.setDisplayedChild(STATE_MAIN);
+            setSignInListener(null);
+          }
+        });
+      } else {
+        Toast.makeText(this, "Please sign in to play multiplayer", Toast.LENGTH_SHORT).show();
+        finish();
+        return;
+      }
+    }
 
     mRoomsRef = FirebaseDatabase.getInstance().getReference("rooms");
 

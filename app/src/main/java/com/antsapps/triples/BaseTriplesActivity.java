@@ -42,6 +42,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected FirebaseAnalytics mFirebaseAnalytics;
   private FirebaseAuth mFirebaseAuth;
   protected boolean mIsSignedIn = false;
+  protected boolean mIsFirebaseSignedIn = false;
 
   @Nullable private OnSignInListener mSignInListener;
 
@@ -150,7 +151,9 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                   // Sign in success, update UI with the signed-in user's information
                   Log.d(TAG, "signInWithCredential:success");
+                  mIsFirebaseSignedIn = true;
                   FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                  onSignInSucceeded();
                 } else {
                   // If sign in fails, display a message to the user.
                   Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -200,12 +203,17 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     return mIsSignedIn;
   }
 
+  public boolean isFirebaseSignedIn() {
+    return mIsFirebaseSignedIn || mFirebaseAuth.getCurrentUser() != null;
+  }
+
   protected void signOut() {
     // Note: PGS v2 does not support programmatic sign out.
     // We can sign out from Firebase.
     mFirebaseAuth.signOut();
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SIGN_OUT, null);
     mIsSignedIn = false;
+    mIsFirebaseSignedIn = false;
     onSignOut();
   }
 
