@@ -386,4 +386,14 @@ public class Application extends OnStateChangedReporter {
     }
     return false;
   }
+  
+  public void clearAllData() {
+    mClassicGames.clear();
+    mArcadeGames.clear();
+    mDailyGames.clear();
+    mZenGame = null;
+    mBeginnerGame = null;
+    database.clearAllData();
+    notifyStateChanged();
+  }
 }

@@ -226,7 +226,6 @@ public class MainActivity extends BaseTriplesActivity {
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     super.onPrepareOptionsMenu(menu);
-    menu.findItem(R.id.signout).setVisible(isSignedIn());
     MenuItem exportItem = menu.findItem(R.id.export_to_csv);
     if (exportItem != null) {
       exportItem.setVisible(false);
@@ -244,9 +243,6 @@ public class MainActivity extends BaseTriplesActivity {
     } else if (itemId == R.id.settings) {
       Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
       startActivity(settingsIntent);
-      return true;
-    } else if (itemId == R.id.signout) {
-      signOut();
       return true;
     }
     return super.onOptionsItemSelected(item);

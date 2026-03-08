@@ -445,4 +445,17 @@ public class DBAdapter extends SQLiteOpenHelper {
     }
     return values;
   }
+
+  public void clearAllData() {
+    SQLiteDatabase db = getWritableDatabase();
+    db.beginTransaction();
+    try {
+      db.delete(TABLE_CLASSIC_GAMES, null, null);
+      db.delete(TABLE_ARCADE_GAMES, null, null);
+      db.delete(TABLE_DAILY_GAMES, null, null);
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
+  }
 }

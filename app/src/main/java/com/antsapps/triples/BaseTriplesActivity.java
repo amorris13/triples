@@ -111,6 +111,8 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   private void fetchTokenAndSignInToFirebase() {
     GoogleSignInOptions gso =
         new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+            .requestEmail()
+            .requestProfile()
             .requestIdToken(getString(R.string.default_web_client_id))
             .build();
     GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -154,6 +156,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
                   // Sign in success, update UI with the signed-in user's information
                   Log.d(TAG, "signInWithCredential:success");
                   FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                  onSignInSucceeded();
                 } else {
                   // If sign in fails, display a message to the user.
                   Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -218,7 +221,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   public boolean isSignedIn() {
-    return mIsSignedIn;
+    return mIsSignedIn || mFirebaseAuth.getCurrentUser() != null;
   }
 
   protected void signOut() {
@@ -228,6 +231,20 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SIGN_OUT, null);
     mIsSignedIn = false;
     onSignOut();
+  }
+
+  @Nullable
+  public String getSignedInUserInfo() {
+    FirebaseUser user = mFirebaseAuth.getCurrentUser();
+    if (user != null) {
+      if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+        return user.getEmail();
+      }
+      if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+        return user.getDisplayName();
+      }
+    }
+    return null;
   }
 
   protected void onSignOut() {

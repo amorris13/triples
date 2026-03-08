@@ -269,4 +269,66 @@ public class CloudSaveManager {
     }
     Log.e(TAG, "Error opening snapshot for " + operation, exception);
   }
+
+  @VisibleForTesting
+  static boolean merge(Application application, CloudSaveSerializer.CloudData cloudData) {
+    boolean changed = false;
+
+    // Classic Games
+    Set<Long> localClassicDates = new HashSet<>();
+    for (ClassicGame g : application.getCompletedClassicGames()) {
+      localClassicDates.add(g.getDateStarted().getTime());
+    }
+    for (ClassicGame cloudGame : cloudData.classicGames) {
+      if (!localClassicDates.contains(cloudGame.getDateStarted().getTime())) {
+        application.addClassicGame(cloudGame);
+        changed = true;
+      }
+    }
+
+    // Arcade Games
+    Set<Long> localArcadeDates = new HashSet<>();
+    for (ArcadeGame g : application.getCompletedArcadeGames()) {
+      localArcadeDates.add(g.getDateStarted().getTime());
+    }
+    for (ArcadeGame cloudGame : cloudData.arcadeGames) {
+      if (!localArcadeDates.contains(cloudGame.getDateStarted().getTime())) {
+        application.addArcadeGame(cloudGame);
+        changed = true;
+      }
+    }
+
+    return changed;
+  }
+
+  public static void deleteFromCloud(final Activity activity) {
+    Log.d(TAG, "deleteFromCloud");
+    PlayGames.getGamesSignInClient(activity)
+        .isAuthenticated()
+        .addOnCompleteListener(
+            task -> {
+              boolean isAuthenticated = (task.isSuccessful() && task.getResult().isAuthenticated());
+              if (isAuthenticated) {
+                SnapshotsClient snapshotsClient = PlayGames.getSnapshotsClient(activity);
+                snapshotsClient.open(SNAPSHOT_NAME, true, SnapshotsClient.RESOLUTION_POLICY_MOST_RECENTLY_MODIFIED)
+                    .addOnCompleteListener(openTask -> {
+                      if (openTask.isSuccessful()) {
+                        Snapshot snapshot = openTask.getResult().getData();
+                        snapshotsClient.delete(snapshot.getMetadata())
+                            .addOnCompleteListener(deleteTask -> {
+                              if (deleteTask.isSuccessful()) {
+                                Log.d(TAG, "Cloud data deleted successfully");
+                              } else {
+                                Log.e(TAG, "Error deleting cloud data", deleteTask.getException());
+                              }
+                            });
+                      } else {
+                        handleSnapshotError("delete", openTask.getException());
+                      }
+                    });
+              } else {
+                Log.d(TAG, "deleteFromCloud: not authenticated, skipping");
+              }
+            });
+  }
 }
