@@ -5,7 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.AttributeSet;
+import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,9 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
@@ -30,8 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import android.os.Bundle;
 
 public class DailyStatisticsFragment extends Fragment {
 
@@ -53,7 +49,8 @@ public class DailyStatisticsFragment extends Fragment {
   private TextView mDetailTime;
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mApplication = Application.getInstance(getActivity());
     View view = inflater.inflate(R.layout.daily_stats_fragment, container, false);
 
@@ -67,7 +64,8 @@ public class DailyStatisticsFragment extends Fragment {
     mDetailDate = view.findViewById(R.id.detail_date);
     mDetailStatus = view.findViewById(R.id.detail_status);
     mDetailPlayBtn = view.findViewById(R.id.detail_play_btn);
-    mDetailPlayBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.daily_accent)));
+    mDetailPlayBtn.setBackgroundTintList(
+        ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.daily_accent)));
     mDetailResultsContainer = view.findViewById(R.id.detail_results_container);
     mDetailTriples = view.findViewById(R.id.detail_triples);
     mDetailTime = view.findViewById(R.id.detail_time);
@@ -79,60 +77,68 @@ public class DailyStatisticsFragment extends Fragment {
     mCurrentMonth.set(Calendar.SECOND, 0);
     mCurrentMonth.set(Calendar.MILLISECOND, 0);
 
-    view.findViewById(R.id.prev_month).setOnClickListener(v -> {
-      mCurrentMonth.add(Calendar.MONTH, -1);
-      updateCalendar();
-    });
+    view.findViewById(R.id.prev_month)
+        .setOnClickListener(
+            v -> {
+              mCurrentMonth.add(Calendar.MONTH, -1);
+              updateCalendar();
+            });
 
-    mNextMonthBtn.setOnClickListener(v -> {
-      Calendar nextMonth = (Calendar) mCurrentMonth.clone();
-      nextMonth.add(Calendar.MONTH, 1);
-      Calendar now = Calendar.getInstance();
-      if (nextMonth.get(Calendar.YEAR) < now.get(Calendar.YEAR) ||
-          (nextMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-           nextMonth.get(Calendar.MONTH) <= now.get(Calendar.MONTH))) {
-        mCurrentMonth.add(Calendar.MONTH, 1);
-        updateCalendar();
-      }
-    });
+    mNextMonthBtn.setOnClickListener(
+        v -> {
+          Calendar nextMonth = (Calendar) mCurrentMonth.clone();
+          nextMonth.add(Calendar.MONTH, 1);
+          Calendar now = Calendar.getInstance();
+          if (nextMonth.get(Calendar.YEAR) < now.get(Calendar.YEAR)
+              || (nextMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+                  && nextMonth.get(Calendar.MONTH) <= now.get(Calendar.MONTH))) {
+            mCurrentMonth.add(Calendar.MONTH, 1);
+            updateCalendar();
+          }
+        });
 
-    mMonthTitle.setOnClickListener(v -> {
-      mCurrentMonth = Calendar.getInstance();
-      mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
-      mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
-      mCurrentMonth.set(Calendar.MINUTE, 0);
-      mCurrentMonth.set(Calendar.SECOND, 0);
-      mCurrentMonth.set(Calendar.MILLISECOND, 0);
-      mSelectedDate = Calendar.getInstance();
-      updateCalendar();
-    });
+    mMonthTitle.setOnClickListener(
+        v -> {
+          mCurrentMonth = Calendar.getInstance();
+          mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
+          mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
+          mCurrentMonth.set(Calendar.MINUTE, 0);
+          mCurrentMonth.set(Calendar.SECOND, 0);
+          mCurrentMonth.set(Calendar.MILLISECOND, 0);
+          mSelectedDate = Calendar.getInstance();
+          updateCalendar();
+        });
 
     mSelectedDate = Calendar.getInstance();
 
-    GestureDetector gestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
-      @Override
-      public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 100) {
-          if (velocityX > 0) {
-            mCurrentMonth.add(Calendar.MONTH, -1);
-            updateCalendar();
-            return true;
-          } else {
-            Calendar nextMonth = (Calendar) mCurrentMonth.clone();
-            nextMonth.add(Calendar.MONTH, 1);
-            Calendar now = Calendar.getInstance();
-            if (nextMonth.get(Calendar.YEAR) < now.get(Calendar.YEAR) ||
-                (nextMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-                 nextMonth.get(Calendar.MONTH) <= now.get(Calendar.MONTH))) {
-              mCurrentMonth.add(Calendar.MONTH, 1);
-              updateCalendar();
-              return true;
-            }
-          }
-        }
-        return false;
-      }
-    });
+    GestureDetector gestureDetector =
+        new GestureDetector(
+            getActivity(),
+            new GestureDetector.SimpleOnGestureListener() {
+              @Override
+              public boolean onFling(
+                  MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 100) {
+                  if (velocityX > 0) {
+                    mCurrentMonth.add(Calendar.MONTH, -1);
+                    updateCalendar();
+                    return true;
+                  } else {
+                    Calendar nextMonth = (Calendar) mCurrentMonth.clone();
+                    nextMonth.add(Calendar.MONTH, 1);
+                    Calendar now = Calendar.getInstance();
+                    if (nextMonth.get(Calendar.YEAR) < now.get(Calendar.YEAR)
+                        || (nextMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+                            && nextMonth.get(Calendar.MONTH) <= now.get(Calendar.MONTH))) {
+                      mCurrentMonth.add(Calendar.MONTH, 1);
+                      updateCalendar();
+                      return true;
+                    }
+                  }
+                }
+                return false;
+              }
+            });
 
     mCalendarGrid.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
@@ -140,7 +146,8 @@ public class DailyStatisticsFragment extends Fragment {
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
       mCompletedGames.add(game);
     }
-    Collections.sort(mCompletedGames, (g1, g2) -> g2.getDateStarted().compareTo(g1.getDateStarted()));
+    Collections.sort(
+        mCompletedGames, (g1, g2) -> g2.getDateStarted().compareTo(g1.getDateStarted()));
 
     updateCalendar();
     updateStreaks();
@@ -153,23 +160,30 @@ public class DailyStatisticsFragment extends Fragment {
     mMonthTitle.setText(sdf.format(mCurrentMonth.getTime()));
 
     Calendar today = Calendar.getInstance();
-    boolean isCurrentMonth = mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-                             mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
+    boolean isCurrentMonth =
+        mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+            && mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
 
     mNextMonthBtn.setEnabled(!isCurrentMonth);
 
-    CalendarAdapter adapter = new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames, getStartOfDay(mSelectedDate.getTimeInMillis()));
+    CalendarAdapter adapter =
+        new CalendarAdapter(
+            getActivity(),
+            mCurrentMonth,
+            mCompletedGames,
+            getStartOfDay(mSelectedDate.getTimeInMillis()));
     mCalendarGrid.setAdapter(adapter);
 
-    mCalendarGrid.setOnItemClickListener((parent, view1, position, id) -> {
-      Calendar day = (Calendar) adapter.getItem(position);
-      if (adapter.isEnabled(position)) {
-        long daySeed = getStartOfDay(day.getTimeInMillis());
-        mSelectedDate = (Calendar) day.clone();
-        adapter.setSelectedSeed(daySeed);
-        updateDetailSection();
-      }
-    });
+    mCalendarGrid.setOnItemClickListener(
+        (parent, view1, position, id) -> {
+          Calendar day = (Calendar) adapter.getItem(position);
+          if (adapter.isEnabled(position)) {
+            long daySeed = getStartOfDay(day.getTimeInMillis());
+            mSelectedDate = (Calendar) day.clone();
+            adapter.setSelectedSeed(daySeed);
+            updateDetailSection();
+          }
+        });
 
     updateDetailSection();
   }
@@ -191,16 +205,24 @@ public class DailyStatisticsFragment extends Fragment {
       if (game == null || game.getNumTriplesFound() == 0) {
         mDetailStatus.setText(R.string.daily_not_started);
       } else {
-        mDetailStatus.setText(getString(R.string.daily_incomplete) + " (" + game.getNumTriplesFound() + "/" + game.getTotalTriplesCount() + " triples found)");
+        mDetailStatus.setText(
+            getString(R.string.daily_incomplete)
+                + " ("
+                + game.getNumTriplesFound()
+                + "/"
+                + game.getTotalTriplesCount()
+                + " triples found)");
       }
       mDetailResultsContainer.setVisibility(View.GONE);
       mDetailPlayBtn.setVisibility(View.VISIBLE);
-      mDetailPlayBtn.setOnClickListener(v -> {
-        android.content.Intent intent = new android.content.Intent(getActivity(), DailyGameActivity.class);
-        DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
-        intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, newGame.getId());
-        startActivity(intent);
-      });
+      mDetailPlayBtn.setOnClickListener(
+          v -> {
+            android.content.Intent intent =
+                new android.content.Intent(getActivity(), DailyGameActivity.class);
+            DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
+            intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, newGame.getId());
+            startActivity(intent);
+          });
     } else {
       String status = getString(R.string.daily_completed);
       if (game.areHintsUsed()) {
@@ -248,8 +270,8 @@ public class DailyStatisticsFragment extends Fragment {
       if (lastCal != null) {
         Calendar expectedCal = (Calendar) lastCal.clone();
         expectedCal.add(Calendar.DAY_OF_YEAR, 1);
-        if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
-            expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
+        if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR)
+            && expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
           tempStreak++;
         } else {
           tempStreak = 1;
@@ -289,7 +311,8 @@ public class DailyStatisticsFragment extends Fragment {
     private final int mYear;
     private long mSelectedSeed;
 
-    CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames, long selectedSeed) {
+    CalendarAdapter(
+        Context context, Calendar month, List<DailyGame> completedGames, long selectedSeed) {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
@@ -334,11 +357,19 @@ public class DailyStatisticsFragment extends Fragment {
     }
 
     @Override
-    public int getCount() { return mDays.size(); }
+    public int getCount() {
+      return mDays.size();
+    }
+
     @Override
-    public Object getItem(int position) { return mDays.get(position); }
+    public Object getItem(int position) {
+      return mDays.get(position);
+    }
+
     @Override
-    public long getItemId(int position) { return position; }
+    public long getItemId(int position) {
+      return position;
+    }
 
     @Override
     public boolean areAllItemsEnabled() {
@@ -348,61 +379,66 @@ public class DailyStatisticsFragment extends Fragment {
     @Override
     public boolean isEnabled(int position) {
       Calendar day = mDays.get(position);
-      return day.get(Calendar.YEAR) == mYear && day.get(Calendar.MONTH) == mMonth &&
-          getStartOfDay(day.getTimeInMillis()) <= getStartOfDay(System.currentTimeMillis());
+      return day.get(Calendar.YEAR) == mYear
+          && day.get(Calendar.MONTH) == mMonth
+          && getStartOfDay(day.getTimeInMillis()) <= getStartOfDay(System.currentTimeMillis());
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView tv = (TextView) convertView;
       if (tv == null) {
-        tv = new TextView(mContext) {
-          private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tv =
+            new TextView(mContext) {
+              private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-          @Override
-          protected void onDraw(Canvas canvas) {
-            Calendar day = (Calendar) getTag();
-            if (day == null || day.get(Calendar.MONTH) != mMonth || day.get(Calendar.YEAR) != mYear) {
-              return;
-            }
+              @Override
+              protected void onDraw(Canvas canvas) {
+                Calendar day = (Calendar) getTag();
+                if (day == null
+                    || day.get(Calendar.MONTH) != mMonth
+                    || day.get(Calendar.YEAR) != mYear) {
+                  return;
+                }
 
-            float density = mContext.getResources().getDisplayMetrics().density;
-            long daySeed = getStartOfDay(day.getTimeInMillis());
-            float centerX = getWidth() / 2f;
-            float centerY = getHeight() / 2f;
-            float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
+                float density = mContext.getResources().getDisplayMetrics().density;
+                long daySeed = getStartOfDay(day.getTimeInMillis());
+                float centerX = getWidth() / 2f;
+                float centerY = getHeight() / 2f;
+                float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
 
-            // Background circle for solved games
-            if (mCompletedOnDaySeeds.contains(daySeed)) {
-              mPaint.setStyle(Paint.Style.FILL);
-              mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-              canvas.drawCircle(centerX, centerY, radius, mPaint);
-            } else if (mCompletedLateSeeds.contains(daySeed)) {
-              mPaint.setStyle(Paint.Style.FILL);
-              int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-              mPaint.setColor(Color.argb(128, Color.red(color), Color.green(color), Color.blue(color)));
-              canvas.drawCircle(centerX, centerY, radius, mPaint);
-            }
+                // Background circle for solved games
+                if (mCompletedOnDaySeeds.contains(daySeed)) {
+                  mPaint.setStyle(Paint.Style.FILL);
+                  mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
+                  canvas.drawCircle(centerX, centerY, radius, mPaint);
+                } else if (mCompletedLateSeeds.contains(daySeed)) {
+                  mPaint.setStyle(Paint.Style.FILL);
+                  int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                  mPaint.setColor(
+                      Color.argb(128, Color.red(color), Color.green(color), Color.blue(color)));
+                  canvas.drawCircle(centerX, centerY, radius, mPaint);
+                }
 
-            // Selection indicator (outline)
-            if (daySeed == mSelectedSeed) {
-              mPaint.setStyle(Paint.Style.STROKE);
-              mPaint.setStrokeWidth(2 * density);
-              mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
-              canvas.drawCircle(centerX, centerY, radius + density, mPaint);
-            }
+                // Selection indicator (outline)
+                if (daySeed == mSelectedSeed) {
+                  mPaint.setStyle(Paint.Style.STROKE);
+                  mPaint.setStrokeWidth(2 * density);
+                  mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
+                  canvas.drawCircle(centerX, centerY, radius + density, mPaint);
+                }
 
-            // Today indicator
-            if (daySeed == mTodaySeed) {
-              mPaint.setStyle(Paint.Style.STROKE);
-              mPaint.setStrokeWidth(density);
-              mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-              canvas.drawCircle(centerX, centerY, radius + 3f * density, mPaint);
-            }
+                // Today indicator
+                if (daySeed == mTodaySeed) {
+                  mPaint.setStyle(Paint.Style.STROKE);
+                  mPaint.setStrokeWidth(density);
+                  mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
+                  canvas.drawCircle(centerX, centerY, radius + 3f * density, mPaint);
+                }
 
-            super.onDraw(canvas);
-          }
-        };
+                super.onDraw(canvas);
+              }
+            };
         tv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
         tv.setGravity(android.view.Gravity.CENTER);
       }
@@ -432,5 +468,4 @@ public class DailyStatisticsFragment extends Fragment {
       return tv;
     }
   }
-
 }

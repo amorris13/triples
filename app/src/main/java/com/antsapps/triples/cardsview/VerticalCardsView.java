@@ -4,10 +4,8 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
-
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
-
 import java.util.List;
 
 public class VerticalCardsView extends CardsView {
@@ -51,11 +49,11 @@ public class VerticalCardsView extends CardsView {
   protected void updateMeasuredDimensions(final int widthMeasureSpec, final int heightMeasureSpec) {
     int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
     if (widthOfCards == 0) {
-        if (getWidth() > 0) {
-            widthOfCards = getWidth();
-        } else {
-            widthOfCards = getResources().getDisplayMetrics().widthPixels;
-        }
+      if (getWidth() > 0) {
+        widthOfCards = getWidth();
+      } else {
+        widthOfCards = getResources().getDisplayMetrics().widthPixels;
+      }
     }
     mWidthOfCard = widthOfCards / COLUMNS;
     mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
@@ -63,11 +61,12 @@ public class VerticalCardsView extends CardsView {
     int rows = (int) Math.ceil((double) mCards.size() / COLUMNS);
     int heightOfCards = mHeightOfCard * rows;
     if (mCards.isEmpty()) {
-        heightOfCards = 0;
+      heightOfCards = 0;
     }
 
     if (widthOfCards > 0 && heightOfCards > 0) {
-        mOffScreenLocation.set(widthOfCards, heightOfCards, widthOfCards + mWidthOfCard, heightOfCards + mHeightOfCard);
+      mOffScreenLocation.set(
+          widthOfCards, heightOfCards, widthOfCards + mWidthOfCard, heightOfCards + mHeightOfCard);
     }
 
     setMeasuredDimension(widthOfCards, heightOfCards);

@@ -11,9 +11,7 @@ import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.util.AttributeSet;
 import android.view.View;
-
 import com.antsapps.triples.CardCustomizationUtils;
-import com.antsapps.triples.R;
 
 public class ShapeIconView extends View {
 

@@ -26,7 +26,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     setupListeners(getPreferenceScreen());
 
-    SeekBarPreference animationDurationPref = findPreference(getString(R.string.pref_animation_speed));
+    SeekBarPreference animationDurationPref =
+        findPreference(getString(R.string.pref_animation_speed));
     if (animationDurationPref != null) {
       animationDurationPref.setSummary(
           getString(R.string.pref_animation_duration_summary, animationDurationPref.getValue()));
@@ -47,32 +48,37 @@ public class SettingsFragment extends PreferenceFragmentCompat
       String info = activity.getSignedInUserInfo();
       userPref.setSummary(getString(R.string.account_signed_in_as, info != null ? info : ""));
       signInOutPref.setTitle(R.string.account_sign_out);
-      signInOutPref.setOnPreferenceClickListener(preference -> {
-        activity.signOut();
-        return true;
-      });
+      signInOutPref.setOnPreferenceClickListener(
+          preference -> {
+            activity.signOut();
+            return true;
+          });
     } else {
       userPref.setSummary(R.string.account_not_signed_in);
       signInOutPref.setTitle(R.string.account_sign_in);
-      signInOutPref.setOnPreferenceClickListener(preference -> {
-        activity.signIn();
-        return true;
-      });
+      signInOutPref.setOnPreferenceClickListener(
+          preference -> {
+            activity.signIn();
+            return true;
+          });
     }
 
-    deleteDataPref.setOnPreferenceClickListener(preference -> {
-      showDeleteDataConfirmation();
-      return true;
-    });
+    deleteDataPref.setOnPreferenceClickListener(
+        preference -> {
+          showDeleteDataConfirmation();
+          return true;
+        });
   }
 
   private void showDeleteDataConfirmation() {
-    AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
-        .setTitle(R.string.account_delete_data_dialog_title)
-        .setMessage(R.string.account_delete_data_dialog_message)
-        .setPositiveButton(R.string.account_delete_button, (dialogInterface, which) -> deleteData())
-        .setNegativeButton(R.string.no, null)
-        .create();
+    AlertDialog dialog =
+        new MaterialAlertDialogBuilder(getContext())
+            .setTitle(R.string.account_delete_data_dialog_title)
+            .setMessage(R.string.account_delete_data_dialog_message)
+            .setPositiveButton(
+                R.string.account_delete_button, (dialogInterface, which) -> deleteData())
+            .setNegativeButton(R.string.no, null)
+            .create();
     dialog.show();
     Button deleteButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
     if (deleteButton != null) {
@@ -103,7 +109,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
   @Override
   public boolean onPreferenceChange(Preference preference, Object newValue) {
     if (preference.getKey().equals(getString(R.string.pref_animation_speed))) {
-      preference.setSummary(getString(R.string.pref_animation_duration_summary, (Integer) newValue));
+      preference.setSummary(
+          getString(R.string.pref_animation_duration_summary, (Integer) newValue));
     }
     if (preference.getKey().equals(getString(R.string.pref_theme))) {
       String theme = (String) newValue;

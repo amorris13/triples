@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -24,12 +23,11 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
-
+import androidx.annotation.Nullable;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
-
 import java.util.List;
 
 class CardDrawable extends Drawable implements Comparable<CardDrawable> {

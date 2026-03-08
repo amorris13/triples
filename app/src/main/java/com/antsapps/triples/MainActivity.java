@@ -6,20 +6,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
-import com.antsapps.triples.backend.ZenGame;
 import com.antsapps.triples.backend.Game;
+import com.google.android.material.button.MaterialButton;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.common.collect.Lists;
-
-import java.util.List;
 
 public class MainActivity extends BaseTriplesActivity {
 
@@ -48,76 +41,85 @@ public class MainActivity extends BaseTriplesActivity {
     mApplication = Application.getInstance(getApplication());
 
     mClassicResumeButton = findViewById(R.id.classic_resume_button);
-    mClassicResumeButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        resumeGame(mApplication.getCurrentClassicGames(), ClassicGameActivity.class);
-      }
-    });
+    mClassicResumeButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            resumeGame(mApplication.getCurrentClassicGames(), ClassicGameActivity.class);
+          }
+        });
 
     mClassicNewGameButton = findViewById(R.id.classic_new_game_button);
-    mClassicNewGameButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        startNewClassicGame();
-      }
-    });
+    mClassicNewGameButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            startNewClassicGame();
+          }
+        });
 
     mClassicStatisticsButton = findViewById(R.id.classic_statistics_button);
-    mClassicStatisticsButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        showStatistics("Classic");
-      }
-    });
+    mClassicStatisticsButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            showStatistics("Classic");
+          }
+        });
 
     mArcadeResumeButton = findViewById(R.id.arcade_resume_button);
-    mArcadeResumeButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        resumeGame(mApplication.getCurrentArcadeGames(), ArcadeGameActivity.class);
-      }
-    });
+    mArcadeResumeButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            resumeGame(mApplication.getCurrentArcadeGames(), ArcadeGameActivity.class);
+          }
+        });
 
     mArcadeNewGameButton = findViewById(R.id.arcade_new_game_button);
-    mArcadeNewGameButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        startNewArcadeGame();
-      }
-    });
+    mArcadeNewGameButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            startNewArcadeGame();
+          }
+        });
 
     mArcadeStatisticsButton = findViewById(R.id.arcade_statistics_button);
-    mArcadeStatisticsButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        showStatistics("Arcade");
-      }
-    });
+    mArcadeStatisticsButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            showStatistics("Arcade");
+          }
+        });
 
     mDailyPlayButton = findViewById(R.id.daily_play_button);
-    mDailyPlayButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        playDailyGame();
-      }
-    });
+    mDailyPlayButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            playDailyGame();
+          }
+        });
 
     mDailyStatisticsButton = findViewById(R.id.daily_statistics_button);
-    mDailyStatisticsButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        showStatistics("Daily");
-      }
-    });
+    mDailyStatisticsButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            showStatistics("Daily");
+          }
+        });
 
     mZenButton = findViewById(R.id.zen_button);
-    mZenButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        playZenGame(false);
-      }
-    });
+    mZenButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            playZenGame(false);
+          }
+        });
   }
 
   @Override
@@ -127,7 +129,8 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
-    long todaySeed = com.antsapps.triples.backend.DailyGame.getStartOfDaySeed(System.currentTimeMillis());
+    long todaySeed =
+        com.antsapps.triples.backend.DailyGame.getStartOfDaySeed(System.currentTimeMillis());
     boolean dailyCompleted = false;
     for (com.antsapps.triples.backend.DailyGame dg : mApplication.getCompletedDailyGames()) {
       if (dg.getRandomSeed() == todaySeed) {
@@ -136,12 +139,14 @@ public class MainActivity extends BaseTriplesActivity {
       }
     }
     findViewById(R.id.daily_play_button).setVisibility(dailyCompleted ? View.GONE : View.VISIBLE);
-    findViewById(R.id.daily_completed_text).setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
+    findViewById(R.id.daily_completed_text)
+        .setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
 
     ClassicGame classicGame = Iterables.getFirst(mApplication.getCurrentClassicGames(), null);
     if (classicGame != null && !classicGame.getTripleFindTimes().isEmpty()) {
       mClassicResumeButton.setVisibility(View.VISIBLE);
-      mClassicResumeButton.setText(getString(R.string.resume_game_classic_format, classicGame.getCardsRemaining()));
+      mClassicResumeButton.setText(
+          getString(R.string.resume_game_classic_format, classicGame.getCardsRemaining()));
       mClassicNewGameButton.setText(R.string.start_again);
     } else {
       mClassicResumeButton.setVisibility(View.GONE);
@@ -153,7 +158,8 @@ public class MainActivity extends BaseTriplesActivity {
     ArcadeGame arcadeGame = Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
     if (arcadeGame != null && !arcadeGame.getTripleFindTimes().isEmpty()) {
       mArcadeResumeButton.setVisibility(View.VISIBLE);
-      mArcadeResumeButton.setText(getString(R.string.resume_game_arcade_format, arcadeGame.getNumTriplesFound()));
+      mArcadeResumeButton.setText(
+          getString(R.string.resume_game_arcade_format, arcadeGame.getNumTriplesFound()));
       mArcadeNewGameButton.setText(R.string.start_again);
     } else {
       mArcadeResumeButton.setVisibility(View.GONE);
@@ -193,7 +199,8 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void playDailyGame() {
-    com.antsapps.triples.backend.DailyGame game = mApplication.getDailyGameForDate(System.currentTimeMillis());
+    com.antsapps.triples.backend.DailyGame game =
+        mApplication.getDailyGameForDate(System.currentTimeMillis());
     Intent intent = new Intent(this, DailyGameActivity.class);
     intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, game.getId());
     startActivity(intent);

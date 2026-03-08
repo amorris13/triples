@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import androidx.preference.PreferenceManager;
-
 import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;

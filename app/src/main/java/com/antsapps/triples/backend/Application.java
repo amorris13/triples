@@ -2,13 +2,11 @@ package com.antsapps.triples.backend;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.CloudSaveManager;
+import com.antsapps.triples.backend.Game.GameState;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -60,7 +58,8 @@ public class Application extends OnStateChangedReporter {
                 Lists.<Long>newArrayList(),
                 new Deck(Lists.<Card>newArrayList()),
                 (long) (120000 + random.nextInt(300000)), // 2 to 7 minutes
-                new Date(System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
+                new Date(
+                    System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
                 GameState.COMPLETED,
                 false);
         addClassicGame(game);

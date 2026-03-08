@@ -10,17 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-
 import com.antsapps.triples.BaseGameListFragment;
 import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -100,7 +97,8 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
       return;
     }
 
-    Uri contentUri = FileProvider.getUriForFile(getActivity(), "com.antsapps.triples.fileprovider", cacheFile);
+    Uri contentUri =
+        FileProvider.getUriForFile(getActivity(), "com.antsapps.triples.fileprovider", cacheFile);
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
     shareIntent.setType("text/csv");
     shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);

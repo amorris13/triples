@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
@@ -19,7 +18,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -313,8 +311,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     }
 
     // Fly back after animation duration
-    mHandler.postDelayed(() -> {
-      updateBounds();
-    }, 1000); // 1s to ensure animation finishes
+    mHandler.postDelayed(
+        () -> {
+          updateBounds();
+        },
+        1000); // 1s to ensure animation finishes
   }
 }

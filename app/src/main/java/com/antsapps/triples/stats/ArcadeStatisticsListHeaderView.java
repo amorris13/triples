@@ -3,7 +3,6 @@ package com.antsapps.triples.stats;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
-
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.GameProperty;
 

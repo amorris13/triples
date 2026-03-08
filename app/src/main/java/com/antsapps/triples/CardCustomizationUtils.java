@@ -6,25 +6,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Color;
 import android.graphics.Shader;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.Shape;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.cardsview.DiamondShape;
 import com.antsapps.triples.cardsview.HexagonShape;
 import com.antsapps.triples.cardsview.StarShape;
 import com.antsapps.triples.cardsview.TriangleShape;
-import android.graphics.drawable.shapes.OvalShape;
-import android.graphics.drawable.shapes.RectShape;
-import android.graphics.drawable.shapes.Shape;
-import androidx.core.content.ContextCompat;
 import com.google.common.primitives.Ints;
 import java.util.Arrays;
 
 public class CardCustomizationUtils {
 
   public static final int[] PRESET_COLOR_RES = {
-      R.color.preset_color_0, R.color.preset_color_1, R.color.preset_color_2,
-      R.color.preset_color_3, R.color.preset_color_4, R.color.preset_color_5,
-      R.color.preset_color_6, R.color.preset_color_7, R.color.preset_color_8,
-      R.color.preset_color_9, R.color.preset_color_10, R.color.preset_color_11
+    R.color.preset_color_0, R.color.preset_color_1, R.color.preset_color_2,
+    R.color.preset_color_3, R.color.preset_color_4, R.color.preset_color_5,
+    R.color.preset_color_6, R.color.preset_color_7, R.color.preset_color_8,
+    R.color.preset_color_9, R.color.preset_color_10, R.color.preset_color_11
   };
 
   private static final float STRIPE_WIDTH = 1.5f;

@@ -3,15 +3,12 @@ package com.antsapps.triples.backend;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
-import java.util.Calendar;
 
 public class DailyGame extends Game {
 
@@ -48,18 +45,19 @@ public class DailyGame extends Game {
       }
     }
 
-    DailyGame game = new DailyGame(
-        -1,
-        seed,
-        cardsInPlay,
-        Collections.<Long>emptyList(),
-        new Deck(Collections.<Card>emptyList()),
-        0,
-        new Date(seed),
-        GameState.STARTING,
-        false,
-        Collections.<Set<Card>>emptyList(),
-        null);
+    DailyGame game =
+        new DailyGame(
+            -1,
+            seed,
+            cardsInPlay,
+            Collections.<Long>emptyList(),
+            new Deck(Collections.<Card>emptyList()),
+            0,
+            new Date(seed),
+            GameState.STARTING,
+            false,
+            Collections.<Set<Card>>emptyList(),
+            null);
     return game;
   }
 
@@ -75,7 +73,16 @@ public class DailyGame extends Game {
       boolean hintsUsed,
       List<Set<Card>> foundTriples,
       Date dateCompleted) {
-    super(id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
+    super(
+        id,
+        seed,
+        cardsInPlay,
+        tripleFindTimes,
+        cardsInDeck,
+        timeElapsed,
+        date,
+        gameState,
+        hintsUsed);
     mAllTriples = Game.getAllValidTriples(mCardsInPlay);
     mFoundTriples = Lists.newArrayList(foundTriples);
     mNumTriplesFound = mFoundTriples.size();

@@ -1,7 +1,7 @@
 package com.antsapps.triples.backend;
 
-import com.google.common.base.Objects;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 public final class Card {

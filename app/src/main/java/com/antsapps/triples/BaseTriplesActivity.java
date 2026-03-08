@@ -3,22 +3,17 @@ package com.antsapps.triples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
-
-import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.graphics.drawable.DrawableCompat;
-import com.google.android.gms.auth.api.Auth;
+import androidx.preference.PreferenceManager;
+import com.antsapps.triples.backend.Application;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.antsapps.triples.backend.Application;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -56,8 +51,9 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   private void applyTheme() {
-    String theme = PreferenceManager.getDefaultSharedPreferences(this)
-        .getString(getString(R.string.pref_theme), "system");
+    String theme =
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.pref_theme), "system");
     switch (theme) {
       case "light":
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -236,5 +232,4 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected void onStop() {
     super.onStop();
   }
-
 }
