@@ -114,19 +114,6 @@ public class DailyStatisticsFragment extends Fragment {
       }
 
       @Override
-      public boolean onSingleTapUp(MotionEvent e) {
-        int position = mCalendarGrid.pointToPosition((int) e.getX(), (int) e.getY());
-        if (position != GridView.INVALID_POSITION && mCalendarGrid.getAdapter().isEnabled(position)) {
-          mCalendarGrid.performItemClick(
-              mCalendarGrid.getChildAt(position - mCalendarGrid.getFirstVisiblePosition()),
-              position,
-              mCalendarGrid.getAdapter().getItemId(position));
-          return true;
-        }
-        return false;
-      }
-
-      @Override
       public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 100) {
           if (velocityX > 0) {
@@ -150,7 +137,10 @@ public class DailyStatisticsFragment extends Fragment {
       }
     });
 
-    mCalendarGrid.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+    mCalendarGrid.setOnTouchListener((v, event) -> {
+      gestureDetector.onTouchEvent(event);
+      return false;
+    });
 
     mCompletedGames = new ArrayList<>();
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
@@ -382,10 +372,11 @@ public class DailyStatisticsFragment extends Fragment {
               return;
             }
 
+            float density = mContext.getResources().getDisplayMetrics().density;
             long daySeed = getStartOfDay(day.getTimeInMillis());
             float centerX = getWidth() / 2f;
             float centerY = getHeight() / 2f;
-            float radius = Math.min(getWidth(), getHeight()) / 2f - 16;
+            float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
 
             // Background circle for solved games
             if (mCompletedOnDaySeeds.contains(daySeed)) {
@@ -402,17 +393,17 @@ public class DailyStatisticsFragment extends Fragment {
             // Selection indicator (outline)
             if (daySeed == mSelectedSeed) {
               mPaint.setStyle(Paint.Style.STROKE);
-              mPaint.setStrokeWidth(4);
+              mPaint.setStrokeWidth(2 * density);
               mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
-              canvas.drawCircle(centerX, centerY, radius + 4, mPaint);
+              canvas.drawCircle(centerX, centerY, radius + density, mPaint);
             }
 
             // Today indicator
             if (daySeed == mTodaySeed) {
               mPaint.setStyle(Paint.Style.STROKE);
-              mPaint.setStrokeWidth(2);
+              mPaint.setStrokeWidth(density);
               mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-              canvas.drawCircle(centerX, centerY, radius + 10, mPaint);
+              canvas.drawCircle(centerX, centerY, radius + 2.5f * density, mPaint);
             }
 
             super.onDraw(canvas);

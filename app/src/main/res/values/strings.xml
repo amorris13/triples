@@ -145,7 +145,7 @@
   <string name="daily_not_started">Not Started</string>
   <string name="daily_incomplete">Incomplete</string>
   <string name="daily_completed">Completed</string>
-  <string name="daily_hints_used_suffix"> (*hints used)</string>
+  <string name="daily_hints_used_suffix"> (hints used)</string>
 
   <string name="account_settings">Account</string>
   <string name="account_user_title">User</string>
