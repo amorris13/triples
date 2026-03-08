@@ -116,7 +116,7 @@ public class DailyStatisticsFragment extends Fragment {
 
       @Override
       public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (Math.abs(velocityX) > Math.abs(velocityY)) {
+        if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 100) {
           if (velocityX > 0) {
             mCurrentMonth.add(Calendar.MONTH, -1);
             updateCalendar();
@@ -138,7 +138,12 @@ public class DailyStatisticsFragment extends Fragment {
       }
     });
 
-    mCalendarGrid.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+    mCalendarGrid.setOnTouchListener((v, event) -> {
+      if (gestureDetector.onTouchEvent(event)) {
+        return true;
+      }
+      return false;
+    });
 
     mCompletedGames = new ArrayList<>();
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
@@ -165,14 +170,16 @@ public class DailyStatisticsFragment extends Fragment {
     CalendarAdapter adapter = new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames, getStartOfDay(mSelectedDate.getTimeInMillis()));
     mCalendarGrid.setAdapter(adapter);
 
-    mCalendarGrid.setOnItemClickListener((parent, view, position, id) -> {
+    mCalendarGrid.setOnItemClickListener((parent, view1, position, id) -> {
       Calendar day = (Calendar) adapter.getItem(position);
-      if (day != null && day.get(Calendar.MONTH) == mCurrentMonth.get(Calendar.MONTH)) {
-        if (getStartOfDay(day.getTimeInMillis()) > getStartOfDay(System.currentTimeMillis())) {
+      if (day != null && day.get(Calendar.MONTH) == mCurrentMonth.get(Calendar.MONTH) &&
+          day.get(Calendar.YEAR) == mCurrentMonth.get(Calendar.YEAR)) {
+        long daySeed = getStartOfDay(day.getTimeInMillis());
+        if (daySeed > getStartOfDay(System.currentTimeMillis())) {
           return;
         }
         mSelectedDate = (Calendar) day.clone();
-        adapter.setSelectedSeed(getStartOfDay(mSelectedDate.getTimeInMillis()));
+        adapter.setSelectedSeed(daySeed);
         updateDetailSection();
       }
     });
@@ -204,11 +211,14 @@ public class DailyStatisticsFragment extends Fragment {
         startActivity(intent);
       });
     } else {
-      mDetailStatus.setText("Completed");
+      String status = "Completed";
+      if (game.areHintsUsed()) {
+        status += " (*hints used)";
+      }
+      mDetailStatus.setText(status);
       mDetailPlayBtn.setVisibility(View.GONE);
       mDetailResultsContainer.setVisibility(View.VISIBLE);
-      String hintStr = game.areHintsUsed() ? "*" : "";
-      mDetailTriples.setText(game.getNumTriplesFound() + hintStr);
+      mDetailTriples.setText(String.valueOf(game.getNumTriplesFound()));
       long seconds = game.getTimeElapsed() / 1000;
       mDetailTime.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
     }
@@ -285,6 +295,7 @@ public class DailyStatisticsFragment extends Fragment {
     private final Set<Long> mHintSeeds;
     private final long mTodaySeed;
     private final int mMonth;
+    private final int mYear;
     private long mSelectedSeed;
 
     CalendarAdapter(Context context, Calendar month, List<DailyGame> completedGames, long selectedSeed) {
@@ -292,6 +303,7 @@ public class DailyStatisticsFragment extends Fragment {
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
       mMonth = month.get(Calendar.MONTH);
+      mYear = month.get(Calendar.YEAR);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
       mSelectedSeed = selectedSeed;
 
@@ -338,6 +350,18 @@ public class DailyStatisticsFragment extends Fragment {
     public long getItemId(int position) { return position; }
 
     @Override
+    public boolean areAllItemsEnabled() {
+      return false;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+      Calendar day = mDays.get(position);
+      return day.get(Calendar.YEAR) == mYear && day.get(Calendar.MONTH) == mMonth &&
+          getStartOfDay(day.getTimeInMillis()) <= getStartOfDay(System.currentTimeMillis());
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView tv = (TextView) convertView;
       if (tv == null) {
@@ -347,14 +371,14 @@ public class DailyStatisticsFragment extends Fragment {
           @Override
           protected void onDraw(Canvas canvas) {
             Calendar day = (Calendar) getTag();
-            if (day == null || day.get(Calendar.MONTH) != mMonth) {
+            if (day == null || day.get(Calendar.MONTH) != mMonth || day.get(Calendar.YEAR) != mYear) {
               return;
             }
 
             long daySeed = getStartOfDay(day.getTimeInMillis());
             float centerX = getWidth() / 2f;
             float centerY = getHeight() / 2f;
-            float radius = Math.min(getWidth(), getHeight()) / 2f - 8;
+            float radius = Math.min(getWidth(), getHeight()) / 2f - 16;
 
             // Background circle for solved games
             if (mCompletedOnDaySeeds.contains(daySeed)) {
@@ -371,9 +395,9 @@ public class DailyStatisticsFragment extends Fragment {
             // Selection indicator (outline)
             if (daySeed == mSelectedSeed) {
               mPaint.setStyle(Paint.Style.STROKE);
-              mPaint.setStrokeWidth(6);
+              mPaint.setStrokeWidth(4);
               mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
-              canvas.drawCircle(centerX, centerY, radius, mPaint);
+              canvas.drawCircle(centerX, centerY, radius + 4, mPaint);
             }
 
             // Today indicator
@@ -381,7 +405,7 @@ public class DailyStatisticsFragment extends Fragment {
               mPaint.setStyle(Paint.Style.STROKE);
               mPaint.setStrokeWidth(2);
               mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-              canvas.drawCircle(centerX, centerY, radius + 4, mPaint);
+              canvas.drawCircle(centerX, centerY, radius + 10, mPaint);
             }
 
             super.onDraw(canvas);
@@ -395,7 +419,7 @@ public class DailyStatisticsFragment extends Fragment {
       tv.setTag(day);
       long daySeed = getStartOfDay(day.getTimeInMillis());
 
-      if (day.get(Calendar.MONTH) != mMonth) {
+      if (day.get(Calendar.MONTH) != mMonth || day.get(Calendar.YEAR) != mYear) {
         tv.setText("");
         tv.setBackground(null);
       } else {
@@ -404,6 +428,7 @@ public class DailyStatisticsFragment extends Fragment {
           text += "*";
         }
         tv.setText(text);
+        tv.setBackgroundResource(android.R.drawable.list_selector_background);
 
         if (daySeed > mTodaySeed) {
           tv.setTextColor(mTextSecondaryColor);

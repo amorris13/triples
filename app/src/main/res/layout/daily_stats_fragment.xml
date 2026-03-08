@@ -93,7 +93,8 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&lt;" />
+            android:text="&lt;"
+            android:textColor="@color/daily_accent" />
 
         <TextView
             android:id="@+id/month_title"
@@ -103,6 +104,7 @@
             android:gravity="center"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/daily_accent"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true" />
@@ -112,7 +114,8 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&gt;" />
+            android:text="&gt;"
+            android:textColor="@color/daily_accent" />
     </LinearLayout>
 
     <LinearLayout
