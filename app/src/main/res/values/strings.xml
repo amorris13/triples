@@ -97,6 +97,7 @@
     <string name="cards_remaining_format">Cards remaining: %1$d</string>
     <string name="triples_found_format">Triples found: %1$d</string>
     <string name="triples_found_of_format">Triples found: %1$d / %2$d</string>
+    <string name="triple_already_found">Triple already found!</string>
 
   <string name="color_0">Color 1</string>
   <string name="color_1">Color 2</string>

@@ -1,23 +1,30 @@
 package com.antsapps.triples;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
+import com.antsapps.triples.backend.OnValidTripleSelectedListener;
+import com.antsapps.triples.cardsview.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class DailyGameActivity extends BaseGameActivity
-    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener, DailyGame.OnTripleFoundListener {
+    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener, DailyGame.OnTripleFoundListener, OnValidTripleSelectedListener {
 
   private DailyGame mGame;
   private Application mApplication;
@@ -37,12 +44,36 @@ public class DailyGameActivity extends BaseGameActivity
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
     stub.setLayoutResource(R.layout.daily_statusbar);
     stub.inflate();
+
+    FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+    foundTriplesView.setTotalTriplesCount(mGame.getTotalTriplesCount());
+    foundTriplesView.setFoundTriples(mGame.getFoundTriples());
     mGame.addOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
     mGame.setOnTripleFoundListener(this);
 
     TextView dateText = findViewById(R.id.daily_date_text);
     dateText.setText(java.text.DateFormat.getDateInstance().format(mGame.getDateStarted()));
+  }
+
+  @Override
+  protected OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
+    return this;
+  }
+
+  @Override
+  public void onValidTripleSelected(Collection<Card> cards) {
+    Set<Card> selectedTriple = com.google.common.collect.Sets.newHashSet(cards);
+    int indexFound = mGame.getFoundTriples().indexOf(selectedTriple);
+    if (indexFound != -1) {
+      Toast.makeText(this, R.string.triple_already_found, Toast.LENGTH_SHORT).show();
+      FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+      foundTriplesView.highlightStack(indexFound);
+      com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
+      cardsView.clearSelectedCards();
+    } else {
+      mGame.commitTriple(cards.toArray(new Card[0]));
+    }
   }
 
   @Override
@@ -82,11 +113,19 @@ public class DailyGameActivity extends BaseGameActivity
       int numRemaining,
       int numTriplesFound) {
     updateTriplesFoundText();
+    updateFoundTriplesView();
   }
 
   private void updateTriplesFoundText() {
     TextView triplesFoundText = (TextView) findViewById(R.id.triples_found_text);
     triplesFoundText.setText(mGame.getNumTriplesFound() + " / " + mGame.getTotalTriplesCount());
+  }
+
+  private void updateFoundTriplesView() {
+    FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+    if (foundTriplesView != null) {
+      foundTriplesView.setFoundTriples(mGame.getFoundTriples());
+    }
   }
 
   @Override
@@ -96,8 +135,23 @@ public class DailyGameActivity extends BaseGameActivity
 
   @Override
   public void onTripleFound(Set<Card> triple) {
+    updateFoundTriplesView();
+    FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+    int index = mGame.getFoundTriples().indexOf(triple);
+    Map<Card, Rect> targetRects = foundTriplesView.getCardRectsInStack(index);
+
     com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
-    cardsView.animateTripleFound(triple);
+    int[] locationOnScreen = new int[2];
+    cardsView.getLocationOnScreen(locationOnScreen);
+
+    Map<Card, Rect> localTargetRects = Maps.newHashMap();
+    for (Map.Entry<Card, Rect> entry : targetRects.entrySet()) {
+      Rect rect = new Rect(entry.getValue());
+      rect.offset(-locationOnScreen[0], -locationOnScreen[1]);
+      localTargetRects.put(entry.getKey(), rect);
+    }
+
+    cardsView.animateTripleFound(triple, localTargetRects);
   }
 
   @Override

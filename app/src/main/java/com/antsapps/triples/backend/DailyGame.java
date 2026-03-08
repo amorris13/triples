@@ -123,8 +123,6 @@ public class DailyGame extends Game {
       if (mFoundTriples.size() == mAllTriples.size()) {
         mDateCompleted = new Date();
         finish();
-      } else {
-        dispatchCardsInPlayUpdate(ImmutableList.copyOf(mCardsInPlay));
       }
     }
   }

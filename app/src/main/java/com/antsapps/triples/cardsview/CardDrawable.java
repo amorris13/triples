@@ -18,6 +18,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.RotateAnimation;
@@ -100,7 +101,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mListener = listener;
   }
 
-  private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
+  public static List<Rect> getBoundsForNumId(int id, Rect bounds) {
     List<Rect> rects = Lists.newArrayList();
 
     int width = bounds.width();
@@ -289,7 +290,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       }
       return;
     }
-    Animation transitionAnimation = null;
+    Animation transitionAnimation;
     if (oldBounds == null) {
       // This CardDrawable is new.
       if (mShouldSlideIn) {
@@ -301,9 +302,21 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       }
     } else {
       // This CardDrawable is old
-      transitionAnimation =
+      AnimationSet animationSet = new AnimationSet(true);
+      animationSet.addAnimation(
           new TranslateAnimation(
-              oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
+              oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0));
+      if (oldBounds.width() != bounds.width() || oldBounds.height() != bounds.height()) {
+        animationSet.addAnimation(
+            new ScaleAnimation(
+                (float) oldBounds.width() / bounds.width(),
+                1,
+                (float) oldBounds.height() / bounds.height(),
+                1,
+                0,
+                0));
+      }
+      transitionAnimation = animationSet;
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());

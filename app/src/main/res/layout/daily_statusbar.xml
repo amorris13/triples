@@ -9,6 +9,12 @@
     android:paddingBottom="@dimen/status_bar_padding_bottom"
     android:orientation="vertical">
 
+    <com.antsapps.triples.cardsview.FoundTriplesView
+        android:id="@+id/found_triples_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

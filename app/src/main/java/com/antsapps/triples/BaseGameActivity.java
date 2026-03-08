@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import androidx.core.view.MenuItemCompat;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
@@ -67,7 +68,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     GameState originalGameState = getGame().getGameState();
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
-    mCardsView.setOnValidTripleSelectedListener(getGame());
+    mCardsView.setOnValidTripleSelectedListener(getOnValidTripleSelectedListener());
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().setGameRenderer(mCardsView);
 
@@ -104,6 +105,10 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected abstract Game getGame();
+
+  protected OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
+    return getGame();
+  }
 
   protected abstract int getAccentColor();
 

@@ -3,7 +3,9 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="?attr/colorSurface">
+  android:background="?attr/colorSurface"
+  android:clipChildren="false"
+  android:clipToPadding="false">
 
   <ViewStub
     android:id="@+id/status_bar"
@@ -27,7 +29,9 @@
     android:outAnimation="@android:anim/fade_out"
     android:layout_above="@id/bottom_separator"
     android:layout_alignParentTop="true"
-    android:measureAllChildren="false">
+    android:measureAllChildren="false"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <include
       android:layout_width="fill_parent"
