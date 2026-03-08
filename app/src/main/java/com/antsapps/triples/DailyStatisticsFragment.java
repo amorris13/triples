@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -319,7 +320,7 @@ public class DailyStatisticsFragment extends Fragment {
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
 
-      android.util.TypedValue outValue = new android.util.TypedValue();
+      TypedValue outValue = new TypedValue();
       mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
       mSelectableItemBackground = outValue.resourceId;
       mMonth = month.get(Calendar.MONTH);
