@@ -5,10 +5,9 @@
     android:layout_height="wrap_content"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:orientation="vertical"
-    android:background="@color/daily_background">
+    android:paddingTop="5dp"
+    android:paddingBottom="@dimen/status_bar_padding_bottom"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
