@@ -89,6 +89,8 @@ public class StatisticsActivity extends BaseTriplesActivity {
       Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.statistics_container);
       if (fragment instanceof BaseStatisticsFragment) {
         ((BaseStatisticsFragment) fragment).exportToCsv();
+      } else if (fragment instanceof DailyStatisticsFragment) {
+        ((DailyStatisticsFragment) fragment).exportToCsv();
       }
       return true;
     }
