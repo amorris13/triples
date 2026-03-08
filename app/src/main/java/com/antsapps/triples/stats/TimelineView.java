@@ -3,6 +3,7 @@ package com.antsapps.triples.stats;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.core.content.ContextCompat;
@@ -84,7 +85,7 @@ public class TimelineView extends View {
 
     canvas.drawText("0:00", padding, height / 2 + 20 * density, textPaint);
 
-    String endTime = android.text.format.DateUtils.formatElapsedTime(mMaxTime / 1000);
+    String endTime = DateUtils.formatElapsedTime(mMaxTime / 1000);
     canvas.drawText(endTime, width - padding, height / 2 + 20 * density, textPaint);
   }
 }

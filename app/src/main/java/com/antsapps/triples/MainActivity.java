@@ -9,6 +9,7 @@ import android.view.View;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.google.android.material.button.MaterialButton;
 import com.google.common.collect.Iterables;
@@ -129,10 +130,9 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
-    long todaySeed =
-        com.antsapps.triples.backend.DailyGame.getStartOfDaySeed(System.currentTimeMillis());
+    long todaySeed = DailyGame.getStartOfDaySeed(System.currentTimeMillis());
     boolean dailyCompleted = false;
-    for (com.antsapps.triples.backend.DailyGame dg : mApplication.getCompletedDailyGames()) {
+    for (DailyGame dg : mApplication.getCompletedDailyGames()) {
       if (dg.getRandomSeed() == todaySeed) {
         dailyCompleted = true;
         break;
@@ -199,10 +199,9 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void playDailyGame() {
-    com.antsapps.triples.backend.DailyGame game =
-        mApplication.getDailyGameForDate(System.currentTimeMillis());
+    DailyGame game = mApplication.getDailyGameForDate(System.currentTimeMillis());
     Intent intent = new Intent(this, DailyGameActivity.class);
-    intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, game.getId());
+    intent.putExtra(Game.ID_TAG, game.getId());
     startActivity(intent);
   }
 

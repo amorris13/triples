@@ -1,12 +1,14 @@
 package com.antsapps.triples;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
+import com.antsapps.triples.backend.Game;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -217,10 +220,9 @@ public class DailyStatisticsFragment extends Fragment {
       mDetailPlayBtn.setVisibility(View.VISIBLE);
       mDetailPlayBtn.setOnClickListener(
           v -> {
-            android.content.Intent intent =
-                new android.content.Intent(getActivity(), DailyGameActivity.class);
+            Intent intent = new Intent(getActivity(), DailyGameActivity.class);
             DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
-            intent.putExtra(com.antsapps.triples.backend.Game.ID_TAG, newGame.getId());
+            intent.putExtra(Game.ID_TAG, newGame.getId());
             startActivity(intent);
           });
     } else {
@@ -440,7 +442,7 @@ public class DailyStatisticsFragment extends Fragment {
               }
             };
         tv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
-        tv.setGravity(android.view.Gravity.CENTER);
+        tv.setGravity(Gravity.CENTER);
       }
 
       Calendar day = mDays.get(position);

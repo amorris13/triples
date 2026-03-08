@@ -2,6 +2,7 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
@@ -43,8 +44,8 @@ public class SettingsRefreshTest extends BaseRobolectricTest {
       // "Simulate" returning from settings by re-entering the activity.
       // ActivityScenario.moveToState(RESUMED) might already be the case,
       // but we need to trigger onResume after the preference change.
-      scenario.moveToState(androidx.lifecycle.Lifecycle.State.STARTED);
-      scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);
+      scenario.moveToState(Lifecycle.State.STARTED);
+      scenario.moveToState(Lifecycle.State.RESUMED);
 
       // Unfortunately, it's hard to verify if the drawing changed without deep inspection.
       // But I can at least verify that I'm calling the right methods.

@@ -6,6 +6,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Intent;
 import android.widget.Button;
 import androidx.test.core.app.ActivityScenario;
+import com.antsapps.triples.backend.Game;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowActivity;
 
@@ -120,7 +121,7 @@ public class NavigationTest extends BaseRobolectricTest {
             Intent nextIntent = shadowActivity.getNextStartedActivity();
             assertThat(nextIntent.getComponent().getClassName())
                 .isEqualTo(DailyGameActivity.class.getName());
-            assertThat(nextIntent.hasExtra(com.antsapps.triples.backend.Game.ID_TAG)).isTrue();
+            assertThat(nextIntent.hasExtra(Game.ID_TAG)).isTrue();
           });
     }
   }
