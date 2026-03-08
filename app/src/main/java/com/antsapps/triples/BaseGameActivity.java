@@ -51,7 +51,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public static final int VIEW_COMPLETED = 2;
 
   private ViewAnimator mViewAnimator;
-  private CardsView mCardsView;
+  protected CardsView mCardsView;
   private GameState mGameState;
 
   private boolean shouldSubmitScoreOnSignIn = false;

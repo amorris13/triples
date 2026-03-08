@@ -33,7 +33,7 @@ import com.google.common.primitives.Ints;
 
 import java.util.List;
 
-class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final int DEFAULT_ANIMATION_DURATION_MS = 800;
 
@@ -79,6 +79,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private boolean mSelected = false;
   private boolean mShakeAnimating = false;
   private boolean mHinted = false;
+  private boolean mFadeNextTransition = false;
 
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
@@ -173,6 +174,10 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
     drawable.setBounds(bounds);
     drawable.draw(canvas);
+  }
+
+  public Card getCard() {
+    return mCard;
   }
 
   public void regenerateCachedDrawable() {
@@ -271,6 +276,35 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     updateAnimation(shakeAnimation);
   }
 
+  public void onAlreadyFound() {
+    mSelected = false;
+    mShakeAnimating = true;
+    if (mAnimationHandler == null) {
+      mShakeAnimating = false;
+      regenerateCachedDrawable();
+      return;
+    }
+    // Lateral shake animation
+    Animation shakeAnimation = new TranslateAnimation(0, 10, 0, 0);
+    shakeAnimation.setInterpolator(new CycleInterpolator(4));
+    shakeAnimation.setDuration(getAnimationDuration());
+    shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
+    shakeAnimation.setAnimationListener(
+        new BaseAnimationListener() {
+          @Override
+          public void onAnimationEnd(Animation animation) {
+            super.onAnimationEnd(animation);
+            mShakeAnimating = false;
+            regenerateCachedDrawable();
+          }
+        });
+    updateAnimation(shakeAnimation);
+  }
+
+  public void setFadeNextTransition(boolean fade) {
+    mFadeNextTransition = fade;
+  }
+
   void updateBounds(Rect bounds) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
@@ -302,21 +336,28 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       }
     } else {
       // This CardDrawable is old
-      AnimationSet animationSet = new AnimationSet(true);
-      animationSet.addAnimation(
-          new TranslateAnimation(
-              oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0));
-      if (oldBounds.width() != bounds.width() || oldBounds.height() != bounds.height()) {
+      if (mFadeNextTransition) {
+        transitionAnimation = new AlphaAnimation(0, 1);
+        mFadeNextTransition = false;
+      } else {
+        AnimationSet animationSet = new AnimationSet(true);
         animationSet.addAnimation(
-            new ScaleAnimation(
-                (float) oldBounds.width() / bounds.width(),
-                1,
-                (float) oldBounds.height() / bounds.height(),
-                1,
-                0,
-                0));
+            new TranslateAnimation(
+                oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0));
+        if (oldBounds.width() != bounds.width() || oldBounds.height() != bounds.height()) {
+          animationSet.addAnimation(
+              new ScaleAnimation(
+                  (float) oldBounds.width() / bounds.width(),
+                  1,
+                  (float) oldBounds.height() / bounds.height(),
+                  1,
+                  Animation.RELATIVE_TO_SELF,
+                  0.5f,
+                  Animation.RELATIVE_TO_SELF,
+                  0.5f));
+        }
+        transitionAnimation = animationSet;
       }
-      transitionAnimation = animationSet;
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());

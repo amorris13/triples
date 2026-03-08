@@ -23,15 +23,22 @@ public class SymbolDrawable extends Drawable {
 
   public static final int OUTLINE_WIDTH = 2;
 
-  private final Card mCard;
+  private Card mCard;
 
-  private final ShapeDrawable mOutline;
-  private final ShapeDrawable mFill;
+  private ShapeDrawable mOutline;
+  private ShapeDrawable mFill;
+
+  private final Context mContext;
 
   SymbolDrawable(Context context, Card card) {
+    mContext = context;
+    setCard(card);
+  }
+
+  public void setCard(Card card) {
     mCard = card;
-    mOutline = getOutlineForCard(context, card);
-    mFill = getFillForCard(context, card);
+    mOutline = getOutlineForCard(mContext, card);
+    mFill = getFillForCard(mContext, card);
   }
 
   private static ShapeDrawable getOutlineForCard(Context context, Card card) {

@@ -304,6 +304,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     invalidate();
   }
 
+  public CardDrawable getCardDrawable(Card card) {
+    return mCardDrawables.get(card);
+  }
+
   public void animateTripleFound(final Set<Card> triple) {
     animateTripleFound(triple, null);
   }

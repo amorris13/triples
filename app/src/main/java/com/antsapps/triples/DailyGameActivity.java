@@ -69,8 +69,13 @@ public class DailyGameActivity extends BaseGameActivity
       Toast.makeText(this, R.string.triple_already_found, Toast.LENGTH_SHORT).show();
       FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
       foundTriplesView.highlightStack(indexFound);
-      com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
-      cardsView.clearSelectedCards();
+      for (Card card : cards) {
+        com.antsapps.triples.cardsview.CardDrawable cd = mCardsView.getCardDrawable(card);
+        if (cd != null) {
+          cd.onAlreadyFound();
+        }
+      }
+      mCardsView.clearSelectedCards();
     } else {
       mGame.commitTriple(cards.toArray(new Card[0]));
     }
@@ -135,23 +140,31 @@ public class DailyGameActivity extends BaseGameActivity
 
   @Override
   public void onTripleFound(Set<Card> triple) {
-    updateFoundTriplesView();
+    updateTriplesFoundText();
+    // Delay updating the status bar stacks until animation is finished
+    new android.os.Handler().postDelayed(() -> {
+      updateFoundTriplesView();
+    }, 1000);
+
     FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
     int index = mGame.getFoundTriples().indexOf(triple);
     Map<Card, Rect> targetRects = foundTriplesView.getCardRectsInStack(index);
 
-    com.antsapps.triples.cardsview.CardsView cardsView = findViewById(R.id.cards_view);
     int[] locationOnScreen = new int[2];
-    cardsView.getLocationOnScreen(locationOnScreen);
+    mCardsView.getLocationOnScreen(locationOnScreen);
 
     Map<Card, Rect> localTargetRects = Maps.newHashMap();
     for (Map.Entry<Card, Rect> entry : targetRects.entrySet()) {
       Rect rect = new Rect(entry.getValue());
       rect.offset(-locationOnScreen[0], -locationOnScreen[1]);
       localTargetRects.put(entry.getKey(), rect);
+      com.antsapps.triples.cardsview.CardDrawable cd = mCardsView.getCardDrawable(entry.getKey());
+      if (cd != null) {
+        cd.setFadeNextTransition(true);
+      }
     }
 
-    cardsView.animateTripleFound(triple, localTargetRects);
+    mCardsView.animateTripleFound(triple, localTargetRects);
   }
 
   @Override
