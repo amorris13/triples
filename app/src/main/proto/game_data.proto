@@ -25,15 +25,11 @@ message ArcadeGameSummary {
 }
 
 message DailyGameSummary {
-  int64 date_started_millis = 1;
+  int64 date_millis = 1;
   int64 time_elapsed_millis = 2;
   bool hints_used = 3;
   int64 date_completed_millis = 4;
-}
-
-message CloudSaveData {
-  repeated ClassicGameSummary classic_games = 1;
-  repeated ArcadeGameSummary arcade_games = 2;
+  int32 num_triples_found = 5;
 }
 
 message ClassicCompletedData {
@@ -49,39 +45,32 @@ message DailyCompletedData {
 }
 
 message ClassicGameState {
-  int64 id = 1;
-  int64 seed = 2;
-  bytes cards_in_play = 3;
-  bytes triple_find_times = 4;
-  bytes cards_in_deck = 5;
-  int64 time_elapsed_millis = 6;
-  int64 date_started_millis = 7;
-  GameStateProto game_state = 8;
-  bool hints_used = 9;
+  int64 seed = 1;
+  bytes cards_in_play = 2;
+  bytes triple_find_times = 3;
+  bytes cards_in_deck = 4;
+  int64 time_elapsed_millis = 5;
+  GameStateProto game_state = 6;
+  bool hints_used = 7;
 }
 
 message ArcadeGameState {
-  int64 id = 1;
-  int64 seed = 2;
-  bytes cards_in_play = 3;
-  bytes triple_find_times = 4;
-  bytes cards_in_deck = 5;
-  int64 time_elapsed_millis = 6;
-  int64 date_started_millis = 7;
-  GameStateProto game_state = 8;
-  int32 num_triples_found = 9;
-  bool hints_used = 10;
+  int64 seed = 1;
+  bytes cards_in_play = 2;
+  bytes triple_find_times = 3;
+  bytes cards_in_deck = 4;
+  int64 time_elapsed_millis = 5;
+  GameStateProto game_state = 6;
+  int32 num_triples_found = 7;
+  bool hints_used = 8;
 }
 
 message DailyGameState {
-  int64 id = 1;
-  int64 seed = 2;
-  bytes cards_in_play = 3;
-  bytes triple_find_times = 4;
-  int64 time_elapsed_millis = 5;
-  int64 date_started_millis = 6;
-  GameStateProto game_state = 7;
-  bool hints_used = 8;
-  bytes found_triples = 9;
-  int64 date_completed_millis = 10;
+  int64 seed = 1;
+  bytes cards_in_play = 2;
+  bytes triple_find_times = 3;
+  int64 time_elapsed_millis = 4;
+  GameStateProto game_state = 5;
+  bool hints_used = 6;
+  bytes found_triples = 7;
 }

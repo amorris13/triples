@@ -15,76 +15,6 @@ import java.util.Set;
 public class CloudSaveSerializer {
   private static final String TAG = "CloudSaveSerializer";
 
-  public static byte[] serialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames)
-      throws IOException {
-    CloudSaveData.Builder dataBuilder = CloudSaveData.newBuilder();
-
-    for (ClassicGame g : classicGames) {
-      if (g.getGameState() == Game.GameState.COMPLETED) {
-        dataBuilder.addClassicGames(ClassicGameSummary.newBuilder()
-            .setDateStartedMillis(g.getDateStarted().getTime())
-            .setTimeElapsedMillis(g.getTimeElapsed())
-            .setHintsUsed(g.areHintsUsed())
-            .build());
-      }
-    }
-
-    for (ArcadeGame g : arcadeGames) {
-      if (g.getGameState() == Game.GameState.COMPLETED) {
-        dataBuilder.addArcadeGames(ArcadeGameSummary.newBuilder()
-            .setDateStartedMillis(g.getDateStarted().getTime())
-            .setNumTriplesFound(g.getNumTriplesFound())
-            .setHintsUsed(g.areHintsUsed())
-            .build());
-      }
-    }
-
-    return dataBuilder.build().toByteArray();
-  }
-
-  public static class CloudData {
-    public final List<ClassicGame> classicGames;
-    public final List<ArcadeGame> arcadeGames;
-
-    public CloudData(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames) {
-      this.classicGames = classicGames;
-      this.arcadeGames = arcadeGames;
-    }
-  }
-
-  public static CloudData deserialize(byte[] data) throws IOException {
-    if (data == null || data.length == 0) {
-      return new CloudData(new ArrayList<ClassicGame>(), new ArrayList<ArcadeGame>());
-    }
-
-    CloudSaveData cloudSaveData;
-    try {
-      cloudSaveData = CloudSaveData.parseFrom(data);
-    } catch (InvalidProtocolBufferException e) {
-      throw new IOException("Failed to parse protobuf data", e);
-    }
-
-    List<ClassicGame> classicGames = new ArrayList<>(cloudSaveData.getClassicGamesCount());
-    for (ClassicGameSummary summary : cloudSaveData.getClassicGamesList()) {
-      classicGames.add(new ClassicGame(
-          -1, 0, Collections.<Card>emptyList(), Collections.<Long>emptyList(),
-          new Deck(Collections.<Card>emptyList()), summary.getTimeElapsedMillis(),
-          new Date(summary.getDateStartedMillis()),
-          Game.GameState.COMPLETED, summary.getHintsUsed()));
-    }
-
-    List<ArcadeGame> arcadeGames = new ArrayList<>(cloudSaveData.getArcadeGamesCount());
-    for (ArcadeGameSummary summary : cloudSaveData.getArcadeGamesList()) {
-      arcadeGames.add(new ArcadeGame(
-          -1, 0, Collections.<Card>emptyList(), Collections.<Long>emptyList(),
-          new Deck(Collections.<Card>emptyList()), ArcadeGame.TIME_LIMIT_MS + 100,
-          new Date(summary.getDateStartedMillis()), Game.GameState.COMPLETED,
-          summary.getNumTriplesFound(), summary.getHintsUsed()));
-    }
-
-    return new CloudData(classicGames, arcadeGames);
-  }
-
   public static byte[] serializeClassicCompleted(List<ClassicGame> games) {
     ClassicCompletedData.Builder builder = ClassicCompletedData.newBuilder();
     for (ClassicGame g : games) {
@@ -139,10 +69,11 @@ public class CloudSaveSerializer {
     DailyCompletedData.Builder builder = DailyCompletedData.newBuilder();
     for (DailyGame g : games) {
       builder.addDailyGames(DailyGameSummary.newBuilder()
-          .setDateStartedMillis(g.getDateStarted().getTime())
+          .setDateMillis(g.getDateStarted().getTime())
           .setTimeElapsedMillis(g.getTimeElapsed())
           .setHintsUsed(g.areHintsUsed())
           .setDateCompletedMillis(g.getDateCompleted() != null ? g.getDateCompleted().getTime() : 0)
+          .setNumTriplesFound(g.getNumTriplesFound())
           .build());
     }
     return builder.build().toByteArray();
@@ -153,10 +84,10 @@ public class CloudSaveSerializer {
     DailyCompletedData completedData = DailyCompletedData.parseFrom(data);
     List<DailyGame> games = new ArrayList<>(completedData.getDailyGamesCount());
     for (DailyGameSummary summary : completedData.getDailyGamesList()) {
-      games.add(new DailyGame(-1, summary.getDateStartedMillis(),
+      games.add(new DailyGame(-1, summary.getDateMillis(),
           createFakeCardsInPlay(),
           Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-          summary.getTimeElapsedMillis(), new Date(summary.getDateStartedMillis()),
+          summary.getTimeElapsedMillis(), new Date(summary.getDateMillis()),
           Game.GameState.COMPLETED, summary.getHintsUsed(), Collections.<Set<Card>>emptyList(),
           summary.getDateCompletedMillis() != 0 ? new Date(summary.getDateCompletedMillis()) : null));
     }
@@ -165,13 +96,11 @@ public class CloudSaveSerializer {
 
   public static byte[] serializeClassicGameState(ClassicGame game) {
     return ClassicGameState.newBuilder()
-        .setId(game.getId())
         .setSeed(game.getRandomSeed())
         .setCardsInPlay(ByteString.copyFrom(game.getCardsInPlayAsByteArray()))
         .setTripleFindTimes(ByteString.copyFrom(Utils.longListToByteArray(game.getTripleFindTimes())))
         .setCardsInDeck(ByteString.copyFrom(game.getCardsInDeckAsByteArray()))
         .setTimeElapsedMillis(game.getTimeElapsed())
-        .setDateStartedMillis(game.getDateStarted().getTime())
         .setGameState(toGameStateProto(game.getGameState()))
         .setHintsUsed(game.areHintsUsed())
         .build().toByteArray();
@@ -179,23 +108,21 @@ public class CloudSaveSerializer {
 
   public static ClassicGame deserializeClassicGameState(byte[] data) throws IOException {
     ClassicGameState state = ClassicGameState.parseFrom(data);
-    return new ClassicGame(state.getId(), state.getSeed(),
+    return new ClassicGame(-1, state.getSeed(),
         Utils.cardListFromByteArray(state.getCardsInPlay().toByteArray()),
         Utils.longListFromByteArray(state.getTripleFindTimes().toByteArray()),
         Deck.fromByteArray(state.getCardsInDeck().toByteArray()),
-        state.getTimeElapsedMillis(), new Date(state.getDateStartedMillis()),
+        state.getTimeElapsedMillis(), new Date(state.getSeed()),
         fromGameStateProto(state.getGameState()), state.getHintsUsed());
   }
 
   public static byte[] serializeArcadeGameState(ArcadeGame game) {
     return ArcadeGameState.newBuilder()
-        .setId(game.getId())
         .setSeed(game.getRandomSeed())
         .setCardsInPlay(ByteString.copyFrom(game.getCardsInPlayAsByteArray()))
         .setTripleFindTimes(ByteString.copyFrom(Utils.longListToByteArray(game.getTripleFindTimes())))
         .setCardsInDeck(ByteString.copyFrom(game.getCardsInDeckAsByteArray()))
         .setTimeElapsedMillis(game.getTimeElapsed())
-        .setDateStartedMillis(game.getDateStarted().getTime())
         .setGameState(toGameStateProto(game.getGameState()))
         .setNumTriplesFound(game.getNumTriplesFound())
         .setHintsUsed(game.areHintsUsed())
@@ -204,41 +131,36 @@ public class CloudSaveSerializer {
 
   public static ArcadeGame deserializeArcadeGameState(byte[] data) throws IOException {
     ArcadeGameState state = ArcadeGameState.parseFrom(data);
-    return new ArcadeGame(state.getId(), state.getSeed(),
+    return new ArcadeGame(-1, state.getSeed(),
         Utils.cardListFromByteArray(state.getCardsInPlay().toByteArray()),
         Utils.longListFromByteArray(state.getTripleFindTimes().toByteArray()),
         Deck.fromByteArray(state.getCardsInDeck().toByteArray()),
-        state.getTimeElapsedMillis(), new Date(state.getDateStartedMillis()),
+        state.getTimeElapsedMillis(), new Date(state.getSeed()),
         fromGameStateProto(state.getGameState()), state.getNumTriplesFound(), state.getHintsUsed());
   }
 
   public static byte[] serializeDailyGameState(DailyGame game) {
-    DailyGameState.Builder builder = DailyGameState.newBuilder()
-        .setId(game.getId())
+    return DailyGameState.newBuilder()
         .setSeed(game.getRandomSeed())
         .setCardsInPlay(ByteString.copyFrom(game.getCardsInPlayAsByteArray()))
         .setTripleFindTimes(ByteString.copyFrom(Utils.longListToByteArray(game.getTripleFindTimes())))
         .setTimeElapsedMillis(game.getTimeElapsed())
-        .setDateStartedMillis(game.getDateStarted().getTime())
         .setGameState(toGameStateProto(game.getGameState()))
         .setHintsUsed(game.areHintsUsed())
-        .setFoundTriples(ByteString.copyFrom(Utils.triplesListToByteArray(game.getFoundTriples())));
-    if (game.getDateCompleted() != null) {
-      builder.setDateCompletedMillis(game.getDateCompleted().getTime());
-    }
-    return builder.build().toByteArray();
+        .setFoundTriples(ByteString.copyFrom(Utils.triplesListToByteArray(game.getFoundTriples())))
+        .build().toByteArray();
   }
 
   public static DailyGame deserializeDailyGameState(byte[] data) throws IOException {
     DailyGameState state = DailyGameState.parseFrom(data);
-    return new DailyGame(state.getId(), state.getSeed(),
+    return new DailyGame(-1, state.getSeed(),
         Utils.cardListFromByteArray(state.getCardsInPlay().toByteArray()),
         Utils.longListFromByteArray(state.getTripleFindTimes().toByteArray()),
         new Deck(Collections.<Card>emptyList()),
-        state.getTimeElapsedMillis(), new Date(state.getDateStartedMillis()),
+        state.getTimeElapsedMillis(), new Date(state.getSeed()),
         fromGameStateProto(state.getGameState()), state.getHintsUsed(),
         Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()),
-        state.getDateCompletedMillis() != 0 ? new Date(state.getDateCompletedMillis()) : null);
+        null);
   }
 
   private static GameStateProto toGameStateProto(Game.GameState state) {

@@ -14,46 +14,6 @@ import org.junit.Test;
 public class CloudSaveSerializerTest {
 
   @Test
-  public void testSerializationRoundTrip() throws IOException {
-    List<ClassicGame> classicGames = new ArrayList<>();
-    classicGames.add(new ClassicGame(1, 123, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        60000, new Date(1000000), Game.GameState.COMPLETED, false));
-    classicGames.add(new ClassicGame(2, 456, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        120000, new Date(2000000), Game.GameState.COMPLETED, true));
-
-    List<ArcadeGame> arcadeGames = new ArrayList<>();
-    arcadeGames.add(new ArcadeGame(3, 789, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        ArcadeGame.TIME_LIMIT_MS + 100, new Date(3000000), Game.GameState.COMPLETED, 15, false));
-
-    byte[] serialized = CloudSaveSerializer.serialize(classicGames, arcadeGames);
-    CloudSaveSerializer.CloudData deserialized = CloudSaveSerializer.deserialize(serialized);
-
-    assertThat(deserialized.classicGames).hasSize(2);
-    assertThat(deserialized.classicGames.get(0).getDateStarted().getTime()).isEqualTo(1000000);
-    assertThat(deserialized.classicGames.get(0).getTimeElapsed()).isEqualTo(60000);
-    assertThat(deserialized.classicGames.get(0).areHintsUsed()).isFalse();
-    assertThat(deserialized.classicGames.get(1).getDateStarted().getTime()).isEqualTo(2000000);
-    assertThat(deserialized.classicGames.get(1).getTimeElapsed()).isEqualTo(120000);
-    assertThat(deserialized.classicGames.get(1).areHintsUsed()).isTrue();
-
-    assertThat(deserialized.arcadeGames).hasSize(1);
-    assertThat(deserialized.arcadeGames.get(0).getDateStarted().getTime()).isEqualTo(3000000);
-    assertThat(deserialized.arcadeGames.get(0).getNumTriplesFound()).isEqualTo(15);
-    assertThat(deserialized.arcadeGames.get(0).areHintsUsed()).isFalse();
-  }
-
-  @Test
-  public void testEmptyData() throws IOException {
-    byte[] serialized = CloudSaveSerializer.serialize(new ArrayList<ClassicGame>(), new ArrayList<ArcadeGame>());
-    CloudSaveSerializer.CloudData deserialized = CloudSaveSerializer.deserialize(serialized);
-    assertThat(deserialized.classicGames).isEmpty();
-    assertThat(deserialized.arcadeGames).isEmpty();
-  }
-
-  @Test
   public void testClassicCompletedRoundTrip() throws IOException {
     List<ClassicGame> classicGames = new ArrayList<>();
     classicGames.add(new ClassicGame(1, 123, Collections.<Card>emptyList(),
@@ -86,10 +46,10 @@ public class CloudSaveSerializerTest {
     List<DailyGame> dailyGames = new ArrayList<>();
     List<Card> cards = Arrays.asList(
         new Card(0,0,0,0), new Card(1,1,1,1), new Card(2,2,2,2),
-        new Card(0,1,0,1), new Card(1,2,1,2), new Card(2,0,2,0),
-        new Card(0,2,0,2), new Card(1,0,1,0), new Card(2,1,2,1),
+        new Card(0,1,1,2), new Card(1,2,2,0), new Card(2,0,0,1),
+        new Card(0,2,2,1), new Card(1,0,0,2), new Card(2,1,1,0),
         new Card(0,0,1,1), new Card(1,1,2,2), new Card(2,2,0,0),
-        new Card(0,1,1,2), new Card(1,2,2,0), new Card(2,0,0,1)
+        new Card(0,1,2,0), new Card(1,2,0,1), new Card(2,0,1,2)
     );
     dailyGames.add(new DailyGame(1, 1000000,
         cards,
@@ -115,7 +75,6 @@ public class CloudSaveSerializerTest {
     byte[] serialized = CloudSaveSerializer.serializeClassicGameState(game);
     ClassicGame deserialized = CloudSaveSerializer.deserializeClassicGameState(serialized);
 
-    assertThat(deserialized.getId()).isEqualTo(1);
     assertThat(deserialized.getRandomSeed()).isEqualTo(123);
     assertThat(deserialized.getCardsInPlay()).hasSize(2);
     assertThat(deserialized.getTripleFindTimes()).containsExactly(1000L, 2000L).inOrder();
@@ -136,7 +95,6 @@ public class CloudSaveSerializerTest {
     byte[] serialized = CloudSaveSerializer.serializeArcadeGameState(game);
     ArcadeGame deserialized = CloudSaveSerializer.deserializeArcadeGameState(serialized);
 
-    assertThat(deserialized.getId()).isEqualTo(1);
     assertThat(deserialized.getGameState()).isEqualTo(Game.GameState.PAUSED);
     assertThat(deserialized.getNumTriplesFound()).isEqualTo(10);
   }
@@ -146,10 +104,10 @@ public class CloudSaveSerializerTest {
     Set<Card> triple = com.google.common.collect.Sets.newHashSet(new Card(0,0,0,0), new Card(1,1,1,1), new Card(2,2,2,2));
     List<Card> cards = Arrays.asList(
         new Card(0,0,0,0), new Card(1,1,1,1), new Card(2,2,2,2),
-        new Card(0,1,0,1), new Card(1,2,1,2), new Card(2,0,2,0),
-        new Card(0,2,0,2), new Card(1,0,1,0), new Card(2,1,2,1),
+        new Card(0,1,1,2), new Card(1,2,2,0), new Card(2,0,0,1),
+        new Card(0,2,2,1), new Card(1,0,0,2), new Card(2,1,1,0),
         new Card(0,0,1,1), new Card(1,1,2,2), new Card(2,2,0,0),
-        new Card(0,1,1,2), new Card(1,2,2,0), new Card(2,0,0,1)
+        new Card(0,1,2,0), new Card(1,2,0,1), new Card(2,0,1,2)
     );
     DailyGame game = new DailyGame(1, 123,
         cards,
