@@ -6,7 +6,9 @@ import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -311,6 +313,7 @@ public class DailyStatisticsFragment extends Fragment {
     private final long mTodaySeed;
     private final int mMonth;
     private final int mYear;
+    private final int mSelectableItemBackground;
     private long mSelectedSeed;
 
     CalendarAdapter(
@@ -318,6 +321,10 @@ public class DailyStatisticsFragment extends Fragment {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
+
+      TypedValue outValue = new TypedValue();
+      mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+      mSelectableItemBackground = outValue.resourceId;
       mMonth = month.get(Calendar.MONTH);
       mYear = month.get(Calendar.YEAR);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
@@ -430,14 +437,6 @@ public class DailyStatisticsFragment extends Fragment {
                   canvas.drawCircle(centerX, centerY, radius + density, mPaint);
                 }
 
-                // Today indicator
-                if (daySeed == mTodaySeed) {
-                  mPaint.setStyle(Paint.Style.STROKE);
-                  mPaint.setStrokeWidth(density);
-                  mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-                  canvas.drawCircle(centerX, centerY, radius + 3f * density, mPaint);
-                }
-
                 super.onDraw(canvas);
               }
             };
@@ -458,7 +457,15 @@ public class DailyStatisticsFragment extends Fragment {
           text += "*";
         }
         tv.setText(text);
-        tv.setBackgroundResource(android.R.drawable.list_selector_background);
+        tv.setBackgroundResource(mSelectableItemBackground);
+
+        if (daySeed == mTodaySeed) {
+          tv.setTypeface(null, Typeface.BOLD);
+          tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        } else {
+          tv.setTypeface(null, Typeface.NORMAL);
+          tv.setPaintFlags(tv.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
+        }
 
         if (daySeed > mTodaySeed) {
           tv.setTextColor(mTextSecondaryColor);

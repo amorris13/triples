@@ -136,7 +136,8 @@
         android:layout_height="wrap_content"
         android:numColumns="7"
         android:verticalSpacing="4dp"
-        android:horizontalSpacing="4dp" />
+        android:horizontalSpacing="4dp"
+        android:listSelector="@android:color/transparent" />
 
     <LinearLayout
         android:id="@+id/date_detail_container"
