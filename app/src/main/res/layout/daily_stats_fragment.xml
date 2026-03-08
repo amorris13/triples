@@ -94,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="&lt;"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="@color/selector_month_nav" />
 
         <Button
             android:id="@+id/month_title"
@@ -105,7 +105,7 @@
             android:gravity="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="@color/selector_month_nav" />
 
         <Button
             android:id="@+id/next_month"
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="&gt;"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="@color/selector_month_nav" />
     </LinearLayout>
 
     <LinearLayout
