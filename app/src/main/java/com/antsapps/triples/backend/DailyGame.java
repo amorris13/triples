@@ -120,7 +120,6 @@ public class DailyGame extends Game {
       mHintedCards.clear();
       if (mGameRenderer != null) {
         mGameRenderer.clearHintedCards();
-        mGameRenderer.clearSelectedCards();
       }
 
       if (mOnTripleFoundListener != null) {

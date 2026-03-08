@@ -225,7 +225,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
-    mGameRenderer.clearSelectedCards();
 
     for (int i = 0; i < 3; i++) {
       mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);

@@ -313,6 +313,12 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     // Fly back after animation duration
     mHandler.postDelayed(
         () -> {
+          for (Card c : triple) {
+            CardDrawable cd = mCardDrawables.get(c);
+            if (cd != null) {
+              cd.setSelected(false);
+            }
+          }
           updateBounds();
         },
         1000); // 1s to ensure animation finishes
