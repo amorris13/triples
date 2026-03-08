@@ -207,5 +207,35 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Multiplayer Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:id="@+id/multiplayer_container"
+                style="@style/MainCardContainer"
+                android:background="@color/classic_background">
+
+                <TextView
+                    style="@style/MainCardLabel"
+                    android:text="@string/multiplayer_label"
+                    android:textColor="@color/classic_accent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/multiplayer_button"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/play"
+                    android:theme="@style/ClassicButtonTheme" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 </ScrollView>
