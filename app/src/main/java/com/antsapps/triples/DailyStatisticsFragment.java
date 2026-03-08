@@ -310,6 +310,7 @@ public class DailyStatisticsFragment extends Fragment {
     private final long mTodaySeed;
     private final int mMonth;
     private final int mYear;
+    private final int mSelectableItemBackground;
     private long mSelectedSeed;
 
     CalendarAdapter(
@@ -317,6 +318,10 @@ public class DailyStatisticsFragment extends Fragment {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
+
+      android.util.TypedValue outValue = new android.util.TypedValue();
+      mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+      mSelectableItemBackground = outValue.resourceId;
       mMonth = month.get(Calendar.MONTH);
       mYear = month.get(Calendar.YEAR);
       mTodaySeed = getStartOfDay(System.currentTimeMillis());
@@ -449,6 +454,7 @@ public class DailyStatisticsFragment extends Fragment {
           text += "*";
         }
         tv.setText(text);
+        tv.setBackgroundResource(mSelectableItemBackground);
 
         if (daySeed == mTodaySeed) {
           tv.setTypeface(null, Typeface.BOLD);
