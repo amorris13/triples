@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -66,6 +67,7 @@ public class DailyStatisticsFragment extends Fragment {
     mDetailDate = view.findViewById(R.id.detail_date);
     mDetailStatus = view.findViewById(R.id.detail_status);
     mDetailPlayBtn = view.findViewById(R.id.detail_play_btn);
+    mDetailPlayBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.daily_accent)));
     mDetailResultsContainer = view.findViewById(R.id.detail_results_container);
     mDetailTriples = view.findViewById(R.id.detail_triples);
     mDetailTime = view.findViewById(R.id.detail_time);
@@ -109,11 +111,6 @@ public class DailyStatisticsFragment extends Fragment {
 
     GestureDetector gestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
       @Override
-      public boolean onDown(MotionEvent e) {
-        return true;
-      }
-
-      @Override
       public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 100) {
           if (velocityX > 0) {
@@ -137,10 +134,7 @@ public class DailyStatisticsFragment extends Fragment {
       }
     });
 
-    mCalendarGrid.setOnTouchListener((v, event) -> {
-      gestureDetector.onTouchEvent(event);
-      return false;
-    });
+    mCalendarGrid.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
     mCompletedGames = new ArrayList<>();
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
@@ -210,7 +204,7 @@ public class DailyStatisticsFragment extends Fragment {
     } else {
       String status = getString(R.string.daily_completed);
       if (game.areHintsUsed()) {
-        status += getString(R.string.daily_hints_used_suffix);
+        status += " " + getString(R.string.daily_hints_used_suffix);
       }
       mDetailStatus.setText(status);
       mDetailPlayBtn.setVisibility(View.GONE);
@@ -403,7 +397,7 @@ public class DailyStatisticsFragment extends Fragment {
               mPaint.setStyle(Paint.Style.STROKE);
               mPaint.setStrokeWidth(density);
               mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-              canvas.drawCircle(centerX, centerY, radius + 2.5f * density, mPaint);
+              canvas.drawCircle(centerX, centerY, radius + 3f * density, mPaint);
             }
 
             super.onDraw(canvas);
