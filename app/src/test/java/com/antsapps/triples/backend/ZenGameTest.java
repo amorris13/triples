@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 
 public class ZenGameTest {
@@ -23,7 +24,7 @@ public class ZenGameTest {
     public void clearHintedCards() {}
 
     @Override
-    public java.util.Set<Card> getSelectedCards() {
+    public Set<Card> getSelectedCards() {
       return Collections.emptySet();
     }
 

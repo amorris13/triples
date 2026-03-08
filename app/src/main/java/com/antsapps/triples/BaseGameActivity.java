@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
@@ -92,12 +93,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
     ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
-    findViewById(R.id.rate_app)
-        .setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.rate_app).setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.statistics_button)
-        .setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+        .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.new_game_button)
-        .setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+        .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
 
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();

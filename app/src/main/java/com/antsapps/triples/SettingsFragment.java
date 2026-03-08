@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
 import androidx.preference.SeekBarPreference;
 import com.antsapps.triples.backend.Application;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -95,11 +96,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
     CloudSaveManager.deleteFromCloud(activity);
   }
 
-  private void setupListeners(androidx.preference.PreferenceGroup group) {
+  private void setupListeners(PreferenceGroup group) {
     for (int i = 0; i < group.getPreferenceCount(); i++) {
       Preference p = group.getPreference(i);
-      if (p instanceof androidx.preference.PreferenceGroup) {
-        setupListeners((androidx.preference.PreferenceGroup) p);
+      if (p instanceof PreferenceGroup) {
+        setupListeners((PreferenceGroup) p);
       } else {
         p.setOnPreferenceChangeListener(this);
       }

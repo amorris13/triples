@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
@@ -44,7 +45,7 @@ public class ArcadeGameActivity extends BaseGameActivity
 
   @Override
   protected int getAccentColor() {
-    return androidx.core.content.ContextCompat.getColor(this, R.color.arcade_accent);
+    return ContextCompat.getColor(this, R.color.arcade_accent);
   }
 
   @Override

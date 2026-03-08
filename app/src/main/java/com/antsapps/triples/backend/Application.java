@@ -1,5 +1,6 @@
 package com.antsapps.triples.backend;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import com.antsapps.triples.CloudSaveManager;
@@ -105,7 +106,7 @@ public class Application extends OnStateChangedReporter {
     notifyStateChanged();
   }
 
-  public void uploadToCloud(android.app.Activity activity) {
+  public void uploadToCloud(Activity activity) {
     CloudSaveManager.saveToCloud(activity, this);
   }
 

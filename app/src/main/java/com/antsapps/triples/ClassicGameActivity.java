@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
@@ -44,7 +45,7 @@ public class ClassicGameActivity extends BaseGameActivity
 
   @Override
   protected int getAccentColor() {
-    return androidx.core.content.ContextCompat.getColor(this, R.color.classic_accent);
+    return ContextCompat.getColor(this, R.color.classic_accent);
   }
 
   @Override
