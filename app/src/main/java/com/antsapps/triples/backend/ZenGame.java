@@ -42,7 +42,15 @@ public class ZenGame extends Game {
       boolean hintsUsed,
       boolean isBeginner) {
     super(
-        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
+        id,
+        seed,
+        cardsInPlay,
+        tripleFindTimes,
+        cardsInDeck,
+        timeElapsed,
+        date,
+        gameState,
+        hintsUsed);
     mIsBeginner = isBeginner;
   }
 
@@ -50,7 +58,8 @@ public class ZenGame extends Game {
   protected boolean isGameInValidState() {
     switch (mGameState) {
       case COMPLETED:
-        return true; // Zen mode doesn't really have a COMPLETED state in normal play but for consistency
+        return true; // Zen mode doesn't really have a COMPLETED state in normal play but for
+        // consistency
       case PAUSED:
       case ACTIVE:
       case STARTING:

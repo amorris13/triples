@@ -15,13 +15,29 @@ public class DailyGameHintTest {
   private static class DummyRenderer implements Game.GameRenderer {
     Set<Card> selected = Sets.newHashSet();
     Set<Card> hinted = Sets.newHashSet();
-    @Override public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-    @Override public void addHint(Card card) {
-        hinted.add(card);
+
+    @Override
+    public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
+    @Override
+    public void addHint(Card card) {
+      hinted.add(card);
     }
-    @Override public void clearHintedCards() { hinted.clear(); }
-    @Override public Set<Card> getSelectedCards() { return selected; }
-    @Override public void clearSelectedCards() { selected.clear(); }
+
+    @Override
+    public void clearHintedCards() {
+      hinted.clear();
+    }
+
+    @Override
+    public Set<Card> getSelectedCards() {
+      return selected;
+    }
+
+    @Override
+    public void clearSelectedCards() {
+      selected.clear();
+    }
   }
 
   @Test

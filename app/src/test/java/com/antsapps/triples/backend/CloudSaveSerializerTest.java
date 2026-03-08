@@ -14,17 +14,42 @@ public class CloudSaveSerializerTest {
   @Test
   public void testSerializationRoundTrip() throws IOException {
     List<ClassicGame> classicGames = new ArrayList<>();
-    classicGames.add(new ClassicGame(1, 123, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        60000, new Date(1000000), Game.GameState.COMPLETED, false));
-    classicGames.add(new ClassicGame(2, 456, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        120000, new Date(2000000), Game.GameState.COMPLETED, true));
+    classicGames.add(
+        new ClassicGame(
+            1,
+            123,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(Collections.<Card>emptyList()),
+            60000,
+            new Date(1000000),
+            Game.GameState.COMPLETED,
+            false));
+    classicGames.add(
+        new ClassicGame(
+            2,
+            456,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(Collections.<Card>emptyList()),
+            120000,
+            new Date(2000000),
+            Game.GameState.COMPLETED,
+            true));
 
     List<ArcadeGame> arcadeGames = new ArrayList<>();
-    arcadeGames.add(new ArcadeGame(3, 789, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        ArcadeGame.TIME_LIMIT_MS + 100, new Date(3000000), Game.GameState.COMPLETED, 15, false));
+    arcadeGames.add(
+        new ArcadeGame(
+            3,
+            789,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(Collections.<Card>emptyList()),
+            ArcadeGame.TIME_LIMIT_MS + 100,
+            new Date(3000000),
+            Game.GameState.COMPLETED,
+            15,
+            false));
 
     byte[] serialized = CloudSaveSerializer.serialize(classicGames, arcadeGames);
     CloudSaveSerializer.CloudData deserialized = CloudSaveSerializer.deserialize(serialized);
@@ -45,7 +70,8 @@ public class CloudSaveSerializerTest {
 
   @Test
   public void testEmptyData() throws IOException {
-    byte[] serialized = CloudSaveSerializer.serialize(new ArrayList<ClassicGame>(), new ArrayList<ArcadeGame>());
+    byte[] serialized =
+        CloudSaveSerializer.serialize(new ArrayList<ClassicGame>(), new ArrayList<ArcadeGame>());
     CloudSaveSerializer.CloudData deserialized = CloudSaveSerializer.deserialize(serialized);
     assertThat(deserialized.classicGames).isEmpty();
     assertThat(deserialized.arcadeGames).isEmpty();

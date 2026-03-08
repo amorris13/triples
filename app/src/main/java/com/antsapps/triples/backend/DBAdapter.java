@@ -7,9 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.antsapps.triples.backend.Game.GameState;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,8 +28,10 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_HINTS_USED = "hints_used";
   public static final String COLUMN_FOUND_TRIPLES = "found_triples"; // DAILY only
   public static final String COLUMN_DATE_COMPLETED = "date_completed"; // DAILY only
+
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
+
   /** The version of the database that this class understands. */
   private static final int DATABASE_VERSION = 7;
 
@@ -164,8 +164,18 @@ public class DBAdapter extends SQLiteOpenHelper {
     if (oldVersion < 5) {
       db.beginTransaction();
       try {
-        db.execSQL("ALTER TABLE " + TABLE_CLASSIC_GAMES + " ADD COLUMN " + COLUMN_TRIPLE_FIND_TIMES + " BLOB");
-        db.execSQL("ALTER TABLE " + TABLE_ARCADE_GAMES + " ADD COLUMN " + COLUMN_TRIPLE_FIND_TIMES + " BLOB");
+        db.execSQL(
+            "ALTER TABLE "
+                + TABLE_CLASSIC_GAMES
+                + " ADD COLUMN "
+                + COLUMN_TRIPLE_FIND_TIMES
+                + " BLOB");
+        db.execSQL(
+            "ALTER TABLE "
+                + TABLE_ARCADE_GAMES
+                + " ADD COLUMN "
+                + COLUMN_TRIPLE_FIND_TIMES
+                + " BLOB");
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
@@ -176,8 +186,18 @@ public class DBAdapter extends SQLiteOpenHelper {
     if (oldVersion < 6) {
       db.beginTransaction();
       try {
-        db.execSQL("ALTER TABLE " + TABLE_CLASSIC_GAMES + " ADD COLUMN " + COLUMN_HINTS_USED + " INTEGER DEFAULT 0");
-        db.execSQL("ALTER TABLE " + TABLE_ARCADE_GAMES + " ADD COLUMN " + COLUMN_HINTS_USED + " INTEGER DEFAULT 0");
+        db.execSQL(
+            "ALTER TABLE "
+                + TABLE_CLASSIC_GAMES
+                + " ADD COLUMN "
+                + COLUMN_HINTS_USED
+                + " INTEGER DEFAULT 0");
+        db.execSQL(
+            "ALTER TABLE "
+                + TABLE_ARCADE_GAMES
+                + " ADD COLUMN "
+                + COLUMN_HINTS_USED
+                + " INTEGER DEFAULT 0");
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
@@ -198,7 +218,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     }
   }
 
-  public void initialize(List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames, List<DailyGame> dailyGames) {
+  public void initialize(
+      List<ClassicGame> classicGames, List<ArcadeGame> arcadeGames, List<DailyGame> dailyGames) {
     Log.i("DBAdapter", "initialize");
     initClassicGames(classicGames);
     initArcadeGames(arcadeGames);

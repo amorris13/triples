@@ -101,28 +101,46 @@ public class GameTest {
     Card c4 = new Card(0, 0, 0, 1);
     List<Card> cardsInPlay = ImmutableList.of(c1, c2, c3, c4);
 
-    Game game = new Game(0, 0, cardsInPlay, Collections.emptyList(), new Deck(Collections.emptyList()), 0, new Date(), Game.GameState.ACTIVE, false) {
-      @Override
-      protected boolean isGameInValidState() {
-        return true;
-      }
-      @Override
-      public String getGameTypeForAnalytics() {
-        return "Test";
-      }
-    };
-    game.setGameRenderer(new Game.GameRenderer() {
-      @Override
-      public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-      @Override
-      public void addHint(Card card) {}
-      @Override
-      public void clearHintedCards() {}
-      @Override
-      public void clearSelectedCards() {}
-      @Override
-      public Set<Card> getSelectedCards() { return Collections.emptySet(); }
-    });
+    Game game =
+        new Game(
+            0,
+            0,
+            cardsInPlay,
+            Collections.emptyList(),
+            new Deck(Collections.emptyList()),
+            0,
+            new Date(),
+            Game.GameState.ACTIVE,
+            false) {
+          @Override
+          protected boolean isGameInValidState() {
+            return true;
+          }
+
+          @Override
+          public String getGameTypeForAnalytics() {
+            return "Test";
+          }
+        };
+    game.setGameRenderer(
+        new Game.GameRenderer() {
+          @Override
+          public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
+          @Override
+          public void addHint(Card card) {}
+
+          @Override
+          public void clearHintedCards() {}
+
+          @Override
+          public void clearSelectedCards() {}
+
+          @Override
+          public Set<Card> getSelectedCards() {
+            return Collections.emptySet();
+          }
+        });
 
     // We can't guarantee a shuffle will change order with only 4 cards, but it usually does.
     // To be more robust, we check that it still contains the same cards.

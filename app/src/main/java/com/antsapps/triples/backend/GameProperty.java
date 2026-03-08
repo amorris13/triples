@@ -2,7 +2,6 @@ package com.antsapps.triples.backend;
 
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
-
 import java.util.Comparator;
 
 public enum GameProperty {

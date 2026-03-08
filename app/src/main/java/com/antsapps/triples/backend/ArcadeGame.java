@@ -41,7 +41,15 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
       int numTriplesFound,
       boolean hintsUsed) {
     super(
-        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
+        id,
+        seed,
+        cardsInPlay,
+        tripleFindTimes,
+        cardsInDeck,
+        timeElapsed,
+        date,
+        gameState,
+        hintsUsed);
     mNumTriplesFound = numTriplesFound;
     mTimer.addOnTimerTickListener(this);
   }

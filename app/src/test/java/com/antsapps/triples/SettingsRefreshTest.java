@@ -1,7 +1,5 @@
 package com.antsapps.triples;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
@@ -15,39 +13,41 @@ import org.junit.Test;
 
 public class SettingsRefreshTest extends BaseRobolectricTest {
 
-    @Test
-    public void testSettingsChangeRefreshesCards() {
-        Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
-        ClassicGame game = ClassicGame.createFromSeed(12345L);
-        app.addClassicGame(game);
+  @Test
+  public void testSettingsChangeRefreshesCards() {
+    Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
+    ClassicGame game = ClassicGame.createFromSeed(12345L);
+    app.addClassicGame(game);
 
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ClassicGameActivity.class);
-        intent.putExtra(Game.ID_TAG, game.getId());
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), ClassicGameActivity.class);
+    intent.putExtra(Game.ID_TAG, game.getId());
 
-        try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity -> {
-                CardsView cardsView = activity.findViewById(R.id.cards_view);
+    try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
+      scenario.onActivity(
+          activity -> {
+            CardsView cardsView = activity.findViewById(R.id.cards_view);
 
-                // We want to see if refreshDrawables is called.
-                // Since we can't easily mock CardsView in this setup,
-                // let's check if the preferences are applied after resume.
+            // We want to see if refreshDrawables is called.
+            // Since we can't easily mock CardsView in this setup,
+            // let's check if the preferences are applied after resume.
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-                String colorKey = activity.getString(R.string.pref_color_0);
-                String oldColor = prefs.getString(colorKey, "#33B5E5");
-                String newColor = "#000000";
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+            String colorKey = activity.getString(R.string.pref_color_0);
+            String oldColor = prefs.getString(colorKey, "#33B5E5");
+            String newColor = "#000000";
 
-                prefs.edit().putString(colorKey, newColor).commit();
-            });
+            prefs.edit().putString(colorKey, newColor).commit();
+          });
 
-            // "Simulate" returning from settings by re-entering the activity.
-            // ActivityScenario.moveToState(RESUMED) might already be the case,
-            // but we need to trigger onResume after the preference change.
-            scenario.moveToState(androidx.lifecycle.Lifecycle.State.STARTED);
-            scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);
+      // "Simulate" returning from settings by re-entering the activity.
+      // ActivityScenario.moveToState(RESUMED) might already be the case,
+      // but we need to trigger onResume after the preference change.
+      scenario.moveToState(androidx.lifecycle.Lifecycle.State.STARTED);
+      scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);
 
-            // Unfortunately, it's hard to verify if the drawing changed without deep inspection.
-            // But I can at least verify that I'm calling the right methods.
-        }
+      // Unfortunately, it's hard to verify if the drawing changed without deep inspection.
+      // But I can at least verify that I'm calling the right methods.
     }
+  }
 }

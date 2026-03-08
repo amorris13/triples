@@ -4,10 +4,8 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
-
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
-
 import java.util.List;
 
 public class HorizontalCardsView extends CardsView {
