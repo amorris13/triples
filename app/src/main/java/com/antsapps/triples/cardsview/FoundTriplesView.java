@@ -20,9 +20,10 @@ import java.util.Set;
 
 public class FoundTriplesView extends View {
 
-  private static final int COLUMNS = 7;
+  private static final int COLUMNS = 6;
   private static final float ASPECT_RATIO = 3f / 5f;
   private static final float CARD_HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
+  private static final int STACK_OVERLAP_DP = 20;
 
   private int mTotalTriplesCount;
   private List<Set<Card>> mFoundTriples = Lists.newArrayList();
@@ -66,6 +67,15 @@ public class FoundTriplesView extends View {
     int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
     mWidthOfStack = width / COLUMNS;
     mHeightOfStack = (int) (mWidthOfStack / ASPECT_RATIO);
+
+    // Max height constraint to avoid taking up too much vertical space
+    float density = getResources().getDisplayMetrics().density;
+    int maxHeight = (int) (120 * density);
+    if (mHeightOfStack > maxHeight) {
+        mHeightOfStack = maxHeight;
+        mWidthOfStack = (int) (mHeightOfStack * ASPECT_RATIO);
+    }
+
     int rows = (int) Math.ceil((double) mTotalTriplesCount / COLUMNS);
     int height = mHeightOfStack * rows;
     setMeasuredDimension(width, height);
@@ -85,7 +95,7 @@ public class FoundTriplesView extends View {
       }
 
       Rect stackRect = new Rect(left, top, left + mWidthOfStack, top + mHeightOfStack);
-      stackRect.inset(5, 5);
+      stackRect.inset(2, 2);
 
       if (i < mFoundTriples.size()) {
         drawTriple(canvas, mFoundTriples.get(i), stackRect);
@@ -98,15 +108,16 @@ public class FoundTriplesView extends View {
 
   private void drawTriple(Canvas canvas, Set<Card> triple, Rect stackRect) {
     int cardHeight = (int) (stackRect.width() * CARD_HEIGHT_OVER_WIDTH);
-    int offset = (stackRect.height() - cardHeight) / 2;
+    float density = getResources().getDisplayMetrics().density;
+    int stackOverlap = (int) (STACK_OVERLAP_DP * density);
 
     int i = 0;
     for (Card card : triple) {
       Rect bounds = new Rect(
           stackRect.left,
-          stackRect.top + i * offset,
+          stackRect.top + i * stackOverlap,
           stackRect.right,
-          stackRect.top + i * offset + cardHeight);
+          stackRect.top + i * stackOverlap + cardHeight);
       drawCard(canvas, card, bounds);
       i++;
     }
@@ -133,10 +144,11 @@ public class FoundTriplesView extends View {
     getLocationOnScreen(location);
 
     Rect stackRect = new Rect(left, top, left + mWidthOfStack, top + mHeightOfStack);
-    stackRect.inset(5, 5);
+    stackRect.inset(2, 2);
 
     int cardHeight = (int) (stackRect.width() * CARD_HEIGHT_OVER_WIDTH);
-    int offset = (stackRect.height() - cardHeight) / 2;
+    float density = getResources().getDisplayMetrics().density;
+    int stackOverlap = (int) (STACK_OVERLAP_DP * density);
 
     Set<Card> triple = mFoundTriples.get(index);
     Map<Card, Rect> rects = Maps.newHashMap();
@@ -145,9 +157,9 @@ public class FoundTriplesView extends View {
     for (Card card : triple) {
       Rect rect = new Rect(
           location[0] + stackRect.left,
-          location[1] + stackRect.top + i * offset,
+          location[1] + stackRect.top + i * stackOverlap,
           location[0] + stackRect.right,
-          location[1] + stackRect.top + i * offset + cardHeight);
+          location[1] + stackRect.top + i * stackOverlap + cardHeight);
       rects.put(card, rect);
       i++;
     }
