@@ -143,18 +143,83 @@ public class DailyGame extends Game {
 
   @Override
   public boolean addHint() {
-    for (Set<Card> triple : mAllTriples) {
-      if (!mFoundTriples.contains(triple)) {
-        mHintsUsed = true;
-        mHintedCards.clear();
-        mGameRenderer.clearHintedCards();
-        for (Card card : triple) {
-          dispatchHint(card);
+    if (mHintedCards.size() == 3) {
+      return false;
+    }
+
+    Set<Card> selectedCards = mGameRenderer.getSelectedCards();
+
+    // Calculate target triple
+    Set<Card> targetTriple = null;
+    if (!mHintedCards.isEmpty()) {
+      for (Set<Card> triple : mAllTriples) {
+        if (!mFoundTriples.contains(triple) && triple.containsAll(mHintedCards)) {
+          targetTriple = triple;
+          break;
         }
-        return true;
       }
     }
-    return false;
+
+    if (targetTriple == null) {
+      mHintedCards.clear();
+      mGameRenderer.clearHintedCards();
+      targetTriple = findUnfoundTripleIncludingSelected(selectedCards);
+    }
+
+    if (targetTriple == null) {
+      return false;
+    }
+
+    mHintsUsed = true;
+    boolean hintedNewCard = false;
+
+    // 1. Hint all selected cards in the triple that aren't hinted yet.
+    // This ensures they stay selected in the UI.
+    for (Card c : targetTriple) {
+      if (selectedCards.contains(c) && !mHintedCards.contains(c)) {
+        dispatchHint(c);
+      }
+    }
+
+    // 2. Hint at least one card that was not selected (the "actual" hint).
+    for (Card c : targetTriple) {
+      if (!mHintedCards.contains(c) && !selectedCards.contains(c)) {
+        dispatchHint(c);
+        hintedNewCard = true;
+        break;
+      }
+    }
+
+    // 3. Fallback: if we haven't hinted a new card (e.g. all remaining cards in the triple
+    // are selected), hint one of them.
+    if (!hintedNewCard && mHintedCards.size() < 3) {
+      for (Card c : targetTriple) {
+        if (!mHintedCards.contains(c)) {
+          dispatchHint(c);
+          break;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private Set<Card> findUnfoundTripleIncludingSelected(Set<Card> selectedCards) {
+    for (int i = selectedCards.size(); i > 0; i--) {
+      for (Set<Card> subset : Sets.combinations(selectedCards, i)) {
+        for (Set<Card> triple : mAllTriples) {
+          if (!mFoundTriples.contains(triple) && triple.containsAll(subset)) {
+            return triple;
+          }
+        }
+      }
+    }
+    for (Set<Card> triple : mAllTriples) {
+      if (!mFoundTriples.contains(triple)) {
+        return triple;
+      }
+    }
+    return null;
   }
 
   @Override
