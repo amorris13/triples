@@ -311,7 +311,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
             oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0));
         float scaleX = (float) oldBounds.width() / bounds.width();
         float scaleY = (float) oldBounds.height() / bounds.height();
-        set.addAnimation(new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, 0, 0));
+        set.addAnimation(new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, bounds.width() / 2f, bounds.height() / 2f));
         transitionAnimation = set;
       } else {
         transitionAnimation =

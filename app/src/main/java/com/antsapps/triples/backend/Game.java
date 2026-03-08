@@ -379,6 +379,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
   }
 
+  public void notifyCardsInPlayUpdate() {
+    dispatchCardsInPlayUpdate(ImmutableList.copyOf(mCardsInPlay));
+  }
+
   protected void dispatchCardsInPlayUpdate(ImmutableList<Card> oldCards) {
     ImmutableList<Card> newCards = ImmutableList.copyOf(mCardsInPlay);
     if (mGameRenderer != null) {

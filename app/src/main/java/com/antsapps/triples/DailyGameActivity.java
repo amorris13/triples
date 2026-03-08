@@ -139,7 +139,7 @@ public class DailyGameActivity extends BaseGameActivity
     // Delay updating the FoundTriplesView until animation is finished
     findViewById(R.id.status_bar).postDelayed(() -> {
       updateFoundTriplesView();
-      cardsView.updateBounds();
+      mGame.notifyCardsInPlayUpdate();
     }, 1000);
   }
 

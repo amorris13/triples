@@ -26,19 +26,17 @@ import java.util.Set;
 public class FoundTriplesView extends View {
 
   private static final float CARD_ASPECT_RATIO = (float) ((Math.sqrt(5) - 1) / 2);
-  private static final int COLUMNS = 6;
-  private static final int PADDING_DP = 8;
-  private static final int STACK_OVERLAP_DP = 16;
-  private static final int STACK_WIDTH_REDUCTION_DP = 10;
+  private static final int COLUMNS = 7;
+  private static final int PADDING_DP = 6;
+  private static final int STACK_OVERLAP_DP = 20;
   private static final int HIGHLIGHT_DURATION_MS = 1000;
-  private static final int MAX_HEIGHT_DP = 120;
+  private static final int MAX_HEIGHT_DP = 140;
 
   private final Paint mPlaceholderPaint;
   private final Paint mBackgroundPaint;
   private final Paint mHighlightPaint;
   private final int mPadding;
   private final int mOverlap;
-  private final int mWidthReduction;
   private final int mMaxHeight;
 
   private List<Set<Card>> mAllTriples = Lists.newArrayList();
@@ -57,23 +55,22 @@ public class FoundTriplesView extends View {
     float density = getResources().getDisplayMetrics().density;
     mPadding = (int) (PADDING_DP * density);
     mOverlap = (int) (STACK_OVERLAP_DP * density);
-    mWidthReduction = (int) (STACK_WIDTH_REDUCTION_DP * density);
     mMaxHeight = (int) (MAX_HEIGHT_DP * density);
 
     mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
     mPlaceholderPaint.setColor(ContextCompat.getColor(context, R.color.colorOutlineVariant));
-    mPlaceholderPaint.setStrokeWidth(density); // thin border
+    mPlaceholderPaint.setStrokeWidth(1); // Very thin
     mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
 
     mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mBackgroundPaint.setColor(ContextCompat.getColor(context, R.color.card_background));
-    mBackgroundPaint.setShadowLayer(4, 2, 2, ContextCompat.getColor(context, R.color.card_shadow));
+    mBackgroundPaint.setShadowLayer(2, 1, 1, ContextCompat.getColor(context, R.color.card_shadow));
 
     mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mHighlightPaint.setColor(ContextCompat.getColor(context, R.color.card_selected_outline));
     mHighlightPaint.setStyle(Paint.Style.STROKE);
-    mHighlightPaint.setStrokeWidth(density * 3);
+    mHighlightPaint.setStrokeWidth(density * 2);
 
     setLayerType(LAYER_TYPE_SOFTWARE, null);
   }
@@ -113,12 +110,11 @@ public class FoundTriplesView extends View {
     int row = visualIndex / COLUMNS;
 
     int availableWidth = getWidth() - (COLUMNS + 1) * mPadding;
-    int colWidth = availableWidth / COLUMNS;
-    int cardWidth = colWidth - mWidthReduction;
+    int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
     int stackHeight = cardHeight + mOverlap * 2;
 
-    int x = mPadding + column * (colWidth + mPadding) + mWidthReduction / 2;
+    int x = mPadding + column * (cardWidth + mPadding);
     int y = mPadding + row * (stackHeight + mPadding);
 
     int[] location = new int[2];
@@ -144,8 +140,7 @@ public class FoundTriplesView extends View {
     }
 
     int availableWidth = width - (COLUMNS + 1) * mPadding;
-    int colWidth = availableWidth / COLUMNS;
-    int cardWidth = colWidth - mWidthReduction;
+    int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
     int stackHeight = cardHeight + mOverlap * 2;
 
@@ -164,29 +159,28 @@ public class FoundTriplesView extends View {
     if (mAllTriples.isEmpty()) return;
 
     int availableWidth = getWidth() - (COLUMNS + 1) * mPadding;
-    int colWidth = availableWidth / COLUMNS;
-    int cardWidth = colWidth - mWidthReduction;
+    int cardWidth = availableWidth / COLUMNS;
     int cardHeight = (int) (cardWidth * CARD_ASPECT_RATIO);
     int stackHeight = cardHeight + mOverlap * 2;
 
     for (int i = 0; i < mFoundTriples.size(); i++) {
       int column = i % COLUMNS;
       int row = i / COLUMNS;
-      int x = mPadding + column * (colWidth + mPadding) + mWidthReduction / 2;
+      int x = mPadding + column * (cardWidth + mPadding);
       int y = mPadding + row * (stackHeight + mPadding);
 
       Set<Card> triple = mFoundTriples.get(i);
       drawTripleStack(canvas, triple, x, y, cardWidth, cardHeight);
 
       if (triple.equals(mHighlightedTriple)) {
-        canvas.drawRoundRect(new RectF(x - 2, y - 2, x + cardWidth + 2, y + stackHeight + 2), 8, 8, mHighlightPaint);
+        canvas.drawRoundRect(new RectF(x - 2, y - 2, x + cardWidth + 2, y + stackHeight + 2), 4, 4, mHighlightPaint);
       }
     }
 
     for (int i = mFoundTriples.size(); i < mAllTriples.size(); i++) {
       int column = i % COLUMNS;
       int row = i / COLUMNS;
-      int x = mPadding + column * (colWidth + mPadding) + mWidthReduction / 2;
+      int x = mPadding + column * (cardWidth + mPadding);
       int y = mPadding + row * (stackHeight + mPadding);
 
       drawPlaceholderStack(canvas, x, y, cardWidth, cardHeight);
@@ -199,8 +193,19 @@ public class FoundTriplesView extends View {
 
     for (int i = 0; i < 3; i++) {
       Rect cardRect = new Rect(x, y + i * mOverlap, x + w, y + i * mOverlap + h);
-      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mBackgroundPaint);
-      canvas.drawRoundRect(new RectF(cardRect), 8, 8, mPlaceholderPaint); // thin border
+
+      // Scale canvas to draw the card at "normal" size then shrink it
+      // This ensures line thicknesses etc. are consistent
+      float scale = (float) w / 200f; // assuming 200 is a reasonable reference width
+      int sc = canvas.save();
+      canvas.translate(cardRect.left, cardRect.top);
+      canvas.scale((float)w/100f, (float)h/61.8f); // roughly golden ratio / standard aspect
+
+      // Actually let's just use the rect and draw simply but adjust stroke widths
+      canvas.restoreToCount(sc);
+
+      canvas.drawRoundRect(new RectF(cardRect), 4, 4, mBackgroundPaint);
+      canvas.drawRoundRect(new RectF(cardRect), 4, 4, mPlaceholderPaint); // thin border
 
       SymbolDrawable symbol = mSymbolDrawables.get(cards.get(i));
       Rect relativeCardRect = new Rect(0, 0, w, h);
@@ -215,6 +220,6 @@ public class FoundTriplesView extends View {
 
   private void drawPlaceholderStack(Canvas canvas, int x, int y, int w, int h) {
     RectF rect = new RectF(x, y, x + w, y + h + mOverlap * 2);
-    canvas.drawRoundRect(rect, 8, 8, mPlaceholderPaint);
+    canvas.drawRoundRect(rect, 4, 4, mPlaceholderPaint);
   }
 }
