@@ -17,15 +17,11 @@ public class SettingsActivity extends BaseTriplesActivity {
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     setSignInListener(
-        new OnSignInListener() {
-          @Override
-          public void onSignInStateChanged(boolean signedInAndConnected) {
-            SettingsFragment fragment =
-                (SettingsFragment)
-                    getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
-            if (fragment != null) {
-              fragment.updateAccountPreferences();
-            }
+        signedInAndConnected -> {
+          SettingsFragment fragment =
+              (SettingsFragment) getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
+          if (fragment != null) {
+            fragment.updateAccountPreferences();
           }
         });
   }

@@ -1,6 +1,5 @@
 package com.antsapps.triples;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -190,28 +189,18 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       builder.setView(checkBoxView);
       builder.setPositiveButton(
           R.string.yes,
-          new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              if (checkBox.isChecked()) {
-                sharedPref
-                    .edit()
-                    .putBoolean(getString(R.string.pref_dont_ask_for_hint), true)
-                    .commit();
-              }
-              getGame().addHint();
-              logGameEvent(AnalyticsConstants.Event.USE_HINT);
-              updateHintUsedIndicator();
+          (dialog, which) -> {
+            if (checkBox.isChecked()) {
+              sharedPref
+                  .edit()
+                  .putBoolean(getString(R.string.pref_dont_ask_for_hint), true)
+                  .commit();
             }
+            getGame().addHint();
+            logGameEvent(AnalyticsConstants.Event.USE_HINT);
+            updateHintUsedIndicator();
           });
-      builder.setNegativeButton(
-          R.string.no,
-          new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              // do nothing
-            }
-          });
+      builder.setNegativeButton(R.string.no, (dialog, which) -> {});
       builder.show();
     }
   }
