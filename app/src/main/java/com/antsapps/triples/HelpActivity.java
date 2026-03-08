@@ -50,13 +50,10 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
 
     findViewById(R.id.beginner_tutorial_button)
         .setOnClickListener(
-            new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                Intent intent = new Intent(HelpActivity.this, ZenGameActivity.class);
-                intent.putExtra(ZenGameActivity.IS_BEGINNER, true);
-                startActivity(intent);
-              }
+            v -> {
+              Intent intent = new Intent(HelpActivity.this, ZenGameActivity.class);
+              intent.putExtra(ZenGameActivity.IS_BEGINNER, true);
+              startActivity(intent);
             });
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);

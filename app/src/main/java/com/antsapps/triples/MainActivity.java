@@ -43,84 +43,32 @@ public class MainActivity extends BaseTriplesActivity {
 
     mClassicResumeButton = findViewById(R.id.classic_resume_button);
     mClassicResumeButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            resumeGame(mApplication.getCurrentClassicGames(), ClassicGameActivity.class);
-          }
-        });
+        v -> resumeGame(mApplication.getCurrentClassicGames(), ClassicGameActivity.class));
 
     mClassicNewGameButton = findViewById(R.id.classic_new_game_button);
-    mClassicNewGameButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            startNewClassicGame();
-          }
-        });
+    mClassicNewGameButton.setOnClickListener(v -> startNewClassicGame());
 
     mClassicStatisticsButton = findViewById(R.id.classic_statistics_button);
-    mClassicStatisticsButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            showStatistics("Classic");
-          }
-        });
+    mClassicStatisticsButton.setOnClickListener(v -> showStatistics("Classic"));
 
     mArcadeResumeButton = findViewById(R.id.arcade_resume_button);
     mArcadeResumeButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            resumeGame(mApplication.getCurrentArcadeGames(), ArcadeGameActivity.class);
-          }
-        });
+        v -> resumeGame(mApplication.getCurrentArcadeGames(), ArcadeGameActivity.class));
 
     mArcadeNewGameButton = findViewById(R.id.arcade_new_game_button);
-    mArcadeNewGameButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            startNewArcadeGame();
-          }
-        });
+    mArcadeNewGameButton.setOnClickListener(v -> startNewArcadeGame());
 
     mArcadeStatisticsButton = findViewById(R.id.arcade_statistics_button);
-    mArcadeStatisticsButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            showStatistics("Arcade");
-          }
-        });
+    mArcadeStatisticsButton.setOnClickListener(v -> showStatistics("Arcade"));
 
     mDailyPlayButton = findViewById(R.id.daily_play_button);
-    mDailyPlayButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            playDailyGame();
-          }
-        });
+    mDailyPlayButton.setOnClickListener(v -> playDailyGame());
 
     mDailyStatisticsButton = findViewById(R.id.daily_statistics_button);
-    mDailyStatisticsButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            showStatistics("Daily");
-          }
-        });
+    mDailyStatisticsButton.setOnClickListener(v -> showStatistics("Daily"));
 
     mZenButton = findViewById(R.id.zen_button);
-    mZenButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            playZenGame(false);
-          }
-        });
+    mZenButton.setOnClickListener(v -> playZenGame(false));
   }
 
   @Override
