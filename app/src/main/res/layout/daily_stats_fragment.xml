@@ -93,29 +93,24 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&lt;"
-            android:textColor="@color/daily_accent" />
+            android:text="&lt;" />
 
-        <TextView
+        <Button
             android:id="@+id/month_title"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/daily_accent"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true" />
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/next_month"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&gt;"
-            android:textColor="@color/daily_accent" />
+            android:text="&gt;" />
     </LinearLayout>
 
     <LinearLayout
@@ -145,7 +140,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:gravity="center_horizontal">
 
         <TextView

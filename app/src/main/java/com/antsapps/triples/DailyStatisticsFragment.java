@@ -14,7 +14,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -39,7 +38,7 @@ public class DailyStatisticsFragment extends Fragment {
   private List<DailyGame> mCompletedGames;
   private Calendar mCurrentMonth;
   private GridView mCalendarGrid;
-  private TextView mMonthTitle;
+  private Button mMonthTitle;
   private TextView mCurrentStreakTv;
   private TextView mLongestStreakTv;
   private TextView mTotalSolvedTv;
@@ -115,6 +114,19 @@ public class DailyStatisticsFragment extends Fragment {
       }
 
       @Override
+      public boolean onSingleTapUp(MotionEvent e) {
+        int position = mCalendarGrid.pointToPosition((int) e.getX(), (int) e.getY());
+        if (position != GridView.INVALID_POSITION && mCalendarGrid.getAdapter().isEnabled(position)) {
+          mCalendarGrid.performItemClick(
+              mCalendarGrid.getChildAt(position - mCalendarGrid.getFirstVisiblePosition()),
+              position,
+              mCalendarGrid.getAdapter().getItemId(position));
+          return true;
+        }
+        return false;
+      }
+
+      @Override
       public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 100) {
           if (velocityX > 0) {
@@ -138,12 +150,7 @@ public class DailyStatisticsFragment extends Fragment {
       }
     });
 
-    mCalendarGrid.setOnTouchListener((v, event) -> {
-      if (gestureDetector.onTouchEvent(event)) {
-        return true;
-      }
-      return false;
-    });
+    mCalendarGrid.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
     mCompletedGames = new ArrayList<>();
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
@@ -172,12 +179,8 @@ public class DailyStatisticsFragment extends Fragment {
 
     mCalendarGrid.setOnItemClickListener((parent, view1, position, id) -> {
       Calendar day = (Calendar) adapter.getItem(position);
-      if (day != null && day.get(Calendar.MONTH) == mCurrentMonth.get(Calendar.MONTH) &&
-          day.get(Calendar.YEAR) == mCurrentMonth.get(Calendar.YEAR)) {
+      if (adapter.isEnabled(position)) {
         long daySeed = getStartOfDay(day.getTimeInMillis());
-        if (daySeed > getStartOfDay(System.currentTimeMillis())) {
-          return;
-        }
         mSelectedDate = (Calendar) day.clone();
         adapter.setSelectedSeed(daySeed);
         updateDetailSection();
@@ -201,7 +204,11 @@ public class DailyStatisticsFragment extends Fragment {
     }
 
     if (game == null || game.getGameState() != DailyGame.GameState.COMPLETED) {
-      mDetailStatus.setText("Uncompleted");
+      if (game == null || game.getNumTriplesFound() == 0) {
+        mDetailStatus.setText(R.string.daily_not_started);
+      } else {
+        mDetailStatus.setText(getString(R.string.daily_incomplete) + " (" + game.getNumTriplesFound() + "/" + game.getTotalTriplesCount() + " triples found)");
+      }
       mDetailResultsContainer.setVisibility(View.GONE);
       mDetailPlayBtn.setVisibility(View.VISIBLE);
       mDetailPlayBtn.setOnClickListener(v -> {
@@ -211,9 +218,9 @@ public class DailyStatisticsFragment extends Fragment {
         startActivity(intent);
       });
     } else {
-      String status = "Completed";
+      String status = getString(R.string.daily_completed);
       if (game.areHintsUsed()) {
-        status += " (*hints used)";
+        status += getString(R.string.daily_hints_used_suffix);
       }
       mDetailStatus.setText(status);
       mDetailPlayBtn.setVisibility(View.GONE);
