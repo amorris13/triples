@@ -101,13 +101,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
     }
-    Iterator<CardDrawable> iter = mAnimatingCopies.iterator();
-    while (iter.hasNext()) {
-      CardDrawable dr = iter.next();
+    for (CardDrawable dr : mAnimatingCopies) {
       dr.draw(canvas);
-      if (!dr.isAnimating()) {
-        iter.remove();
-      }
     }
     if (mDimAlpha != 1) {
       canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
@@ -327,7 +322,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     }
   }
 
-  public void animateTripleFound(final Set<Card> triple, Rect targetBoundsInWindow) {
+  public void animateTripleFound(
+      final Set<Card> triple, Rect targetBoundsInWindow, final Runnable onAnimationFinished) {
     // Translate window coordinates to CardsView coordinates
     int[] cardsViewLoc = new int[2];
     getLocationInWindow(cardsViewLoc);
@@ -335,20 +331,22 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     Rect targetBoundsInCardsView = new Rect(targetBoundsInWindow);
     targetBoundsInCardsView.offset(-cardsViewLoc[0], -cardsViewLoc[1]);
 
+    int i = 0;
     for (Card c : triple) {
       CardDrawable cd = mCardDrawables.get(c);
       if (cd != null) {
-        final CardDrawable copy =
-            new CardDrawable(
-                getContext(),
-                mHandler,
-                c,
-                new CardDrawable.OnAnimationFinishedListener() {
-                  @Override
-                  public void onAnimationFinished() {
-                    // Handled in onDraw for removal
-                  }
-                });
+        final boolean isLast = (i == triple.size() - 1);
+        final CardDrawable copy = new CardDrawable(getContext(), mHandler, c, null);
+        copy.setAnimationFinishedListener(
+            new CardDrawable.OnAnimationFinishedListener() {
+              @Override
+              public void onAnimationFinished() {
+                mAnimatingCopies.remove(copy);
+                if (isLast && onAnimationFinished != null) {
+                  onAnimationFinished.run();
+                }
+              }
+            });
         copy.mBounds = new Rect(cd.mBounds);
         copy.setSelected(true);
         mAnimatingCopies.add(copy);
@@ -362,13 +360,9 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         fadeIn.setFillBefore(true);
         cd.updateAnimation(fadeIn);
       }
+      i++;
     }
 
-    mHandler.postDelayed(
-        () -> {
-          clearSelectedCards();
-          updateBounds();
-        },
-        1000); // Wait for animations to finish
+    mCurrentlySelected.clear();
   }
 }

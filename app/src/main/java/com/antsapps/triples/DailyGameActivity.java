@@ -129,16 +129,12 @@ public class DailyGameActivity extends BaseGameActivity
     final FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
     if (foundTriplesView != null) {
       int index = mGame.getFoundTriples().indexOf(triple);
-      mCardsView.animateTripleFound(triple, foundTriplesView.getStackBounds(index));
-      foundTriplesView.postDelayed(
-          new Runnable() {
-            @Override
-            public void run() {
+      mCardsView.animateTripleFound(
+          triple,
+          foundTriplesView.getStackBounds(index),
+          () ->
               foundTriplesView.setFoundTriples(
-                  mGame.getFoundTriples(), mGame.getTotalTriplesCount());
-            }
-          },
-          1000);
+                  mGame.getFoundTriples(), mGame.getTotalTriplesCount()));
     }
   }
 

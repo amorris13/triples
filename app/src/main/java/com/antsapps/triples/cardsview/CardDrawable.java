@@ -82,7 +82,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
 
-  private final OnAnimationFinishedListener mListener;
+  private OnAnimationFinishedListener mListener;
 
   private float mAlpha;
 
@@ -97,6 +97,10 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mAnimationHandler = animationHandler;
 
     mCard = card;
+    mListener = listener;
+  }
+
+  public void setAnimationFinishedListener(OnAnimationFinishedListener listener) {
     mListener = listener;
   }
 

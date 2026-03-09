@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class FoundTriplesView extends View {
 
-  private static final float STACK_DISPLACEMENT_PERCENT = 0.4f;
+  private static final float STACK_DISPLACEMENT_PERCENT = 0.25f;
   private static final int COLUMNS = 6;
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
