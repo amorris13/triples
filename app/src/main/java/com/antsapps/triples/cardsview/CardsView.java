@@ -11,11 +11,9 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
@@ -329,8 +327,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     }
   }
 
-  public void animateTripleFound(
-          final Map<Card, Rect> triple, final Runnable onAnimationFinished) {
+  public void animateTripleFound(final Map<Card, Rect> triple, final Runnable onAnimationFinished) {
     // Translate window coordinates to CardsView coordinates
     int[] cardsViewLoc = new int[2];
     getLocationInWindow(cardsViewLoc);
@@ -347,12 +344,12 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         final boolean isLast = (i == triple.size() - 1);
         final CardDrawable copy = new CardDrawable(getContext(), mHandler, c, null);
         copy.setAnimationFinishedListener(
-                () -> {
-                  mAnimatingCopies.remove(copy);
-                  if (isLast && onAnimationFinished != null) {
-                    onAnimationFinished.run();
-                  }
-                });
+            () -> {
+              mAnimatingCopies.remove(copy);
+              if (isLast && onAnimationFinished != null) {
+                onAnimationFinished.run();
+              }
+            });
         copy.updateBounds(cd.getBounds(), false);
         copy.setSelected(true);
         mAnimatingCopies.add(copy);
@@ -361,8 +358,11 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         // Board card disappears immediately and then fades back in
         cd.setSelected(false);
         AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
-        fadeIn.setDuration(PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getInt(getContext().getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS));
+        fadeIn.setDuration(
+            PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getInt(
+                    getContext().getString(R.string.pref_animation_speed),
+                    DEFAULT_ANIMATION_DURATION_MS));
         fadeIn.setFillBefore(true);
         cd.updateAnimation(fadeIn);
       }

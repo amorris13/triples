@@ -28,9 +28,7 @@ import androidx.annotation.Nullable;
 import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
-import java.util.List;
 
 public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
@@ -282,15 +280,15 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       // This CardDrawable is an existing drawable
       AnimationSet set = new AnimationSet(true);
       set.addAnimation(
-              new ScaleAnimation(
-                      (float) oldBounds.width() / mBounds.width(),
-                      1.0f,
-                      (float) oldBounds.height() / mBounds.height(),
-                      1.0f,
-                      Animation.ABSOLUTE,
-                      mBounds.centerX(),
-                      Animation.ABSOLUTE,
-                      mBounds.centerY()));
+          new ScaleAnimation(
+              (float) oldBounds.width() / mBounds.width(),
+              1.0f,
+              (float) oldBounds.height() / mBounds.height(),
+              1.0f,
+              Animation.ABSOLUTE,
+              mBounds.centerX(),
+              Animation.ABSOLUTE,
+              mBounds.centerY()));
       set.addAnimation(
           new TranslateAnimation(
               oldBounds.centerX() - mBounds.centerX(),

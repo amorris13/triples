@@ -6,7 +6,6 @@ import static com.antsapps.triples.cardsview.CardDrawable.DEFAULT_ANIMATION_DURA
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -22,15 +21,13 @@ import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 public class FoundTriplesView extends View {
 
@@ -78,7 +75,7 @@ public class FoundTriplesView extends View {
     requestLayout();
     invalidate();
   }
-  
+
   public void setCardsView(CardsView cardsView) {
     mCardsView = cardsView;
   }
@@ -123,19 +120,11 @@ public class FoundTriplesView extends View {
       canvas.save();
       canvas.translate(left, top);
       float highlightScale = (i == mHighlightIndex) ? mHighlightScale : 1.0f;
-      canvas.scale(
-              scale * highlightScale,
-              scale * highlightScale,
-              0,
-              0);
+      canvas.scale(scale * highlightScale, scale * highlightScale, 0, 0);
 
       if (mFoundTriples != null && i < mFoundTriples.size()) {
         drawTripleStack(
-            canvas,
-            mFoundTriples.get(i),
-            naturalWidth,
-            naturalHeight,
-            naturalDisplacement);
+            canvas, mFoundTriples.get(i), naturalWidth, naturalHeight, naturalDisplacement);
       } else {
         drawPlaceholder(canvas, naturalWidth, naturalHeight, naturalDisplacement);
       }
@@ -184,7 +173,8 @@ public class FoundTriplesView extends View {
 
   private int getAnimationDuration() {
     return PreferenceManager.getDefaultSharedPreferences(getContext())
-        .getInt(getContext().getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS);
+        .getInt(
+            getContext().getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS);
   }
 
   public Map<Card, Rect> getCardBoundsInWindow(int index, Set<Card> triple) {
@@ -193,7 +183,6 @@ public class FoundTriplesView extends View {
 
     int[] locationInWindow = new int[2];
     getLocationInWindow(locationInWindow);
-
 
     int row = index / COLUMNS;
     int col = index % COLUMNS;
@@ -208,11 +197,13 @@ public class FoundTriplesView extends View {
       int left = slotLeft + mPadding;
       int top = slotTop + mPadding + i * mStackDisplacement;
 
-        cardBounds.put(card, new Rect(
-            locationInWindow[0] + left,
-            locationInWindow[1] + top,
-            locationInWindow[0] + left + mCardWidth,
-            locationInWindow[1] + top + mCardHeight));
+      cardBounds.put(
+          card,
+          new Rect(
+              locationInWindow[0] + left,
+              locationInWindow[1] + top,
+              locationInWindow[0] + left + mCardWidth,
+              locationInWindow[1] + top + mCardHeight));
     }
     return cardBounds;
   }

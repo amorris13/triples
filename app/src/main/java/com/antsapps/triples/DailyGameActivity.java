@@ -12,7 +12,6 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
-import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.views.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
 import java.text.DateFormat;
@@ -59,19 +58,19 @@ public class DailyGameActivity extends BaseGameActivity
     }
 
     mCardsView.setOnValidTripleSelectedListener(
-            tripleCollection -> {
-              Set<Card> triple = com.google.common.collect.Sets.newHashSet(tripleCollection);
-              List<Set<Card>> foundTriples = mGame.getFoundTriples();
-              if (foundTriples.contains(triple)) {
-                mCardsView.onAlreadyFoundTriple(triple);
-                FoundTriplesView ftv = findViewById(R.id.found_triples_view);
-                if (ftv != null) {
-                  ftv.highlightStack(foundTriples.indexOf(triple));
-                }
-              } else {
-                mGame.onValidTripleSelected(tripleCollection);
-              }
-            });
+        tripleCollection -> {
+          Set<Card> triple = com.google.common.collect.Sets.newHashSet(tripleCollection);
+          List<Set<Card>> foundTriples = mGame.getFoundTriples();
+          if (foundTriples.contains(triple)) {
+            mCardsView.onAlreadyFoundTriple(triple);
+            FoundTriplesView ftv = findViewById(R.id.found_triples_view);
+            if (ftv != null) {
+              ftv.highlightStack(foundTriples.indexOf(triple));
+            }
+          } else {
+            mGame.onValidTripleSelected(tripleCollection);
+          }
+        });
   }
 
   @Override
