@@ -1,27 +1,19 @@
 package com.antsapps.triples.stats;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import com.antsapps.triples.BaseGameListFragment;
 import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import com.antsapps.triples.util.ShareUtil;
 import java.util.Comparator;
 
 /** Created by anthony on 1/12/13. */
@@ -88,22 +80,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   public abstract void exportToCsv();
 
   protected void shareCsv(String filename, String content) {
-    File cacheFile = new File(getActivity().getCacheDir(), filename);
-    try (FileOutputStream out = new FileOutputStream(cacheFile)) {
-      out.write(content.getBytes(StandardCharsets.UTF_8));
-    } catch (IOException e) {
-      Log.e("BaseStatisticsFragment", "Error writing CSV file", e);
-      Toast.makeText(getActivity(), "Error exporting CSV", Toast.LENGTH_SHORT).show();
-      return;
-    }
-
-    Uri contentUri =
-        FileProvider.getUriForFile(getActivity(), "com.antsapps.triples.fileprovider", cacheFile);
-    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-    shareIntent.setType("text/csv");
-    shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    startActivity(Intent.createChooser(shareIntent, "Export Statistics"));
+    ShareUtil.shareCsv(getActivity(), filename, content);
   }
 
   @Override
