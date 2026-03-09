@@ -291,7 +291,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         || oldBounds.height() != mBounds.height()) {
       regenerateCachedDrawable();
     }
-    if (bounds.equals(oldBounds)) {
+    if (bounds.equals(oldBounds) && targetBounds == null) {
       // No change
       return;
     }

@@ -357,6 +357,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
         fadeIn.setStartOffset(500);
         fadeIn.setDuration(500);
+        fadeIn.setFillBefore(true);
         cd.updateAnimation(fadeIn);
       }
     }

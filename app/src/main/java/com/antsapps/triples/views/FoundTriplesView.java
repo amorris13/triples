@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class FoundTriplesView extends View {
 
-  private static final float STACK_OVERLAP_PERCENT = 0.2f;
+  private static final float STACK_DISPLACEMENT_PERCENT = 0.75f;
   private static final int COLUMNS = 6;
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
@@ -70,17 +70,24 @@ public class FoundTriplesView extends View {
       setMeasuredDimension(0, 0);
       return;
     }
-    int gap = (int) (8 * getResources().getDisplayMetrics().density);
-    mCardWidth = Math.max(0, (width - (COLUMNS + 1) * gap) / COLUMNS);
+    int gap = (int) (4 * getResources().getDisplayMetrics().density);
+    // mCardWidth should be such that COLUMNS stacks fit with gaps between them
+    mCardWidth = (width - (COLUMNS - 1) * gap) / COLUMNS;
+    // Cap card width to roughly 1/7th of screen width to ensure some side margins
+    int maxCardWidth = getResources().getDisplayMetrics().widthPixels / 7;
+    if (mCardWidth > maxCardWidth) {
+      mCardWidth = maxCardWidth;
+    }
+
     mCardHeight = (int) (mCardWidth * HEIGHT_OVER_WIDTH);
-    mStackOverlap = (int) (mCardHeight * STACK_OVERLAP_PERCENT);
+    mStackOverlap = (int) (mCardHeight * STACK_DISPLACEMENT_PERCENT);
 
     int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);
-    int stackHeight = mCardHeight + 2 * mStackOverlap;
-    int height = rows * (stackHeight + gap) + gap;
+    int stackHeight = mCardHeight + (int) (2 * mCardHeight * STACK_DISPLACEMENT_PERCENT);
+    int height = rows * (stackHeight + gap);
 
     // Enforce max height of roughly 2.5 rows as requested
-    int maxHeight = (int) (2.5 * (stackHeight + gap) + gap);
+    int maxHeight = (int) (2.5 * (stackHeight + gap));
     setMeasuredDimension(width, Math.min(height, maxHeight));
   }
 
@@ -88,21 +95,24 @@ public class FoundTriplesView extends View {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
-    int gap = (int) (8 * getResources().getDisplayMetrics().density);
+    int gap = (int) (4 * getResources().getDisplayMetrics().density);
+
+    // Center the stacks horizontally
+    float totalStacksWidth = COLUMNS * mCardWidth + (COLUMNS - 1) * gap;
+    float startX = (getWidth() - totalStacksWidth) / 2f;
 
     // Use a reference card width for \"natural\" drawing size, then scale.
-    // Let's assume natural width is 200px.
     float naturalWidth = 200f;
     float naturalHeight = naturalWidth * HEIGHT_OVER_WIDTH;
-    float naturalOverlap = naturalHeight * STACK_OVERLAP_PERCENT;
+    float naturalDisplacement = naturalHeight * STACK_DISPLACEMENT_PERCENT;
     float scale = (float) mCardWidth / naturalWidth;
 
     for (int i = 0; i < mTotalTriples; i++) {
       int row = i / COLUMNS;
       int col = i % COLUMNS;
 
-      float left = col * (mCardWidth + gap) + gap;
-      float top = row * (mCardHeight + 2 * mStackOverlap + gap) + gap;
+      float left = startX + col * (mCardWidth + gap);
+      float top = row * (mCardHeight + 2 * mStackOverlap + gap);
 
       canvas.save();
       canvas.translate(left, top);
@@ -112,7 +122,7 @@ public class FoundTriplesView extends View {
           scale * currentScale,
           scale * currentScale,
           naturalWidth / 2f,
-          (naturalHeight + 2 * naturalOverlap) / 2f);
+          (naturalHeight + 2 * naturalDisplacement) / 2f);
 
       if (mFoundTriples != null && i < mFoundTriples.size()) {
         drawTripleStack(
@@ -120,9 +130,9 @@ public class FoundTriplesView extends View {
             mFoundTriples.get(i),
             (int) naturalWidth,
             (int) naturalHeight,
-            (int) naturalOverlap);
+            (int) naturalDisplacement);
       } else {
-        drawPlaceholder(canvas, (int) naturalWidth, (int) naturalHeight, (int) naturalOverlap);
+        drawPlaceholder(canvas, (int) naturalWidth, (int) naturalHeight, (int) naturalDisplacement);
       }
 
       canvas.restore();
@@ -130,10 +140,10 @@ public class FoundTriplesView extends View {
   }
 
   private void drawTripleStack(
-      Canvas canvas, Set<Card> triple, int width, int height, int overlap) {
+      Canvas canvas, Set<Card> triple, int width, int height, int displacement) {
     int i = 0;
     for (Card card : triple) {
-      Rect bounds = new Rect(0, i * overlap, width, i * overlap + height);
+      Rect bounds = new Rect(0, i * displacement, width, i * displacement + height);
       mCardBackground.setBounds(bounds);
       mCardBackground.draw(canvas);
 
@@ -151,13 +161,10 @@ public class FoundTriplesView extends View {
     }
   }
 
-  private void drawPlaceholder(Canvas canvas, int width, int height, int overlap) {
-    RectF rect = new RectF(0, 0, width, height + 2 * overlap);
-    canvas.drawRoundRect(
-        rect,
-        8 * getResources().getDisplayMetrics().density,
-        8 * getResources().getDisplayMetrics().density,
-        mPlaceholderPaint);
+  private void drawPlaceholder(Canvas canvas, int width, int height, int displacement) {
+    float inset = mPlaceholderPaint.getStrokeWidth() / 2;
+    RectF rect = new RectF(inset, inset, width - inset, height + 2 * displacement - inset);
+    canvas.drawRoundRect(rect, 15, 15, mPlaceholderPaint);
   }
 
   public void highlightStack(int index) {
@@ -177,11 +184,15 @@ public class FoundTriplesView extends View {
   }
 
   public Rect getStackBounds(int index) {
-    int gap = (int) (8 * getResources().getDisplayMetrics().density);
+    int gap = (int) (4 * getResources().getDisplayMetrics().density);
     int row = index / COLUMNS;
     int col = index % COLUMNS;
-    int left = col * (mCardWidth + gap) + gap;
-    int top = row * (mCardHeight + 2 * mStackOverlap + gap) + gap;
+
+    float totalStacksWidth = COLUMNS * mCardWidth + (COLUMNS - 1) * gap;
+    float startX = (getWidth() - totalStacksWidth) / 2f;
+
+    int left = (int) (startX + col * (mCardWidth + gap));
+    int top = (int) (row * (mCardHeight + 2 * mStackOverlap + gap));
 
     int[] location = new int[2];
     getLocationInWindow(location);
