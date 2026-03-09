@@ -31,7 +31,7 @@ public class SampleCardView extends View {
     super.onDraw(canvas);
     if (mCardDrawable != null) {
       Rect bounds = new Rect(0, 0, getWidth(), getHeight());
-      mCardDrawable.updateBounds(bounds);
+      mCardDrawable.updateBounds(bounds, false);
       mCardDrawable.draw(canvas);
     }
   }

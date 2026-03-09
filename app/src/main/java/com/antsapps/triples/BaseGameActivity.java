@@ -46,7 +46,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public static final int VIEW_COMPLETED = 2;
 
   private ViewAnimator mViewAnimator;
-  private CardsView mCardsView;
+  protected CardsView mCardsView;
   private GameState mGameState;
 
   private boolean shouldSubmitScoreOnSignIn = false;
@@ -63,7 +63,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     GameState originalGameState = getGame().getGameState();
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
-    mCardsView.setOnValidTripleSelectedListener(getGame());
+    if (mCardsView.getOnValidTripleSelectedListener() == null) {
+      mCardsView.setOnValidTripleSelectedListener(getGame());
+    }
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().setGameRenderer(mCardsView);
 

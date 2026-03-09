@@ -10,18 +10,13 @@ import java.util.List;
 
 public class VerticalCardsView extends CardsView {
 
-  private static final int HORIZONTAL = 0;
-  private static final int VERTICAL = 1;
-
-  private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
+  public static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
   public static final int COLUMNS = 3;
 
   private int mWidthOfCard;
 
   private int mHeightOfCard;
-
-  private int mOrientation;
 
   public VerticalCardsView(Context context) {
     this(context, null);
@@ -86,7 +81,7 @@ public class VerticalCardsView extends CardsView {
   }
 
   @Override
-  protected Rect calcBounds(int i) {
+  public Rect calcBounds(int i) {
     return new Rect(
         i % COLUMNS * mWidthOfCard,
         i / COLUMNS * mHeightOfCard,

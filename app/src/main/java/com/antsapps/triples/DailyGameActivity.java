@@ -12,9 +12,10 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
-import com.antsapps.triples.cardsview.CardsView;
+import com.antsapps.triples.views.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
 import java.text.DateFormat;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +48,29 @@ public class DailyGameActivity extends BaseGameActivity
 
     TextView dateText = findViewById(R.id.daily_date_text);
     dateText.setText(DateFormat.getDateInstance().format(mGame.getDateStarted()));
+
+    mCardsView = findViewById(R.id.cards_view);
+
+    FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+    if (foundTriplesView != null) {
+      foundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
+      foundTriplesView.setCardsView(mCardsView);
+    }
+
+    mCardsView.setOnValidTripleSelectedListener(
+        tripleCollection -> {
+          Set<Card> triple = com.google.common.collect.Sets.newHashSet(tripleCollection);
+          List<Set<Card>> foundTriples = mGame.getFoundTriples();
+          if (foundTriples.contains(triple)) {
+            mCardsView.onAlreadyFoundTriple(triple);
+            FoundTriplesView ftv = findViewById(R.id.found_triples_view);
+            if (ftv != null) {
+              ftv.highlightStack(foundTriples.indexOf(triple));
+            }
+          } else {
+            mGame.onValidTripleSelected(tripleCollection);
+          }
+        });
   }
 
   @Override
@@ -99,9 +123,16 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  public void onTripleFound(Set<Card> triple) {
-    CardsView cardsView = findViewById(R.id.cards_view);
-    cardsView.animateTripleFound(triple);
+  public void onTripleFound(final Set<Card> triple) {
+    final FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+    if (foundTriplesView != null) {
+      int index = mGame.getFoundTriples().indexOf(triple);
+      mCardsView.animateTripleFound(
+          foundTriplesView.getCardBoundsInWindow(index, triple),
+          () ->
+              foundTriplesView.setFoundTriples(
+                  mGame.getFoundTriples(), mGame.getTotalTriplesCount()));
+    }
   }
 
   @Override
@@ -109,6 +140,10 @@ public class DailyGameActivity extends BaseGameActivity
     super.onResume();
     updateTriplesFoundText();
     updateDailyUi();
+    FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
+    if (foundTriplesView != null) {
+      foundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
+    }
   }
 
   @Override

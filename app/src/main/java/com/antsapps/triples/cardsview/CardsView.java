@@ -1,24 +1,31 @@
 package com.antsapps.triples.cardsview;
 
+import static com.antsapps.triples.cardsview.CardDrawable.DEFAULT_ANIMATION_DURATION_MS;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,6 +53,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
+  private final List<CardDrawable> mAnimatingCopies = Lists.newArrayList();
   private final Set<Card> mCurrentlySelected = Sets.newHashSet();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
@@ -97,6 +105,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
     }
+    // Defensive copy here as entries may be deleted from the list.
+    for (CardDrawable dr : Lists.newArrayList(mAnimatingCopies)) {
+      dr.draw(canvas);
+    }
     if (mDimAlpha != 1) {
       canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
     }
@@ -122,7 +134,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
       if (!newCards.contains(oldCard)) {
         CardDrawable cardDrawable = mCardDrawables.get(oldCard);
         if (cardDrawable != null) {
-          cardDrawable.updateBounds(mOffScreenLocation);
+          cardDrawable.updateBounds(mOffScreenLocation, true);
         }
         mCurrentlySelected.remove(oldCard);
       }
@@ -139,7 +151,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         mCardDrawables.put(card, cardDrawable);
       }
       if (!calcBounds(i).equals(EMPTY_RECT)) {
-        cardDrawable.updateBounds(calcBounds(i));
+        cardDrawable.updateBounds(calcBounds(i), true);
       }
     }
     requestLayout();
@@ -159,7 +171,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
-      cardDrawable.updateBounds(calcBounds(i));
+      cardDrawable.updateBounds(calcBounds(i), true);
     }
     invalidate();
     long end = System.currentTimeMillis();
@@ -169,7 +181,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   protected abstract void updateMeasuredDimensions(
       final int widthMeasureSpec, final int heightMeasureSpec);
 
-  protected abstract Rect calcBounds(int i);
+  public abstract Rect calcBounds(int i);
 
   private void incrementNumAnimating() {
     mNumAnimating++;
@@ -254,6 +266,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     mOnValidTripleSelectedListener = listener;
   }
 
+  public OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
+    return mOnValidTripleSelectedListener;
+  }
+
   @Override
   public Set<Card> getSelectedCards() {
     return mCurrentlySelected;
@@ -302,19 +318,57 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     invalidate();
   }
 
-  public void animateTripleFound(final Set<Card> triple) {
-    for (Card c : triple) {
-      CardDrawable cd = mCardDrawables.get(c);
+  public void onAlreadyFoundTriple(Set<Card> triple) {
+    for (Card card : triple) {
+      CardDrawable cd = mCardDrawables.get(card);
       if (cd != null) {
-        cd.updateBounds(mOffScreenLocation);
+        cd.onIncorrectTriple(true);
       }
     }
+  }
 
-    // Fly back after animation duration
-    mHandler.postDelayed(
-        () -> {
-          updateBounds();
-        },
-        1000); // 1s to ensure animation finishes
+  public void animateTripleFound(final Map<Card, Rect> triple, final Runnable onAnimationFinished) {
+    // Translate window coordinates to CardsView coordinates
+    int[] cardsViewLoc = new int[2];
+    getLocationInWindow(cardsViewLoc);
+
+    int i = 0;
+    for (Map.Entry<Card, Rect> entry : triple.entrySet()) {
+      Card c = entry.getKey();
+      Rect targetBoundsInWindow = entry.getValue();
+      Rect targetBoundsInCardsView = new Rect(targetBoundsInWindow);
+      targetBoundsInCardsView.offset(-cardsViewLoc[0], -cardsViewLoc[1]);
+
+      CardDrawable cd = mCardDrawables.get(c);
+      if (cd != null) {
+        final boolean isLast = (i == triple.size() - 1);
+        final CardDrawable copy = new CardDrawable(getContext(), mHandler, c, null);
+        copy.setAnimationFinishedListener(
+            () -> {
+              mAnimatingCopies.remove(copy);
+              if (isLast && onAnimationFinished != null) {
+                onAnimationFinished.run();
+              }
+            });
+        copy.updateBounds(cd.getBounds(), false);
+        copy.setSelected(true);
+        mAnimatingCopies.add(copy);
+        copy.updateBounds(targetBoundsInCardsView, true);
+
+        // Board card disappears immediately and then fades back in
+        cd.setSelected(false);
+        AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(
+            PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getInt(
+                    getContext().getString(R.string.pref_animation_speed),
+                    DEFAULT_ANIMATION_DURATION_MS));
+        fadeIn.setFillBefore(true);
+        cd.updateAnimation(fadeIn);
+      }
+      i++;
+    }
+
+    mCurrentlySelected.clear();
   }
 }

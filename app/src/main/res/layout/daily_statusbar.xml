@@ -3,72 +3,88 @@
     android:id="@+id/status_bar"
     style="@style/StatusBarContainer">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <com.antsapps.triples.views.FoundTriplesView
+        android:id="@+id/found_triples_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:id="@+id/aux_status"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:orientation="vertical">
+        android:layout_below="@id/found_triples_view"
+        android:layout_marginTop="8dp">
 
-        <TextView
-            android:id="@+id/triples_found_text"
-            style="@style/status_bar_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/triples_found_key_text"
-            style="@style/status_bar_key"
+        <LinearLayout
+            android:id="@+id/found_triples_text_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/triples_found" />
-    </LinearLayout>
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+            <TextView
+                android:id="@+id/triples_found_text"
+                style="@style/status_bar_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/daily_accent"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/daily_date_text"
-            style="@style/status_bar_key"
+            <TextView
+                android:id="@+id/triples_found_key_text"
+                style="@style/status_bar_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="@string/triples_found" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/center_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/daily_accent"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/hint_used_text"
-            style="@style/status_bar_key"
+            <TextView
+                android:id="@+id/daily_date_text"
+                style="@style/status_bar_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/daily_accent"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/hint_used_text"
+                style="@style/status_bar_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_used_indicator"
+                android:textColor="@color/colorError"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_used_indicator"
-            android:textColor="@color/colorError"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical">
+            <TextView
+                android:id="@+id/timer_value_text"
+                style="@style/status_bar_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/timer_value_text"
-            style="@style/status_bar_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right" />
-
-        <TextView
-            android:id="@+id/timer_key_text"
-            style="@style/status_bar_key"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="@string/time_elapsed" />
-    </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
