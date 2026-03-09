@@ -303,24 +303,26 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   }
 
   public void animateTripleFound(final Set<Card> triple) {
+    final int[] numRemaining = {triple.size()};
     for (Card c : triple) {
       CardDrawable cd = mCardDrawables.get(c);
       if (cd != null) {
-        cd.updateBounds(mOffScreenLocation);
+        cd.updateBounds(
+            mOffScreenLocation,
+            () -> {
+              numRemaining[0]--;
+              if (numRemaining[0] == 0) {
+                // All cards in triple have finished animating off. Fly them back.
+                for (Card card : triple) {
+                  CardDrawable drawable = mCardDrawables.get(card);
+                  if (drawable != null) {
+                    drawable.setSelected(false);
+                  }
+                }
+                updateBounds();
+              }
+            });
       }
     }
-
-    // Fly back after animation duration
-    mHandler.postDelayed(
-        () -> {
-          for (Card c : triple) {
-            CardDrawable cd = mCardDrawables.get(c);
-            if (cd != null) {
-              cd.setSelected(false);
-            }
-          }
-          updateBounds();
-        },
-        1000); // 1s to ensure animation finishes
   }
 }

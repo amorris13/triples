@@ -269,6 +269,10 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   void updateBounds(Rect bounds) {
+    updateBounds(bounds, null);
+  }
+
+  void updateBounds(Rect bounds, final OnAnimationFinishedListener temporaryListener) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
@@ -279,11 +283,17 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
     if (bounds.equals(oldBounds)) {
       // No change
+      if (temporaryListener != null) {
+        temporaryListener.onAnimationFinished();
+      }
       return;
     }
     if (mAnimationHandler == null) {
       if (mListener != null) {
         mListener.onAnimationFinished();
+      }
+      if (temporaryListener != null) {
+        temporaryListener.onAnimationFinished();
       }
       return;
     }
@@ -317,6 +327,9 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
             super.onAnimationEnd(animation);
             if (mListener != null) {
               mListener.onAnimationFinished();
+            }
+            if (temporaryListener != null) {
+              temporaryListener.onAnimationFinished();
             }
             mDrawOrder = 0;
           }
