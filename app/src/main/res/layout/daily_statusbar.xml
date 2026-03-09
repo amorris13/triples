@@ -17,6 +17,7 @@
     </ScrollView>
 
     <RelativeLayout
+        android:id="@+id/aux_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/found_triples_scroll"

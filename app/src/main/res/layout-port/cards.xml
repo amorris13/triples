@@ -3,11 +3,15 @@
   android:id="@+id/cards_scroll"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:fillViewport="true">
+  android:fillViewport="true"
+  android:clipChildren="false"
+  android:clipToPadding="false">
 
   <com.antsapps.triples.cardsview.VerticalCardsView
     android:id="@+id/cards_view"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false" />
 
 </ScrollView>

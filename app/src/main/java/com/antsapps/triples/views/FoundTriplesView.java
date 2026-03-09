@@ -8,12 +8,13 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.cardsview.CardBackgroundDrawable;
-import com.antsapps.triples.cardsview.SymbolDrawable;
+import com.antsapps.triples.cardsview.CardDrawable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.Set;
 
 public class FoundTriplesView extends View {
 
-  private static final float STACK_DISPLACEMENT_PERCENT = 0.5f;
+  private static final float STACK_DISPLACEMENT_PERCENT = 0.4f;
   private static final int COLUMNS = 6;
   private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
@@ -30,12 +31,12 @@ public class FoundTriplesView extends View {
   private int mTotalTriples = 0;
 
   private final Paint mPlaceholderPaint;
-  private final CardBackgroundDrawable mCardBackground;
-  private final Map<Card, SymbolDrawable> mSymbolDrawableCache = new HashMap<>();
+  private final Map<Card, CardDrawable> mCardDrawableCache = new HashMap<>();
 
   private int mCardWidth;
   private int mCardHeight;
   private int mStackOverlap;
+  private int mPadding;
 
   private int mHighlightIndex = -1;
   private float mHighlightScale = 1.0f;
@@ -50,10 +51,9 @@ public class FoundTriplesView extends View {
     mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
     mPlaceholderPaint.setColor(Color.LTGRAY);
-    mPlaceholderPaint.setStrokeWidth(2 * getResources().getDisplayMetrics().density);
+    mPlaceholderPaint.setStrokeWidth(getResources().getDisplayMetrics().density);
     mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[] {10, 10}, 0));
-
-    mCardBackground = new CardBackgroundDrawable(context);
+    mPadding = (int) (1 * getResources().getDisplayMetrics().density);
   }
 
   public void setFoundTriples(List<Set<Card>> foundTriples, int totalTriples) {
@@ -70,24 +70,17 @@ public class FoundTriplesView extends View {
       setMeasuredDimension(0, 0);
       return;
     }
-    int gap = (int) (4 * getResources().getDisplayMetrics().density);
-    // mCardWidth should be such that COLUMNS stacks fit with gaps between them
-    mCardWidth = (width - (COLUMNS - 1) * gap) / COLUMNS;
-    // Cap card width to roughly 1/7th of screen width to ensure some side margins
-    int maxCardWidth = getResources().getDisplayMetrics().widthPixels / 7;
-    if (mCardWidth > maxCardWidth) {
-      mCardWidth = maxCardWidth;
-    }
-
+    int slotWidth = width / COLUMNS;
+    mCardWidth = slotWidth - 2 * mPadding;
     mCardHeight = (int) (mCardWidth * HEIGHT_OVER_WIDTH);
     mStackOverlap = (int) (mCardHeight * STACK_DISPLACEMENT_PERCENT);
 
     int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);
-    int stackHeight = mCardHeight + (int) (2 * mCardHeight * STACK_DISPLACEMENT_PERCENT);
-    int height = rows * (stackHeight + gap);
+    int stackHeight = mCardHeight + 2 * mStackOverlap;
+    int height = rows * (stackHeight + 2 * mPadding);
 
     // Enforce max height of roughly 2.5 rows as requested
-    int maxHeight = (int) (2.5 * (stackHeight + gap));
+    int maxHeight = (int) (2.5 * (stackHeight + 2 * mPadding));
     setMeasuredDimension(width, Math.min(height, maxHeight));
   }
 
@@ -95,13 +88,8 @@ public class FoundTriplesView extends View {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
-    int gap = (int) (4 * getResources().getDisplayMetrics().density);
-
-    // Center the stacks horizontally
-    float totalStacksWidth = COLUMNS * mCardWidth + (COLUMNS - 1) * gap;
-    float startX = (getWidth() - totalStacksWidth) / 2f;
-
-    // Use a reference card width for \"natural\" drawing size, then scale.
+    int slotWidth = getWidth() / COLUMNS;
+    int horizontalOffset = (getWidth() - slotWidth * COLUMNS) / 2;
     float naturalWidth = 200f;
     float naturalHeight = naturalWidth * HEIGHT_OVER_WIDTH;
     float naturalDisplacement = naturalHeight * STACK_DISPLACEMENT_PERCENT;
@@ -111,8 +99,8 @@ public class FoundTriplesView extends View {
       int row = i / COLUMNS;
       int col = i % COLUMNS;
 
-      float left = startX + col * (mCardWidth + gap);
-      float top = row * (mCardHeight + 2 * mStackOverlap + gap);
+      float left = horizontalOffset + col * slotWidth + mPadding;
+      float top = row * (mCardHeight + 2 * mStackOverlap + 2 * mPadding) + mPadding;
 
       canvas.save();
       canvas.translate(left, top);
@@ -144,19 +132,13 @@ public class FoundTriplesView extends View {
     int i = 0;
     for (Card card : triple) {
       Rect bounds = new Rect(0, i * displacement, width, i * displacement + height);
-      mCardBackground.setBounds(bounds);
-      mCardBackground.draw(canvas);
-
-      SymbolDrawable symbolDrawable = mSymbolDrawableCache.get(card);
-      if (symbolDrawable == null) {
-        symbolDrawable = new SymbolDrawable(getContext(), card);
-        mSymbolDrawableCache.put(card, symbolDrawable);
+      CardDrawable cardDrawable = mCardDrawableCache.get(card);
+      if (cardDrawable == null) {
+        cardDrawable = new CardDrawable(getContext(), null, card, null);
+        mCardDrawableCache.put(card, cardDrawable);
       }
-      for (Rect symbolBounds :
-          com.antsapps.triples.CardCustomizationUtils.getBoundsForNumId(card.mNumber, bounds)) {
-        symbolDrawable.setBounds(symbolBounds);
-        symbolDrawable.draw(canvas);
-      }
+      cardDrawable.mBounds = bounds;
+      cardDrawable.draw(canvas);
       i++;
     }
   }
@@ -164,7 +146,7 @@ public class FoundTriplesView extends View {
   private void drawPlaceholder(Canvas canvas, int width, int height, int displacement) {
     float inset = mPlaceholderPaint.getStrokeWidth() / 2;
     RectF rect = new RectF(inset, inset, width - inset, height + 2 * displacement - inset);
-    canvas.drawRoundRect(rect, 15, 15, mPlaceholderPaint);
+    canvas.drawRoundRect(rect, 10, 10, mPlaceholderPaint);
   }
 
   public void highlightStack(int index) {
@@ -173,7 +155,7 @@ public class FoundTriplesView extends View {
     }
     mHighlightIndex = index;
     mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
-    mHighlightAnimator.setDuration(400);
+    mHighlightAnimator.setDuration(getAnimationDuration());
     mHighlightAnimator.setInterpolator(new CycleInterpolator(1));
     mHighlightAnimator.addUpdateListener(
         animation -> {
@@ -183,16 +165,19 @@ public class FoundTriplesView extends View {
     mHighlightAnimator.start();
   }
 
+  private int getAnimationDuration() {
+    return PreferenceManager.getDefaultSharedPreferences(getContext())
+        .getInt(getContext().getString(R.string.pref_animation_speed), 800);
+  }
+
   public Rect getStackBounds(int index) {
-    int gap = (int) (4 * getResources().getDisplayMetrics().density);
+    int slotWidth = getWidth() / COLUMNS;
+    int horizontalOffset = (getWidth() - slotWidth * COLUMNS) / 2;
     int row = index / COLUMNS;
     int col = index % COLUMNS;
 
-    float totalStacksWidth = COLUMNS * mCardWidth + (COLUMNS - 1) * gap;
-    float startX = (getWidth() - totalStacksWidth) / 2f;
-
-    int left = (int) (startX + col * (mCardWidth + gap));
-    int top = (int) (row * (mCardHeight + 2 * mStackOverlap + gap));
+    int left = horizontalOffset + col * slotWidth + mPadding;
+    int top = row * (mCardHeight + 2 * mStackOverlap + 2 * mPadding) + mPadding;
 
     int[] location = new int[2];
     getLocationInWindow(location);

@@ -350,8 +350,9 @@ public abstract class CardsView extends View implements Game.GameRenderer {
                   }
                 });
         copy.mBounds = new Rect(cd.mBounds);
+        copy.setSelected(true);
         mAnimatingCopies.add(copy);
-        copy.updateBounds(copy.mBounds, targetBoundsInCardsView);
+        copy.updateBounds(targetBoundsInCardsView);
 
         // Board card disappears immediately and then fades back in
         cd.setSelected(false);

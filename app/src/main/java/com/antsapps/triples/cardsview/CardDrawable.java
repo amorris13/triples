@@ -25,13 +25,14 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import androidx.annotation.Nullable;
+import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import java.util.List;
 
-class CardDrawable extends Drawable implements Comparable<CardDrawable> {
+public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private static final int DEFAULT_ANIMATION_DURATION_MS = 800;
 
@@ -72,7 +73,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private BitmapDrawable mCachedDrawable;
 
-  Rect mBounds;
+  public Rect mBounds;
 
   private boolean mSelected = false;
   private boolean mShakeAnimating = false;
@@ -192,7 +193,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     mCardBackground.draw(tmpCanvas);
 
     SymbolDrawable mSymbol = new SymbolDrawable(mContext, mCard);
-    for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
+    for (Rect rect : CardCustomizationUtils.getBoundsForNumId(mCard.mNumber, bounds)) {
       mSymbol.setBounds(rect);
       mSymbol.draw(tmpCanvas);
     }
@@ -223,7 +224,9 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   void setSelected(boolean selected) {
     if (mSelected != selected) {
       mSelected = selected;
-      regenerateCachedDrawable();
+      if (mBounds != null) {
+        regenerateCachedDrawable();
+      }
     }
   }
 
@@ -278,11 +281,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     updateAnimation(shakeAnimation);
   }
 
-  void updateBounds(Rect bounds) {
-    updateBounds(bounds, null);
-  }
-
-  void updateBounds(Rect bounds, @Nullable Rect targetBounds) {
+  public void updateBounds(Rect bounds) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
@@ -291,7 +290,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         || oldBounds.height() != mBounds.height()) {
       regenerateCachedDrawable();
     }
-    if (bounds.equals(oldBounds) && targetBounds == null) {
+    if (mBounds.equals(oldBounds)) {
       // No change
       return;
     }
@@ -302,27 +301,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       return;
     }
     Animation transitionAnimation = null;
-    if (targetBounds != null) {
-      // Animation towards target bounds
-      AnimationSet set = new AnimationSet(true);
-      set.addAnimation(
-          new TranslateAnimation(
-              0,
-              targetBounds.centerX() - bounds.centerX(),
-              0,
-              targetBounds.centerY() - bounds.centerY()));
-      set.addAnimation(
-          new ScaleAnimation(
-              1.0f,
-              (float) targetBounds.width() / bounds.width(),
-              1.0f,
-              (float) targetBounds.height() / bounds.height(),
-              Animation.RELATIVE_TO_SELF,
-              0.5f,
-              Animation.RELATIVE_TO_SELF,
-              0.5f));
-      transitionAnimation = set;
-    } else if (oldBounds == null) {
+    if (oldBounds == null) {
       // This CardDrawable is new.
       if (mShouldSlideIn) {
         transitionAnimation =
@@ -333,9 +312,24 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       }
     } else {
       // This CardDrawable is old
-      transitionAnimation =
+      AnimationSet set = new AnimationSet(true);
+      set.addAnimation(
           new TranslateAnimation(
-              oldBounds.centerX() - bounds.centerX(), 0, oldBounds.centerY() - bounds.centerY(), 0);
+              oldBounds.centerX() - mBounds.centerX(),
+              0,
+              oldBounds.centerY() - mBounds.centerY(),
+              0));
+      set.addAnimation(
+          new ScaleAnimation(
+              (float) oldBounds.width() / mBounds.width(),
+              1.0f,
+              (float) oldBounds.height() / mBounds.height(),
+              1.0f,
+              Animation.RELATIVE_TO_SELF,
+              0.5f,
+              Animation.RELATIVE_TO_SELF,
+              0.5f));
+      transitionAnimation = set;
       mDrawOrder = 1;
     }
     transitionAnimation.setInterpolator(new AccelerateInterpolator());
