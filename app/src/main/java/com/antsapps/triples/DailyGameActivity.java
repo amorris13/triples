@@ -50,29 +50,28 @@ public class DailyGameActivity extends BaseGameActivity
     TextView dateText = findViewById(R.id.daily_date_text);
     dateText.setText(DateFormat.getDateInstance().format(mGame.getDateStarted()));
 
+    mCardsView = findViewById(R.id.cards_view);
+
     FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
     if (foundTriplesView != null) {
       foundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
+      foundTriplesView.setCardsView(mCardsView);
     }
 
-    mCardsView = findViewById(R.id.cards_view);
     mCardsView.setOnValidTripleSelectedListener(
-        new OnValidTripleSelectedListener() {
-          @Override
-          public void onValidTripleSelected(java.util.Collection<Card> tripleCollection) {
-            Set<Card> triple = com.google.common.collect.Sets.newHashSet(tripleCollection);
-            List<Set<Card>> foundTriples = mGame.getFoundTriples();
-            if (foundTriples.contains(triple)) {
-              mCardsView.onAlreadyFoundTriple(triple);
-              FoundTriplesView ftv = findViewById(R.id.found_triples_view);
-              if (ftv != null) {
-                ftv.highlightStack(foundTriples.indexOf(triple));
+            tripleCollection -> {
+              Set<Card> triple = com.google.common.collect.Sets.newHashSet(tripleCollection);
+              List<Set<Card>> foundTriples = mGame.getFoundTriples();
+              if (foundTriples.contains(triple)) {
+                mCardsView.onAlreadyFoundTriple(triple);
+                FoundTriplesView ftv = findViewById(R.id.found_triples_view);
+                if (ftv != null) {
+                  ftv.highlightStack(foundTriples.indexOf(triple));
+                }
+              } else {
+                mGame.onValidTripleSelected(tripleCollection);
               }
-            } else {
-              mGame.onValidTripleSelected(tripleCollection);
-            }
-          }
-        });
+            });
   }
 
   @Override
@@ -130,8 +129,7 @@ public class DailyGameActivity extends BaseGameActivity
     if (foundTriplesView != null) {
       int index = mGame.getFoundTriples().indexOf(triple);
       mCardsView.animateTripleFound(
-          triple,
-          foundTriplesView.getStackBounds(index),
+          foundTriplesView.getCardBoundsInWindow(index, triple),
           () ->
               foundTriplesView.setFoundTriples(
                   mGame.getFoundTriples(), mGame.getTotalTriplesCount()));

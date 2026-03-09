@@ -34,7 +34,7 @@ import java.util.List;
 
 public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
-  private static final int DEFAULT_ANIMATION_DURATION_MS = 800;
+  public static final int DEFAULT_ANIMATION_DURATION_MS = 800;
 
   private class BaseAnimationListener implements AnimationListener {
 
@@ -73,7 +73,7 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private BitmapDrawable mCachedDrawable;
 
-  public Rect mBounds;
+  private Rect mBounds;
 
   private boolean mSelected = false;
   private boolean mShakeAnimating = false;
@@ -102,46 +102,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   public void setAnimationFinishedListener(OnAnimationFinishedListener listener) {
     mListener = listener;
-  }
-
-  private static List<Rect> getBoundsForNumId(int id, Rect bounds) {
-    List<Rect> rects = Lists.newArrayList();
-
-    int width = bounds.width();
-    int height = bounds.height();
-    int halfSideLength = width / 10;
-    int gap = halfSideLength / 2;
-    switch (id) {
-      case 0:
-        rects.add(squareFromCenterAndRadius(width / 2, height / 2, halfSideLength));
-        break;
-      case 1:
-        rects.add(
-            squareFromCenterAndRadius(
-                width / 2 - gap / 2 - halfSideLength, height / 2, halfSideLength));
-        rects.add(
-            squareFromCenterAndRadius(
-                width / 2 + gap / 2 + halfSideLength, height / 2, halfSideLength));
-        break;
-      case 2:
-        rects.add(
-            squareFromCenterAndRadius(
-                width / 2 - gap - halfSideLength * 2, height / 2, halfSideLength));
-        rects.add(squareFromCenterAndRadius(width / 2, height / 2, halfSideLength));
-        rects.add(
-            squareFromCenterAndRadius(
-                width / 2 + gap + halfSideLength * 2, height / 2, halfSideLength));
-        break;
-    }
-    return rects;
-  }
-
-  private static Rect squareFromCenterAndRadius(int centerX, int centerY, int radius) {
-    return new Rect(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-  }
-
-  boolean isAnimating() {
-    return mAnimation != null && !mAnimation.hasEnded();
   }
 
   @Override
@@ -285,9 +245,10 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     updateAnimation(shakeAnimation);
   }
 
-  public void updateBounds(Rect bounds) {
+  public void updateBounds(Rect bounds, boolean animate) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
+    setBounds(mBounds);
     Log.i(TAG, "mBounds = " + mBounds);
     if (oldBounds == null
         || oldBounds.width() != mBounds.width()
@@ -296,6 +257,9 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     }
     if (mBounds.equals(oldBounds)) {
       // No change
+      return;
+    }
+    if (!animate) {
       return;
     }
     if (mAnimationHandler == null) {
@@ -315,24 +279,25 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
         transitionAnimation = new AlphaAnimation(mAlpha, 1);
       }
     } else {
-      // This CardDrawable is old
+      // This CardDrawable is an existing drawable
       AnimationSet set = new AnimationSet(true);
+      set.addAnimation(
+              new ScaleAnimation(
+                      (float) oldBounds.width() / mBounds.width(),
+                      1.0f,
+                      (float) oldBounds.height() / mBounds.height(),
+                      1.0f,
+                      Animation.ABSOLUTE,
+                      mBounds.centerX(),
+                      Animation.ABSOLUTE,
+                      mBounds.centerY()));
       set.addAnimation(
           new TranslateAnimation(
               oldBounds.centerX() - mBounds.centerX(),
               0,
               oldBounds.centerY() - mBounds.centerY(),
               0));
-      set.addAnimation(
-          new ScaleAnimation(
-              (float) oldBounds.width() / mBounds.width(),
-              1.0f,
-              (float) oldBounds.height() / mBounds.height(),
-              1.0f,
-              Animation.RELATIVE_TO_SELF,
-              0.5f,
-              Animation.RELATIVE_TO_SELF,
-              0.5f));
+
       transitionAnimation = set;
       mDrawOrder = 1;
     }

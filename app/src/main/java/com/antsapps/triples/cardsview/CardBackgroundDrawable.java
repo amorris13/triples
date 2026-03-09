@@ -22,7 +22,9 @@ public class CardBackgroundDrawable extends Drawable {
 
   private static final int CORNER_RADIUS = 8;
 
-  private static final int INSET_PX = 15;
+  public static final int INSET_DP = 8;
+
+  private final int mInsetPx;
 
   private final RoundRectShape mCardShape;
 
@@ -38,6 +40,8 @@ public class CardBackgroundDrawable extends Drawable {
   private boolean mHinted;
 
   public CardBackgroundDrawable(Context context) {
+    mInsetPx = (int) context.getResources().getDisplayMetrics().density * INSET_DP;
+
     float[] outerR = new float[8];
     Arrays.fill(outerR, CORNER_RADIUS);
     mCardShape = new RoundRectShape(outerR, null, null);
@@ -112,7 +116,7 @@ public class CardBackgroundDrawable extends Drawable {
   @Override
   public void setBounds(Rect bounds) {
     Rect cardBounds = new Rect(bounds);
-    cardBounds.inset(INSET_PX, INSET_PX);
+    cardBounds.inset(mInsetPx, mInsetPx);
     mBackground.setBounds(cardBounds);
     mOutline.setBounds(cardBounds);
     mHintOutline.setBounds(cardBounds);
