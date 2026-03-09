@@ -354,6 +354,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
         copy.updateBounds(copy.mBounds, targetBoundsInCardsView);
 
         // Board card disappears immediately and then fades back in
+        cd.setSelected(false);
         AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
         fadeIn.setStartOffset(500);
         fadeIn.setDuration(500);

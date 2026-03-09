@@ -26,7 +26,7 @@
   <ViewAnimator
     android:id="@+id/view_switcher"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:layout_above="@id/bottom_separator"
