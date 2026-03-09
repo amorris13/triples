@@ -17,6 +17,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.RotateAnimation;
@@ -71,7 +72,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private BitmapDrawable mCachedDrawable;
 
-  private Rect mBounds;
+  Rect mBounds;
 
   private boolean mSelected = false;
   private boolean mShakeAnimating = false;
@@ -244,6 +245,10 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   void onIncorrectTriple() {
+    onIncorrectTriple(false);
+  }
+
+  void onIncorrectTriple(boolean horizontalOnly) {
     mSelected = false;
     mShakeAnimating = true;
     if (mAnimationHandler == null) {
@@ -252,7 +257,12 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       return;
     }
     // Shake animation
-    Animation shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
+    Animation shakeAnimation;
+    if (horizontalOnly) {
+      shakeAnimation = new TranslateAnimation(0, 10, 0, 0);
+    } else {
+      shakeAnimation = new RotateAnimation(0, 5, mBounds.centerX(), mBounds.centerY());
+    }
     shakeAnimation.setInterpolator(new CycleInterpolator(4));
     shakeAnimation.setDuration(getAnimationDuration());
     shakeAnimation.setStartTime(Animation.START_ON_FIRST_FRAME);
@@ -269,6 +279,10 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   void updateBounds(Rect bounds) {
+    updateBounds(bounds, null);
+  }
+
+  void updateBounds(Rect bounds, @Nullable Rect targetBounds) {
     Rect oldBounds = mBounds;
     mBounds = new Rect(bounds);
     Log.i(TAG, "mBounds = " + mBounds);
@@ -288,7 +302,23 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       return;
     }
     Animation transitionAnimation = null;
-    if (oldBounds == null) {
+    if (targetBounds != null) {
+      // Animation towards target bounds
+      AnimationSet set = new AnimationSet(true);
+      set.addAnimation(
+          new TranslateAnimation(0, targetBounds.centerX() - bounds.centerX(), 0, targetBounds.centerY() - bounds.centerY()));
+      set.addAnimation(
+          new ScaleAnimation(
+              1.0f,
+              (float) targetBounds.width() / bounds.width(),
+              1.0f,
+              (float) targetBounds.height() / bounds.height(),
+              Animation.RELATIVE_TO_SELF,
+              0.5f,
+              Animation.RELATIVE_TO_SELF,
+              0.5f));
+      transitionAnimation = set;
+    } else if (oldBounds == null) {
       // This CardDrawable is new.
       if (mShouldSlideIn) {
         transitionAnimation =
@@ -324,7 +354,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     updateAnimation(transitionAnimation);
   }
 
-  private void updateAnimation(Animation animation) {
+  public void updateAnimation(Animation animation) {
     if (mAnimation != null) {
       mAnimation.cancel();
     }

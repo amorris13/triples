@@ -3,11 +3,29 @@
     android:id="@+id/status_bar"
     style="@style/StatusBarContainer">
 
+    <ScrollView
+        android:id="@+id/found_triples_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/center_status"
+        android:maxHeight="150dp"
+        android:scrollbars="none">
+
+        <com.antsapps.triples.views.FoundTriplesView
+            android:id="@+id/found_triples_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
     <LinearLayout
+        android:id="@+id/found_triples_text_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:orientation="vertical">
+        android:layout_below="@id/found_triples_scroll"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/triples_found_text"
@@ -24,9 +42,11 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/center_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -53,22 +73,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_below="@id/center_status"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/timer_value_text"
-            style="@style/status_bar_value"
+            style="@style/status_bar_key"
+            android:textSize="14sp"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right" />
 
-        <TextView
-            android:id="@+id/timer_key_text"
-            style="@style/status_bar_key"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="@string/time_elapsed" />
     </LinearLayout>
 
 </RelativeLayout>

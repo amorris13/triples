@@ -27,7 +27,7 @@ public class SymbolDrawable extends Drawable {
   private final ShapeDrawable mOutline;
   private final ShapeDrawable mFill;
 
-  SymbolDrawable(Context context, Card card) {
+  public SymbolDrawable(Context context, Card card) {
     mCard = card;
     mOutline = getOutlineForCard(context, card);
     mFill = getFillForCard(context, card);

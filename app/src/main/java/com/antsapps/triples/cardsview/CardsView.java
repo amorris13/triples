@@ -15,12 +15,17 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.antsapps.triples.R;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
 
 public abstract class CardsView extends View implements Game.GameRenderer {
 
@@ -46,6 +51,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
+  private final List<CardDrawable> mAnimatingCopies = Lists.newArrayList();
   private final Set<Card> mCurrentlySelected = Sets.newHashSet();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
@@ -96,6 +102,14 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     long start = System.currentTimeMillis();
     for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
+    }
+    Iterator<CardDrawable> iter = mAnimatingCopies.iterator();
+    while (iter.hasNext()) {
+      CardDrawable dr = iter.next();
+      dr.draw(canvas);
+      if (!dr.isAnimating()) {
+        iter.remove();
+      }
     }
     if (mDimAlpha != 1) {
       canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
@@ -254,6 +268,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     mOnValidTripleSelectedListener = listener;
   }
 
+  public OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
+    return mOnValidTripleSelectedListener;
+  }
+
   @Override
   public Set<Card> getSelectedCards() {
     return mCurrentlySelected;
@@ -302,19 +320,54 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     invalidate();
   }
 
-  public void animateTripleFound(final Set<Card> triple) {
+  public void onAlreadyFoundTriple(Set<Card> triple) {
+    for (Card card : triple) {
+      CardDrawable cd = mCardDrawables.get(card);
+      if (cd != null) {
+        cd.onIncorrectTriple(true);
+      }
+    }
+  }
+
+  public void animateTripleFound(final Set<Card> triple, Rect targetBoundsInWindow) {
+    // Translate window coordinates to CardsView coordinates
+    int[] cardsViewLoc = new int[2];
+    getLocationInWindow(cardsViewLoc);
+
+    Rect targetBoundsInCardsView = new Rect(targetBoundsInWindow);
+    targetBoundsInCardsView.offset(-cardsViewLoc[0], -cardsViewLoc[1]);
+
     for (Card c : triple) {
       CardDrawable cd = mCardDrawables.get(c);
       if (cd != null) {
-        cd.updateBounds(mOffScreenLocation);
+        final CardDrawable copy =
+            new CardDrawable(
+                getContext(),
+                mHandler,
+                c,
+                new CardDrawable.OnAnimationFinishedListener() {
+                  @Override
+                  public void onAnimationFinished() {
+                    // Handled in onDraw for removal
+                  }
+                });
+        copy.mBounds = new Rect(cd.mBounds);
+        mAnimatingCopies.add(copy);
+        copy.updateBounds(copy.mBounds, targetBoundsInCardsView);
+
+        // Board card disappears immediately and then fades back in
+        AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setStartOffset(500);
+        fadeIn.setDuration(500);
+        cd.updateAnimation(fadeIn);
       }
     }
 
-    // Fly back after animation duration
     mHandler.postDelayed(
         () -> {
+          clearSelectedCards();
           updateBounds();
         },
-        1000); // 1s to ensure animation finishes
+        1000); // Wait for animations to finish
   }
 }
