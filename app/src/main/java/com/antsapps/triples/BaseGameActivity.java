@@ -68,20 +68,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().setGameRenderer(mCardsView);
 
-    mCardsView
-        .getViewTreeObserver()
-        .addOnGlobalLayoutListener(
-            new ViewTreeObserver.OnGlobalLayoutListener() {
-              @Override
-              public void onGlobalLayout() {
-                // Ensure width and height are greater than 0 before refreshing drawables
-                if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
-                  mCardsView.refreshDrawables();
-                  mCardsView.updateBounds();
-                  mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-              }
-            });
 
     mViewAnimator = findViewById(R.id.view_switcher);
 

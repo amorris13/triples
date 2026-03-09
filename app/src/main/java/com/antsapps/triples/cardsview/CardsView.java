@@ -1,63 +1,36 @@
 package com.antsapps.triples.cardsview;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
-import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CardsView extends View implements Game.GameRenderer {
+/**
+ * A ViewGroup that manages a grid of CardViews.
+ */
+public class CardsView extends ViewGroup implements Game.GameRenderer {
 
   private static final String TAG = "CardsView";
+  private static final int COLUMNS = 3;
+  private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
-  class CardRemovalListener implements OnAnimationFinishedListener {
-    Card mCard;
-
-    public CardRemovalListener(Card card) {
-      mCard = card;
-    }
-
-    @Override
-    public void onAnimationFinished() {
-      if (!mCards.contains(mCard)) {
-        mCardDrawables.remove(mCard);
-      }
-    }
-  }
-
-  private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
-  static final int WHAT_INCREMENT = 0;
-  static final int WHAT_DECREMENT = 1;
-  protected ImmutableList<Card> mCards = ImmutableList.of();
-  private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
+  private ImmutableList<Card> mCards = ImmutableList.of();
+  private final Map<Card, CardView> mCardViews = Maps.newHashMap();
   private final Set<Card> mCurrentlySelected = Sets.newHashSet();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
-  protected Rect mOffScreenLocation = new Rect();
-  private final Handler mHandler;
-  private volatile int mNumAnimating;
 
-  /**
-   * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
-   * view is completely opaque.
-   */
-  private float mDimAlpha = 1;
+  private int mWidthOfCard;
+  private int mHeightOfCard;
 
   public CardsView(Context context) {
     this(context, null);
@@ -67,225 +40,151 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     this(context, attrs, 0);
   }
 
-  public CardsView(Context context, AttributeSet attrs, int defStyle) {
-    super(context, attrs, defStyle);
-    mHandler =
-        new Handler() {
-          @Override
-          public void handleMessage(Message m) {
-            switch (m.what) {
-              case WHAT_INCREMENT:
-                incrementNumAnimating();
-                break;
-              case WHAT_DECREMENT:
-                decrementNumAnimating();
-                break;
-            }
-          }
-        };
+  public CardsView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
   }
 
   @Override
-  protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    updateMeasuredDimensions(widthMeasureSpec, heightMeasureSpec);
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    mWidthOfCard = width / COLUMNS;
+    mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
+
+    int rows = (int) Math.ceil((double) mCards.size() / COLUMNS);
+    int height = mHeightOfCard * rows;
+
+    for (int i = 0; i < getChildCount(); i++) {
+      View child = getChildAt(i);
+      child.measure(
+          MeasureSpec.makeMeasureSpec(mWidthOfCard, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(mHeightOfCard, MeasureSpec.EXACTLY));
+    }
+
+    setMeasuredDimension(width, height);
   }
 
   @Override
-  protected void onDraw(Canvas canvas) {
-    long start = System.currentTimeMillis();
-    for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
-      dr.draw(canvas);
-    }
-    if (mDimAlpha != 1) {
-      canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
-    }
-    boolean invalidated = false;
-    if (mNumAnimating > 0) {
-      invalidate();
-      invalidated = true;
-    }
-    long end = System.currentTimeMillis();
-    Log.v(
-        TAG,
-        "draw took "
-            + (end - start)
-            + ", cards drawn: "
-            + mCardDrawables.size()
-            + ", invalidated = "
-            + invalidated);
-  }
-
-  public void updateCardsInPlay(ImmutableList<Card> newCards) {
-    long start = System.currentTimeMillis();
-    for (Card oldCard : mCards) {
-      if (!newCards.contains(oldCard)) {
-        CardDrawable cardDrawable = mCardDrawables.get(oldCard);
-        if (cardDrawable != null) {
-          cardDrawable.updateBounds(mOffScreenLocation);
-        }
-        mCurrentlySelected.remove(oldCard);
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    for (int i = 0; i < mCards.size(); i++) {
+      Card card = mCards.get(i);
+      CardView cardView = mCardViews.get(card);
+      if (cardView != null) {
+        int left = (i % COLUMNS) * mWidthOfCard;
+        int top = (i / COLUMNS) * mHeightOfCard;
+        cardView.layout(left, top, left + mWidthOfCard, top + mHeightOfCard);
       }
+    }
+  }
+
+  @Override
+  public void updateCardsInPlay(ImmutableList<Card> newCards) {
+    Set<Card> cardsToRemove = Sets.newHashSet(mCards);
+    cardsToRemove.removeAll(newCards);
+
+    for (Card card : cardsToRemove) {
+      CardView cardView = mCardViews.remove(card);
+      if (cardView != null) {
+        if (cardView.getAnimation() != null || cardView.getScaleX() < 1.0f) {
+          // It's probably animating away, let it finish and remove itself
+          cardView
+              .animate()
+              .withEndAction(
+                  () -> {
+                    removeView(cardView);
+                  });
+        } else {
+          removeView(cardView);
+        }
+      }
+      mCurrentlySelected.remove(card);
+      mCurrentlyHinted.remove(card);
     }
 
     mCards = newCards;
-    updateMeasuredDimensions(0, 0);
+
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
-      CardDrawable cardDrawable = mCardDrawables.get(card);
-      if (cardDrawable == null) {
-        cardDrawable =
-            new CardDrawable(getContext(), mHandler, card, new CardRemovalListener(card));
-        mCardDrawables.put(card, cardDrawable);
-      }
-      if (!calcBounds(i).equals(EMPTY_RECT)) {
-        cardDrawable.updateBounds(calcBounds(i));
+      CardView cardView = mCardViews.get(card);
+      if (cardView == null) {
+        cardView = createCardView(card);
+        mCardViews.put(card, cardView);
+        addView(cardView);
+        if (mShouldSlideInNextUpdate) {
+          cardView.setAlpha(0);
+          cardView.setTranslationX(-getWidth());
+          cardView.animate().alpha(1).translationX(0).setDuration(500).start();
+        }
       }
     }
+    mShouldSlideInNextUpdate = false;
+
     requestLayout();
-    invalidate();
-    logValidTriple();
-    long end = System.currentTimeMillis();
-    Log.i(TAG, "updateCards took " + (end - start));
   }
 
-  protected abstract void logValidTriple();
+  private CardView createCardView(Card card) {
+    CardView cardView = new CardView(getContext());
+    cardView.setCard(card);
+    cardView.setOnClickListener(v -> handleCardClick((CardView) v));
+    return cardView;
+  }
 
-  public void updateBounds() {
-    if (mOffScreenLocation.isEmpty() && getWidth() > 0 && getHeight() > 0) {
-      updateMeasuredDimensions(0, 0); // Trigger dimension calculation if needed
+  private void handleCardClick(CardView cardView) {
+    if (!isEnabled()) return;
+
+    Card card = cardView.getCard();
+    if (mCurrentlySelected.contains(card)) {
+      mCurrentlySelected.remove(card);
+      cardView.setSelected(false);
+    } else {
+      mCurrentlySelected.add(card);
+      cardView.setSelected(true);
     }
-    long start = System.currentTimeMillis();
-    for (int i = 0; i < mCards.size(); i++) {
-      Card card = mCards.get(i);
-      CardDrawable cardDrawable = mCardDrawables.get(card);
-      cardDrawable.updateBounds(calcBounds(i));
-    }
-    invalidate();
-    long end = System.currentTimeMillis();
-    Log.i(TAG, "updateBounds took " + (end - start));
+
+    checkSelectedCards();
   }
-
-  protected abstract void updateMeasuredDimensions(
-      final int widthMeasureSpec, final int heightMeasureSpec);
-
-  protected abstract Rect calcBounds(int i);
-
-  private void incrementNumAnimating() {
-    mNumAnimating++;
-    Log.i(TAG, "increment with mNumAnimating = " + mNumAnimating);
-    if (mNumAnimating > 0) {
-      invalidate();
-    }
-  }
-
-  private void decrementNumAnimating() {
-    Log.i(TAG, "decrement with mNumAnimating = " + mNumAnimating);
-    mNumAnimating--;
-  }
-
-  @Override
-  public void setAlpha(float opacity) {
-    super.setAlpha(opacity);
-    mDimAlpha = opacity;
-    invalidate();
-  }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    if (!isEnabled()) {
-      return false;
-    }
-    int action = event.getActionMasked();
-    if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) {
-      // Get the index of the pointer associated with the action.
-      int index = event.getActionIndex();
-      int xPos = (int) event.getX(index);
-      int yPos = (int) event.getY(index);
-
-      Card tappedCard = getCardForPosition(xPos, yPos);
-      if (tappedCard == null) {
-        return true;
-      }
-      CardDrawable tappedCardDrawable = mCardDrawables.get(tappedCard);
-      if (mCurrentlySelected.contains(tappedCard)) {
-        mCurrentlySelected.remove(tappedCard);
-        tappedCardDrawable.setSelected(false);
-      } else {
-        mCurrentlySelected.add(tappedCard);
-        tappedCardDrawable.setSelected(true);
-      }
-
-      checkSelectedCards();
-      invalidate();
-    }
-    return true;
-  }
-
-  protected abstract Card getCardForPosition(int x, int y);
 
   private void checkSelectedCards() {
     if (mCurrentlySelected.size() == 3) {
       if (Game.isValidTriple(mCurrentlySelected)) {
-        mOnValidTripleSelectedListener.onValidTripleSelected(mCurrentlySelected);
+        if (mOnValidTripleSelectedListener != null) {
+          mOnValidTripleSelectedListener.onValidTripleSelected(mCurrentlySelected);
+        }
       } else {
         for (Card card : mCurrentlySelected) {
-          mCardDrawables.get(card).onIncorrectTriple();
+          CardView cv = mCardViews.get(card);
+          if (cv != null) {
+            cv.animateIncorrect();
+          }
         }
       }
-      mCurrentlySelected.clear();
+      clearSelectedCards();
     }
-  }
-
-  public void shouldSlideIn() {
-    for (CardDrawable cardDrawable : mCardDrawables.values()) {
-      cardDrawable.setShouldSlideIn();
-    }
-  }
-
-  public void refreshDrawables() {
-    for (CardDrawable cardDrawable : mCardDrawables.values()) {
-      cardDrawable.regenerateCachedDrawable();
-    }
-    invalidate();
-  }
-
-  public void setOnValidTripleSelectedListener(OnValidTripleSelectedListener listener) {
-    mOnValidTripleSelectedListener = listener;
-  }
-
-  @Override
-  public Set<Card> getSelectedCards() {
-    return mCurrentlySelected;
   }
 
   @Override
   public void addHint(Card card) {
-    CardDrawable cardDrawable = mCardDrawables.get(card);
-    if (cardDrawable != null) {
-      cardDrawable.setHinted(true);
+    CardView cardView = mCardViews.get(card);
+    if (cardView != null) {
+      cardView.setHinted(true);
       mCurrentlyHinted.add(card);
     }
 
     // Remove incorrectly selected cards
-    Iterator<Card> iter = mCurrentlySelected.iterator();
-    while (iter.hasNext()) {
-      Card selectedCard = iter.next();
-      if (!mCurrentlyHinted.contains(selectedCard)) {
-        mCardDrawables.get(selectedCard).setSelected(false);
-        iter.remove();
+    Set<Card> toRemove = Sets.newHashSet();
+    for (Card selected : mCurrentlySelected) {
+      if (!mCurrentlyHinted.contains(selected)) {
+        toRemove.add(selected);
+        CardView cv = mCardViews.get(selected);
+        if (cv != null) cv.setSelected(false);
       }
     }
-
-    invalidate();
+    mCurrentlySelected.removeAll(toRemove);
   }
 
   @Override
   public void clearHintedCards() {
-    for (CardDrawable cardDrawable : mCardDrawables.values()) {
-      if (cardDrawable != null) {
-        cardDrawable.setHinted(false);
-      }
+    for (CardView cardView : mCardViews.values()) {
+      cardView.setHinted(false);
     }
     mCurrentlyHinted.clear();
   }
@@ -293,28 +192,53 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   @Override
   public void clearSelectedCards() {
     for (Card card : mCurrentlySelected) {
-      CardDrawable cardDrawable = mCardDrawables.get(card);
-      if (cardDrawable != null) {
-        cardDrawable.setSelected(false);
+      CardView cardView = mCardViews.get(card);
+      if (cardView != null) {
+        cardView.setSelected(false);
       }
     }
     mCurrentlySelected.clear();
-    invalidate();
   }
 
-  public void animateTripleFound(final Set<Card> triple) {
-    for (Card c : triple) {
-      CardDrawable cd = mCardDrawables.get(c);
-      if (cd != null) {
-        cd.updateBounds(mOffScreenLocation);
+  @Override
+  public Set<Card> getSelectedCards() {
+    return mCurrentlySelected;
+  }
+
+  public void setOnValidTripleSelectedListener(OnValidTripleSelectedListener listener) {
+    mOnValidTripleSelectedListener = listener;
+  }
+
+  public void animateTripleFound(Set<Card> triple) {
+    for (Card card : triple) {
+      CardView cardView = mCardViews.get(card);
+      if (cardView != null) {
+        cardView.animate()
+            .scaleX(0f)
+            .scaleY(0f)
+            .translationY(getHeight())
+            .setDuration(500)
+            .withEndAction(() -> {
+              // This will be handled by updateCardsInPlay when the backend updates
+            })
+            .start();
       }
     }
+  }
 
-    // Fly back after animation duration
-    mHandler.postDelayed(
-        () -> {
-          updateBounds();
-        },
-        1000); // 1s to ensure animation finishes
+  private boolean mShouldSlideInNextUpdate;
+
+  public void shouldSlideIn() {
+    mShouldSlideInNextUpdate = true;
+  }
+
+  public void refreshDrawables() {
+    for (CardView cardView : mCardViews.values()) {
+      cardView.invalidate();
+    }
+  }
+
+  public void updateBounds() {
+    requestLayout();
   }
 }

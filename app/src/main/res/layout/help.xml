@@ -49,7 +49,7 @@
       android:layout_marginBottom="8dp"
       android:background="?attr/colorPrimary" />
 
-    <com.antsapps.triples.cardsview.VerticalCardsView
+    <com.antsapps.triples.cardsview.CardsView
       android:id="@+id/cards_view"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content" />

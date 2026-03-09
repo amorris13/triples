@@ -7,10 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import com.antsapps.triples.backend.Card;
 
-public class SampleCardView extends View {
-
-  private Card mCard;
-  private CardDrawable mCardDrawable;
+public class SampleCardView extends CardView {
 
   public SampleCardView(Context context) {
     this(context, null);
@@ -20,26 +17,10 @@ public class SampleCardView extends View {
     super(context, attrs);
   }
 
-  public void setCard(Card card) {
-    mCard = card;
-    mCardDrawable = new CardDrawable(getContext(), null, mCard, null);
-    invalidate();
-  }
-
-  @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
-    if (mCardDrawable != null) {
-      Rect bounds = new Rect(0, 0, getWidth(), getHeight());
-      mCardDrawable.updateBounds(bounds);
-      mCardDrawable.draw(canvas);
-    }
-  }
-
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
-    int height = width * 2 / 3;
+    int height = (int) (width * ((Math.sqrt(5) - 1) / 2));
     setMeasuredDimension(width, height);
   }
 }

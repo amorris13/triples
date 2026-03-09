@@ -13,7 +13,7 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.cardsview.VerticalCardsView;
+import com.antsapps.triples.cardsview.CardsView;
 import java.util.List;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowLooper;
@@ -33,7 +33,7 @@ public class RateAppTest extends BaseRobolectricTest {
     try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
           activity -> {
-            VerticalCardsView cardsView = activity.findViewById(R.id.cards_view);
+            CardsView cardsView = activity.findViewById(R.id.cards_view);
 
             // Force layout so cards have bounds
             cardsView.measure(1080, 1920);
@@ -64,12 +64,12 @@ public class RateAppTest extends BaseRobolectricTest {
     }
   }
 
-  private void clickCardAtPosition(VerticalCardsView cardsView, int index) {
-    int widthOfCard = cardsView.getWidth() / VerticalCardsView.COLUMNS;
+  private void clickCardAtPosition(CardsView cardsView, int index) {
+    int widthOfCard = cardsView.getWidth() / 3;
     int heightOfCard = (int) (widthOfCard * ((Math.sqrt(5) - 1) / 2));
 
-    int x = (index % VerticalCardsView.COLUMNS) * widthOfCard + widthOfCard / 2;
-    int y = (index / VerticalCardsView.COLUMNS) * heightOfCard + heightOfCard / 2;
+    int x = (index % 3) * widthOfCard + widthOfCard / 2;
+    int y = (index / 3) * heightOfCard + heightOfCard / 2;
 
     long downTime = SystemClock.uptimeMillis();
     long eventTime = SystemClock.uptimeMillis();
