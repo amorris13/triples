@@ -14,6 +14,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -21,9 +24,15 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class CsvExportTest {
 
+  @Before
+  // Set timezone to UTC
+  public void setTimeZoneToUtc() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  }
+
   @Test
   public void testClassicCsvExportContent() {
-    Date date = new Date(1700000000000L); // 2023-11-14 22:13:20
+    Date date = new Date(1700000000000L); // 2023-11-14 22:13:20 UTC
     ClassicGame game =
         new ClassicGame(
             1,
