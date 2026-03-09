@@ -105,7 +105,7 @@ public class CsvExportTest {
     String csv = CsvUtil.getDailyCsvContent(games);
 
     assertThat(csv)
-        .contains("Date Started,Date Completed,Time Elapsed (ms),Triples Found,Hints Used");
-    assertThat(csv).contains("2023-11-14 22:13:20,2023-11-14 22:15:20,120000,0/14,false");
+        .contains("Puzzle Date,Date Completed,Time Elapsed (ms),Triples Found,Hints Used");
+    assertThat(csv).contains("2023-11-14,2023-11-14 22:15:20,120000,0/14,false");
   }
 }

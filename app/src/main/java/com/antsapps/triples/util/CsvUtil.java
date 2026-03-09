@@ -45,13 +45,14 @@ public class CsvUtil {
 
   public static String getDailyCsvContent(List<DailyGame> games) {
     StringBuilder csv = new StringBuilder();
-    csv.append("Date Started,Date Completed,Time Elapsed (ms),Triples Found,Hints Used\n");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+    csv.append("Puzzle Date,Date Completed,Time Elapsed (ms),Triples Found,Hints Used\n");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     for (DailyGame game : games) {
-      csv.append(dateFormat.format(game.getDateStarted()));
+      csv.append(dateFormat.format(new Date(game.getRandomSeed())));
       csv.append(",");
       if (game.getDateCompleted() != null) {
-        csv.append(dateFormat.format(game.getDateCompleted()));
+        csv.append(dateTimeFormat.format(game.getDateCompleted()));
       }
       csv.append(",");
       csv.append(game.getTimeElapsed());
