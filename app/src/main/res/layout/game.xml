@@ -10,7 +10,9 @@
     android:inflatedId="@+id/status_bar"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true" />
+    android:layout_alignParentBottom="true"
+    android:clipChildren="false"
+    android:clipToPadding="false" />
 
   <View
     android:id="@+id/bottom_separator"

@@ -138,4 +138,43 @@ public class CardCustomizationUtils {
     Arrays.fill(arr, value);
     return arr;
   }
+
+  public static java.util.List<android.graphics.Rect> getBoundsForNumId(
+      int id, android.graphics.Rect bounds) {
+    java.util.List<android.graphics.Rect> rects = com.google.common.collect.Lists.newArrayList();
+
+    int width = bounds.width();
+    int height = bounds.height();
+    int halfSideLength = width / 10;
+    int gap = halfSideLength / 2;
+    switch (id) {
+      case 0:
+        rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
+        break;
+      case 1:
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() - gap / 2 - halfSideLength, bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() + gap / 2 + halfSideLength, bounds.centerY(), halfSideLength));
+        break;
+      case 2:
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() - gap - halfSideLength * 2, bounds.centerY(), halfSideLength));
+        rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() + gap + halfSideLength * 2, bounds.centerY(), halfSideLength));
+        break;
+    }
+    return rects;
+  }
+
+  private static android.graphics.Rect squareFromCenterAndRadius(
+      int centerX, int centerY, int radius) {
+    return new android.graphics.Rect(
+        centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+  }
 }

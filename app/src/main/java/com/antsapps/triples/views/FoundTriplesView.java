@@ -15,27 +15,27 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardBackgroundDrawable;
 import com.antsapps.triples.cardsview.SymbolDrawable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class FoundTriplesView extends View {
 
   private static final float STACK_OVERLAP_PERCENT = 0.2f;
   private static final int COLUMNS = 6;
-  private static final int CARD_ASPECT_RATIO_NUM = 3;
-  private static final int CARD_ASPECT_RATIO_DEN = 2; // 3:2 aspect ratio
+  private static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
   private List<Set<Card>> mFoundTriples = new ArrayList<>();
   private int mTotalTriples = 0;
 
   private final Paint mPlaceholderPaint;
   private final CardBackgroundDrawable mCardBackground;
-  private SymbolDrawable mSymbolDrawable;
+  private final Map<Card, SymbolDrawable> mSymbolDrawableCache = new HashMap<>();
 
   private int mCardWidth;
   private int mCardHeight;
   private int mStackOverlap;
-  private float mScale;
 
   private int mHighlightIndex = -1;
   private float mHighlightScale = 1.0f;
@@ -70,13 +70,9 @@ public class FoundTriplesView extends View {
       setMeasuredDimension(0, 0);
       return;
     }
-    // We need a rough estimate of mCardWidth to calculate mStackOverlap,
-    // and mStackOverlap to calculate mCardWidth.
-    // Width = COLUMNS * mCardWidth + (COLUMNS + 1) * Gap
-    // Let Gap = some fixed small value, say 8dp
     int gap = (int) (8 * getResources().getDisplayMetrics().density);
     mCardWidth = Math.max(0, (width - (COLUMNS + 1) * gap) / COLUMNS);
-    mCardHeight = mCardWidth * CARD_ASPECT_RATIO_NUM / CARD_ASPECT_RATIO_DEN;
+    mCardHeight = (int) (mCardWidth * HEIGHT_OVER_WIDTH);
     mStackOverlap = (int) (mCardHeight * STACK_OVERLAP_PERCENT);
 
     int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);
@@ -94,98 +90,74 @@ public class FoundTriplesView extends View {
 
     int gap = (int) (8 * getResources().getDisplayMetrics().density);
 
+    // Use a reference card width for \"natural\" drawing size, then scale.
+    // Let's assume natural width is 200px.
+    float naturalWidth = 200f;
+    float naturalHeight = naturalWidth * HEIGHT_OVER_WIDTH;
+    float naturalOverlap = naturalHeight * STACK_OVERLAP_PERCENT;
+    float scale = (float) mCardWidth / naturalWidth;
+
     for (int i = 0; i < mTotalTriples; i++) {
       int row = i / COLUMNS;
       int col = i % COLUMNS;
 
-      int left = col * (mCardWidth + gap) + gap;
-      int top = row * (mCardHeight + 2 * mStackOverlap + gap) + gap;
+      float left = col * (mCardWidth + gap) + gap;
+      float top = row * (mCardHeight + 2 * mStackOverlap + gap) + gap;
+
+      canvas.save();
+      canvas.translate(left, top);
 
       float currentScale = (i == mHighlightIndex) ? mHighlightScale : 1.0f;
-      if (currentScale != 1.0f) {
-        canvas.save();
-        canvas.scale(
-            currentScale,
-            currentScale,
-            left + mCardWidth / 2f,
-            top + mCardHeight / 2f + mStackOverlap);
-      }
+      canvas.scale(
+          scale * currentScale,
+          scale * currentScale,
+          naturalWidth / 2f,
+          (naturalHeight + 2 * naturalOverlap) / 2f);
 
       if (mFoundTriples != null && i < mFoundTriples.size()) {
-        drawTripleStack(canvas, mFoundTriples.get(i), left, top);
+        drawTripleStack(
+            canvas,
+            mFoundTriples.get(i),
+            (int) naturalWidth,
+            (int) naturalHeight,
+            (int) naturalOverlap);
       } else {
-        drawPlaceholder(canvas, left, top);
+        drawPlaceholder(canvas, (int) naturalWidth, (int) naturalHeight, (int) naturalOverlap);
       }
 
-      if (currentScale != 1.0f) {
-        canvas.restore();
-      }
+      canvas.restore();
     }
   }
 
-  private void drawTripleStack(Canvas canvas, Set<Card> triple, int left, int top) {
+  private void drawTripleStack(
+      Canvas canvas, Set<Card> triple, int width, int height, int overlap) {
     int i = 0;
     for (Card card : triple) {
-      Rect bounds =
-          new Rect(
-              left,
-              top + i * mStackOverlap,
-              left + mCardWidth,
-              top + i * mStackOverlap + mCardHeight);
+      Rect bounds = new Rect(0, i * overlap, width, i * overlap + height);
       mCardBackground.setBounds(bounds);
       mCardBackground.draw(canvas);
 
-      mSymbolDrawable = new SymbolDrawable(getContext(), card);
-      for (Rect symbolBounds : getBoundsForNumId(card.mNumber, bounds)) {
-        mSymbolDrawable.setBounds(symbolBounds);
-        mSymbolDrawable.draw(canvas);
+      SymbolDrawable symbolDrawable = mSymbolDrawableCache.get(card);
+      if (symbolDrawable == null) {
+        symbolDrawable = new SymbolDrawable(getContext(), card);
+        mSymbolDrawableCache.put(card, symbolDrawable);
+      }
+      for (Rect symbolBounds :
+          com.antsapps.triples.CardCustomizationUtils.getBoundsForNumId(card.mNumber, bounds)) {
+        symbolDrawable.setBounds(symbolBounds);
+        symbolDrawable.draw(canvas);
       }
       i++;
     }
   }
 
-  private void drawPlaceholder(Canvas canvas, int left, int top) {
-    RectF rect = new RectF(left, top, left + mCardWidth, top + mCardHeight + 2 * mStackOverlap);
+  private void drawPlaceholder(Canvas canvas, int width, int height, int overlap) {
+    RectF rect = new RectF(0, 0, width, height + 2 * overlap);
     canvas.drawRoundRect(
         rect,
         8 * getResources().getDisplayMetrics().density,
         8 * getResources().getDisplayMetrics().density,
         mPlaceholderPaint);
-  }
-
-  private List<Rect> getBoundsForNumId(int id, Rect bounds) {
-    List<Rect> rects = new ArrayList<>();
-    int width = bounds.width();
-    int height = bounds.height();
-    int halfSideLength = width / 10;
-    int gap = halfSideLength / 2;
-    switch (id) {
-      case 0:
-        rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
-        break;
-      case 1:
-        rects.add(
-            squareFromCenterAndRadius(
-                bounds.centerX() - gap / 2 - halfSideLength, bounds.centerY(), halfSideLength));
-        rects.add(
-            squareFromCenterAndRadius(
-                bounds.centerX() + gap / 2 + halfSideLength, bounds.centerY(), halfSideLength));
-        break;
-      case 2:
-        rects.add(
-            squareFromCenterAndRadius(
-                bounds.centerX() - gap - halfSideLength * 2, bounds.centerY(), halfSideLength));
-        rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
-        rects.add(
-            squareFromCenterAndRadius(
-                bounds.centerX() + gap + halfSideLength * 2, bounds.centerY(), halfSideLength));
-        break;
-    }
-    return rects;
-  }
-
-  private Rect squareFromCenterAndRadius(int centerX, int centerY, int radius) {
-    return new Rect(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
   }
 
   public void highlightStack(int index) {

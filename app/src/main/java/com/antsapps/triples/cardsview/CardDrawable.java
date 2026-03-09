@@ -136,7 +136,7 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   }
 
   boolean isAnimating() {
-    return mAnimation != null && mAnimation.hasStarted() && !mAnimation.hasEnded();
+    return mAnimation != null && !mAnimation.hasEnded();
   }
 
   @Override
