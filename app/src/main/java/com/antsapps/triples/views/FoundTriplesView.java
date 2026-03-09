@@ -11,8 +11,6 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
-import androidx.core.content.ContextCompat;
-import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardBackgroundDrawable;
 import com.antsapps.triples.cardsview.SymbolDrawable;
@@ -106,7 +104,11 @@ public class FoundTriplesView extends View {
       float currentScale = (i == mHighlightIndex) ? mHighlightScale : 1.0f;
       if (currentScale != 1.0f) {
         canvas.save();
-        canvas.scale(currentScale, currentScale, left + mCardWidth / 2f, top + mCardHeight / 2f + mStackOverlap);
+        canvas.scale(
+            currentScale,
+            currentScale,
+            left + mCardWidth / 2f,
+            top + mCardHeight / 2f + mStackOverlap);
       }
 
       if (mFoundTriples != null && i < mFoundTriples.size()) {
@@ -124,7 +126,12 @@ public class FoundTriplesView extends View {
   private void drawTripleStack(Canvas canvas, Set<Card> triple, int left, int top) {
     int i = 0;
     for (Card card : triple) {
-      Rect bounds = new Rect(left, top + i * mStackOverlap, left + mCardWidth, top + i * mStackOverlap + mCardHeight);
+      Rect bounds =
+          new Rect(
+              left,
+              top + i * mStackOverlap,
+              left + mCardWidth,
+              top + i * mStackOverlap + mCardHeight);
       mCardBackground.setBounds(bounds);
       mCardBackground.draw(canvas);
 
@@ -139,7 +146,11 @@ public class FoundTriplesView extends View {
 
   private void drawPlaceholder(Canvas canvas, int left, int top) {
     RectF rect = new RectF(left, top, left + mCardWidth, top + mCardHeight + 2 * mStackOverlap);
-    canvas.drawRoundRect(rect, 8 * getResources().getDisplayMetrics().density, 8 * getResources().getDisplayMetrics().density, mPlaceholderPaint);
+    canvas.drawRoundRect(
+        rect,
+        8 * getResources().getDisplayMetrics().density,
+        8 * getResources().getDisplayMetrics().density,
+        mPlaceholderPaint);
   }
 
   private List<Rect> getBoundsForNumId(int id, Rect bounds) {
@@ -153,13 +164,21 @@ public class FoundTriplesView extends View {
         rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
         break;
       case 1:
-        rects.add(squareFromCenterAndRadius(bounds.centerX() - gap / 2 - halfSideLength, bounds.centerY(), halfSideLength));
-        rects.add(squareFromCenterAndRadius(bounds.centerX() + gap / 2 + halfSideLength, bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() - gap / 2 - halfSideLength, bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() + gap / 2 + halfSideLength, bounds.centerY(), halfSideLength));
         break;
       case 2:
-        rects.add(squareFromCenterAndRadius(bounds.centerX() - gap - halfSideLength * 2, bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() - gap - halfSideLength * 2, bounds.centerY(), halfSideLength));
         rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
-        rects.add(squareFromCenterAndRadius(bounds.centerX() + gap + halfSideLength * 2, bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() + gap + halfSideLength * 2, bounds.centerY(), halfSideLength));
         break;
     }
     return rects;
@@ -177,10 +196,11 @@ public class FoundTriplesView extends View {
     mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
     mHighlightAnimator.setDuration(400);
     mHighlightAnimator.setInterpolator(new CycleInterpolator(1));
-    mHighlightAnimator.addUpdateListener(animation -> {
-      mHighlightScale = (float) animation.getAnimatedValue();
-      invalidate();
-    });
+    mHighlightAnimator.addUpdateListener(
+        animation -> {
+          mHighlightScale = (float) animation.getAnimatedValue();
+          invalidate();
+        });
     mHighlightAnimator.start();
   }
 

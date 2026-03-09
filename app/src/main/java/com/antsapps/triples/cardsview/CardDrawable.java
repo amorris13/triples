@@ -306,7 +306,11 @@ class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       // Animation towards target bounds
       AnimationSet set = new AnimationSet(true);
       set.addAnimation(
-          new TranslateAnimation(0, targetBounds.centerX() - bounds.centerX(), 0, targetBounds.centerY() - bounds.centerY()));
+          new TranslateAnimation(
+              0,
+              targetBounds.centerX() - bounds.centerX(),
+              0,
+              targetBounds.centerY() - bounds.centerY()));
       set.addAnimation(
           new ScaleAnimation(
               1.0f,

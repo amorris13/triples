@@ -13,7 +13,6 @@ import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
-import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.views.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
 import java.text.DateFormat;
@@ -135,7 +134,8 @@ public class DailyGameActivity extends BaseGameActivity
           new Runnable() {
             @Override
             public void run() {
-              foundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
+              foundTriplesView.setFoundTriples(
+                  mGame.getFoundTriples(), mGame.getTotalTriplesCount());
             }
           },
           1000);
