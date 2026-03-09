@@ -2,7 +2,6 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -226,16 +225,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    if (sharedPref.getBoolean(getString(R.string.pref_orientation_lock), false)) {
-      String orientation = sharedPref.getString(getString(R.string.pref_orientation), "portrait");
-      if (orientation.equals("portrait")) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-      } else if (orientation.equals("landscape")) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-      }
-    } else {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
     if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
       mCardsView.refreshDrawables();
     }

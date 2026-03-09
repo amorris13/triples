@@ -3,23 +3,6 @@
                                                 xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <androidx.preference.SwitchPreferenceCompat
-    android:defaultValue="true"
-    android:key="@string/pref_orientation_lock"
-    android:summaryOff="Screen will auto rotate"
-    android:summaryOn="Screen will not auto rotate"
-    android:title="Orientation Lock" />
-
-  <androidx.preference.ListPreference
-      android:dependency="@string/pref_orientation_lock"
-      android:dialogTitle="Preferred orientation"
-      android:entries="@array/entries_orientation_pref"
-      android:entryValues="@array/entryvalues_orientation_pref"
-      android:summary="%s"
-      android:key="@string/pref_orientation"
-      android:layout="?android:attr/preferenceLayoutChild"
-      android:title="Orientation" />
-
-  <androidx.preference.SwitchPreferenceCompat
     android:defaultValue="false"
     android:key="@string/pref_screen_lock"
     android:summaryOff="Use default sleep timeout"

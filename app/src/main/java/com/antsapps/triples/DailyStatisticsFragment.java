@@ -24,6 +24,8 @@ import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.util.CsvUtil;
+import com.antsapps.triples.util.ShareUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -239,6 +241,11 @@ public class DailyStatisticsFragment extends Fragment {
       long seconds = game.getTimeElapsed() / 1000;
       mDetailTime.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
     }
+  }
+
+  public void exportToCsv() {
+    ShareUtil.shareCsv(
+        getActivity(), "daily_statistics.csv", CsvUtil.getDailyCsvContent(mCompletedGames));
   }
 
   private void updateStreaks() {
