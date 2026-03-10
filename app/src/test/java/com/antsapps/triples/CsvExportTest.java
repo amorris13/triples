@@ -21,9 +21,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(sdk = 35)
-public class CsvExportTest {
+public class CsvExportTest extends BaseRobolectricTest {
 
   @Before
   // Set timezone to UTC
