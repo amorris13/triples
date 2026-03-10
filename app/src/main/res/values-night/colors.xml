@@ -56,8 +56,9 @@
   <!-- Card Colors -->
   <color name="card_background">#2C2C2C</color>
   <color name="card_shadow">#40000000</color>
-  <color name="card_selected_outline">#40C4FF</color>
-  <color name="card_hint_outline">#8040C4FF</color>
+  <color name="card_selected_outline">#55D6F3</color>
+  <color name="card_selected_tint">#1F55D6F3</color>
+  <color name="card_hint_outline">#8055D6F3</color>
 
   <!-- Card Symbol Presets for Dark Mode (slightly adjusted for visibility if needed) -->
   <color name="preset_color_0">#42A5F5</color>
