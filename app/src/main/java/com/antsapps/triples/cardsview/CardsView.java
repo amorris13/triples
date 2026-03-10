@@ -107,6 +107,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       Rect target = calcBounds(i);
       if (!target.equals(EMPTY_RECT)) {
         // Animate from current translation back to 0 (the target position set by layout)
+        cardView.bringToFront();
         cardView
             .animate()
             .translationX(0)
@@ -164,6 +165,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
           cardView.setTranslationX(oldBounds.left - target.left);
           cardView.setTranslationY(oldBounds.top - target.top);
           // Animate back to 0
+          cardView.bringToFront();
           cardView
               .animate()
               .translationX(0)
