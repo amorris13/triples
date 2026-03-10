@@ -19,13 +19,22 @@ public class DailyGame extends Game {
   private Date mDateCompleted;
 
   public static long getStartOfDaySeed(long dateMillis) {
-    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    Calendar cal = Calendar.getInstance();
     cal.setTimeInMillis(dateMillis);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND, 0);
-    return cal.getTimeInMillis();
+    return getStartOfDaySeed(cal);
+  }
+
+  public static long getStartOfDaySeed(Calendar cal) {
+    Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    utcCal.set(
+        cal.get(Calendar.YEAR),
+        cal.get(Calendar.MONTH),
+        cal.get(Calendar.DAY_OF_MONTH),
+        0,
+        0,
+        0);
+    utcCal.set(Calendar.MILLISECOND, 0);
+    return utcCal.getTimeInMillis();
   }
 
   public static DailyGame createFromSeed(long seed) {

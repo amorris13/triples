@@ -78,7 +78,7 @@ public class DailyStatisticsFragment extends Fragment {
     mDetailTriples = view.findViewById(R.id.detail_triples);
     mDetailTime = view.findViewById(R.id.detail_time);
 
-    mCurrentMonth = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    mCurrentMonth = Calendar.getInstance();
     mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
     mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
     mCurrentMonth.set(Calendar.MINUTE, 0);
@@ -96,7 +96,7 @@ public class DailyStatisticsFragment extends Fragment {
         v -> {
           Calendar nextMonth = (Calendar) mCurrentMonth.clone();
           nextMonth.add(Calendar.MONTH, 1);
-          Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+          Calendar now = Calendar.getInstance();
           if (nextMonth.get(Calendar.YEAR) < now.get(Calendar.YEAR)
               || (nextMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR)
                   && nextMonth.get(Calendar.MONTH) <= now.get(Calendar.MONTH))) {
@@ -107,17 +107,17 @@ public class DailyStatisticsFragment extends Fragment {
 
     mMonthTitle.setOnClickListener(
         v -> {
-          mCurrentMonth = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+          mCurrentMonth = Calendar.getInstance();
           mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
           mCurrentMonth.set(Calendar.HOUR_OF_DAY, 0);
           mCurrentMonth.set(Calendar.MINUTE, 0);
           mCurrentMonth.set(Calendar.SECOND, 0);
           mCurrentMonth.set(Calendar.MILLISECOND, 0);
-          mSelectedDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+          mSelectedDate = Calendar.getInstance();
           updateCalendar();
         });
 
-    mSelectedDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    mSelectedDate = Calendar.getInstance();
 
     GestureDetector gestureDetector =
         new GestureDetector(
@@ -134,7 +134,7 @@ public class DailyStatisticsFragment extends Fragment {
                   } else {
                     Calendar nextMonth = (Calendar) mCurrentMonth.clone();
                     nextMonth.add(Calendar.MONTH, 1);
-                    Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                    Calendar now = Calendar.getInstance();
                     if (nextMonth.get(Calendar.YEAR) < now.get(Calendar.YEAR)
                         || (nextMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR)
                             && nextMonth.get(Calendar.MONTH) <= now.get(Calendar.MONTH))) {
@@ -165,10 +165,9 @@ public class DailyStatisticsFragment extends Fragment {
 
   private void updateCalendar() {
     SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     mMonthTitle.setText(sdf.format(mCurrentMonth.getTime()));
 
-    Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    Calendar today = Calendar.getInstance();
     boolean isCurrentMonth =
         mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR)
             && mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
@@ -180,14 +179,14 @@ public class DailyStatisticsFragment extends Fragment {
             getActivity(),
             mCurrentMonth,
             mCompletedGames,
-            DailyGame.getStartOfDaySeed(mSelectedDate.getTimeInMillis()));
+            DailyGame.getStartOfDaySeed(mSelectedDate));
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener(
         (parent, view1, position, id) -> {
           Calendar day = (Calendar) adapter.getItem(position);
           if (adapter.isEnabled(position)) {
-            long daySeed = DailyGame.getStartOfDaySeed(day.getTimeInMillis());
+            long daySeed = DailyGame.getStartOfDaySeed(day);
             mSelectedDate = (Calendar) day.clone();
             adapter.setSelectedSeed(daySeed);
             updateDetailSection();
@@ -199,10 +198,9 @@ public class DailyStatisticsFragment extends Fragment {
 
   private void updateDetailSection() {
     DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
-    df.setTimeZone(TimeZone.getTimeZone("UTC"));
     mDetailDate.setText(df.format(mSelectedDate.getTime()));
 
-    long daySeed = DailyGame.getStartOfDaySeed(mSelectedDate.getTimeInMillis());
+    long daySeed = DailyGame.getStartOfDaySeed(mSelectedDate);
     DailyGame game = null;
     for (DailyGame dg : mApplication.getDailyGames()) {
       if (dg.getRandomSeed() == daySeed) {
@@ -257,18 +255,18 @@ public class DailyStatisticsFragment extends Fragment {
     for (DailyGame game : mCompletedGames) {
       if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
       totalSolved++;
-      long startSeed = DailyGame.getStartOfDaySeed(game.getDateStarted().getTime());
-      if (DailyGame.getStartOfDaySeed(game.getDateCompleted().getTime()) == startSeed) {
-        completedOnDaySeeds.add(startSeed);
+      long seed = game.getRandomSeed();
+      if (game.getDateCompleted().getTime() - seed < 48 * 60 * 60 * 1000) {
+        completedOnDaySeeds.add(seed);
       }
     }
 
     int currentStreak = 0;
-    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    if (!completedOnDaySeeds.contains(DailyGame.getStartOfDaySeed(cal.getTimeInMillis()))) {
+    Calendar cal = Calendar.getInstance();
+    if (!completedOnDaySeeds.contains(DailyGame.getStartOfDaySeed(cal))) {
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
-    while (completedOnDaySeeds.contains(DailyGame.getStartOfDaySeed(cal.getTimeInMillis()))) {
+    while (completedOnDaySeeds.contains(DailyGame.getStartOfDaySeed(cal))) {
       currentStreak++;
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
@@ -279,7 +277,7 @@ public class DailyStatisticsFragment extends Fragment {
     Collections.sort(sortedSeeds);
     Calendar lastCal = null;
     for (Long seed : sortedSeeds) {
-      Calendar currentCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+      Calendar currentCal = Calendar.getInstance();
       currentCal.setTimeInMillis(seed);
       if (lastCal != null) {
         Calendar expectedCal = (Calendar) lastCal.clone();
@@ -327,7 +325,7 @@ public class DailyStatisticsFragment extends Fragment {
       mSelectableItemBackground = outValue.resourceId;
       mMonth = month.get(Calendar.MONTH);
       mYear = month.get(Calendar.YEAR);
-      mTodaySeed = DailyGame.getStartOfDaySeed(System.currentTimeMillis());
+      mTodaySeed = DailyGame.getStartOfDaySeed(Calendar.getInstance());
       mSelectedSeed = selectedSeed;
 
       mDays = new ArrayList<>();
@@ -348,14 +346,14 @@ public class DailyStatisticsFragment extends Fragment {
       mHintSeeds = new HashSet<>();
       for (DailyGame game : completedGames) {
         if (game.getDateCompleted() == null) continue;
-        long startSeed = DailyGame.getStartOfDaySeed(game.getDateStarted().getTime());
+        long seed = game.getRandomSeed();
         if (game.areHintsUsed()) {
-          mHintSeeds.add(startSeed);
+          mHintSeeds.add(seed);
         }
-        if (DailyGame.getStartOfDaySeed(game.getDateCompleted().getTime()) == startSeed) {
-          mCompletedOnDaySeeds.add(startSeed);
+        if (game.getDateCompleted().getTime() - seed < 48 * 60 * 60 * 1000) {
+          mCompletedOnDaySeeds.add(seed);
         } else {
-          mCompletedLateSeeds.add(startSeed);
+          mCompletedLateSeeds.add(seed);
         }
       }
     }
@@ -390,7 +388,7 @@ public class DailyStatisticsFragment extends Fragment {
       Calendar day = mDays.get(position);
       return day.get(Calendar.YEAR) == mYear
           && day.get(Calendar.MONTH) == mMonth
-          && DailyGame.getStartOfDaySeed(day.getTimeInMillis()) <= DailyGame.getStartOfDaySeed(System.currentTimeMillis());
+          && day.getTimeInMillis() <= System.currentTimeMillis();
     }
 
     @Override
@@ -411,7 +409,7 @@ public class DailyStatisticsFragment extends Fragment {
                 }
 
                 float density = mContext.getResources().getDisplayMetrics().density;
-                long daySeed = DailyGame.getStartOfDaySeed(day.getTimeInMillis());
+                long daySeed = DailyGame.getStartOfDaySeed(day);
                 float centerX = getWidth() / 2f;
                 float centerY = getHeight() / 2f;
                 float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
@@ -446,7 +444,7 @@ public class DailyStatisticsFragment extends Fragment {
 
       Calendar day = mDays.get(position);
       tv.setTag(day);
-      long daySeed = DailyGame.getStartOfDaySeed(day.getTimeInMillis());
+      long daySeed = DailyGame.getStartOfDaySeed(day);
 
       if (day.get(Calendar.MONTH) != mMonth || day.get(Calendar.YEAR) != mYear) {
         tv.setText("");
