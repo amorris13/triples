@@ -17,6 +17,10 @@ public class DailyGame extends Game {
   private final List<Set<Card>> mFoundTriples;
   private Date mDateCompleted;
 
+  /**
+   * Returns the timestamp for the start of the day for the given date in milliseconds. This is used
+   * as a seed for the daily puzzle and for streak calculations.
+   */
   public static long getStartOfDaySeed(long dateMillis) {
     Calendar cal = Calendar.getInstance();
     cal.setTimeInMillis(dateMillis);
