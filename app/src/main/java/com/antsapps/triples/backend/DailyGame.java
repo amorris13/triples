@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class DailyGame extends Game {
   private Date mDateCompleted;
 
   public static long getStartOfDaySeed(long dateMillis) {
-    Calendar cal = Calendar.getInstance();
+    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     cal.setTimeInMillis(dateMillis);
     cal.set(Calendar.HOUR_OF_DAY, 0);
     cal.set(Calendar.MINUTE, 0);

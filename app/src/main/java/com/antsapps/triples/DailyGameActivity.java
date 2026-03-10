@@ -16,6 +16,7 @@ import com.antsapps.triples.backend.OnTimerTickListener;
 import com.antsapps.triples.views.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
 import java.text.DateFormat;
+import java.util.TimeZone;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +47,9 @@ public class DailyGameActivity extends BaseGameActivity
     mGame.addOnUpdateCardsInPlayListener(this);
 
     TextView dateText = findViewById(R.id.daily_date_text);
-    dateText.setText(DateFormat.getDateInstance().format(mGame.getDateStarted()));
+    DateFormat df = DateFormat.getDateInstance();
+    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+    dateText.setText(df.format(mGame.getDateStarted()));
 
     mCardsView = findViewById(R.id.cards_view);
 
