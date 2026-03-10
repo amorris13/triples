@@ -212,9 +212,12 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   }
 
   public void refreshDrawables() {
-    // Invalidate all card views
+    // Invalidate and refresh all card views
     for (int i = 0; i < getChildCount(); i++) {
-      getChildAt(i).invalidate();
+      View child = getChildAt(i);
+      if (child instanceof CardView) {
+        ((CardView) child).refresh();
+      }
     }
   }
 

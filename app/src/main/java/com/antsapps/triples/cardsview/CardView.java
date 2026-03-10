@@ -89,6 +89,15 @@ public class CardView extends View {
     return mCard;
   }
 
+  public void refresh() {
+    mCardBackground = new CardBackgroundDrawable(getContext());
+    if (mCard != null) {
+      mSymbol = new SymbolDrawable(getContext(), mCard);
+    }
+    regenerateCache();
+    invalidate();
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
