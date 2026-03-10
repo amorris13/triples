@@ -3,10 +3,14 @@ package com.antsapps.triples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.backend.Application;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -41,10 +45,24 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     applyTheme();
     super.onCreate(savedInstanceState);
+    setupEdgeToEdge();
     PlayGamesSdk.initialize(this);
 
     mFirebaseAuth = FirebaseAuth.getInstance();
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+  }
+
+  private void setupEdgeToEdge() {
+    View rootView = findViewById(android.R.id.content);
+    if (rootView != null) {
+      ViewCompat.setOnApplyWindowInsetsListener(
+          rootView,
+          (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+          });
+    }
   }
 
   private void applyTheme() {
