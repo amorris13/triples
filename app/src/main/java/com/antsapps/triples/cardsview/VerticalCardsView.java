@@ -11,8 +11,6 @@ import java.util.List;
 
 public class VerticalCardsView extends CardsView {
 
-  public static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
-
   public static final int COLUMNS = 3;
 
   private int mWidthOfCard;
@@ -52,7 +50,7 @@ public class VerticalCardsView extends CardsView {
       }
     }
     mWidthOfCard = widthOfCards / COLUMNS;
-    mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
+    mHeightOfCard = (int) (mWidthOfCard * CardView.HEIGHT_OVER_WIDTH);
 
     int rows = (int) Math.ceil((double) mCards.size() / COLUMNS);
     int heightOfCards = mHeightOfCard * rows;
@@ -71,7 +69,7 @@ public class VerticalCardsView extends CardsView {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     mWidthOfCard = (right - left) / COLUMNS;
-    mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
+    mHeightOfCard = (int) (mWidthOfCard * CardView.HEIGHT_OVER_WIDTH);
     mOffScreenLocation.set(right, bottom, right + mWidthOfCard, bottom + mHeightOfCard);
     Log.i("VCV", "oL: mHOC = " + mHeightOfCard + ", mWOC = " + mWidthOfCard);
 

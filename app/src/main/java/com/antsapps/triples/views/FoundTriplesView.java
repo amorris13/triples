@@ -89,7 +89,7 @@ public class FoundTriplesView extends View {
     }
     mSlotWidth = width / COLUMNS;
     mCardWidth = mSlotWidth - 2 * mPadding;
-    mCardHeight = (int) (mCardWidth * VerticalCardsView.HEIGHT_OVER_WIDTH);
+    mCardHeight = (int) (mCardWidth * CardView.HEIGHT_OVER_WIDTH);
     mStackDisplacement = (int) (mCardHeight * STACK_DISPLACEMENT_PERCENT);
 
     int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);

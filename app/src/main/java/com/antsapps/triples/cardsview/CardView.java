@@ -8,10 +8,12 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.Interpolator;
+import androidx.annotation.Nullable;
 import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
@@ -19,21 +21,42 @@ import com.antsapps.triples.backend.Card;
 public class CardView extends View {
 
   public static final int DEFAULT_ANIMATION_DURATION_MS = 800;
+  public static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
-  private final Card mCard;
+  private Card mCard;
   private boolean mSelected = false;
   private boolean mHinted = false;
   private boolean mShakeAnimating = false;
   private Bitmap mCachedBitmap;
-  private final CardBackgroundDrawable mCardBackground;
-  private final SymbolDrawable mSymbol;
+  private CardBackgroundDrawable mCardBackground;
+  private SymbolDrawable mSymbol;
   private boolean mShouldSlideIn = false;
+
+  public CardView(Context context) {
+    super(context);
+    init(context);
+  }
+
+  public CardView(Context context, @Nullable AttributeSet attrs) {
+    this(context, attrs, 0);
+  }
+
+  public CardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+    init(context);
+  }
 
   public CardView(Context context, Card card) {
     super(context);
     mCard = card;
+    init(context);
+  }
+
+  private void init(Context context) {
     mCardBackground = new CardBackgroundDrawable(context);
-    mSymbol = new SymbolDrawable(context, mCard);
+    if (mCard != null) {
+      mSymbol = new SymbolDrawable(context, mCard);
+    }
     setClickable(true);
     setFocusable(true);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -45,8 +68,22 @@ public class CardView extends View {
     }
   }
 
+  public void setCard(Card card) {
+    mCard = card;
+    mSymbol = new SymbolDrawable(getContext(), mCard);
+    regenerateCache();
+    invalidate();
+  }
+
   public Card getCard() {
     return mCard;
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    int height = (int) (width * HEIGHT_OVER_WIDTH);
+    setMeasuredDimension(width, height);
   }
 
   @Override
@@ -71,16 +108,18 @@ public class CardView extends View {
     mCardBackground.setHinted(mHinted);
     mCardBackground.draw(canvas);
 
-    for (Rect rect : CardCustomizationUtils.getBoundsForNumId(mCard.mNumber, bounds)) {
-      mSymbol.setBounds(rect);
-      mSymbol.draw(canvas);
+    if (mSymbol != null) {
+      for (Rect rect : CardCustomizationUtils.getBoundsForNumId(mCard.mNumber, bounds)) {
+        mSymbol.setBounds(rect);
+        mSymbol.draw(canvas);
+      }
     }
   }
 
   private void regenerateCache() {
     int width = getWidth();
     int height = getHeight();
-    if (width <= 0 || height <= 0) {
+    if (width <= 0 || height <= 0 || mCard == null) {
       return;
     }
 
