@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.Set;
 
-public class HelpActivity extends HelpActivityBase implements OnValidTripleSelectedListener {
+public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSelectedListener {
 
   private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -33,8 +33,6 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.help);
-
-    getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
     mHelpCardsView = (CardsView) findViewById(R.id.cards_view);
     mHelpCardsView.setOnValidTripleSelectedListener(this);

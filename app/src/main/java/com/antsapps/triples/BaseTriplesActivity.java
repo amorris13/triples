@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.backend.Application;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -45,6 +46,19 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
 
     mFirebaseAuth = FirebaseAuth.getInstance();
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+  }
+
+  @Override
+  public void setContentView(int layoutResID) {
+    super.setContentView(layoutResID);
+    setupToolbar();
+  }
+
+  private void setupToolbar() {
+    Toolbar toolbar = findViewById(R.id.toolbar);
+    if (toolbar != null) {
+      setSupportActionBar(toolbar);
+    }
   }
 
   private void applyTheme() {

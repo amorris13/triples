@@ -47,8 +47,7 @@
     <activity
       android:name=".HelpActivity"
       android:label="@string/help"
-      android:screenOrientation="portrait"
-      android:theme="@style/HelpDialog" />
+      android:screenOrientation="portrait" />
     <activity
       android:name=".SettingsActivity"
       android:label="@string/settings"
