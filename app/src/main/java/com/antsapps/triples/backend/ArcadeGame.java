@@ -10,8 +10,6 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   public static final long TIME_LIMIT_MS = 1 * 60 * 1000;
   public static final String GAME_TYPE_FOR_ANALYTICS = "arcade";
 
-  private int mNumTriplesFound;
-
   public static ArcadeGame createFromSeed(long seed) {
     ArcadeGame game =
         new ArcadeGame(
