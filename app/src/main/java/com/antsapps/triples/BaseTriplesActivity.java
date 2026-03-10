@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.OnStateChangedListener;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.antsapps.triples.backend.OnStateChangedListener;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
 import com.google.android.gms.tasks.Task;
@@ -176,22 +176,25 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     AchievementManager.syncAchievements(this, application);
 
     if (!mIsSyncing) {
-        mIsSyncing = true;
-        CloudSaveManager.syncAll(this, application).addOnCompleteListener(t -> {
-            mIsSyncing = false;
-        });
+      mIsSyncing = true;
+      CloudSaveManager.syncAll(this, application)
+          .addOnCompleteListener(
+              t -> {
+                mIsSyncing = false;
+              });
     }
 
     if (mOnStateChangedListener == null) {
-        mOnStateChangedListener = new OnStateChangedListener() {
-          @Override
-          public void onStateChanged() {
-            if (isSignedIn() && !mIsSyncing) {
-              CloudSaveManager.saveAll(BaseTriplesActivity.this, application);
+      mOnStateChangedListener =
+          new OnStateChangedListener() {
+            @Override
+            public void onStateChanged() {
+              if (isSignedIn() && !mIsSyncing) {
+                CloudSaveManager.saveAll(BaseTriplesActivity.this, application);
+              }
             }
-          }
-        };
-        application.addOnStateChangedListener(mOnStateChangedListener);
+          };
+      application.addOnStateChangedListener(mOnStateChangedListener);
     }
   }
 
@@ -245,11 +248,11 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
 
   @Override
   protected void onDestroy() {
-      if (mOnStateChangedListener != null) {
-          Application.getInstance(this).removeOnStateChangedListener(mOnStateChangedListener);
-          mOnStateChangedListener = null;
-      }
-      super.onDestroy();
+    if (mOnStateChangedListener != null) {
+      Application.getInstance(this).removeOnStateChangedListener(mOnStateChangedListener);
+      mOnStateChangedListener = null;
+    }
+    super.onDestroy();
   }
 
   @Override

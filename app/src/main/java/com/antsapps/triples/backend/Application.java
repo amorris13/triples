@@ -352,37 +352,42 @@ public class Application extends OnStateChangedReporter {
 
   public boolean mergeClassicCurrent(ClassicGame cloudGame) {
     ClassicGame localCurrent = Iterables.getFirst(getCurrentClassicGames(), null);
-    if (localCurrent == null || cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed() || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining()) {
-        if (localCurrent != null) {
-            deleteClassicGame(localCurrent);
-        }
-        addClassicGame(cloudGame);
-        return true;
+    if (localCurrent == null
+        || cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed()
+        || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining()) {
+      if (localCurrent != null) {
+        deleteClassicGame(localCurrent);
+      }
+      addClassicGame(cloudGame);
+      return true;
     }
     return false;
   }
 
   public boolean mergeArcadeCurrent(ArcadeGame cloudGame) {
     ArcadeGame localCurrent = Iterables.getFirst(getCurrentArcadeGames(), null);
-    if (localCurrent == null || cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
-        if (localCurrent != null) {
-            deleteArcadeGame(localCurrent);
-        }
-        addArcadeGame(cloudGame);
-        return true;
+    if (localCurrent == null
+        || cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
+      if (localCurrent != null) {
+        deleteArcadeGame(localCurrent);
+      }
+      addArcadeGame(cloudGame);
+      return true;
     }
     return false;
   }
 
   public boolean mergeDailyCurrent(DailyGame cloudGame) {
     DailyGame local = getDailyGameBySeed(cloudGame.getRandomSeed());
-    if (local == null || (local.getGameState() != GameState.COMPLETED && cloudGame.getNumTriplesFound() > local.getNumTriplesFound())) {
-        if (local != null) {
-            mDailyGames.remove(local);
-            database.removeDailyGame(local);
-        }
-        addDailyGame(cloudGame);
-        return true;
+    if (local == null
+        || (local.getGameState() != GameState.COMPLETED
+            && cloudGame.getNumTriplesFound() > local.getNumTriplesFound())) {
+      if (local != null) {
+        mDailyGames.remove(local);
+        database.removeDailyGame(local);
+      }
+      addDailyGame(cloudGame);
+      return true;
     }
     return false;
   }
@@ -390,6 +395,7 @@ public class Application extends OnStateChangedReporter {
   public List<DailyGame> getDailyGames() {
     return Lists.newArrayList(mDailyGames);
   }
+
   public void clearAllData() {
     mClassicGames.clear();
     mArcadeGames.clear();
