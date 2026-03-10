@@ -16,15 +16,22 @@ import java.util.Arrays;
 
 public class CardBackgroundDrawable extends Drawable {
 
-  private static final int SHADOW_OFFSET_VERTICAL = 4;
+  private static final int SHADOW_OFFSET_VERTICAL_DP = 2;
 
-  private static final int SHADOW_OFFSET_HORIZONTAL = 4;
+  private static final int SHADOW_OFFSET_HORIZONTAL_DP = 2;
 
-  private static final int CORNER_RADIUS = 8;
+  private static final int CORNER_RADIUS_DP = 4;
 
   public static final int INSET_DP = 8;
 
+  private static final int SELECTION_STROKE_WIDTH_DP = 2;
+  private static final int HINT_STROKE_WIDTH_DP = 6;
+  private static final int HINT_DASH_ON_DP = 8;
+  private static final int HINT_DASH_OFF_DP = 4;
+
   private final int mInsetPx;
+  private final int mShadowOffsetVerticalPx;
+  private final int mShadowOffsetHorizontalPx;
 
   private final RoundRectShape mCardShape;
 
@@ -40,10 +47,13 @@ public class CardBackgroundDrawable extends Drawable {
   private boolean mHinted;
 
   public CardBackgroundDrawable(Context context) {
-    mInsetPx = (int) context.getResources().getDisplayMetrics().density * INSET_DP;
+    float density = context.getResources().getDisplayMetrics().density;
+    mInsetPx = (int) (density * INSET_DP);
+    mShadowOffsetVerticalPx = (int) (density * SHADOW_OFFSET_VERTICAL_DP);
+    mShadowOffsetHorizontalPx = (int) (density * SHADOW_OFFSET_HORIZONTAL_DP);
 
     float[] outerR = new float[8];
-    Arrays.fill(outerR, CORNER_RADIUS);
+    Arrays.fill(outerR, CORNER_RADIUS_DP * density);
     mCardShape = new RoundRectShape(outerR, null, null);
 
     mBackground = new ShapeDrawable(mCardShape);
@@ -55,13 +65,17 @@ public class CardBackgroundDrawable extends Drawable {
     mOutline = new ShapeDrawable(mCardShape);
     mOutline.getPaint().setStyle(Paint.Style.STROKE);
     mOutline.getPaint().setColor(ContextCompat.getColor(context, R.color.card_selected_outline));
-    mOutline.getPaint().setStrokeWidth(5);
+    mOutline.getPaint().setStrokeWidth(SELECTION_STROKE_WIDTH_DP * density);
 
     mHintOutline = new ShapeDrawable(mCardShape);
     mHintOutline.getPaint().setStyle(Paint.Style.STROKE);
     mHintOutline.getPaint().setColor(ContextCompat.getColor(context, R.color.card_hint_outline));
-    mHintOutline.getPaint().setStrokeWidth(15);
-    mHintOutline.getPaint().setPathEffect(new DashPathEffect(new float[] {20, 10}, 0));
+    mHintOutline.getPaint().setStrokeWidth(HINT_STROKE_WIDTH_DP * density);
+    mHintOutline
+        .getPaint()
+        .setPathEffect(
+            new DashPathEffect(
+                new float[] {HINT_DASH_ON_DP * density, HINT_DASH_OFF_DP * density}, 0));
 
     mBorder = new ShapeDrawable(mCardShape);
     mBorder.getPaint().setStyle(Paint.Style.STROKE);
@@ -122,7 +136,7 @@ public class CardBackgroundDrawable extends Drawable {
     mHintOutline.setBounds(cardBounds);
     mBorder.setBounds(cardBounds);
 
-    cardBounds.offset(SHADOW_OFFSET_HORIZONTAL, SHADOW_OFFSET_VERTICAL);
+    cardBounds.offset(mShadowOffsetHorizontalPx, mShadowOffsetVerticalPx);
     mShadow.setBounds(cardBounds);
   }
 }
