@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
