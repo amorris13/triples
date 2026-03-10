@@ -3,14 +3,18 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="?attr/colorSurface">
+  android:background="?attr/colorSurface"
+  android:clipChildren="false"
+  android:clipToPadding="false">
 
   <ViewStub
     android:id="@+id/status_bar"
     android:inflatedId="@+id/status_bar"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true" />
+    android:layout_alignParentBottom="true"
+    android:clipChildren="false"
+    android:clipToPadding="false" />
 
   <View
     android:id="@+id/bottom_separator"
@@ -22,12 +26,14 @@
   <ViewAnimator
     android:id="@+id/view_switcher"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:layout_above="@id/bottom_separator"
     android:layout_alignParentTop="true"
-    android:measureAllChildren="false">
+    android:measureAllChildren="false"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <include
       android:layout_width="fill_parent"

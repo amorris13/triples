@@ -1,23 +1,20 @@
 package com.antsapps.triples;
 
-import androidx.appcompat.app.AppCompatActivity;
+import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
-
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Random;
-
-import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 public class HelpActivity extends HelpActivityBase implements OnValidTripleSelectedListener {
 
@@ -51,14 +48,13 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
     mCardsShown = newCards;
     updateTextExplanation();
 
-    findViewById(R.id.beginner_tutorial_button).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Intent intent = new Intent(HelpActivity.this, ZenGameActivity.class);
-        intent.putExtra(ZenGameActivity.IS_BEGINNER, true);
-        startActivity(intent);
-      }
-    });
+    findViewById(R.id.beginner_tutorial_button)
+        .setOnClickListener(
+            v -> {
+              Intent intent = new Intent(HelpActivity.this, ZenGameActivity.class);
+              intent.putExtra(ZenGameActivity.IS_BEGINNER, true);
+              startActivity(intent);
+            });
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.VIEW_HELP, null);
@@ -104,7 +100,9 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
     }
   }
 
-  /** @return true if all the same, false otherwise. */
+  /**
+   * @return true if all the same, false otherwise.
+   */
   private static boolean checkField(Field property, ImmutableList<Card> cards) {
     try {
       return property.getInt(cards.get(0)) == property.getInt(cards.get(1))

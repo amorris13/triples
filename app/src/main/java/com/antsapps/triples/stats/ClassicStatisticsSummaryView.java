@@ -5,12 +5,10 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
-
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 

@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Serializes and deserializes game data for cloud storage using Protocol Buffers.
- */
+/** Serializes and deserializes game data for cloud storage using Protocol Buffers. */
 public class CloudSaveSerializer {
   private static final String TAG = "CloudSaveSerializer";
 

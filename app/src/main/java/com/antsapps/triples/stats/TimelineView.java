@@ -2,12 +2,11 @@ package com.antsapps.triples.stats;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import androidx.core.content.ContextCompat;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
-
+import androidx.core.content.ContextCompat;
 import java.util.List;
 
 public class TimelineView extends View {
@@ -24,7 +23,8 @@ public class TimelineView extends View {
     super(context, attrs);
   }
 
-  public void setTripleFindTimes(List<Long> tripleFindTimes, long maxTime, int fastestIndex, int slowestIndex) {
+  public void setTripleFindTimes(
+      List<Long> tripleFindTimes, long maxTime, int fastestIndex, int slowestIndex) {
     mTripleFindTimes = tripleFindTimes;
     mMaxTime = maxTime;
     mFastestIndex = fastestIndex;
@@ -47,7 +47,8 @@ public class TimelineView extends View {
     float availableWidth = width - 2 * padding;
 
     Paint linePaint = new Paint();
-    linePaint.setColor(ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_text_secondary));
+    linePaint.setColor(
+        ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_text_secondary));
     linePaint.setStrokeWidth(2 * density);
     canvas.drawLine(padding, height / 2, width - padding, height / 2, linePaint);
 
@@ -55,9 +56,12 @@ public class TimelineView extends View {
     pointPaint.setStrokeWidth(8 * density);
     pointPaint.setStrokeCap(Paint.Cap.ROUND);
 
-    int colorFastest = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_fastest);
-    int colorSlowest = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_slowest);
-    int colorDefault = ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_timeline_point);
+    int colorFastest =
+        ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_fastest);
+    int colorSlowest =
+        ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_slowest);
+    int colorDefault =
+        ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_timeline_point);
 
     for (int i = 0; i < mTripleFindTimes.size(); i++) {
       long time = mTripleFindTimes.get(i);
@@ -73,14 +77,15 @@ public class TimelineView extends View {
     }
 
     Paint textPaint = new Paint();
-    textPaint.setColor(ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_text_secondary));
+    textPaint.setColor(
+        ContextCompat.getColor(getContext(), com.antsapps.triples.R.color.color_text_secondary));
     textPaint.setTextSize(10 * density);
     textPaint.setAntiAlias(true);
     textPaint.setTextAlign(Paint.Align.CENTER);
 
     canvas.drawText("0:00", padding, height / 2 + 20 * density, textPaint);
 
-    String endTime = android.text.format.DateUtils.formatElapsedTime(mMaxTime / 1000);
+    String endTime = DateUtils.formatElapsedTime(mMaxTime / 1000);
     canvas.drawText(endTime, width - padding, height / 2 + 20 * density, textPaint);
   }
 }

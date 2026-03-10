@@ -1,7 +1,6 @@
 package com.antsapps.triples.backend;
 
 import com.google.common.collect.Sets;
-
 import java.util.Collection;
 
 public abstract class OnStateChangedReporter {

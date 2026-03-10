@@ -1,7 +1,7 @@
 package com.antsapps.triples.cardsview;
 
+import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
@@ -9,15 +9,12 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.content.Context;
-import androidx.core.content.ContextCompat;
 import android.graphics.drawable.shapes.RoundRectShape;
-
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.R;
-
 import java.util.Arrays;
 
-class CardBackgroundDrawable extends Drawable {
+public class CardBackgroundDrawable extends Drawable {
 
   private static final int SHADOW_OFFSET_VERTICAL = 4;
 
@@ -25,7 +22,9 @@ class CardBackgroundDrawable extends Drawable {
 
   private static final int CORNER_RADIUS = 8;
 
-  private static final int INSET_PX = 15;
+  public static final int INSET_DP = 8;
+
+  private final int mInsetPx;
 
   private final RoundRectShape mCardShape;
 
@@ -40,7 +39,9 @@ class CardBackgroundDrawable extends Drawable {
   private boolean mSelected;
   private boolean mHinted;
 
-  CardBackgroundDrawable(Context context) {
+  public CardBackgroundDrawable(Context context) {
+    mInsetPx = (int) context.getResources().getDisplayMetrics().density * INSET_DP;
+
     float[] outerR = new float[8];
     Arrays.fill(outerR, CORNER_RADIUS);
     mCardShape = new RoundRectShape(outerR, null, null);
@@ -115,7 +116,7 @@ class CardBackgroundDrawable extends Drawable {
   @Override
   public void setBounds(Rect bounds) {
     Rect cardBounds = new Rect(bounds);
-    cardBounds.inset(INSET_PX, INSET_PX);
+    cardBounds.inset(mInsetPx, mInsetPx);
     mBackground.setBounds(cardBounds);
     mOutline.setBounds(cardBounds);
     mHintOutline.setBounds(cardBounds);

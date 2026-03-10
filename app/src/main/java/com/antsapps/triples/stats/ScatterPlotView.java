@@ -7,10 +7,8 @@ import android.graphics.Paint;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
-
 import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 

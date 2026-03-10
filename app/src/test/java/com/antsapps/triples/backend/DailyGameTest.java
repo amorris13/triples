@@ -2,7 +2,6 @@ package com.antsapps.triples.backend;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;

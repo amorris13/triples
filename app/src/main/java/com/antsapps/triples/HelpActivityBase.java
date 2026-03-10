@@ -14,8 +14,9 @@ public abstract class HelpActivityBase extends AppCompatActivity {
   }
 
   private void applyTheme() {
-    String theme = PreferenceManager.getDefaultSharedPreferences(this)
-        .getString(getString(R.string.pref_theme), "system");
+    String theme =
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.pref_theme), "system");
     switch (theme) {
       case "light":
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

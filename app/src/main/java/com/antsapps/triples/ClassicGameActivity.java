@@ -2,11 +2,10 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.view.ViewStub;
 import android.widget.TextView;
-
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
@@ -14,7 +13,6 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
 import com.google.android.gms.games.PlayGames;
 import com.google.common.collect.ImmutableList;
-
 import java.util.concurrent.TimeUnit;
 
 /** Classic Game */
@@ -47,7 +45,7 @@ public class ClassicGameActivity extends BaseGameActivity
 
   @Override
   protected int getAccentColor() {
-    return androidx.core.content.ContextCompat.getColor(this, R.color.classic_accent);
+    return ContextCompat.getColor(this, R.color.classic_accent);
   }
 
   @Override

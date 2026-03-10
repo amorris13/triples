@@ -1,12 +1,10 @@
 package com.antsapps.triples;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.appcompat.app.ActionBar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -18,14 +16,13 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
-
-import androidx.core.view.MenuItemCompat;
+import androidx.appcompat.app.ActionBar;
+import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
-import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.ClassicStatistics;
+import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
@@ -33,12 +30,11 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +46,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public static final int VIEW_COMPLETED = 2;
 
   private ViewAnimator mViewAnimator;
-  private CardsView mCardsView;
+  protected CardsView mCardsView;
   private GameState mGameState;
 
   private boolean shouldSubmitScoreOnSignIn = false;
@@ -67,21 +63,26 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     GameState originalGameState = getGame().getGameState();
 
     mCardsView = (CardsView) findViewById(R.id.cards_view);
-    mCardsView.setOnValidTripleSelectedListener(getGame());
+    if (mCardsView.getOnValidTripleSelectedListener() == null) {
+      mCardsView.setOnValidTripleSelectedListener(getGame());
+    }
     mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
     getGame().setGameRenderer(mCardsView);
 
-    mCardsView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            // Ensure width and height are greater than 0 before refreshing drawables
-            if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
-                mCardsView.refreshDrawables();
-                mCardsView.updateBounds();
-                mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        }
-    });
+    mCardsView
+        .getViewTreeObserver()
+        .addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override
+              public void onGlobalLayout() {
+                // Ensure width and height are greater than 0 before refreshing drawables
+                if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+                  mCardsView.refreshDrawables();
+                  mCardsView.updateBounds();
+                  mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+              }
+            });
 
     mViewAnimator = findViewById(R.id.view_switcher);
 
@@ -92,9 +93,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
     ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
-    findViewById(R.id.rate_app).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
-    findViewById(R.id.statistics_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
-    findViewById(R.id.new_game_button).setBackgroundTintList(android.content.res.ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.rate_app).setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.statistics_button)
+        .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.new_game_button)
+        .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
 
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
@@ -163,7 +166,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
       startActivity(settingsIntent);
       return true;
-    } else if (itemId == android.R.id.home) {// app icon in action bar clicked; go up one level
+    } else if (itemId == android.R.id.home) { // app icon in action bar clicked; go up one level
       finish();
       return true;
     }
@@ -187,28 +190,18 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       builder.setView(checkBoxView);
       builder.setPositiveButton(
           R.string.yes,
-          new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              if (checkBox.isChecked()) {
-                sharedPref
-                    .edit()
-                    .putBoolean(getString(R.string.pref_dont_ask_for_hint), true)
-                    .commit();
-              }
-              getGame().addHint();
-              logGameEvent(AnalyticsConstants.Event.USE_HINT);
-              updateHintUsedIndicator();
+          (dialog, which) -> {
+            if (checkBox.isChecked()) {
+              sharedPref
+                  .edit()
+                  .putBoolean(getString(R.string.pref_dont_ask_for_hint), true)
+                  .commit();
             }
+            getGame().addHint();
+            logGameEvent(AnalyticsConstants.Event.USE_HINT);
+            updateHintUsedIndicator();
           });
-      builder.setNegativeButton(
-          R.string.no,
-          new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              // do nothing
-            }
-          });
+      builder.setNegativeButton(R.string.no, (dialog, which) -> {});
       builder.show();
     }
   }
@@ -232,16 +225,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    if (sharedPref.getBoolean(getString(R.string.pref_orientation_lock), false)) {
-      String orientation = sharedPref.getString(getString(R.string.pref_orientation), "portrait");
-      if (orientation.equals("portrait")) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-      } else if (orientation.equals("landscape")) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-      }
-    } else {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
     if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
       mCardsView.refreshDrawables();
     }
@@ -365,7 +348,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       if (game instanceof ClassicGame) {
         outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
       } else if (game instanceof ArcadeGame) {
-        outputTv.setText(getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
+        outputTv.setText(
+            getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
       } else if (game instanceof DailyGame) {
         outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
       }
@@ -373,15 +357,18 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
       fastestTv.setText(formatElapsedTime(fastest));
       fastestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.green_dot, 0, 0, 0);
-      fastestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
+      fastestTv.setCompoundDrawablePadding(
+          getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
       TextView slowestTv = (TextView) findViewById(R.id.slowest_triple);
       slowestTv.setText(formatElapsedTime(slowest));
       slowestTv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.red_dot, 0, 0, 0);
-      slowestTv.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
+      slowestTv.setCompoundDrawablePadding(
+          getResources().getDimensionPixelSize(R.dimen.triple_dot_padding));
 
       TimelineView timelineView = (TimelineView) findViewById(R.id.timeline);
-      timelineView.setTripleFindTimes(findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
+      timelineView.setTripleFindTimes(
+          findTimes, getGame().getTimeElapsed(), fastestIndex, slowestIndex);
 
       updatePerformanceDescription();
     }
@@ -406,13 +393,21 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       int currentFound = ((ArcadeGame) game).getNumTriplesFound();
       if (currentFound >= allTimeStats.getMostFound()) {
         performanceTv.setText(R.string.performance_arcade_new_best);
-      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365))).getMostFound()) {
+      } else if (currentFound
+          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
+              .getMostFound()) {
         performanceTv.setText(R.string.performance_arcade_best_year);
-      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30))).getMostFound()) {
+      } else if (currentFound
+          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
+              .getMostFound()) {
         performanceTv.setText(R.string.performance_arcade_best_month);
-      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7))).getMostFound()) {
+      } else if (currentFound
+          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
+              .getMostFound()) {
         performanceTv.setText(R.string.performance_arcade_best_week);
-      } else if (currentFound >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1))).getMostFound()) {
+      } else if (currentFound
+          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
+              .getMostFound()) {
         performanceTv.setText(R.string.performance_arcade_best_day);
       } else if (currentFound > allTimeStats.getAverageFound()) {
         performanceTv.setText(R.string.performance_arcade_better_than_average);
@@ -429,13 +424,21 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       long currentTime = game.getTimeElapsed();
       if (currentTime <= allTimeStats.getFastestTime()) {
         performanceTv.setText(R.string.performance_classic_new_best);
-      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365))).getFastestTime()) {
+      } else if (currentTime
+          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
+              .getFastestTime()) {
         performanceTv.setText(R.string.performance_classic_best_year);
-      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30))).getFastestTime()) {
+      } else if (currentTime
+          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
+              .getFastestTime()) {
         performanceTv.setText(R.string.performance_classic_best_month);
-      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7))).getFastestTime()) {
+      } else if (currentTime
+          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
+              .getFastestTime()) {
         performanceTv.setText(R.string.performance_classic_best_week);
-      } else if (currentTime <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1))).getFastestTime()) {
+      } else if (currentTime
+          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
+              .getFastestTime()) {
         performanceTv.setText(R.string.performance_classic_best_day);
       } else if (currentTime < allTimeStats.getAverageTime()) {
         performanceTv.setText(R.string.performance_classic_better_than_average);
@@ -484,16 +487,19 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   public void rateApp(View view) {
     ReviewManager manager = ReviewManagerFactory.create(this);
-    manager.requestReviewFlow().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        // We can get the ReviewInfo object
-        ReviewInfo reviewInfo = task.getResult();
-        manager.launchReviewFlow(this, reviewInfo);
-      } else {
-        // There was some problem, log or handle
-        Log.e("BaseGameActivity", "In-app review request failed", task.getException());
-      }
-    });
+    manager
+        .requestReviewFlow()
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                ReviewInfo reviewInfo = task.getResult();
+                manager.launchReviewFlow(this, reviewInfo);
+              } else {
+                // There was some problem, log or handle
+                Log.e("BaseGameActivity", "In-app review request failed", task.getException());
+              }
+            });
   }
 
   private void logGameEvent(String event) {

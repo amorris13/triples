@@ -2,9 +2,8 @@ package com.antsapps.triples;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
+import androidx.appcompat.app.ActionBar;
 
 public class SettingsActivity extends BaseTriplesActivity {
   private SharedPreferences mSharedPref;
@@ -17,15 +16,14 @@ public class SettingsActivity extends BaseTriplesActivity {
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
-    setSignInListener(new OnSignInListener() {
-      @Override
-      public void onSignInStateChanged(boolean signedInAndConnected) {
-        SettingsFragment fragment = (SettingsFragment) getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
-        if (fragment != null) {
-          fragment.updateAccountPreferences();
-        }
-      }
-    });
+    setSignInListener(
+        signedInAndConnected -> {
+          SettingsFragment fragment =
+              (SettingsFragment) getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
+          if (fragment != null) {
+            fragment.updateAccountPreferences();
+          }
+        });
   }
 
   @Override

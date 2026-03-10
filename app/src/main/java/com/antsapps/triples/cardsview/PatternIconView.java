@@ -29,7 +29,8 @@ public class PatternIconView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    mPaint.setShader(CardCustomizationUtils.getCustomShadedShader(getContext(), Color.BLACK, mPattern));
+    mPaint.setShader(
+        CardCustomizationUtils.getCustomShadedShader(getContext(), Color.BLACK, mPattern));
     mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
     int width = getWidth();

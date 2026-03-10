@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
 import androidx.preference.SeekBarPreference;
 import com.antsapps.triples.backend.Application;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -26,7 +27,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     setupListeners(getPreferenceScreen());
 
-    SeekBarPreference animationDurationPref = findPreference(getString(R.string.pref_animation_speed));
+    SeekBarPreference animationDurationPref =
+        findPreference(getString(R.string.pref_animation_speed));
     if (animationDurationPref != null) {
       animationDurationPref.setSummary(
           getString(R.string.pref_animation_duration_summary, animationDurationPref.getValue()));
@@ -47,32 +49,37 @@ public class SettingsFragment extends PreferenceFragmentCompat
       String info = activity.getSignedInUserInfo();
       userPref.setSummary(getString(R.string.account_signed_in_as, info != null ? info : ""));
       signInOutPref.setTitle(R.string.account_sign_out);
-      signInOutPref.setOnPreferenceClickListener(preference -> {
-        activity.signOut();
-        return true;
-      });
+      signInOutPref.setOnPreferenceClickListener(
+          preference -> {
+            activity.signOut();
+            return true;
+          });
     } else {
       userPref.setSummary(R.string.account_not_signed_in);
       signInOutPref.setTitle(R.string.account_sign_in);
-      signInOutPref.setOnPreferenceClickListener(preference -> {
-        activity.signIn();
-        return true;
-      });
+      signInOutPref.setOnPreferenceClickListener(
+          preference -> {
+            activity.signIn();
+            return true;
+          });
     }
 
-    deleteDataPref.setOnPreferenceClickListener(preference -> {
-      showDeleteDataConfirmation();
-      return true;
-    });
+    deleteDataPref.setOnPreferenceClickListener(
+        preference -> {
+          showDeleteDataConfirmation();
+          return true;
+        });
   }
 
   private void showDeleteDataConfirmation() {
-    AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
-        .setTitle(R.string.account_delete_data_dialog_title)
-        .setMessage(R.string.account_delete_data_dialog_message)
-        .setPositiveButton(R.string.account_delete_button, (dialogInterface, which) -> deleteData())
-        .setNegativeButton(R.string.no, null)
-        .create();
+    AlertDialog dialog =
+        new MaterialAlertDialogBuilder(getContext())
+            .setTitle(R.string.account_delete_data_dialog_title)
+            .setMessage(R.string.account_delete_data_dialog_message)
+            .setPositiveButton(
+                R.string.account_delete_button, (dialogInterface, which) -> deleteData())
+            .setNegativeButton(R.string.no, null)
+            .create();
     dialog.show();
     Button deleteButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
     if (deleteButton != null) {
@@ -89,11 +96,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
     CloudSaveManager.deleteFromCloud(activity);
   }
 
-  private void setupListeners(androidx.preference.PreferenceGroup group) {
+  private void setupListeners(PreferenceGroup group) {
     for (int i = 0; i < group.getPreferenceCount(); i++) {
       Preference p = group.getPreference(i);
-      if (p instanceof androidx.preference.PreferenceGroup) {
-        setupListeners((androidx.preference.PreferenceGroup) p);
+      if (p instanceof PreferenceGroup) {
+        setupListeners((PreferenceGroup) p);
       } else {
         p.setOnPreferenceChangeListener(this);
       }
@@ -103,7 +110,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
   @Override
   public boolean onPreferenceChange(Preference preference, Object newValue) {
     if (preference.getKey().equals(getString(R.string.pref_animation_speed))) {
-      preference.setSummary(getString(R.string.pref_animation_duration_summary, (Integer) newValue));
+      preference.setSummary(
+          getString(R.string.pref_animation_duration_summary, (Integer) newValue));
     }
     if (preference.getKey().equals(getString(R.string.pref_theme))) {
       String theme = (String) newValue;

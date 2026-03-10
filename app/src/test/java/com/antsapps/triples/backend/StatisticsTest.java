@@ -37,7 +37,8 @@ public class StatisticsTest {
 
     List<Game> games = ImmutableList.of(g1, g2, g3);
 
-    DatePeriod<Game> period = DatePeriod.fromSince(new Date(now.getTime() - 5400 * 1000)); // 1.5 hours ago
+    DatePeriod<Game> period =
+        DatePeriod.fromSince(new Date(now.getTime() - 5400 * 1000)); // 1.5 hours ago
     List<Game> filtered = period.filter(games);
 
     assertThat(filtered).containsExactly(g2, g3).inOrder();

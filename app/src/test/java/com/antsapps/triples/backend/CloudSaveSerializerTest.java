@@ -19,20 +19,34 @@ public class CloudSaveSerializerTest {
     classicGames.add(new ClassicGame(1, 123, Collections.<Card>emptyList(),
         Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
         60000, new Date(1000000), Game.GameState.COMPLETED, false));
+    classicGames.add(new ClassicGame(2, 456, Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
+        120000, new Date(2000000), Game.GameState.COMPLETED, true));
 
     byte[] serialized = CloudSaveSerializer.serializeClassicCompleted(classicGames);
     List<ClassicGame> deserialized = CloudSaveSerializer.deserializeClassicCompleted(serialized);
 
-    assertThat(deserialized).hasSize(1);
+    assertThat(deserialized).hasSize(2);
     assertThat(deserialized.get(0).getTimeElapsed()).isEqualTo(60000);
+    assertThat(deserialized.get(1).getTimeElapsed()).isEqualTo(120000);
+    assertThat(deserialized.get(1).areHintsUsed()).isTrue();
   }
 
   @Test
   public void testArcadeCompletedRoundTrip() throws IOException {
     List<ArcadeGame> arcadeGames = new ArrayList<>();
-    arcadeGames.add(new ArcadeGame(3, 789, Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(), new Deck(Collections.<Card>emptyList()),
-        ArcadeGame.TIME_LIMIT_MS + 100, new Date(3000000), Game.GameState.COMPLETED, 15, false));
+    arcadeGames.add(
+        new ArcadeGame(
+            3,
+            789,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(Collections.<Card>emptyList()),
+            ArcadeGame.TIME_LIMIT_MS + 100,
+            new Date(3000000),
+            Game.GameState.COMPLETED,
+            15,
+            false));
 
     byte[] serialized = CloudSaveSerializer.serializeArcadeCompleted(arcadeGames);
     List<ArcadeGame> deserialized = CloudSaveSerializer.deserializeArcadeCompleted(serialized);
