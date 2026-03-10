@@ -6,7 +6,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.Interpolator;
@@ -34,6 +36,13 @@ public class CardView extends View {
     mSymbol = new SymbolDrawable(context, mCard);
     setClickable(true);
     setFocusable(true);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      TypedValue outValue = new TypedValue();
+      getContext()
+          .getTheme()
+          .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+      setForeground(getContext().getDrawable(outValue.resourceId));
+    }
   }
 
   public Card getCard() {
@@ -153,6 +162,8 @@ public class CardView extends View {
   }
 
   public void animateFoundCard(Rect target, Interpolator interpolator, Runnable onFinished) {
+    setPivotX(0);
+    setPivotY(0);
     animate()
         .x(target.left)
         .y(target.top)
