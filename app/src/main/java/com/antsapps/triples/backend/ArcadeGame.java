@@ -96,7 +96,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
     }
   }
 
-  public int getNumTriplesFound() {
-    return mNumTriplesFound;
+  @Override
+  public boolean isNumTriplesFoundRelevant() {
+    return true;
   }
 }

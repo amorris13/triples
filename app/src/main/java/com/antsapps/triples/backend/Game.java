@@ -431,6 +431,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     return mNumTriplesFound;
   }
 
+  public boolean isNumTriplesFoundRelevant() {
+    return false;
+  }
+
   public Date getDateStarted() {
     return mDate;
   }

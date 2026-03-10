@@ -110,6 +110,14 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   protected abstract int getAccentColor();
 
+  protected abstract String getCompletedStats();
+
+  protected abstract void updatePerformanceDescriptionInternal(TextView performanceTv);
+
+  protected abstract String getGameType();
+
+  protected abstract void awardAchievements();
+
   /**
    * This must initialize the game (so that getGame() doesn't return null) and set the content view
    * with a layout that contains a StatusBar (R.id.status_bar) and a CardsView (R.id.cards_view).
@@ -277,7 +285,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
     if (isSignedIn()) {
       submitScore();
-      AchievementManager.awardAchievementsForGame(this, getGame());
+      if (!getGame().areHintsUsed()) {
+        awardAchievements();
+      }
       Application application = Application.getInstance(this);
       AchievementManager.awardCountAchievements(this, application);
       application.uploadToCloud(this);
@@ -303,7 +313,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  private static String formatElapsedTime(long elapsedMillis) {
+  protected static String formatElapsedTime(long elapsedMillis) {
     long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis);
     if (seconds < 3600) {
       return String.format("%d:%02d", seconds / 60, seconds % 60);
@@ -312,7 +322,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  private String formatClassicCompletedStats(long timeElapsed) {
+  protected String formatClassicCompletedStats(long timeElapsed) {
     long seconds = TimeUnit.MILLISECONDS.toSeconds(timeElapsed);
     if (seconds < 60) {
       return getString(R.string.classic_completed_stats_seconds_format, seconds);
@@ -344,15 +354,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       }
 
       TextView outputTv = (TextView) findViewById(R.id.game_output);
-      Game game = getGame();
-      if (game instanceof ClassicGame) {
-        outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
-      } else if (game instanceof ArcadeGame) {
-        outputTv.setText(
-            getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
-      } else if (game instanceof DailyGame) {
-        outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
-      }
+      outputTv.setText(getCompletedStats());
 
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
       fastestTv.setText(formatElapsedTime(fastest));
@@ -382,70 +384,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       return;
     }
 
-    Application app = Application.getInstance(this);
-    if (game instanceof ArcadeGame) {
-      ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME);
-      if (allTimeStats.getNumGames() <= 1) {
-        performanceTv.setText(R.string.performance_first_game);
-        return;
-      }
-
-      int currentFound = ((ArcadeGame) game).getNumTriplesFound();
-      if (currentFound >= allTimeStats.getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_new_best);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_year);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_month);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_week);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_day);
-      } else if (currentFound > allTimeStats.getAverageFound()) {
-        performanceTv.setText(R.string.performance_arcade_better_than_average);
-      } else {
-        performanceTv.setText(R.string.performance_arcade_worse_than_average);
-      }
-    } else if (game instanceof ClassicGame) {
-      ClassicStatistics allTimeStats = app.getClassicStatistics(Period.ALL_TIME);
-      if (allTimeStats.getNumGames() <= 1) {
-        performanceTv.setText(R.string.performance_first_game);
-        return;
-      }
-
-      long currentTime = game.getTimeElapsed();
-      if (currentTime <= allTimeStats.getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_new_best);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_year);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_month);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_week);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_day);
-      } else if (currentTime < allTimeStats.getAverageTime()) {
-        performanceTv.setText(R.string.performance_classic_better_than_average);
-      } else {
-        performanceTv.setText(R.string.performance_classic_worse_than_average);
-      }
-    }
+    updatePerformanceDescriptionInternal(performanceTv);
   }
 
   @Override
@@ -473,15 +412,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   public void showStatistics(View view) {
     Intent intent = new Intent(this, StatisticsActivity.class);
-    String gameType;
-    if (getGame() instanceof ArcadeGame) {
-      gameType = "Arcade";
-    } else if (getGame() instanceof DailyGame) {
-      gameType = "Daily";
-    } else {
-      gameType = "Classic";
-    }
-    intent.putExtra(StatisticsActivity.GAME_TYPE, gameType);
+    intent.putExtra(StatisticsActivity.GAME_TYPE, getGameType());
     startActivity(intent);
   }
 

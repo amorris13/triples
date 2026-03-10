@@ -3,6 +3,7 @@ package com.antsapps.triples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.view.ViewStub;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
@@ -39,6 +40,22 @@ public class ZenGameActivity extends BaseGameActivity {
   protected Game getGame() {
     return mGame;
   }
+
+  @Override
+  protected String getCompletedStats() {
+    return "";
+  }
+
+  @Override
+  protected void updatePerformanceDescriptionInternal(TextView performanceTv) {}
+
+  @Override
+  protected String getGameType() {
+    return "Classic";
+  }
+
+  @Override
+  protected void awardAchievements() {}
 
   @Override
   protected void saveGame() {

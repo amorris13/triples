@@ -13,6 +13,7 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameProperty;
 import com.antsapps.triples.backend.Statistics;
+import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.ShareUtil;
 import java.util.Comparator;
 
@@ -20,7 +21,8 @@ import java.util.Comparator;
 public abstract class BaseStatisticsFragment extends BaseGameListFragment
     implements OnStatisticsChangeListener,
         OnComparatorChangeListener<Game>,
-        StatisticsSelectorView.OnPeriodChangeListener {
+        StatisticsSelectorView.OnPeriodChangeListener,
+        CsvExportable {
   private BaseTriplesActivity mGameListActivity;
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED.createReversableComparator();
   private StatisticsGamesServicesView mGameServicesView;

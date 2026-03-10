@@ -14,9 +14,8 @@ public enum GameProperty {
 
   NUM_TRIPLES_FOUND(
       (lhs, rhs) -> {
-        if (lhs instanceof ArcadeGame && rhs instanceof ArcadeGame) {
-          return Ints.compare(
-              ((ArcadeGame) lhs).getNumTriplesFound(), ((ArcadeGame) rhs).getNumTriplesFound());
+        if (lhs.isNumTriplesFoundRelevant() && rhs.isNumTriplesFoundRelevant()) {
+          return Ints.compare(lhs.getNumTriplesFound(), rhs.getNumTriplesFound());
         } else {
           return 0;
         }

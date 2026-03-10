@@ -12,19 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class AchievementManager {
   private static final String TAG = "AchievementManager";
 
-  public static void awardAchievementsForGame(Context context, Game game) {
-    if (game.areHintsUsed()) {
-      return;
-    }
-
-    if (game instanceof ClassicGame) {
-      awardClassicAchievements(context, ((ClassicGame) game).getTimeElapsed());
-    } else if (game instanceof ArcadeGame) {
-      awardArcadeAchievements(context, ((ArcadeGame) game).getNumTriplesFound());
-    }
-  }
-
-  private static void awardClassicAchievements(Context context, long timeElapsed) {
+  public static void awardClassicAchievements(Context context, long timeElapsed) {
     if (timeElapsed <= TimeUnit.SECONDS.toMillis(30)) {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(GamesServices.Achievement.CLASSIC_30S);
@@ -55,7 +43,7 @@ public class AchievementManager {
     }
   }
 
-  private static void awardArcadeAchievements(Context context, int triplesFound) {
+  public static void awardArcadeAchievements(Context context, int triplesFound) {
     if (triplesFound >= 25) {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(GamesServices.Achievement.ARCADE_25_TRIPLES);
