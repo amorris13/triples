@@ -13,6 +13,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
@@ -22,12 +23,14 @@ import com.antsapps.triples.cardsview.SampleCardView;
 import com.antsapps.triples.cardsview.ShapeIconView;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class CardCustomizationPreference extends Preference {
 
   private static final String[] SHAPES = {
-    "square", "circle", "triangle", "diamond", "hexagon", "star"
+    "square", "circle", "triangle", "diamond", "hexagon", "star", "heart"
   };
   private static final String[] PATTERNS = {"stripes", "dots", "lighter", "crosshatch"};
 
@@ -36,6 +39,7 @@ public class CardCustomizationPreference extends Preference {
   private Spinner patternSpinner;
   private SampleCardView[] sampleCards = new SampleCardView[3];
   private View resetButton;
+  private View randomButton;
 
   private boolean updating = false;
 
@@ -96,6 +100,79 @@ public class CardCustomizationPreference extends Preference {
     resetButton = holder.findViewById(R.id.reset_button);
     resetButton.setOnClickListener(v -> resetToDefaults());
 
+    randomButton = holder.findViewById(R.id.random_button);
+    randomButton.setOnClickListener(v -> chooseRandom());
+
+    setupSpinners();
+    updateSampleCards();
+  }
+
+  private void chooseRandom() {
+    Random r = new Random();
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    SharedPreferences.Editor editor = prefs.edit();
+
+    // Random unique colors with contrast check
+    List<Integer> colorIndices = new ArrayList<>();
+    for (int i = 0; i < CardCustomizationUtils.PRESET_COLOR_RES.length; i++) {
+      colorIndices.add(i);
+    }
+
+    List<Integer> selectedColorIndices = new ArrayList<>();
+    while (selectedColorIndices.size() < 3) {
+      Collections.shuffle(colorIndices);
+      selectedColorIndices.clear();
+      selectedColorIndices.add(colorIndices.get(0));
+
+      for (int i = 1; i < colorIndices.size() && selectedColorIndices.size() < 3; i++) {
+        int candidateIdx = colorIndices.get(i);
+        int candidateColor =
+            ContextCompat.getColor(
+                getContext(), CardCustomizationUtils.PRESET_COLOR_RES[candidateIdx]);
+
+        boolean sufficientlyContrasting = true;
+        for (int selectedIdx : selectedColorIndices) {
+          int selectedColor =
+              ContextCompat.getColor(
+                  getContext(), CardCustomizationUtils.PRESET_COLOR_RES[selectedIdx]);
+          if (ColorUtils.calculateContrast(candidateColor, selectedColor) < 1.5) {
+            sufficientlyContrasting = false;
+            break;
+          }
+        }
+        if (sufficientlyContrasting) {
+          selectedColorIndices.add(candidateIdx);
+        }
+      }
+
+      if (selectedColorIndices.size() < 3) {
+        // Fallback: if we can't find 3 contrasting colors (unlikely with 12 colors and 1.5
+        // threshold),
+        // just take the first 3 unique ones.
+        selectedColorIndices.clear();
+        for (int i = 0; i < 3; i++) {
+          selectedColorIndices.add(colorIndices.get(i));
+        }
+      }
+    }
+
+    for (int i = 0; i < 3; i++) {
+      editor.putString(
+          getContext().getString(getColorKey(i)), String.valueOf(selectedColorIndices.get(i)));
+    }
+
+    // Random unique shapes
+    List<String> shapes = new ArrayList<>(Arrays.asList(SHAPES));
+    Collections.shuffle(shapes);
+    for (int i = 0; i < 3; i++) {
+      editor.putString(getContext().getString(getShapeKey(i)), shapes.get(i));
+    }
+
+    // Random pattern
+    editor.putString(
+        getContext().getString(R.string.pref_shaded_pattern), PATTERNS[r.nextInt(PATTERNS.length)]);
+
+    editor.apply();
     setupSpinners();
     updateSampleCards();
   }

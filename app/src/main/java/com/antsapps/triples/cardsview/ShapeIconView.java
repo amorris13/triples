@@ -34,6 +34,7 @@ public class ShapeIconView extends View {
     else if (shapeName.equals("diamond")) mShape = new DiamondShape();
     else if (shapeName.equals("hexagon")) mShape = new HexagonShape();
     else if (shapeName.equals("star")) mShape = new StarShape();
+    else if (shapeName.equals("heart")) mShape = new HeartShape();
     else mShape = new TriangleShape();
     mDrawable.setShape(mShape);
     invalidate();
