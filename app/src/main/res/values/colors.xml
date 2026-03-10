@@ -28,9 +28,6 @@
   <color name="colorOutline">#74777F</color>
   <color name="colorOutlineVariant">#C4C7CC</color>
 
-  <color name="action_bar_background">#00222d</color>
-  <color name="action_bar_stacked_background">#202020</color>
-
   <color name="classic_background">#E3F2FD</color>
   <color name="classic_accent">#1976D2</color>
 
