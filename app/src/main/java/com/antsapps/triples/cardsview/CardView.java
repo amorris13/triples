@@ -3,10 +3,13 @@ package com.antsapps.triples.cardsview;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -64,11 +67,18 @@ public class CardView extends View {
       getContext()
           .getTheme()
           .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+
       float density = getResources().getDisplayMetrics().density;
       int inset = (int) (CardBackgroundDrawable.INSET_DP * density);
-      setForeground(
-          new InsetDrawable(
-              getContext().getDrawable(outValue.resourceId), inset, inset, inset, inset));
+
+      ShapeDrawable mask = new ShapeDrawable(mCardBackground.getCardShape());
+      RippleDrawable ripple =
+          new RippleDrawable(
+              ColorStateList.valueOf(outValue.data),
+              null, // Use mask for bounded ripple
+              mask);
+
+      setForeground(new InsetDrawable(ripple, inset, inset, inset, inset));
     }
   }
 

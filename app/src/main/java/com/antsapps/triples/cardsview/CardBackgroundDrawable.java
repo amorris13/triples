@@ -113,6 +113,10 @@ public class CardBackgroundDrawable extends Drawable {
     mHinted = hinted;
   }
 
+  public RoundRectShape getCardShape() {
+    return mCardShape;
+  }
+
   @Override
   public void setBounds(Rect bounds) {
     Rect cardBounds = new Rect(bounds);
