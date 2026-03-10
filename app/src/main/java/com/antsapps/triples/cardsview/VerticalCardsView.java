@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import java.util.List;
@@ -69,15 +70,19 @@ public class VerticalCardsView extends CardsView {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (!changed) {
-      return;
-    }
-    Log.i("VCV", "oL: " + ", l = " + left + ", t = " + top + ", r = " + right + ", b = " + bottom);
     mWidthOfCard = (right - left) / COLUMNS;
     mHeightOfCard = (int) (mWidthOfCard * HEIGHT_OVER_WIDTH);
     mOffScreenLocation.set(right, bottom, right + mWidthOfCard, bottom + mHeightOfCard);
     Log.i("VCV", "oL: mHOC = " + mHeightOfCard + ", mWOC = " + mWidthOfCard);
-    updateBounds();
+
+    for (int i = 0; i < mCards.size(); i++) {
+      Card card = mCards.get(i);
+      CardView child = mCardViews.get(card);
+      if (child != null) {
+        Rect bounds = calcBounds(i);
+        child.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
+      }
+    }
   }
 
   @Override
@@ -90,12 +95,12 @@ public class VerticalCardsView extends CardsView {
   }
 
   @Override
-  protected Card getCardForPosition(int x, int y) {
-    int position = y / mHeightOfCard * COLUMNS + x / mWidthOfCard;
-    if (position < mCards.size()) {
-      return mCards.get(position);
-    } else {
-      return null;
-    }
+  protected int cardWidth() {
+      return mWidthOfCard;
+  }
+
+  @Override
+  protected int cardHeight() {
+      return mHeightOfCard;
   }
 }

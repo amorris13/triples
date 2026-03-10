@@ -10,7 +10,7 @@ import com.antsapps.triples.backend.Card;
 public class SampleCardView extends View {
 
   private Card mCard;
-  private CardDrawable mCardDrawable;
+  private CardView mCardView;
 
   public SampleCardView(Context context) {
     this(context, null);
@@ -22,17 +22,15 @@ public class SampleCardView extends View {
 
   public void setCard(Card card) {
     mCard = card;
-    mCardDrawable = new CardDrawable(getContext(), null, mCard);
+    mCardView = new CardView(getContext(), mCard);
     invalidate();
   }
 
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    if (mCardDrawable != null) {
-      Rect bounds = new Rect(0, 0, getWidth(), getHeight());
-      mCardDrawable.updateBounds(bounds, false);
-      mCardDrawable.draw(canvas);
+    if (mCardView != null) {
+      mCardView.drawCardContent(canvas, new Rect(0, 0, getWidth(), getHeight()));
     }
   }
 
