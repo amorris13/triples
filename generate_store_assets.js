@@ -139,8 +139,9 @@ function createAchievementTemplate(label, mode, symbolType) {
     symbol = `<circle cx="120" cy="72" r="27" fill="none" stroke="#F44336" stroke-width="8"/>`;
   } else if (symbolType === 'hexagons') {
     symbol = `
-    <path d="M 59 58 L 87 44 L 115 58 L 115 86 L 87 100 L 59 86 Z" fill="#FFFFFF" opacity="0.8"/>
-    <path d="M 125 58 L 153 44 L 181 58 L 181 86 L 153 100 L 125 86 Z" fill="#FFFFFF" opacity="0.8"/>`;
+    <path d="M 26 80 L 54 66 L 82 80 L 82 108 L 54 122 L 26 108 Z" fill="#F44336"/>
+    <path d="M 92 80 L 120 66 L 148 80 L 148 108 L 120 122 L 92 108 Z" fill="#F44336"/>
+    <path d="M 158 80 L 186 66 L 214 80 L 214 108 L 186 122 L 158 108 Z" fill="#F44336"/>`;
   }
 
   return `
