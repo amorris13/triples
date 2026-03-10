@@ -81,6 +81,14 @@ async function generateAchievements() {
        const count = name.split(' ')[1];
        fileName = `arcade_triples_${count}.png`;
        template = createAchievementTemplate(`${count} Triples`, 'arcade', 'triangles');
+    } else if (name.startsWith('Daily: ') && name.includes('puzzle')) {
+       const count = name.split(' ')[1];
+       fileName = `daily_puzzles_${count}.png`;
+       template = createAchievementTemplate(count, 'daily', 'hexagons');
+    } else if (name.startsWith('Daily: ') && name.includes('streak')) {
+       const streak = name.split(' ')[1];
+       fileName = `daily_streak_${streak}.png`;
+       template = createAchievementTemplate(`${streak} Days`, 'daily', 'hexagons');
     }
 
     if (template) {
@@ -106,7 +114,12 @@ async function generateAchievements() {
 }
 
 function createAchievementTemplate(label, mode, symbolType) {
-  const bgColor = mode === 'classic' ? '#1976D2' : '#388E3C';
+  let bgColor = '#1976D2';
+  if (mode === 'arcade') {
+    bgColor = '#388E3C';
+  } else if (mode === 'daily') {
+    bgColor = '#FF9800';
+  }
   let symbol = '';
 
   if (symbolType === 'squares') {
@@ -124,6 +137,10 @@ function createAchievementTemplate(label, mode, symbolType) {
     <path d="M 125 100 L 153 44 L 181 100 Z" fill="#FFFFFF" opacity="0.8"/>`;
   } else if (symbolType === 'circle') {
     symbol = `<circle cx="120" cy="72" r="27" fill="none" stroke="#F44336" stroke-width="8"/>`;
+  } else if (symbolType === 'hexagons') {
+    symbol = `
+    <path d="M 59 58 L 87 44 L 115 58 L 115 86 L 87 100 L 59 86 Z" fill="#FFFFFF" opacity="0.8"/>
+    <path d="M 125 58 L 153 44 L 181 58 L 181 86 L 153 100 L 125 86 Z" fill="#FFFFFF" opacity="0.8"/>`;
   }
 
   return `

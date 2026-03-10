@@ -5,8 +5,15 @@ import android.content.Context;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.google.android.gms.games.PlayGames;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class AchievementManager {
@@ -21,6 +28,8 @@ public class AchievementManager {
       awardClassicAchievements(context, ((ClassicGame) game).getTimeElapsed());
     } else if (game instanceof ArcadeGame) {
       awardArcadeAchievements(context, ((ArcadeGame) game).getNumTriplesFound());
+    } else if (game instanceof DailyGame) {
+      awardDailyAchievements(context, Application.getInstance(context));
     }
   }
 
@@ -53,6 +62,56 @@ public class AchievementManager {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(context.getString(R.string.achievement_classic__20m));
     }
+  }
+
+  private static void awardDailyAchievements(Context context, Application application) {
+    Set<Long> completedOnDaySeeds = new HashSet<>();
+    int totalSolved = 0;
+    for (DailyGame game : application.getCompletedDailyGames()) {
+      if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
+      totalSolved++;
+      long startSeed = getStartOfDay(game.getDateStarted().getTime());
+      if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
+        completedOnDaySeeds.add(startSeed);
+      }
+    }
+
+    awardDailyCountAchievements(context, totalSolved);
+
+    int longestStreak = 0;
+    int tempStreak = 0;
+    List<Long> sortedSeeds = new ArrayList<>(completedOnDaySeeds);
+    Collections.sort(sortedSeeds);
+    Calendar lastCal = null;
+    for (Long seed : sortedSeeds) {
+      Calendar currentCal = Calendar.getInstance();
+      currentCal.setTimeInMillis(seed);
+      if (lastCal != null) {
+        Calendar expectedCal = (Calendar) lastCal.clone();
+        expectedCal.add(Calendar.DAY_OF_YEAR, 1);
+        if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR)
+            && expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
+          tempStreak++;
+        } else {
+          tempStreak = 1;
+        }
+      } else {
+        tempStreak = 1;
+      }
+      lastCal = currentCal;
+      longestStreak = Math.max(longestStreak, tempStreak);
+    }
+    awardDailyStreakAchievements(context, longestStreak);
+  }
+
+  private static long getStartOfDay(long time) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTimeInMillis(time);
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    return cal.getTimeInMillis();
   }
 
   private static void awardArcadeAchievements(Context context, int triplesFound) {
@@ -108,6 +167,8 @@ public class AchievementManager {
       awardArcadeAchievements(context, maxArcadeTriples);
       awardArcadeCountAchievements(context, completedArcadeGames);
     }
+
+    awardDailyAchievements(context, application);
   }
 
   public static void awardCountAchievements(Context context, Application application) {
@@ -126,6 +187,8 @@ public class AchievementManager {
       }
     }
     awardArcadeCountAchievements(context, completedArcadeGames);
+
+    awardDailyAchievements(context, application);
   }
 
   private static void awardClassicCountAchievements(Context context, int count) {
@@ -187,6 +250,60 @@ public class AchievementManager {
     if (count >= 1) {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(context.getString(R.string.achievement_arcade_1_game));
+    }
+  }
+
+  private static void awardDailyCountAchievements(Context context, int count) {
+    if (count >= 500) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_500_puzzles));
+    }
+    if (count >= 250) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_250_puzzles));
+    }
+    if (count >= 100) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_100_puzzles));
+    }
+    if (count >= 50) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_50_puzzles));
+    }
+    if (count >= 10) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_10_puzzles));
+    }
+    if (count >= 1) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_1_puzzle));
+    }
+  }
+
+  private static void awardDailyStreakAchievements(Context context, int streak) {
+    if (streak >= 365) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_365_day_streak));
+    }
+    if (streak >= 180) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_180_day_streak));
+    }
+    if (streak >= 90) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_90_day_streak));
+    }
+    if (streak >= 30) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_30_day_streak));
+    }
+    if (streak >= 14) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_14_day_streak));
+    }
+    if (streak >= 7) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_7_day_streak));
     }
   }
 }
