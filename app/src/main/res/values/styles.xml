@@ -35,6 +35,7 @@
   </style>
 
   <style name="AppTheme" parent="Theme.Material3.DayNight">
+    <item name="android:fitsSystemWindows">true</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     <item name="colorControlNormal">?attr/colorOnSurface</item>
