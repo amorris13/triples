@@ -80,7 +80,7 @@ async function generateAchievements() {
     } else if (name.startsWith('Arcade: ') && name.includes('triples')) {
        const count = name.split(' ')[1];
        fileName = `arcade_triples_${count}.png`;
-       template = createAchievementTemplate(`${count} Triples`, 'arcade', 'triangles_alt');
+       template = createAchievementTemplate(`${count} Triples`, 'arcade', 'triangles');
     }
 
     if (template) {
