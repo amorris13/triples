@@ -5,7 +5,6 @@ import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
