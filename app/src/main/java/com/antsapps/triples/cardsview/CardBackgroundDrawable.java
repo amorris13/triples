@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import androidx.core.content.ContextCompat;
@@ -113,8 +114,9 @@ public class CardBackgroundDrawable extends Drawable {
     mHinted = hinted;
   }
 
-  public RoundRectShape getCardShape() {
-    return mCardShape;
+  public Drawable getCardMask() {
+    ShapeDrawable mask = new ShapeDrawable(mCardShape);
+    return new InsetDrawable(mask, mInsetPx, mInsetPx, mInsetPx, mInsetPx);
   }
 
   @Override
