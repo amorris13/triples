@@ -57,11 +57,12 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
     int cardHeight = cardHeight();
 
     if (cardWidth > 0 && cardHeight > 0) {
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            child.measure(MeasureSpec.makeMeasureSpec(cardWidth, MeasureSpec.EXACTLY),
-                          MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
-        }
+      for (int i = 0; i < getChildCount(); i++) {
+        View child = getChildAt(i);
+        child.measure(
+            MeasureSpec.makeMeasureSpec(cardWidth, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
+      }
     }
   }
 
@@ -79,9 +80,9 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       if (!newCards.contains(oldCard)) {
         mCurrentlySelected.remove(oldCard);
         if (mCardViews.containsKey(oldCard)) {
-            // Card was removed but not by finding it (e.g. game reset)
-            CardView cardView = mCardViews.remove(oldCard);
-            removeView(cardView);
+          // Card was removed but not by finding it (e.g. game reset)
+          CardView cardView = mCardViews.remove(oldCard);
+          removeView(cardView);
         }
       }
     }
@@ -106,7 +107,8 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       Rect target = calcBounds(i);
       if (!target.equals(EMPTY_RECT)) {
         // Animate from current translation back to 0 (the target position set by layout)
-        cardView.animate()
+        cardView
+            .animate()
             .translationX(0)
             .translationY(0)
             .alpha(1)
@@ -121,23 +123,25 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   }
 
   private CardView createCardView(Card card) {
-      CardView cardView = new CardView(getContext(), card);
-      cardView.setOnClickListener(v -> {
+    CardView cardView = new CardView(getContext(), card);
+    cardView.setOnClickListener(
+        v -> {
           if (!isEnabled()) return;
           Card tappedCard = ((CardView) v).getCard();
           if (mCurrentlySelected.contains(tappedCard)) {
-              mCurrentlySelected.remove(tappedCard);
-              ((CardView) v).setSelected(false);
+            mCurrentlySelected.remove(tappedCard);
+            ((CardView) v).setSelected(false);
           } else {
-              mCurrentlySelected.add(tappedCard);
-              ((CardView) v).setSelected(true);
+            mCurrentlySelected.add(tappedCard);
+            ((CardView) v).setSelected(true);
           }
           checkSelectedCards();
-      });
-      return cardView;
+        });
+    return cardView;
   }
 
   protected abstract int cardWidth();
+
   protected abstract int cardHeight();
 
   protected abstract void logValidTriple();
@@ -151,18 +155,21 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       Card card = mCards.get(i);
       CardView cardView = mCardViews.get(card);
       if (cardView != null) {
-        Rect oldBounds = new Rect(cardView.getLeft(), cardView.getTop(), cardView.getRight(), cardView.getBottom());
+        Rect oldBounds =
+            new Rect(
+                cardView.getLeft(), cardView.getTop(), cardView.getRight(), cardView.getBottom());
         Rect target = calcBounds(i);
         if (!target.equals(oldBounds)) {
           // Set initial translation to stay at old position after layout
           cardView.setTranslationX(oldBounds.left - target.left);
           cardView.setTranslationY(oldBounds.top - target.top);
           // Animate back to 0
-          cardView.animate()
-                  .translationX(0)
-                  .translationY(0)
-                  .setDuration(CardView.DEFAULT_ANIMATION_DURATION_MS)
-                  .start();
+          cardView
+              .animate()
+              .translationX(0)
+              .translationY(0)
+              .setDuration(CardView.DEFAULT_ANIMATION_DURATION_MS)
+              .start();
         }
       }
     }
@@ -190,7 +197,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
         for (Card card : mCurrentlySelected) {
           CardView cardView = mCardViews.get(card);
           if (cardView != null) {
-              cardView.onIncorrectTriple();
+            cardView.onIncorrectTriple();
           }
         }
       }
@@ -207,7 +214,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   public void refreshDrawables() {
     // Invalidate all card views
     for (int i = 0; i < getChildCount(); i++) {
-        getChildAt(i).invalidate();
+      getChildAt(i).invalidate();
     }
   }
 
@@ -239,7 +246,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       if (!mCurrentlyHinted.contains(selectedCard)) {
         CardView selectedView = mCardViews.get(selectedCard);
         if (selectedView != null) {
-            selectedView.setSelected(false);
+          selectedView.setSelected(false);
         }
         iter.remove();
       }

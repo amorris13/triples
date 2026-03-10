@@ -18,7 +18,6 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
-import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
