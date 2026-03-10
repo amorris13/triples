@@ -2,6 +2,9 @@ package com.antsapps.triples.backend;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -10,6 +13,26 @@ import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class DailyGameTest {
+
+  private static class TestRenderer implements Game.GameRenderer {
+    @Override
+    public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
+    @Override
+    public void addHint(Card card) {}
+
+    @Override
+    public void clearHintedCards() {}
+
+    @Override
+    public Set<Card> getSelectedCards() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public void clearSelectedCards() {}
+  }
+
 
   @Test
   public void createFromSeed_isDeterministic() {
@@ -31,6 +54,9 @@ public class DailyGameTest {
   @Test
   public void commitTriple_updatesFoundCount() {
     DailyGame game = DailyGame.createFromSeed(12345L);
+    game.setGameRenderer(new TestRenderer());
+    game.begin();
+
     List<Card> cards = game.getCardsInPlay();
     List<Set<Card>> allTriples = Game.getAllValidTriples(cards);
 
@@ -44,6 +70,9 @@ public class DailyGameTest {
   @Test
   public void commitTriple_sameTripleTwice_doesNotIncrement() {
     DailyGame game = DailyGame.createFromSeed(12345L);
+    game.setGameRenderer(new TestRenderer());
+    game.begin();
+
     List<Card> cards = game.getCardsInPlay();
     List<Set<Card>> allTriples = Game.getAllValidTriples(cards);
 
@@ -57,6 +86,9 @@ public class DailyGameTest {
   @Test
   public void commitAllTriples_finishesGame() {
     DailyGame game = DailyGame.createFromSeed(12345L);
+    game.setGameRenderer(new TestRenderer());
+    game.begin();
+
     List<Card> cards = game.getCardsInPlay();
     List<Set<Card>> allTriples = Game.getAllValidTriples(cards);
 
