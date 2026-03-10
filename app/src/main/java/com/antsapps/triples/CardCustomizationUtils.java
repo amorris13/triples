@@ -12,6 +12,7 @@ import android.graphics.drawable.shapes.Shape;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.cardsview.DiamondShape;
+import com.antsapps.triples.cardsview.HeartShape;
 import com.antsapps.triples.cardsview.HexagonShape;
 import com.antsapps.triples.cardsview.StarShape;
 import com.antsapps.triples.cardsview.TriangleShape;
@@ -90,6 +91,7 @@ public class CardCustomizationUtils {
     if (shape.equals("diamond")) return new DiamondShape();
     if (shape.equals("hexagon")) return new HexagonShape();
     if (shape.equals("star")) return new StarShape();
+    if (shape.equals("heart")) return new HeartShape();
     return new TriangleShape();
   }
 
