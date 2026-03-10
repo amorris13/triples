@@ -20,12 +20,14 @@ import androidx.appcompat.app.ActionBar;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
+import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
@@ -34,12 +36,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.common.collect.ImmutableList;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public abstract class BaseGameActivity extends BaseTriplesActivity
-    implements OnUpdateGameStateListener {
+    implements OnUpdateGameStateListener, OnUpdateCardsInPlayListener {
 
   public static final int VIEW_CARDS = 0;
   public static final int VIEW_PAUSED = 1;
@@ -89,8 +93,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
-    getGame().begin();
-
     findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
     ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
     findViewById(R.id.rate_app).setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
@@ -99,11 +101,13 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     findViewById(R.id.new_game_button)
         .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
 
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+    getGame().begin();
+
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
     }
-
-    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
 
   protected abstract Game getGame();
@@ -173,6 +177,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     return super.onOptionsItemSelected(item);
   }
 
+  @Override
+  public void onUpdateCardsInPlay(
+      ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards,
+      int numRemaining,
+      int numTriplesFound) {}
+
+  public void animateFoundTriple(Set<Card> triple) {
+    mCardsView.animateTripleFoundToOffscreen(triple);
+  }
+
   private void handleHintSelection() {
     final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_dont_ask_for_hint), false)) {
@@ -206,7 +221,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  protected void updateHintUsedIndicator() {
+  private void updateHintUsedIndicator() {
     View hintUsedIndicator = findViewById(R.id.hint_used_text);
     if (hintUsedIndicator != null) {
       hintUsedIndicator.setVisibility(getGame().areHintsUsed() ? View.VISIBLE : View.GONE);

@@ -1,6 +1,5 @@
 package com.antsapps.triples.backend;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.Calendar;
@@ -99,39 +98,28 @@ public class DailyGame extends Game {
     return true;
   }
 
-  public interface OnTripleFoundListener {
-    void onTripleFound(Set<Card> triple);
-  }
-
-  private OnTripleFoundListener mOnTripleFoundListener;
-
-  public void setOnTripleFoundListener(OnTripleFoundListener listener) {
-    mOnTripleFoundListener = listener;
+  @Override
+  protected boolean isValidFoundTriple(Card... cards) {
+    return super.isValidFoundTriple(cards) && !mFoundTriples.contains(Sets.newHashSet(cards));
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    Set<Card> triple = Sets.newHashSet(cards);
-    if (!mFoundTriples.contains(triple) && mAllTriples.contains(triple)) {
-      mFoundTriples.add(triple);
-      mNumTriplesFound = mFoundTriples.size();
-      mTripleFindTimes.add(mTimer.getElapsed());
+  protected void recordFoundTriple(Card... cards) {
+    super.recordFoundTriple();
+    mFoundTriples.add(Sets.newHashSet(cards));
+    mNumTriplesFound = mFoundTriples.size();
+  }
 
-      mHintedCards.clear();
-      if (mGameRenderer != null) {
-        mGameRenderer.clearHintedCards();
-      }
+  @Override
+  protected void updateDeckAfterValidTriple(Card... cards) {
+    // Nothing to do here in puzzle mode.
+  }
 
-      if (mOnTripleFoundListener != null) {
-        mOnTripleFoundListener.onTripleFound(triple);
-      }
-
-      if (mFoundTriples.size() == mAllTriples.size()) {
-        mDateCompleted = new Date();
-        finish();
-      } else {
-        dispatchCardsInPlayUpdate(ImmutableList.copyOf(mCardsInPlay));
-      }
+  @Override
+  protected void checkIfFinished() {
+    if (mFoundTriples.size() == mAllTriples.size()) {
+      mDateCompleted = new Date();
+      finish();
     }
   }
 

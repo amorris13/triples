@@ -72,9 +72,7 @@ public class ClassicGame extends Game {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
-
+  protected void checkIfFinished() {
     if (!checkIfAnyValidTriples()) {
       finish();
     }

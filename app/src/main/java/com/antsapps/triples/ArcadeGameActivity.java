@@ -83,9 +83,6 @@ public class ArcadeGameActivity extends BaseGameActivity
     triplesFound.setText(String.valueOf(numTriplesFound));
   }
 
-  @Override
-  public void onCardHinted(Card hintedCard) {}
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
