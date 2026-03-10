@@ -1,4 +1,4 @@
-package com.antsapps.triples;
+package com.antsapps.triples.stats;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+import com.antsapps.triples.DailyGameActivity;
+import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class DailyStatisticsFragment extends Fragment {
+public class DailyStatisticsActivity extends BaseStatisticsActivity {
 
   private Application mApplication;
   private List<DailyGame> mCompletedGames;
@@ -56,26 +57,28 @@ public class DailyStatisticsFragment extends Fragment {
   private TextView mDetailTime;
 
   @Override
-  public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mApplication = Application.getInstance(getActivity());
-    View view = inflater.inflate(R.layout.daily_stats_fragment, container, false);
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_daily_statistics);
+    setTitle(R.string.daily_label);
 
-    mMonthTitle = view.findViewById(R.id.month_title);
-    mCalendarGrid = view.findViewById(R.id.calendar_grid);
-    mCurrentStreakTv = view.findViewById(R.id.current_streak_tv);
-    mLongestStreakTv = view.findViewById(R.id.longest_streak_tv);
-    mTotalSolvedTv = view.findViewById(R.id.total_solved_tv);
-    mNextMonthBtn = view.findViewById(R.id.next_month);
+    mApplication = Application.getInstance(this);
 
-    mDetailDate = view.findViewById(R.id.detail_date);
-    mDetailStatus = view.findViewById(R.id.detail_status);
-    mDetailPlayBtn = view.findViewById(R.id.detail_play_btn);
+    mMonthTitle = findViewById(R.id.month_title);
+    mCalendarGrid = findViewById(R.id.calendar_grid);
+    mCurrentStreakTv = findViewById(R.id.current_streak_tv);
+    mLongestStreakTv = findViewById(R.id.longest_streak_tv);
+    mTotalSolvedTv = findViewById(R.id.total_solved_tv);
+    mNextMonthBtn = findViewById(R.id.next_month);
+
+    mDetailDate = findViewById(R.id.detail_date);
+    mDetailStatus = findViewById(R.id.detail_status);
+    mDetailPlayBtn = findViewById(R.id.detail_play_btn);
     mDetailPlayBtn.setBackgroundTintList(
-        ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.daily_accent)));
-    mDetailResultsContainer = view.findViewById(R.id.detail_results_container);
-    mDetailTriples = view.findViewById(R.id.detail_triples);
-    mDetailTime = view.findViewById(R.id.detail_time);
+        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.daily_accent)));
+    mDetailResultsContainer = findViewById(R.id.detail_results_container);
+    mDetailTriples = findViewById(R.id.detail_triples);
+    mDetailTime = findViewById(R.id.detail_time);
 
     mCurrentMonth = Calendar.getInstance();
     mCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
@@ -84,7 +87,7 @@ public class DailyStatisticsFragment extends Fragment {
     mCurrentMonth.set(Calendar.SECOND, 0);
     mCurrentMonth.set(Calendar.MILLISECOND, 0);
 
-    view.findViewById(R.id.prev_month)
+    findViewById(R.id.prev_month)
         .setOnClickListener(
             v -> {
               mCurrentMonth.add(Calendar.MONTH, -1);
@@ -120,7 +123,7 @@ public class DailyStatisticsFragment extends Fragment {
 
     GestureDetector gestureDetector =
         new GestureDetector(
-            getActivity(),
+            this,
             new GestureDetector.SimpleOnGestureListener() {
               @Override
               public boolean onFling(
@@ -158,8 +161,6 @@ public class DailyStatisticsFragment extends Fragment {
 
     updateCalendar();
     updateStreaks();
-
-    return view;
   }
 
   private void updateCalendar() {
@@ -175,10 +176,7 @@ public class DailyStatisticsFragment extends Fragment {
 
     CalendarAdapter adapter =
         new CalendarAdapter(
-            getActivity(),
-            mCurrentMonth,
-            mCompletedGames,
-            getStartOfDay(mSelectedDate.getTimeInMillis()));
+            this, mCurrentMonth, mCompletedGames, getStartOfDay(mSelectedDate.getTimeInMillis()));
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener(
@@ -224,7 +222,7 @@ public class DailyStatisticsFragment extends Fragment {
       mDetailPlayBtn.setVisibility(View.VISIBLE);
       mDetailPlayBtn.setOnClickListener(
           v -> {
-            Intent intent = new Intent(getActivity(), DailyGameActivity.class);
+            Intent intent = new Intent(this, DailyGameActivity.class);
             DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
             intent.putExtra(Game.ID_TAG, newGame.getId());
             startActivity(intent);
@@ -243,9 +241,9 @@ public class DailyStatisticsFragment extends Fragment {
     }
   }
 
+  @Override
   public void exportToCsv() {
-    ShareUtil.shareCsv(
-        getActivity(), "daily_statistics.csv", CsvUtil.getDailyCsvContent(mCompletedGames));
+    ShareUtil.shareCsv(this, "daily_statistics.csv", CsvUtil.getDailyCsvContent(mCompletedGames));
   }
 
   private void updateStreaks() {

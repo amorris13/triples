@@ -17,6 +17,8 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.stats.ArcadeStatisticsActivity;
+import com.antsapps.triples.stats.ClassicStatisticsActivity;
 import org.junit.Test;
 
 public class ColoringTest extends BaseRobolectricTest {
@@ -150,10 +152,10 @@ public class ColoringTest extends BaseRobolectricTest {
   @Test
   public void testStatisticsColoring() {
     Intent intent =
-        new Intent(ApplicationProvider.getApplicationContext(), StatisticsActivity.class);
-    intent.putExtra(StatisticsActivity.GAME_TYPE, "Classic");
+        new Intent(
+            ApplicationProvider.getApplicationContext(), ClassicStatisticsActivity.class);
 
-    try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
+    try (ActivityScenario<ClassicStatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
           activity -> {
             // Check Action Bar Title is not colored
@@ -166,9 +168,11 @@ public class ColoringTest extends BaseRobolectricTest {
           });
     }
 
-    intent.putExtra(StatisticsActivity.GAME_TYPE, "Arcade");
+    intent =
+        new Intent(
+            ApplicationProvider.getApplicationContext(), ArcadeStatisticsActivity.class);
 
-    try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
+    try (ActivityScenario<ArcadeStatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
           activity -> {
             // Check Action Bar Title is not colored

@@ -472,16 +472,15 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   protected abstract Intent createNewGame();
 
   public void showStatistics(View view) {
-    Intent intent = new Intent(this, StatisticsActivity.class);
-    String gameType;
+    Class<?> activityClass;
     if (getGame() instanceof ArcadeGame) {
-      gameType = "Arcade";
+      activityClass = com.antsapps.triples.stats.ArcadeStatisticsActivity.class;
     } else if (getGame() instanceof DailyGame) {
-      gameType = "Daily";
+      activityClass = com.antsapps.triples.stats.DailyStatisticsActivity.class;
     } else {
-      gameType = "Classic";
+      activityClass = com.antsapps.triples.stats.ClassicStatisticsActivity.class;
     }
-    intent.putExtra(StatisticsActivity.GAME_TYPE, gameType);
+    Intent intent = new Intent(this, activityClass);
     startActivity(intent);
   }
 

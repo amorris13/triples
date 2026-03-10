@@ -165,8 +165,15 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void showStatistics(String gameType) {
-    Intent intent = new Intent(this, StatisticsActivity.class);
-    intent.putExtra(StatisticsActivity.GAME_TYPE, gameType);
+    Class<?> activityClass;
+    if ("Arcade".equals(gameType)) {
+      activityClass = com.antsapps.triples.stats.ArcadeStatisticsActivity.class;
+    } else if ("Daily".equals(gameType)) {
+      activityClass = com.antsapps.triples.stats.DailyStatisticsActivity.class;
+    } else {
+      activityClass = com.antsapps.triples.stats.ClassicStatisticsActivity.class;
+    }
+    Intent intent = new Intent(this, activityClass);
     startActivity(intent);
   }
 

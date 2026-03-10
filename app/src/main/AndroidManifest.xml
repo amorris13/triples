@@ -27,7 +27,13 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".StatisticsActivity"
+      android:name=".stats.ClassicStatisticsActivity"
+      android:screenOrientation="portrait" />
+    <activity
+      android:name=".stats.ArcadeStatisticsActivity"
+      android:screenOrientation="portrait" />
+    <activity
+      android:name=".stats.DailyStatisticsActivity"
       android:screenOrientation="portrait" />
     <activity
       android:name=".ClassicGameActivity"

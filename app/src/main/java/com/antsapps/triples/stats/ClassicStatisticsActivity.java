@@ -1,23 +1,26 @@
 package com.antsapps.triples.stats;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import com.antsapps.triples.GamesServices;
 import com.antsapps.triples.R;
-import com.antsapps.triples.backend.ArcadeGame;
+import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.util.CsvUtil;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
+public class ClassicStatisticsActivity extends BaseStatisticsListActivity {
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
 
@@ -34,9 +37,10 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
         v = vi.inflate(R.layout.stats_game_list_item, null);
       }
 
-      ArcadeGame g = (ArcadeGame) getItem(position);
+      Game g = getItem(position);
       if (g != null) {
-        String result = String.valueOf(g.getNumTriplesFound());
+        String result =
+            DateUtils.formatElapsedTime(TimeUnit.MILLISECONDS.toSeconds(g.getTimeElapsed()));
         if (g.areHintsUsed()) {
           result += " (hinted)";
         }
@@ -50,41 +54,49 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   }
 
   @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setTitle(R.string.classic_label);
+  }
+
+  @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getActivity(), Lists.<Game>newArrayList());
+    return new StatisticsGamesArrayAdapter(this, Lists.<Game>newArrayList());
   }
 
   @Override
   protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
-    return new ArcadeStatisticsListHeaderView(getActivity());
+    return new ClassicStatisticsListHeaderView(this);
   }
 
   @Override
   protected BaseStatisticsSummaryView createStatisticsSummaryView() {
-    return new ArcadeStatisticsSummaryView(getActivity());
+    return new ClassicStatisticsSummaryView(this);
   }
 
   @Override
   protected String getGameType() {
-    return "Arcade";
+    return "Classic";
   }
 
+  @Override
   protected String getLeaderboardId() {
-    return GamesServices.Leaderboard.ARCADE;
+    return GamesServices.Leaderboard.CLASSIC;
   }
 
+  @Override
   protected void deleteGame(Game game) {
-    mApplication.deleteArcadeGame((ArcadeGame) game);
+    mApplication.deleteClassicGame((ClassicGame) game);
   }
 
   @Override
   public void onPeriodChange(Period period) {
-    onStatisticsChange(mApplication.getArcadeStatistics(period));
+    onStatisticsChange(mApplication.getClassicStatistics(period));
   }
 
   @Override
   protected void updateDataSet() {
-    onStatisticsChange(mApplication.getArcadeStatistics(mSelectorView.getPeriod()));
+    onStatisticsChange(mApplication.getClassicStatistics(mSelectorView.getPeriod()));
   }
 
   @Override
@@ -93,6 +105,6 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
     for (int i = 0; i < mAdapter.getCount(); i++) {
       games.add(mAdapter.getItem(i));
     }
-    shareCsv("arcade_statistics.csv", CsvUtil.getArcadeCsvContent(games));
+    shareCsv("classic_statistics.csv", CsvUtil.getClassicCsvContent(games));
   }
 }
