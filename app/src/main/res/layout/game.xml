@@ -14,21 +14,28 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ViewStub
-    android:id="@+id/status_bar"
-    android:inflatedId="@+id/status_bar"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:clipChildren="false"
-    android:clipToPadding="false" />
+        <LinearLayout
+            android:id="@+id/bottom_inset_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
 
-  <View
-    android:id="@+id/bottom_separator"
-    android:layout_width="fill_parent"
-    android:layout_height="1sp"
-    android:layout_above="@id/status_bar"
-    android:background="@color/color_separator" />
+            <View
+                android:id="@+id/bottom_separator"
+                android:layout_width="match_parent"
+                android:layout_height="1sp"
+                android:background="@color/color_separator" />
+
+            <ViewStub
+                android:id="@+id/status_bar"
+                android:inflatedId="@+id/status_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false" />
+
+        </LinearLayout>
 
   <ViewAnimator
     android:id="@+id/view_switcher"

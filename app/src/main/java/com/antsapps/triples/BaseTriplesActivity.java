@@ -3,6 +3,7 @@ package com.antsapps.triples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -74,6 +75,26 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
             return insets;
           });
     }
+
+    View bottomInsetContainer = findViewById(R.id.bottom_inset_container);
+    if (bottomInsetContainer != null) {
+      ViewCompat.setOnApplyWindowInsetsListener(
+          bottomInsetContainer,
+          (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, 0, 0, systemBars.bottom);
+            return insets;
+          });
+    }
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == android.R.id.home) {
+      onBackPressed();
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   private void applyTheme() {
