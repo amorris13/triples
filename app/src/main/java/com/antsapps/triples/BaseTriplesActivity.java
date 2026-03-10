@@ -3,11 +3,15 @@ package com.antsapps.triples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.backend.Application;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -58,6 +62,17 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     Toolbar toolbar = findViewById(R.id.toolbar);
     if (toolbar != null) {
       setSupportActionBar(toolbar);
+    }
+
+    View appBarLayout = findViewById(R.id.app_bar_layout);
+    if (appBarLayout != null) {
+      ViewCompat.setOnApplyWindowInsetsListener(
+          appBarLayout,
+          (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            return insets;
+          });
     }
   }
 

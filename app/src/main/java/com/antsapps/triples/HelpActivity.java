@@ -33,6 +33,10 @@ public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSe
 
     setContentView(R.layout.help);
 
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
     mHelpCardsView = (CardsView) findViewById(R.id.cards_view);
     mHelpCardsView.setOnValidTripleSelectedListener(this);
 
