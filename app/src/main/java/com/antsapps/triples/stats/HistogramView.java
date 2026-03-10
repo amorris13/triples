@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
-
 import com.antsapps.triples.R;
 import com.google.common.primitives.Ints;
 

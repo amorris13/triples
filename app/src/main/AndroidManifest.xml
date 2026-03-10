@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
   <application
-      android:icon="@drawable/launcher"
+      android:icon="@mipmap/ic_launcher"
       android:label="@string/app_name"
       android:theme="@style/AppTheme">
     <meta-data
@@ -19,29 +19,40 @@
 
     <activity
       android:name=".MainActivity"
-      android:exported="true">
+      android:exported="true"
+      android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
     <activity
-      android:name=".StatisticsActivity" />
+      android:name=".StatisticsActivity"
+      android:screenOrientation="portrait" />
     <activity
       android:name=".ClassicGameActivity"
-      android:label="Classic" />
+      android:label="Classic"
+      android:screenOrientation="portrait" />
     <activity
       android:name=".ArcadeGameActivity"
-      android:label="Arcade" />
+      android:label="Arcade"
+      android:screenOrientation="portrait" />
     <activity
-      android:name=".ZenGameActivity" />
+      android:name=".DailyGameActivity"
+      android:label="Daily Puzzle"
+      android:screenOrientation="portrait" />
+    <activity
+      android:name=".ZenGameActivity"
+      android:screenOrientation="portrait" />
     <activity
       android:name=".HelpActivity"
       android:label="@string/help"
+      android:screenOrientation="portrait"
       android:theme="@style/HelpDialog" />
     <activity
       android:name=".SettingsActivity"
-      android:label="@string/settings" />
+      android:label="@string/settings"
+      android:screenOrientation="portrait" />
 
     <provider
         android:name="androidx.core.content.FileProvider"

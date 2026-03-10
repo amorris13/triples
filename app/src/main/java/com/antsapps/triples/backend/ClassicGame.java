@@ -36,7 +36,15 @@ public class ClassicGame extends Game {
       GameState gameState,
       boolean hintsUsed) {
     super(
-        id, seed, cardsInPlay, tripleFindTimes, cardsInDeck, timeElapsed, date, gameState, hintsUsed);
+        id,
+        seed,
+        cardsInPlay,
+        tripleFindTimes,
+        cardsInDeck,
+        timeElapsed,
+        date,
+        gameState,
+        hintsUsed);
   }
 
   /**
@@ -64,9 +72,7 @@ public class ClassicGame extends Game {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
-
+  protected void checkIfFinished() {
     if (!checkIfAnyValidTriples()) {
       finish();
     }

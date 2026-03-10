@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 
 public class ZenGameTest {
@@ -16,12 +16,20 @@ public class ZenGameTest {
   private static class TestRenderer implements Game.GameRenderer {
     @Override
     public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
     @Override
     public void addHint(Card card) {}
+
     @Override
     public void clearHintedCards() {}
+
     @Override
-    public java.util.Set<Card> getSelectedCards() { return Collections.emptySet(); }
+    public Set<Card> getSelectedCards() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public void clearSelectedCards() {}
   }
 
   @Test
@@ -45,7 +53,8 @@ public class ZenGameTest {
     game.commitTriple(c1, c2, c3);
 
     // In Zen mode, cards are re-added to deck.
-    // Deck size should remain the same after committing a triple (3 cards removed from play, 3 added from deck, 3 re-added to deck)
+    // Deck size should remain the same after committing a triple (3 cards removed from play, 3
+    // added from deck, 3 re-added to deck)
     assertEquals(initialDeckSize, game.mDeck.getCardsRemaining());
   }
 

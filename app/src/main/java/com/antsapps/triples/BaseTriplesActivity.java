@@ -2,27 +2,22 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
-
-import androidx.core.graphics.drawable.DrawableCompat;
-import com.google.android.gms.auth.api.Auth;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
+import com.antsapps.triples.backend.Application;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -44,11 +39,29 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
+    applyTheme();
     super.onCreate(savedInstanceState);
     PlayGamesSdk.initialize(this);
 
     mFirebaseAuth = FirebaseAuth.getInstance();
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+  }
+
+  private void applyTheme() {
+    String theme =
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.pref_theme), "system");
+    switch (theme) {
+      case "light":
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        break;
+      case "dark":
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        break;
+      case "system":
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        break;
+    }
   }
 
   @Override
@@ -88,6 +101,8 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   private void fetchTokenAndSignInToFirebase() {
     GoogleSignInOptions gso =
         new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+            .requestEmail()
+            .requestProfile()
             .requestIdToken(getString(R.string.default_web_client_id))
             .build();
     GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -124,20 +139,18 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
         .signInWithCredential(credential)
         .addOnCompleteListener(
             this,
-            new OnCompleteListener<AuthResult>() {
-              @Override
-              public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                  // Sign in success, update UI with the signed-in user's information
-                  Log.d(TAG, "signInWithCredential:success");
-                  FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                } else {
-                  // If sign in fails, display a message to the user.
-                  Log.w(TAG, "signInWithCredential:failure", task.getException());
-                  Toast.makeText(
-                          BaseTriplesActivity.this, "Authentication failed.", Toast.LENGTH_SHORT)
-                      .show();
-                }
+            task -> {
+              if (task.isSuccessful()) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "signInWithCredential:success");
+                FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                onSignInSucceeded();
+              } else {
+                // If sign in fails, display a message to the user.
+                Log.w(TAG, "signInWithCredential:failure", task.getException());
+                Toast.makeText(
+                        BaseTriplesActivity.this, "Authentication failed.", Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
@@ -156,7 +169,9 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
-    AchievementManager.syncAchievements(this, com.antsapps.triples.backend.Application.getInstance(this));
+    Application application = Application.getInstance(this);
+    AchievementManager.syncAchievements(this, application);
+    CloudSaveManager.syncWithCloud(this, application);
   }
 
   public void signIn() {
@@ -175,7 +190,7 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   public boolean isSignedIn() {
-    return mIsSignedIn;
+    return mIsSignedIn || mFirebaseAuth.getCurrentUser() != null;
   }
 
   protected void signOut() {
@@ -185,6 +200,20 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SIGN_OUT, null);
     mIsSignedIn = false;
     onSignOut();
+  }
+
+  @Nullable
+  public String getSignedInUserInfo() {
+    FirebaseUser user = mFirebaseAuth.getCurrentUser();
+    if (user != null) {
+      if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+        return user.getEmail();
+      }
+      if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+        return user.getDisplayName();
+      }
+    }
+    return null;
   }
 
   protected void onSignOut() {
@@ -197,5 +226,4 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected void onStop() {
     super.onStop();
   }
-
 }

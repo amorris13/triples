@@ -10,17 +10,18 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
-import com.antsapps.triples.cardsview.CardDrawable.OnAnimationFinishedListener;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,26 +29,12 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   private static final String TAG = "CardsView";
 
-  class CardRemovalListener implements OnAnimationFinishedListener {
-    Card mCard;
-
-    public CardRemovalListener(Card card) {
-      mCard = card;
-    }
-
-    @Override
-    public void onAnimationFinished() {
-      if (!mCards.contains(mCard)) {
-        mCardDrawables.remove(mCard);
-      }
-    }
-  }
-
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
   static final int WHAT_INCREMENT = 0;
   static final int WHAT_DECREMENT = 1;
   protected ImmutableList<Card> mCards = ImmutableList.of();
   private final Map<Card, CardDrawable> mCardDrawables = Maps.newConcurrentMap();
+  private final List<CardDrawable> mAnimatingCopies = Lists.newArrayList();
   private final Set<Card> mCurrentlySelected = Sets.newHashSet();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
@@ -59,7 +46,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
    * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
    * view is completely opaque.
    */
-  private float mAlpha = 1;
+  private float mDimAlpha = 1;
 
   public CardsView(Context context) {
     this(context, null);
@@ -99,8 +86,12 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     for (CardDrawable dr : Ordering.natural().sortedCopy(mCardDrawables.values())) {
       dr.draw(canvas);
     }
-    if (mAlpha != 1) {
-      canvas.drawColor(Color.argb((int) ((1 - mAlpha) * 255), 0xF3, 0xF3, 0xF3));
+    // Defensive copy here as entries may be deleted from the list.
+    for (CardDrawable dr : Lists.newArrayList(mAnimatingCopies)) {
+      dr.draw(canvas);
+    }
+    if (mDimAlpha != 1) {
+      canvas.drawColor(Color.argb((int) ((1 - mDimAlpha) * 255), 0xF3, 0xF3, 0xF3));
     }
     boolean invalidated = false;
     if (mNumAnimating > 0) {
@@ -122,26 +113,24 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
-        CardDrawable cardDrawable = mCardDrawables.get(oldCard);
-        cardDrawable.updateBounds(mOffScreenLocation);
         mCurrentlySelected.remove(oldCard);
       }
     }
 
     mCards = newCards;
+    updateMeasuredDimensions(0, 0);
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
       if (cardDrawable == null) {
-        cardDrawable =
-            new CardDrawable(getContext(), mHandler, card, new CardRemovalListener(card));
+        cardDrawable = new CardDrawable(getContext(), mHandler, card);
         mCardDrawables.put(card, cardDrawable);
       }
       if (!calcBounds(i).equals(EMPTY_RECT)) {
-        cardDrawable.updateBounds(calcBounds(i));
+        cardDrawable.updateBounds(calcBounds(i), true);
       }
     }
-    updateMeasuredDimensions(0, 0);
+    requestLayout();
     invalidate();
     logValidTriple();
     long end = System.currentTimeMillis();
@@ -150,12 +139,15 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   protected abstract void logValidTriple();
 
-  void updateBounds() {
+  public void updateBounds() {
+    if (mOffScreenLocation.isEmpty() && getWidth() > 0 && getHeight() > 0) {
+      updateMeasuredDimensions(0, 0); // Trigger dimension calculation if needed
+    }
     long start = System.currentTimeMillis();
     for (int i = 0; i < mCards.size(); i++) {
       Card card = mCards.get(i);
       CardDrawable cardDrawable = mCardDrawables.get(card);
-      cardDrawable.updateBounds(calcBounds(i));
+      cardDrawable.updateBounds(calcBounds(i), true);
     }
     invalidate();
     long end = System.currentTimeMillis();
@@ -165,7 +157,7 @@ public abstract class CardsView extends View implements Game.GameRenderer {
   protected abstract void updateMeasuredDimensions(
       final int widthMeasureSpec, final int heightMeasureSpec);
 
-  protected abstract Rect calcBounds(int i);
+  public abstract Rect calcBounds(int i);
 
   private void incrementNumAnimating() {
     mNumAnimating++;
@@ -182,7 +174,8 @@ public abstract class CardsView extends View implements Game.GameRenderer {
 
   @Override
   public void setAlpha(float opacity) {
-    mAlpha = opacity;
+    super.setAlpha(opacity);
+    mDimAlpha = opacity;
     invalidate();
   }
 
@@ -249,6 +242,10 @@ public abstract class CardsView extends View implements Game.GameRenderer {
     mOnValidTripleSelectedListener = listener;
   }
 
+  public OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
+    return mOnValidTripleSelectedListener;
+  }
+
   @Override
   public Set<Card> getSelectedCards() {
     return mCurrentlySelected;
@@ -283,5 +280,79 @@ public abstract class CardsView extends View implements Game.GameRenderer {
       }
     }
     mCurrentlyHinted.clear();
+  }
+
+  @Override
+  public void clearSelectedCards() {
+    for (Card card : mCurrentlySelected) {
+      CardDrawable cardDrawable = mCardDrawables.get(card);
+      if (cardDrawable != null) {
+        cardDrawable.setSelected(false);
+      }
+    }
+    mCurrentlySelected.clear();
+    invalidate();
+  }
+
+  public void onAlreadyFoundTriple(Set<Card> triple) {
+    for (Card card : triple) {
+      CardDrawable cd = mCardDrawables.get(card);
+      if (cd != null) {
+        cd.onIncorrectTriple(true);
+      }
+    }
+  }
+
+  public void animateTripleFoundToOffscreen(Set<Card> triple) {
+    animateTripleFoundInternal(
+        Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), null);
+  }
+
+  public void animateTripleFound(
+      final Map<Card, Rect> triple, Interpolator interpolator, final Runnable onAnimationFinished) {
+    // Translate window coordinates to CardsView coordinates
+    int[] cardsViewLoc = new int[2];
+    getLocationInWindow(cardsViewLoc);
+
+    animateTripleFoundInternal(
+        Maps.transformValues(
+            triple,
+            windowRect -> {
+              Rect targetBoundsInCardsView = new Rect(windowRect);
+              targetBoundsInCardsView.offset(-cardsViewLoc[0], -cardsViewLoc[1]);
+              return targetBoundsInCardsView;
+            }),
+        interpolator,
+        onAnimationFinished);
+  }
+
+  private void animateTripleFoundInternal(
+      final Map<Card, Rect> triple, Interpolator interpolator, final Runnable onAnimationFinished) {
+    int i = 0;
+    for (Map.Entry<Card, Rect> entry : triple.entrySet()) {
+      Card c = entry.getKey();
+      Rect targetBoundsInCardsView = entry.getValue();
+      CardDrawable cd = mCardDrawables.remove(c);
+      if (cd != null) {
+        final boolean isLast = (i == triple.size() - 1);
+        final CardDrawable copy = new CardDrawable(getContext(), mHandler, c);
+        copy.updateBounds(cd.getBounds(), false);
+        copy.setSelected(true);
+        mAnimatingCopies.add(copy);
+        copy.animateFoundCard(
+            targetBoundsInCardsView,
+            interpolator,
+            () -> {
+              mAnimatingCopies.remove(copy);
+              if (isLast && onAnimationFinished != null) {
+                onAnimationFinished.run();
+              }
+            });
+      }
+      i++;
+    }
+
+    mCurrentlySelected.clear();
+    invalidate();
   }
 }

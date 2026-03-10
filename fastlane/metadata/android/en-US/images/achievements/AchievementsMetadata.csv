@@ -1,0 +1,27 @@
+Classic: 1 game,Complete 1 Classic game,False,,Revealed,5,1
+Classic: 10 games,Complete 10 Classic games,False,,Revealed,10,2
+Classic: 50 games,Complete 50 Classic games,False,,Revealed,15,3
+Classic: 100 games,Complete 100 Classic games,False,,Revealed,20,4
+Classic: 500 games,Complete 500 Classic games,False,,Revealed,25,5
+Classic: 1000 games,Complete 1000 Classic games,False,,Revealed,30,6
+Classic: 5000 games,Complete 5000 Classic games,False,,Revealed,50,7
+Arcade: 1 game,Complete 1 Arcade game,False,,Revealed,5,8
+Arcade: 10 games,Complete 10 Arcade games,False,,Revealed,10,9
+Arcade: 50 games,Complete 50 Arcade games,False,,Revealed,15,10
+Arcade: 100 games,Complete 100 Arcade games,False,,Revealed,20,11
+Arcade: 500 games,Complete 500 Arcade games,False,,Revealed,25,12
+Arcade: 1000 games,Complete 1000 Arcade games,False,,Revealed,30,13
+Arcade: 5000 games,Complete 5000 Arcade games,False,,Revealed,50,14
+Classic: < 20m,Complete a Classic game in under 20 minutes,False,,Revealed,5,15
+Classic: < 10m,Complete a Classic game in under 10 minutes,False,,Revealed,10,16
+Classic: < 5m,Complete a Classic game in under 5 minutes,False,,Revealed,15,17
+Classic: < 2m,Complete a Classic game in under 2 minutes,False,,Revealed,20,18
+Classic: < 1m,Complete a Classic game in under 1 minute,False,,Revealed,25,19
+Classic: < 45s,Complete a Classic game in under 45 seconds,False,,Revealed,30,20
+Classic: < 30s,Complete a Classic game in under 30 seconds,False,,Revealed,50,21
+Arcade: 2 triples,Find 2 triples in an Arcade game,False,,Revealed,5,22
+Arcade: 5 triples,Find 5 triples in an Arcade game,False,,Revealed,10,23
+Arcade: 10 triples,Find 10 triples in an Arcade game,False,,Revealed,15,24
+Arcade: 15 triples,Find 15 triples in an Arcade game,False,,Revealed,20,25
+Arcade: 20 triples,Find 20 triples in an Arcade game,False,,Revealed,25,26
+Arcade: 25 triples,Find 25 triples in an Arcade game,False,,Revealed,30,27

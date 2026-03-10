@@ -1,13 +1,12 @@
 package com.antsapps.triples.backend;
 
-import android.content.Context;
-import android.util.TypedValue;
-
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
+import com.google.common.collect.Sets;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class Utils {
 
@@ -73,6 +72,33 @@ public class Utils {
       longs.add(bb.getLong());
     }
     return longs;
+  }
+
+  public static byte[] triplesListToByteArray(List<Set<Card>> triples) {
+    ByteBuffer bb = ByteBuffer.allocate(triples.size() * 3);
+    for (Set<Card> triple : triples) {
+      Preconditions.checkArgument(triple.size() == 3, "triple must have 3 cards");
+      for (Card card : triple) {
+        bb.put(cardToByte(card));
+      }
+    }
+    return bb.array();
+  }
+
+  public static List<Set<Card>> triplesListFromByteArray(byte[] b) {
+    if (b == null) {
+      return Lists.newArrayList();
+    }
+    ByteBuffer bb = ByteBuffer.wrap(b);
+    List<Set<Card>> triples = Lists.newArrayList();
+    while (bb.hasRemaining()) {
+      Set<Card> triple = Sets.newHashSet();
+      for (int i = 0; i < 3; i++) {
+        triple.add(cardFromByte(bb.get()));
+      }
+      triples.add(triple);
+    }
+    return triples;
   }
 
   private Utils() {}

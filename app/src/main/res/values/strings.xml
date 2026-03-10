@@ -70,12 +70,19 @@
   <string name="drawer_close">Close navigation drawer</string>
   <string name="arcade_label">Arcade</string>
   <string name="classic_label">Classic</string>
+  <string name="daily_label">Daily Puzzle</string>
   <string name="zen_label">Zen</string>
   <string name="beginner_label">Beginner</string>
   <string name="game_completed">GAME COMPLETED</string>
-    <string name="hint">Hint</string>
+  <string name="hint">Hint</string>
+  <string name="shuffle">Shuffle</string>
     <string name="fastest_triple">Fastest triple:</string>
     <string name="slowest_triple">Slowest triple:</string>
+    <string name="time_taken_field">Time taken:</string>
+    <string name="triples_found_field">Triples found:</string>
+    <string name="arcade_completed_stats">%1$d triples</string>
+    <string name="classic_completed_stats_format">%1$dm %2$02ds</string>
+    <string name="classic_completed_stats_seconds_format">%1$ds</string>
 
     <string name="hint_confirmation_title">Use a hint?</string>
     <string name="hint_confirmation_message">Are you sure you want to use a hint? This game will not count towards your statistics or leaderboards.</string>
@@ -88,6 +95,7 @@
 
     <string name="cards_remaining_format">Cards remaining: %1$d</string>
     <string name="triples_found_format">Triples found: %1$d</string>
+    <string name="triples_found_of_format">Triples found: %1$d / %2$d</string>
 
   <string name="color_0">Color 1</string>
   <string name="color_1">Color 2</string>
@@ -129,5 +137,25 @@
   <string name="beginner_title">Beginner Mode</string>
   <string name="zen_title">Zen</string>
   <string name="beginner_note">Beginner Mode: All cards have the same pattern (outline only).</string>
+  <string name="current_streak">Current Streak</string>
+  <string name="longest_streak">Longest Streak</string>
+  <string name="total_solved">Total Solved</string>
+  <string name="today">Today</string>
+  <string name="daily_not_started">Not Started</string>
+  <string name="daily_incomplete">Incomplete</string>
+  <string name="daily_completed">Completed</string>
+  <string name="daily_hints_used_suffix">(hints used)</string>
+
+  <string name="account_settings">Account</string>
+  <string name="account_user_title">User</string>
+  <string name="account_not_signed_in">Not signed in</string>
+  <string name="account_signed_in_as">Signed in as %1$s</string>
+  <string name="account_sign_in">Sign In</string>
+  <string name="account_sign_out">Sign Out</string>
+  <string name="account_delete_data_title">Delete All Data</string>
+  <string name="account_delete_data_summary">Permanently delete all local and cloud game data</string>
+  <string name="account_delete_data_dialog_title">Delete all data</string>
+  <string name="account_delete_data_dialog_message">This will permanently delete all your game statistics and progress from both this device and the cloud. This action cannot be undone. Confirm deletion</string>
+  <string name="account_delete_button">Delete</string>
 
 </resources>

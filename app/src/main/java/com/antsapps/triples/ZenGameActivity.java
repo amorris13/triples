@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.TextView;
-
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
@@ -50,6 +48,11 @@ public class ZenGameActivity extends BaseGameActivity {
   @Override
   protected void submitScore() {
     // Zen mode has no scores/leaderboards
+  }
+
+  @Override
+  protected int getAccentColor() {
+    return getResources().getColor(R.color.zen_accent);
   }
 
   @Override

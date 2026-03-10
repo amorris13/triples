@@ -1,13 +1,13 @@
 package com.antsapps.triples.backend;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-
+import com.antsapps.triples.CloudSaveManager;
 import com.antsapps.triples.backend.Game.GameState;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -20,6 +20,7 @@ public class Application extends OnStateChangedReporter {
   // Should remain sorted
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
+  private final List<DailyGame> mDailyGames = Lists.newArrayList();
 
   private ZenGame mZenGame;
   private ZenGame mBeginnerGame;
@@ -29,7 +30,7 @@ public class Application extends OnStateChangedReporter {
   private Application(Context context) {
     super();
     database = new DBAdapter(context);
-    database.initialize(mClassicGames, mArcadeGames);
+    database.initialize(mClassicGames, mArcadeGames, mDailyGames);
     if (isDebug()) {
       prefillDatabaseIfEmpty();
     }
@@ -58,7 +59,8 @@ public class Application extends OnStateChangedReporter {
                 Lists.<Long>newArrayList(),
                 new Deck(Lists.<Card>newArrayList()),
                 (long) (120000 + random.nextInt(300000)), // 2 to 7 minutes
-                new Date(System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
+                new Date(
+                    System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
                 GameState.COMPLETED,
                 false);
         addClassicGame(game);
@@ -102,6 +104,10 @@ public class Application extends OnStateChangedReporter {
   public void saveClassicGame(ClassicGame game) {
     database.updateClassicGame(game);
     notifyStateChanged();
+  }
+
+  public void uploadToCloud(Activity activity) {
+    CloudSaveManager.saveToCloud(activity, this);
   }
 
   public void deleteClassicGame(ClassicGame game) {
@@ -220,6 +226,65 @@ public class Application extends OnStateChangedReporter {
     } else {
       mZenGame = null;
     }
+    notifyStateChanged();
+  }
+
+  public void addDailyGame(DailyGame game) {
+    game.setId(database.addDailyGame(game));
+    mDailyGames.add(game);
+    notifyStateChanged();
+  }
+
+  public void saveDailyGame(DailyGame game) {
+    database.updateDailyGame(game);
+    notifyStateChanged();
+  }
+
+  public DailyGame getDailyGame(long id) {
+    for (DailyGame game : mDailyGames) {
+      if (game.getId() == id) {
+        return game;
+      }
+    }
+    return null;
+  }
+
+  public DailyGame getDailyGameForDate(long dateMillis) {
+    long daySeed = DailyGame.getStartOfDaySeed(dateMillis);
+
+    for (DailyGame game : mDailyGames) {
+      if (game.getRandomSeed() == daySeed) {
+        return game;
+      }
+    }
+
+    DailyGame game = DailyGame.createFromSeed(daySeed);
+    addDailyGame(game);
+    return game;
+  }
+
+  public Iterable<DailyGame> getCompletedDailyGames() {
+    return Iterables.filter(
+        mDailyGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.COMPLETED;
+          }
+        });
+  }
+
+  public List<DailyGame> getDailyGames() {
+    return Lists.newArrayList(mDailyGames);
+  }
+
+  public void clearAllData() {
+    mClassicGames.clear();
+    mArcadeGames.clear();
+    mDailyGames.clear();
+    mZenGame = null;
+    mBeginnerGame = null;
+    database.clearAllData();
     notifyStateChanged();
   }
 }

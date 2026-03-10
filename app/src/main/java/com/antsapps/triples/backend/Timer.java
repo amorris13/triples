@@ -2,9 +2,7 @@ package com.antsapps.triples.backend;
 
 import android.os.Handler;
 import android.os.Message;
-
 import com.google.common.collect.Sets;
-
 import java.util.Set;
 
 class Timer {

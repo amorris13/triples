@@ -16,7 +16,7 @@
       android:layout_alignParentTop="true"
       android:paddingLeft="5dp"
       android:singleLine="true"
-      android:textColor="#33B5E5"
+      android:textColor="@color/color_separator"
       android:textStyle="bold" />
 
     <TextView
@@ -27,14 +27,14 @@
       android:layout_alignParentTop="true"
       android:paddingRight="5dp"
       android:singleLine="true"
-      android:textColor="#33B5E5"
+      android:textColor="@color/color_separator"
       android:textStyle="bold" />
   </RelativeLayout>
 
   <View
     android:layout_width="fill_parent"
     android:layout_height="1dp"
-    android:background="#33B5E5" />
+    android:background="@color/color_separator" />
 
   <ListView
     android:id="@android:id/list"

@@ -30,11 +30,8 @@ public class UtilsTest {
 
   @Test
   public void cardListToByteArray_and_cardListFromByteArray_areReversible() {
-    List<Card> cards = Lists.newArrayList(
-        new Card(0, 0, 0, 0),
-        new Card(1, 1, 1, 1),
-        new Card(2, 2, 2, 2)
-    );
+    List<Card> cards =
+        Lists.newArrayList(new Card(0, 0, 0, 0), new Card(1, 1, 1, 1), new Card(2, 2, 2, 2));
     byte[] b = Utils.cardListToByteArray(cards);
     List<Card> cardsFromByte = Utils.cardListFromByteArray(b);
     assertThat(cardsFromByte).isEqualTo(cards);

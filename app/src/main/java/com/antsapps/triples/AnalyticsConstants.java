@@ -10,7 +10,8 @@ public class AnalyticsConstants {
     public static final String MODE = "mode";
     public static final String TAB_NAME = "tab_name";
 
-    private Param() {};
+    private Param() {}
+    ;
   }
 
   public static class Event {
@@ -21,14 +22,17 @@ public class AnalyticsConstants {
     public static final String PAUSE_GAME = "pause_game";
     public static final String RESUME_GAME = "resume_game";
     public static final String USE_HINT = "use_hint";
+    public static final String SHUFFLE_CARDS = "shuffle_cards";
     public static final String SIGN_IN = "sign_in";
     public static final String SIGN_OUT = "sign_out";
     public static final String CHANGE_SETTING = "change_setting";
     public static final String SWITCH_GAME_MODE = "switch_game_mode";
     public static final String SELECT_TAB = "select_tab";
 
-    private Event() {};
+    private Event() {}
+    ;
   }
 
-  private AnalyticsConstants() {};
+  private AnalyticsConstants() {}
+  ;
 }

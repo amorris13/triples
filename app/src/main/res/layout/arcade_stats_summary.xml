@@ -12,7 +12,7 @@
     android:layout_height="wrap_content"
     android:singleLine="true"
     android:text="@string/summary"
-    android:textColor="#33B5E5"
+    android:textColor="@color/color_separator"
     android:textStyle="bold"
     android:paddingTop="@dimen/stats_vert_padding"
     android:paddingBottom="@dimen/stats_vert_padding" />
@@ -21,7 +21,7 @@
     android:id="@+id/summary_divider"
     android:layout_width="fill_parent"
     android:layout_height="1dp"
-    android:background="#33B5E5" />
+    android:background="@color/color_separator" />
 
   <com.antsapps.triples.stats.HistogramView
     android:id="@+id/graph"

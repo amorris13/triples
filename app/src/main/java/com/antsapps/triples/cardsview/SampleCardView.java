@@ -1,13 +1,10 @@
 package com.antsapps.triples.cardsview;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.View;
-
 import com.antsapps.triples.backend.Card;
 
 public class SampleCardView extends View {
@@ -25,7 +22,7 @@ public class SampleCardView extends View {
 
   public void setCard(Card card) {
     mCard = card;
-    mCardDrawable = new CardDrawable(getContext(), null, mCard, null);
+    mCardDrawable = new CardDrawable(getContext(), null, mCard);
     invalidate();
   }
 
@@ -34,7 +31,7 @@ public class SampleCardView extends View {
     super.onDraw(canvas);
     if (mCardDrawable != null) {
       Rect bounds = new Rect(0, 0, getWidth(), getHeight());
-      mCardDrawable.updateBounds(bounds);
+      mCardDrawable.updateBounds(bounds, false);
       mCardDrawable.draw(canvas);
     }
   }

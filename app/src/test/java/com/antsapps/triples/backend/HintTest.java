@@ -17,7 +17,16 @@ public class HintTest {
 
   private static class TestGame extends Game {
     TestGame(List<Card> cardsInPlay, Deck deck) {
-      super(0, 0, cardsInPlay, Lists.<Long>newArrayList(), deck, 0, new Date(), GameState.ACTIVE, false);
+      super(
+          0,
+          0,
+          cardsInPlay,
+          Lists.<Long>newArrayList(),
+          deck,
+          0,
+          new Date(),
+          GameState.ACTIVE,
+          false);
     }
 
     @Override
@@ -34,14 +43,31 @@ public class HintTest {
   private static class DummyRenderer implements Game.GameRenderer {
     Set<Card> selected = Sets.newHashSet();
     Set<Card> hinted = Sets.newHashSet();
-    @Override public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-    @Override public void addHint(Card card) {
-        hinted.add(card);
-        // Mimic CardsView.addHint logic
-        selected.retainAll(hinted);
+
+    @Override
+    public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
+    @Override
+    public void addHint(Card card) {
+      hinted.add(card);
+      // Mimic CardsView.addHint logic
+      selected.retainAll(hinted);
     }
-    @Override public void clearHintedCards() { hinted.clear(); }
-    @Override public Set<Card> getSelectedCards() { return selected; }
+
+    @Override
+    public void clearHintedCards() {
+      hinted.clear();
+    }
+
+    @Override
+    public Set<Card> getSelectedCards() {
+      return selected;
+    }
+
+    @Override
+    public void clearSelectedCards() {
+      selected.clear();
+    }
   }
 
   @Test
@@ -52,7 +78,7 @@ public class HintTest {
     Card c4 = new Card(0, 0, 0, 1);
     List<Card> cardsInPlay = Lists.newArrayList(c1, c2, c3, c4);
     for (int i = 0; i < 8; i++) {
-        cardsInPlay.add(new Card(1, 2, 0, i % 3));
+      cardsInPlay.add(new Card(1, 2, 0, i % 3));
     }
 
     Deck deck = new Deck(Lists.<Card>newArrayList());
@@ -76,7 +102,7 @@ public class HintTest {
     Card c3 = new Card(2, 2, 2, 2);
     List<Card> cardsInPlay = Lists.newArrayList(c1, c2, c3);
     for (int i = 0; i < 9; i++) {
-        cardsInPlay.add(new Card(1, 2, 0, i % 3));
+      cardsInPlay.add(new Card(1, 2, 0, i % 3));
     }
 
     Deck deck = new Deck(Lists.<Card>newArrayList());
@@ -101,7 +127,7 @@ public class HintTest {
     Card c4 = new Card(0, 0, 0, 1); // Not part of {c1, c2, c3}
     List<Card> cardsInPlay = Lists.newArrayList(c1, c2, c3, c4);
     for (int i = 0; i < 8; i++) {
-        cardsInPlay.add(new Card(1, 2, 0, i % 3));
+      cardsInPlay.add(new Card(1, 2, 0, i % 3));
     }
 
     Deck deck = new Deck(Lists.<Card>newArrayList());

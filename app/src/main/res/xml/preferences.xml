@@ -3,23 +3,6 @@
                                                 xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <androidx.preference.SwitchPreferenceCompat
-    android:defaultValue="true"
-    android:key="@string/pref_orientation_lock"
-    android:summaryOff="Screen will auto rotate"
-    android:summaryOn="Screen will not auto rotate"
-    android:title="Orientation Lock" />
-
-  <androidx.preference.ListPreference
-      android:dependency="@string/pref_orientation_lock"
-      android:dialogTitle="Preferred orientation"
-      android:entries="@array/entries_orientation_pref"
-      android:entryValues="@array/entryvalues_orientation_pref"
-      android:summary="%s"
-      android:key="@string/pref_orientation"
-      android:layout="?android:attr/preferenceLayoutChild"
-      android:title="Orientation" />
-
-  <androidx.preference.SwitchPreferenceCompat
     android:defaultValue="false"
     android:key="@string/pref_screen_lock"
     android:summaryOff="Use default sleep timeout"
@@ -32,6 +15,14 @@
       android:summary="@string/pref_hide_hint_summary"
       android:title="@string/pref_hide_hint_title" />
 
+
+  <androidx.preference.ListPreference
+      android:defaultValue="system"
+      android:entries="@array/entries_theme_pref"
+      android:entryValues="@array/entryvalues_theme_pref"
+      android:key="@string/pref_theme"
+      android:title="Theme"
+      android:summary="%s" />
 
   <androidx.preference.SeekBarPreference
       android:defaultValue="800"
@@ -50,6 +41,26 @@
     <com.antsapps.triples.CardCustomizationPreference
         android:key="card_customization"
         android:title="Card Customization" />
+
+  </androidx.preference.PreferenceCategory>
+
+  <androidx.preference.PreferenceCategory
+      android:title="@string/account_settings">
+
+    <androidx.preference.Preference
+        android:key="account_user"
+        android:title="@string/account_user_title"
+        android:summary="@string/account_not_signed_in"
+        android:selectable="false"/>
+
+    <androidx.preference.Preference
+        android:key="account_signin_out"
+        android:title="@string/account_sign_in" />
+
+    <androidx.preference.Preference
+        android:key="account_delete_data"
+        android:title="@string/account_delete_data_title"
+        android:summary="@string/account_delete_data_summary" />
 
   </androidx.preference.PreferenceCategory>
 

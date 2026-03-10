@@ -1,12 +1,10 @@
 package com.antsapps.triples.stats;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-
 import com.antsapps.triples.BaseTriplesActivity;
 import com.antsapps.triples.R;
 import com.google.android.gms.games.PlayGames;
@@ -14,6 +12,7 @@ import com.google.android.gms.games.PlayGames;
 class StatisticsGamesServicesView extends FrameLayout
     implements View.OnClickListener, BaseTriplesActivity.OnSignInListener {
 
+  private static final String TAG = "StatsGamesServicesView";
   private BaseTriplesActivity mActivity;
   private View mSignInBar;
   private View mGamesServicesBar;
@@ -49,9 +48,13 @@ class StatisticsGamesServicesView extends FrameLayout
     } else if (view.getId() == R.id.leaderboards) {
       PlayGames.getLeaderboardsClient(mActivity)
           .getLeaderboardIntent(mLeaderboardId)
-          .addOnSuccessListener(
-              intent -> {
-                ((Activity) getContext()).startActivityForResult(intent, 26);
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  mActivity.startActivityForResult(task.getResult(), 26);
+                } else {
+                  Log.e(TAG, "Error getting leaderboard intent", task.getException());
+                }
               });
     }
   }

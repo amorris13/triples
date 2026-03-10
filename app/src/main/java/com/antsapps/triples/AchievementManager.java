@@ -1,16 +1,13 @@
 package com.antsapps.triples;
 
+import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
-
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
 import com.google.android.gms.games.PlayGames;
-
 import java.util.concurrent.TimeUnit;
-import android.app.Activity;
 
 public class AchievementManager {
   private static final String TAG = "AchievementManager";

@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <!-- Used in app/menu examples -->
-  <string-array name="entries_orientation_pref">
-    <item>Portrait</item>
-    <item>Landscape</item>
-  </string-array>
-
-  <!-- Used in app/menu examples -->
-  <string-array name="entryvalues_orientation_pref">
-    <item>portrait</item>
-    <item>landscape</item>
-  </string-array>
-
   <string-array name="entries_color_pref">
     <item>Holo Blue</item>
     <item>Holo Orange</item>
@@ -73,6 +61,18 @@
     <item>dots</item>
     <item>lighter</item>
     <item>crosshatch</item>
+  </string-array>
+
+  <string-array name="entries_theme_pref">
+    <item>Light</item>
+    <item>Dark</item>
+    <item>System default</item>
+  </string-array>
+
+  <string-array name="entryvalues_theme_pref">
+    <item>light</item>
+    <item>dark</item>
+    <item>system</item>
   </string-array>
 
 </resources>
