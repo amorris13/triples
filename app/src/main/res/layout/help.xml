@@ -148,7 +148,7 @@
       android:layout_height="wrap_content"
       android:paddingTop="16dp"
       android:singleLine="true"
-      android:text="GAME MODES"
+      android:text="@string/game_modes_title"
       android:textColor="?attr/colorPrimary"
       android:textSize="18sp"
       android:textStyle="bold" />
@@ -175,12 +175,12 @@
           android:layout_height="wrap_content"
           android:paddingRight="5dp"
           android:textStyle="bold"
-          android:text="Classic" />
+          android:text="@string/classic_label" />
 
         <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Go through the whole deck (81 cards) in the shortest time possible. This requires patience and perseverance."
+          android:text="@string/classic_description"
           />
       </TableRow>
 
@@ -193,12 +193,12 @@
           android:layout_height="wrap_content"
           android:paddingRight="5dp"
           android:textStyle="bold"
-          android:text="Arcade" />
+          android:text="@string/arcade_label" />
 
         <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Find as many triples as you can in 60 seconds."/>
+          android:text="@string/arcade_description"/>
       </TableRow>
 
       <TableRow
@@ -210,7 +210,24 @@
           android:layout_height="wrap_content"
           android:paddingRight="5dp"
           android:textStyle="bold"
-          android:text="Zen" />
+          android:text="@string/daily_label" />
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/daily_puzzle_description" />
+      </TableRow>
+
+      <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingRight="5dp"
+          android:textStyle="bold"
+          android:text="@string/zen_label" />
 
         <TextView
           android:layout_width="match_parent"
