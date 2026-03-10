@@ -112,7 +112,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
             .translationX(0)
             .translationY(0)
             .alpha(1)
-            .setDuration(CardView.DEFAULT_ANIMATION_DURATION_MS)
+            .setDuration(cardView.getAnimationDuration())
             .start();
       }
     }
@@ -168,7 +168,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
               .animate()
               .translationX(0)
               .translationY(0)
-              .setDuration(CardView.DEFAULT_ANIMATION_DURATION_MS)
+              .setDuration(cardView.getAnimationDuration())
               .start();
         }
       }

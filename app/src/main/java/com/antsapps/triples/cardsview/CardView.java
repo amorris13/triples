@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.Interpolator;
 import androidx.annotation.Nullable;
-import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 
@@ -64,7 +64,11 @@ public class CardView extends View {
       getContext()
           .getTheme()
           .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
-      setForeground(getContext().getDrawable(outValue.resourceId));
+      float density = getResources().getDisplayMetrics().density;
+      int inset = (int) (CardBackgroundDrawable.INSET_DP * density);
+      setForeground(
+          new InsetDrawable(
+              getContext().getDrawable(outValue.resourceId), inset, inset, inset, inset));
     }
   }
 
@@ -109,11 +113,50 @@ public class CardView extends View {
     mCardBackground.draw(canvas);
 
     if (mSymbol != null) {
-      for (Rect rect : CardCustomizationUtils.getBoundsForNumId(mCard.mNumber, bounds)) {
+      for (Rect rect : getBoundsForNumId(mCard.mNumber, bounds)) {
         mSymbol.setBounds(rect);
         mSymbol.draw(canvas);
       }
     }
+  }
+
+  private static java.util.List<android.graphics.Rect> getBoundsForNumId(
+      int id, android.graphics.Rect bounds) {
+    java.util.List<android.graphics.Rect> rects = com.google.common.collect.Lists.newArrayList();
+
+    int width = bounds.width();
+    int height = bounds.height();
+    int halfSideLength = width / 10;
+    int gap = halfSideLength / 2;
+    switch (id) {
+      case 0:
+        rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
+        break;
+      case 1:
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() - gap / 2 - halfSideLength, bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() + gap / 2 + halfSideLength, bounds.centerY(), halfSideLength));
+        break;
+      case 2:
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() - gap - halfSideLength * 2, bounds.centerY(), halfSideLength));
+        rects.add(squareFromCenterAndRadius(bounds.centerX(), bounds.centerY(), halfSideLength));
+        rects.add(
+            squareFromCenterAndRadius(
+                bounds.centerX() + gap + halfSideLength * 2, bounds.centerY(), halfSideLength));
+        break;
+    }
+    return rects;
+  }
+
+  private static android.graphics.Rect squareFromCenterAndRadius(
+      int centerX, int centerY, int radius) {
+    return new android.graphics.Rect(
+        centerX - radius, centerY - radius, centerX + radius, centerY + radius);
   }
 
   private void regenerateCache() {
@@ -222,7 +265,7 @@ public class CardView extends View {
         .start();
   }
 
-  private int getAnimationDuration() {
+  public int getAnimationDuration() {
     return PreferenceManager.getDefaultSharedPreferences(getContext())
         .getInt(
             getContext().getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS);
