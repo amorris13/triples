@@ -3,7 +3,6 @@ package com.antsapps.triples.backend;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.collect.ImmutableList;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +31,6 @@ public class DailyGameTest {
     @Override
     public void clearSelectedCards() {}
   }
-
 
   @Test
   public void createFromSeed_isDeterministic() {
