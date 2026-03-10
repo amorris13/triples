@@ -24,6 +24,7 @@ public class CardBackgroundDrawable extends Drawable {
 
   public static final int INSET_DP = 8;
 
+  private static final int SELECTION_STROKE_WIDTH_DP = 2;
   private static final int HINT_STROKE_WIDTH_DP = 6;
   private static final int HINT_DASH_ON_DP = 8;
   private static final int HINT_DASH_OFF_DP = 4;
@@ -64,7 +65,7 @@ public class CardBackgroundDrawable extends Drawable {
     mOutline = new ShapeDrawable(mCardShape);
     mOutline.getPaint().setStyle(Paint.Style.STROKE);
     mOutline.getPaint().setColor(ContextCompat.getColor(context, R.color.card_selected_outline));
-    mOutline.getPaint().setStrokeWidth(2 * density);
+    mOutline.getPaint().setStrokeWidth(SELECTION_STROKE_WIDTH_DP * density);
 
     mHintOutline = new ShapeDrawable(mCardShape);
     mHintOutline.getPaint().setStyle(Paint.Style.STROKE);
