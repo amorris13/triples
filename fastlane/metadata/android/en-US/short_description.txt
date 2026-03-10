@@ -1,1 +1,1 @@
-A beautiful, Set-style card game with Zen, Arcade, and Classic modes.
+A beautiful, Set-style card game with Classic, Arcade, Puzzle and Zen modes.
