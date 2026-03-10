@@ -34,6 +34,7 @@ public class ZenGameActivity extends BaseGameActivity {
       stub.setVisibility(View.GONE);
       findViewById(R.id.bottom_separator).setVisibility(View.GONE);
     }
+    mGame.addOnUpdateCardsInPlayListener(this);
   }
 
   @Override

@@ -30,7 +30,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
         int numRemaining,
         int numTriplesFound);
 
-    void onCardHinted(Card card);
+    void animateFoundTriple(Set<Card> triple);
   }
 
   public interface GameRenderer {
@@ -205,7 +205,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     }
   }
 
-  public void onValidTripleSelected(Collection<Card> cards) {
+  @Override
+  public void onValidTripleSelected(Set<Card> cards) {
     commitTriple(Iterables.toArray(cards, Card.class));
   }
 
@@ -216,17 +217,37 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       throw new IllegalArgumentException(
           "Cards are not in the set. cards = " + cards + ", mCardsInPlay = " + mCardsInPlay);
     }
-    if (!isValidTriple(cards)) {
-      throw new IllegalArgumentException("Cards are not a valid triple");
+    if (!isValidFoundTriple(cards)) {
+      return;
     }
 
-    mNumTriplesFound++;
-    mTripleFindTimes.add(mTimer.getElapsed());
+    recordFoundTriple(cards);
 
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
     mGameRenderer.clearSelectedCards();
 
+    updateDeckAfterValidTriple(cards);
+
+    for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
+      listener.animateFoundTriple(Sets.newHashSet(cards));
+    }
+
+    dispatchCardsInPlayUpdate(oldCards);
+
+    checkIfFinished();
+  }
+
+  protected boolean isValidFoundTriple(Card... cards) {
+    return isValidTriple(cards);
+  }
+
+  protected void recordFoundTriple(Card... cards) {
+    mNumTriplesFound++;
+    mTripleFindTimes.add(mTimer.getElapsed());
+  }
+
+  protected void updateDeckAfterValidTriple(Card... cards) {
     for (int i = 0; i < 3; i++) {
       mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
     }
@@ -255,9 +276,9 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
         mCardsInPlay.add(mDeck.getNextCard());
       }
     }
-
-    dispatchCardsInPlayUpdate(oldCards);
   }
+
+  protected void checkIfFinished() {}
 
   protected void finish() {
     if (mGameState == GameState.COMPLETED) {
@@ -509,9 +530,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   protected void dispatchHint(Card card) {
     if (mHintedCards.add(card)) {
       mGameRenderer.addHint(card);
-      for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-        listener.onCardHinted(card);
-      }
     }
   }
 

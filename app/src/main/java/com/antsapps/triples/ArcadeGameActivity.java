@@ -136,16 +136,13 @@ public class ArcadeGameActivity extends BaseGameActivity
     triplesFound.setText(String.valueOf(numTriplesFound));
   }
 
-  @Override
-  public void onCardHinted(Card hintedCard) {}
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
 
     PlayGames.getLeaderboardsClient(this)
-        .submitScore(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound());
+        .submitScore(getString(R.string.leaderboard_arcade_game), mGame.getNumTriplesFound());
   }
 
   @Override

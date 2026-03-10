@@ -15,58 +15,58 @@ public class AchievementManager {
   public static void awardClassicAchievements(Context context, long timeElapsed) {
     if (timeElapsed <= TimeUnit.SECONDS.toMillis(30)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_30S);
+          .unlock(context.getString(R.string.achievement_classic__30s));
     }
     if (timeElapsed <= TimeUnit.SECONDS.toMillis(45)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_45S);
+          .unlock(context.getString(R.string.achievement_classic__45s));
     }
     if (timeElapsed <= TimeUnit.MINUTES.toMillis(1)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_1M);
+          .unlock(context.getString(R.string.achievement_classic__1m));
     }
     if (timeElapsed <= TimeUnit.MINUTES.toMillis(2)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_2M);
+          .unlock(context.getString(R.string.achievement_classic__2m));
     }
     if (timeElapsed <= TimeUnit.MINUTES.toMillis(5)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_5M);
+          .unlock(context.getString(R.string.achievement_classic__5m));
     }
     if (timeElapsed <= TimeUnit.MINUTES.toMillis(10)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_10M);
+          .unlock(context.getString(R.string.achievement_classic__10m));
     }
     if (timeElapsed <= TimeUnit.MINUTES.toMillis(20)) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_20M);
+          .unlock(context.getString(R.string.achievement_classic__20m));
     }
   }
 
   public static void awardArcadeAchievements(Context context, int triplesFound) {
     if (triplesFound >= 25) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_25_TRIPLES);
+          .unlock(context.getString(R.string.achievement_arcade_25_triples));
     }
     if (triplesFound >= 20) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_20_TRIPLES);
+          .unlock(context.getString(R.string.achievement_arcade_20_triples));
     }
     if (triplesFound >= 15) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_15_TRIPLES);
+          .unlock(context.getString(R.string.achievement_arcade_15_triples));
     }
     if (triplesFound >= 10) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_10_TRIPLES);
+          .unlock(context.getString(R.string.achievement_arcade_10_triples));
     }
     if (triplesFound >= 5) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_5_TRIPLES);
+          .unlock(context.getString(R.string.achievement_arcade_5_triples));
     }
     if (triplesFound >= 2) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_2_TRIPLES);
+          .unlock(context.getString(R.string.achievement_arcade_2_triples));
     }
   }
 
@@ -119,62 +119,62 @@ public class AchievementManager {
   private static void awardClassicCountAchievements(Context context, int count) {
     if (count >= 5000) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_5000);
+          .unlock(context.getString(R.string.achievement_classic_5000_games));
     }
     if (count >= 1000) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_1000);
+          .unlock(context.getString(R.string.achievement_classic_1000_games));
     }
     if (count >= 500) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_500);
+          .unlock(context.getString(R.string.achievement_classic_500_games));
     }
     if (count >= 100) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_100);
+          .unlock(context.getString(R.string.achievement_classic_100_games));
     }
     if (count >= 50) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_50);
+          .unlock(context.getString(R.string.achievement_classic_50_games));
     }
     if (count >= 10) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_10);
+          .unlock(context.getString(R.string.achievement_classic_10_games));
     }
     if (count >= 1) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.CLASSIC_1);
+          .unlock(context.getString(R.string.achievement_classic_1_game));
     }
   }
 
   private static void awardArcadeCountAchievements(Context context, int count) {
     if (count >= 5000) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_5000);
+          .unlock(context.getString(R.string.achievement_arcade_5000_games));
     }
     if (count >= 1000) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_1000);
+          .unlock(context.getString(R.string.achievement_arcade_1000_games));
     }
     if (count >= 500) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_500);
+          .unlock(context.getString(R.string.achievement_arcade_500_games));
     }
     if (count >= 100) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_100);
+          .unlock(context.getString(R.string.achievement_arcade_100_games));
     }
     if (count >= 50) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_50);
+          .unlock(context.getString(R.string.achievement_arcade_50_games));
     }
     if (count >= 10) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_10);
+          .unlock(context.getString(R.string.achievement_arcade_10_games));
     }
     if (count >= 1) {
       PlayGames.getAchievementsClient((Activity) context)
-          .unlock(GamesServices.Achievement.ARCADE_1);
+          .unlock(context.getString(R.string.achievement_arcade_1_game));
     }
   }
 }

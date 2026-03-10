@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.antsapps.triples.backend.Application;
@@ -20,12 +21,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class DailyGameActivity extends BaseGameActivity
-    implements OnTimerTickListener,
-        Game.OnUpdateCardsInPlayListener,
-        DailyGame.OnTripleFoundListener {
+    implements OnTimerTickListener, Game.OnUpdateCardsInPlayListener {
 
   private DailyGame mGame;
   private Application mApplication;
+  private FoundTriplesView mFoundTriplesView;
 
   @Override
   protected void init(Bundle savedInstanceState) {
@@ -44,18 +44,15 @@ public class DailyGameActivity extends BaseGameActivity
     stub.inflate();
     mGame.addOnTimerTickListener(this);
     mGame.addOnUpdateCardsInPlayListener(this);
-    mGame.setOnTripleFoundListener(this);
 
     TextView dateText = findViewById(R.id.daily_date_text);
     dateText.setText(DateFormat.getDateInstance().format(mGame.getDateStarted()));
 
     mCardsView = findViewById(R.id.cards_view);
 
-    FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
-    if (foundTriplesView != null) {
-      foundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
-      foundTriplesView.setCardsView(mCardsView);
-    }
+    mFoundTriplesView = findViewById(R.id.found_triples_view);
+    mFoundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
+    mFoundTriplesView.setCardsView(mCardsView);
 
     mCardsView.setOnValidTripleSelectedListener(
         tripleCollection -> {
@@ -134,21 +131,14 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  public void onCardHinted(Card hintedCard) {
-    updateHintUsedIndicator();
-  }
-
-  @Override
-  public void onTripleFound(final Set<Card> triple) {
-    final FoundTriplesView foundTriplesView = findViewById(R.id.found_triples_view);
-    if (foundTriplesView != null) {
-      int index = mGame.getFoundTriples().indexOf(triple);
-      mCardsView.animateTripleFound(
-          foundTriplesView.getCardBoundsInWindow(index, triple),
-          () ->
-              foundTriplesView.setFoundTriples(
-                  mGame.getFoundTriples(), mGame.getTotalTriplesCount()));
-    }
+  public void animateFoundTriple(Set<Card> triple) {
+    int index = mGame.getFoundTriples().indexOf(triple);
+    mCardsView.animateTripleFound(
+        mFoundTriplesView.getCardBoundsInWindow(index, triple),
+        new AccelerateDecelerateInterpolator(),
+        () ->
+            mFoundTriplesView.setFoundTriples(
+                mGame.getFoundTriples(), mGame.getTotalTriplesCount()));
   }
 
   @Override

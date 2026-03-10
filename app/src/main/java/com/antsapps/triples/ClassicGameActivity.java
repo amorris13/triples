@@ -134,15 +134,12 @@ public class ClassicGameActivity extends BaseGameActivity
     numRemainingText.setText(String.valueOf(numRemaining));
   }
 
-  @Override
-  public void onCardHinted(Card hintedCard) {}
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
     PlayGames.getLeaderboardsClient(this)
-        .submitScore(GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed());
+        .submitScore(getString(R.string.leaderboard_classic_game), mGame.getTimeElapsed());
   }
 
   @Override
