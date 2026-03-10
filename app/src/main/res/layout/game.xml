@@ -43,7 +43,7 @@
     android:layout_height="match_parent"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
-    android:layout_above="@id/bottom_separator"
+    android:layout_above="@id/bottom_inset_container"
     android:layout_alignParentTop="true"
     android:measureAllChildren="false"
     android:clipChildren="false"
