@@ -33,7 +33,6 @@ public class CardBackgroundDrawable extends Drawable {
   private final ShapeDrawable mShadow;
 
   private final ShapeDrawable mOutline;
-  private final ShapeDrawable mSelectedTint;
   private final ShapeDrawable mHintOutline;
   private final ShapeDrawable mBorder;
 
@@ -58,10 +57,7 @@ public class CardBackgroundDrawable extends Drawable {
     mOutline = new ShapeDrawable(mCardShape);
     mOutline.getPaint().setStyle(Paint.Style.STROKE);
     mOutline.getPaint().setColor(ContextCompat.getColor(context, R.color.card_selected_outline));
-    mOutline.getPaint().setStrokeWidth(4 * density);
-
-    mSelectedTint = new ShapeDrawable(mCardShape);
-    mSelectedTint.getPaint().setColor(ContextCompat.getColor(context, R.color.card_selected_tint));
+    mOutline.getPaint().setStrokeWidth(2 * density);
 
     mHintOutline = new ShapeDrawable(mCardShape);
     mHintOutline.getPaint().setStyle(Paint.Style.STROKE);
@@ -82,9 +78,6 @@ public class CardBackgroundDrawable extends Drawable {
     }
     mShadow.draw(canvas);
     mBackground.draw(canvas);
-    if (mSelected) {
-      mSelectedTint.draw(canvas);
-    }
     mBorder.draw(canvas);
     if (mSelected) {
       mOutline.draw(canvas);
@@ -99,7 +92,6 @@ public class CardBackgroundDrawable extends Drawable {
   @Override
   public void setAlpha(int alpha) {
     mOutline.setAlpha(alpha);
-    mSelectedTint.setAlpha(alpha);
     mHintOutline.setAlpha(alpha);
     mBackground.setAlpha(alpha);
     mShadow.setAlpha(alpha);
@@ -109,7 +101,6 @@ public class CardBackgroundDrawable extends Drawable {
   @Override
   public void setColorFilter(ColorFilter cf) {
     mOutline.setColorFilter(cf);
-    mSelectedTint.setColorFilter(cf);
     mHintOutline.setColorFilter(cf);
     mBackground.setColorFilter(cf);
     mShadow.setColorFilter(cf);
@@ -130,7 +121,6 @@ public class CardBackgroundDrawable extends Drawable {
     cardBounds.inset(mInsetPx, mInsetPx);
     mBackground.setBounds(cardBounds);
     mOutline.setBounds(cardBounds);
-    mSelectedTint.setBounds(cardBounds);
     mHintOutline.setBounds(cardBounds);
     mBorder.setBounds(cardBounds);
 

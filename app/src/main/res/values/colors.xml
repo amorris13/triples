@@ -63,7 +63,6 @@
   <color name="card_background">#FFFFFF</color>
   <color name="card_shadow">#20202020</color>
   <color name="card_selected_outline">#00677C</color>
-  <color name="card_selected_tint">#1F00677C</color>
   <color name="card_hint_outline">#4000677C</color>
 
   <!-- Card Symbol Presets -->
