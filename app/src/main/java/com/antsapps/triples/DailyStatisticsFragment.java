@@ -28,7 +28,6 @@ import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -256,7 +255,7 @@ public class DailyStatisticsFragment extends Fragment {
       if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
       totalSolved++;
       long seed = game.getRandomSeed();
-      if (game.getDateCompleted().getTime() - seed < 48 * 60 * 60 * 1000) {
+      if (game.getDateCompleted().getTime() - seed < DailyGame.STREAK_BUFFER_MILLIS) {
         completedOnDaySeeds.add(seed);
       }
     }
@@ -350,7 +349,7 @@ public class DailyStatisticsFragment extends Fragment {
         if (game.areHintsUsed()) {
           mHintSeeds.add(seed);
         }
-        if (game.getDateCompleted().getTime() - seed < 48 * 60 * 60 * 1000) {
+        if (game.getDateCompleted().getTime() - seed < DailyGame.STREAK_BUFFER_MILLIS) {
           mCompletedOnDaySeeds.add(seed);
         } else {
           mCompletedLateSeeds.add(seed);

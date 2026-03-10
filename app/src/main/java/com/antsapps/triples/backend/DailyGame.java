@@ -14,6 +14,8 @@ public class DailyGame extends Game {
 
   public static final String GAME_TYPE_FOR_ANALYTICS = "daily";
 
+  public static final long STREAK_BUFFER_MILLIS = 48 * 60 * 60 * 1000L; // 48 hours
+
   private final List<Set<Card>> mAllTriples;
   private final List<Set<Card>> mFoundTriples;
   private Date mDateCompleted;
