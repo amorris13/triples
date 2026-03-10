@@ -81,9 +81,6 @@ public class ClassicGameActivity extends BaseGameActivity
     numRemainingText.setText(String.valueOf(numRemaining));
   }
 
-  @Override
-  public void onCardHinted(Card hintedCard) {}
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;

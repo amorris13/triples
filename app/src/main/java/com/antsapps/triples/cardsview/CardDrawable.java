@@ -20,6 +20,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.CycleInterpolator;
+import android.view.animation.Interpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
@@ -36,19 +37,27 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
 
   private class BaseAnimationListener implements AnimationListener {
 
+    private boolean mStarted = false;
+
     BaseAnimationListener() {}
 
     @Override
     public void onAnimationStart(Animation animation) {
       if (mAnimationHandler != null) {
         mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_INCREMENT));
+        mStarted = true;
       }
     }
 
     @Override
     public void onAnimationEnd(Animation animation) {
       if (mAnimationHandler != null) {
-        mAnimationHandler.sendMessage(Message.obtain(mAnimationHandler, CardsView.WHAT_DECREMENT));
+        if (!mStarted) {
+          Log.e(TAG, "Ending an animation that did not start", new IllegalStateException());
+        } else {
+          mAnimationHandler.sendMessage(
+              Message.obtain(mAnimationHandler, CardsView.WHAT_DECREMENT));
+        }
       }
       if (mAnimation == animation) {
         mAnimation = null;
@@ -80,8 +89,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private Animation mAnimation;
   private final Transformation mTransformation = new Transformation();
 
-  private OnAnimationFinishedListener mListener;
-
   private float mAlpha;
 
   private boolean mShouldSlideIn;
@@ -89,17 +96,11 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
   private final Context mContext;
   private final Handler mAnimationHandler;
 
-  public CardDrawable(
-      Context context, Handler animationHandler, Card card, OnAnimationFinishedListener listener) {
+  public CardDrawable(Context context, Handler animationHandler, Card card) {
     mContext = context;
     mAnimationHandler = animationHandler;
 
     mCard = card;
-    mListener = listener;
-  }
-
-  public void setAnimationFinishedListener(OnAnimationFinishedListener listener) {
-    mListener = listener;
   }
 
   @Override
@@ -261,9 +262,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
       return;
     }
     if (mAnimationHandler == null) {
-      if (mListener != null) {
-        mListener.onAnimationFinished();
-      }
       return;
     }
     Animation transitionAnimation = null;
@@ -279,16 +277,6 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
     } else {
       // This CardDrawable is an existing drawable
       AnimationSet set = new AnimationSet(true);
-      set.addAnimation(
-          new ScaleAnimation(
-              (float) oldBounds.width() / mBounds.width(),
-              1.0f,
-              (float) oldBounds.height() / mBounds.height(),
-              1.0f,
-              Animation.ABSOLUTE,
-              mBounds.centerX(),
-              Animation.ABSOLUTE,
-              mBounds.centerY()));
       set.addAnimation(
           new TranslateAnimation(
               oldBounds.centerX() - mBounds.centerX(),
@@ -310,16 +298,48 @@ public class CardDrawable extends Drawable implements Comparable<CardDrawable> {
           @Override
           public void onAnimationEnd(Animation animation) {
             super.onAnimationEnd(animation);
-            if (mListener != null) {
-              mListener.onAnimationFinished();
-            }
             mDrawOrder = 0;
           }
         });
     updateAnimation(transitionAnimation);
   }
 
-  public void updateAnimation(Animation animation) {
+  public void animateFoundCard(
+      Rect target, Interpolator interpolator, OnAnimationFinishedListener listener) {
+    AnimationSet animationSet = new AnimationSet(true);
+    animationSet.addAnimation(
+        new ScaleAnimation(
+            1.0f,
+            (float) target.width() / mBounds.width(),
+            1.0f,
+            (float) target.height() / mBounds.height(),
+            Animation.ABSOLUTE,
+            mBounds.centerX(),
+            Animation.ABSOLUTE,
+            mBounds.centerY()));
+    animationSet.addAnimation(
+        new TranslateAnimation(
+            0, target.centerX() - mBounds.centerX(), 0, target.centerY() - mBounds.centerY()));
+
+    mDrawOrder = 1;
+    animationSet.setInterpolator(interpolator);
+    animationSet.setDuration(getAnimationDuration());
+    animationSet.setStartTime(Animation.START_ON_FIRST_FRAME);
+    animationSet.setAnimationListener(
+        new BaseAnimationListener() {
+          @Override
+          public void onAnimationEnd(Animation animation) {
+            super.onAnimationEnd(animation);
+            if (listener != null) {
+              listener.onAnimationFinished();
+            }
+            mDrawOrder = 0;
+          }
+        });
+    updateAnimation(animationSet);
+  }
+
+  private void updateAnimation(Animation animation) {
     if (mAnimation != null) {
       mAnimation.cancel();
     }

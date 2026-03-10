@@ -22,7 +22,7 @@ public class SampleCardView extends View {
 
   public void setCard(Card card) {
     mCard = card;
-    mCardDrawable = new CardDrawable(getContext(), null, mCard, null);
+    mCardDrawable = new CardDrawable(getContext(), null, mCard);
     invalidate();
   }
 

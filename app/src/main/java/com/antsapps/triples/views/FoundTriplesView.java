@@ -140,7 +140,7 @@ public class FoundTriplesView extends View {
       Rect bounds = new Rect(0, i * displacement, width, i * displacement + height);
       CardDrawable cardDrawable = mCardDrawableCache.get(card);
       if (cardDrawable == null) {
-        cardDrawable = new CardDrawable(getContext(), null, card, null);
+        cardDrawable = new CardDrawable(getContext(), null, card);
         mCardDrawableCache.put(card, cardDrawable);
       }
       cardDrawable.updateBounds(bounds, false);

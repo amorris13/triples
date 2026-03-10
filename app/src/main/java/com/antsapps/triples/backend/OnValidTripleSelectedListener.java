@@ -1,7 +1,7 @@
 package com.antsapps.triples.backend;
 
-import java.util.Collection;
+import java.util.Set;
 
 public interface OnValidTripleSelectedListener {
-  void onValidTripleSelected(Collection<Card> validTriple);
+  void onValidTripleSelected(Set<Card> validTriple);
 }
