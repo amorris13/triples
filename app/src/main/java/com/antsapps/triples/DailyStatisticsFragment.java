@@ -303,7 +303,6 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       mHintDates = new HashSet<>();
       mProgressMap = new HashMap<>();
       for (DailyGame game : allGames) {
-        if (game.getDateCompleted() == null) continue;
         DailyGame.Day day = game.getGameDay();
         if (game.areHintsUsed()) {
           mHintDates.add(day);
@@ -315,7 +314,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
             mCompletedLateDates.add(day);
           }
         } else if (game.getNumTriplesFound() > 0) {
-          mProgressMap.put(day, (float) game.getNumTriplesFound() / game.getTotalTriplesCount());
+          mProgressMap.put(
+              day, (float) game.getNumTriplesFound() / (float) game.getTotalTriplesCount());
         }
       }
     }
@@ -381,16 +381,14 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
                 } else if (mCompletedLateDates.contains(day)) {
                   mPaint.setStyle(Paint.Style.FILL);
                   int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-                  mPaint.setColor(
-                      Color.argb(128, Color.red(color), Color.green(color), Color.blue(color)));
+                  mPaint.setColor(updateAlpha(color, 128));
                   canvas.drawCircle(centerX, centerY, radius, mPaint);
                 } else if (mProgressMap.containsKey(day)) {
                   float progress = mProgressMap.get(day);
                   mPaint.setStyle(Paint.Style.FILL);
                   int color = ContextCompat.getColor(mContext, R.color.daily_accent);
                   if (!day.equals(mToday)) {
-                    color =
-                        Color.argb(128, Color.red(color), Color.green(color), Color.blue(color));
+                    color = updateAlpha(color, 128);
                   }
                   mPaint.setColor(color);
                   RectF rectF =
@@ -445,6 +443,10 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       }
 
       return tv;
+    }
+
+    private static int updateAlpha(int color, int alpha) {
+      return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
   }
 }
