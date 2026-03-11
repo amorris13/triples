@@ -219,17 +219,18 @@ public class CardView extends View {
     onIncorrectTriple(false);
   }
 
-  public void onIncorrectTriple(boolean horizontalOnly) {
+  public void onIncorrectTriple(boolean alreadyFound) {
     mSelected = false;
     mShakeAnimating = true;
     regenerateCache();
     invalidate();
 
-    if (horizontalOnly) {
+    if (alreadyFound) {
       animate()
-          .translationXBy(10)
+          .scaleX(1.2f)
+          .scaleY(1.2f)
           .setDuration(getAnimationDuration())
-          .setInterpolator(new CycleInterpolator(4))
+          .setInterpolator(new CycleInterpolator(0.5f))
           .setListener(
               new AnimatorListenerAdapter() {
                 @Override
