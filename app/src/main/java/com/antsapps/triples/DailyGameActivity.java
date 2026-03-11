@@ -89,7 +89,9 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  protected void awardAchievements() {}
+  protected void awardAchievements() {
+    AchievementManager.awardDailyAchievements(this, mApplication);
+  }
 
   @Override
   protected Game getGame() {

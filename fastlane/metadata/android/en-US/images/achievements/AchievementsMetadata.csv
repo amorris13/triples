@@ -25,3 +25,15 @@ Arcade: 10 triples,Find 10 triples in an Arcade game,False,,Revealed,15,24
 Arcade: 15 triples,Find 15 triples in an Arcade game,False,,Revealed,20,25
 Arcade: 20 triples,Find 20 triples in an Arcade game,False,,Revealed,25,26
 Arcade: 25 triples,Find 25 triples in an Arcade game,False,,Revealed,30,27
+Daily: 1 puzzle,Complete 1 Daily puzzle,False,,Revealed,5,28
+Daily: 10 puzzles,Complete 10 Daily puzzles,False,,Revealed,10,29
+Daily: 50 puzzles,Complete 50 Daily puzzles,False,,Revealed,15,30
+Daily: 100 puzzles,Complete 100 Daily puzzles,False,,Revealed,20,31
+Daily: 250 puzzles,Complete 250 Daily puzzles,False,,Revealed,25,32
+Daily: 500 puzzles,Complete 500 Daily puzzles,False,,Revealed,30,33
+Daily: 7 day streak,Complete Daily puzzles for 7 consecutive days,False,,Revealed,10,34
+Daily: 14 day streak,Complete Daily puzzles for 14 consecutive days,False,,Revealed,15,35
+Daily: 30 day streak,Complete Daily puzzles for 30 consecutive days,False,,Revealed,20,36
+Daily: 90 day streak,Complete Daily puzzles for 90 consecutive days,False,,Revealed,25,37
+Daily: 180 day streak,Complete Daily puzzles for 180 consecutive days,False,,Revealed,30,38
+Daily: 365 day streak,Complete Daily puzzles for 365 consecutive days,False,,Revealed,50,39
