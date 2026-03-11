@@ -167,7 +167,7 @@ public class FoundTriplesView extends View {
     mHighlightIndex = index;
     mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
     mHighlightAnimator.setDuration(getAnimationDuration());
-    mHighlightAnimator.setInterpolator(new CycleInterpolator(1));
+    mHighlightAnimator.setInterpolator(new CycleInterpolator(0.5f));
     mHighlightAnimator.addUpdateListener(
         animation -> {
           mHighlightScale = (float) animation.getAnimatedValue();
