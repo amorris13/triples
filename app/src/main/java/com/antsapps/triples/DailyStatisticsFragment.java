@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -33,9 +34,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class DailyStatisticsFragment extends Fragment implements CsvExportable {
@@ -175,7 +178,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mNextMonthBtn.setEnabled(!isCurrentMonth);
 
     CalendarAdapter adapter =
-        new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames, mSelectedDay);
+        new CalendarAdapter(
+            getActivity(), mCurrentMonth, mApplication.getDailyGames(), mSelectedDay);
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener(
@@ -265,12 +269,10 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     private final int mYear;
     private final int mSelectableItemBackground;
     private DailyGame.Day mSelectedDate;
+    private final Map<DailyGame.Day, Float> mProgressMap;
 
     CalendarAdapter(
-        Context context,
-        Calendar month,
-        List<DailyGame> completedGames,
-        DailyGame.Day selectedDay) {
+        Context context, Calendar month, List<DailyGame> allGames, DailyGame.Day selectedDay) {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
@@ -299,16 +301,21 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       mCompletedOnDayDates = new HashSet<>();
       mCompletedLateDates = new HashSet<>();
       mHintDates = new HashSet<>();
-      for (DailyGame game : completedGames) {
-        if (game.getDateCompleted() == null) continue;
+      mProgressMap = new HashMap<>();
+      for (DailyGame game : allGames) {
         DailyGame.Day day = game.getGameDay();
         if (game.areHintsUsed()) {
           mHintDates.add(day);
         }
-        if (game.isCompletedOnTime()) {
-          mCompletedOnDayDates.add(day);
-        } else {
-          mCompletedLateDates.add(day);
+        if (game.getDateCompleted() != null) {
+          if (game.isCompletedOnTime()) {
+            mCompletedOnDayDates.add(day);
+          } else {
+            mCompletedLateDates.add(day);
+          }
+        } else if (game.getNumTriplesFound() > 0) {
+          mProgressMap.put(
+              day, (float) game.getNumTriplesFound() / (float) game.getTotalTriplesCount());
         }
       }
     }
@@ -374,9 +381,20 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
                 } else if (mCompletedLateDates.contains(day)) {
                   mPaint.setStyle(Paint.Style.FILL);
                   int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-                  mPaint.setColor(
-                      Color.argb(128, Color.red(color), Color.green(color), Color.blue(color)));
+                  mPaint.setColor(updateAlpha(color, 128));
                   canvas.drawCircle(centerX, centerY, radius, mPaint);
+                } else if (mProgressMap.containsKey(day)) {
+                  float progress = mProgressMap.get(day);
+                  mPaint.setStyle(Paint.Style.FILL);
+                  int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                  if (!day.equals(mToday)) {
+                    color = updateAlpha(color, 128);
+                  }
+                  mPaint.setColor(color);
+                  RectF rectF =
+                      new RectF(
+                          centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+                  canvas.drawArc(rectF, -90, 360 * progress, true, mPaint);
                 }
 
                 // Selection indicator (outline)
@@ -425,6 +443,10 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       }
 
       return tv;
+    }
+
+    private static int updateAlpha(int color, int alpha) {
+      return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
   }
 }
