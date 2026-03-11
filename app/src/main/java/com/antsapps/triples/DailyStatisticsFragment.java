@@ -3,16 +3,13 @@ package com.antsapps.triples;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.view.ContextThemeWrapper;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
+import com.google.android.material.button.MaterialButton;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -23,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
@@ -362,136 +360,110 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-      TextView tv = (TextView) convertView;
-      if (tv == null) {
-        tv =
-            new androidx.appcompat.widget.AppCompatTextView(mContext) {
-              private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      FrameLayout container = (FrameLayout) convertView;
+      if (container == null) {
+        container = new FrameLayout(mContext);
+        container.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
+
+        MaterialButton button =
+            new MaterialButton(new ContextThemeWrapper(mContext, R.style.DailyCalendarDayButton)) {
+              private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+              @Override
+              protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+                super.onSizeChanged(w, h, oldw, oldh);
+                setCornerRadius(w / 2);
+              }
 
               @Override
               protected void onDraw(Canvas canvas) {
                 DailyGame.Day day = DailyGame.Day.forCalendar((Calendar) getTag());
-                if (day == null || day.getMonth() != mMonth || day.getYear() != mYear) {
-                  return;
-                }
+                if (day != null && day.getMonth() == mMonth && day.getYear() == mYear) {
+                  float centerX = getWidth() / 2f;
+                  float centerY = getHeight() / 2f;
+                  float radius = Math.min(getWidth(), getHeight()) / 2f - 2 * mDensity;
 
-                float density = mContext.getResources().getDisplayMetrics().density;
-                float centerX = getWidth() / 2f;
-                float centerY = getHeight() / 2f;
-                float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
-
-                // Background circle for solved games
-                if (mCompletedOnDayDates.contains(day)) {
-                  mPaint.setStyle(Paint.Style.FILL);
-                  mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-                  canvas.drawCircle(centerX, centerY, radius, mPaint);
-                } else if (mCompletedLateDates.contains(day)) {
-                  mPaint.setStyle(Paint.Style.FILL);
-                  int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-                  mPaint.setColor(updateAlpha(color, 128));
-                  canvas.drawCircle(centerX, centerY, radius, mPaint);
-                } else if (mProgressMap.containsKey(day)) {
-                  float progress = mProgressMap.get(day);
-                  mPaint.setStyle(Paint.Style.FILL);
-                  int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-                  if (!day.equals(mToday)) {
-                    color = updateAlpha(color, 128);
+                  // Background circle for solved games
+                  if (mCompletedOnDayDates.contains(day)) {
+                    mPaint.setStyle(Paint.Style.FILL);
+                    mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
+                    canvas.drawCircle(centerX, centerY, radius, mPaint);
+                  } else if (mCompletedLateDates.contains(day)) {
+                    mPaint.setStyle(Paint.Style.FILL);
+                    int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                    mPaint.setColor(updateAlpha(color, 128));
+                    canvas.drawCircle(centerX, centerY, radius, mPaint);
+                  } else if (mProgressMap.containsKey(day)) {
+                    float progress = mProgressMap.get(day);
+                    mPaint.setStyle(Paint.Style.FILL);
+                    int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                    if (!day.equals(mToday)) {
+                      color = updateAlpha(color, 128);
+                    }
+                    mPaint.setColor(color);
+                    RectF rectF =
+                        new RectF(
+                            centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+                    canvas.drawArc(rectF, -90, 360 * progress, true, mPaint);
                   }
-                  mPaint.setColor(color);
-                  RectF rectF =
-                      new RectF(
-                          centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-                  canvas.drawArc(rectF, -90, 360 * progress, true, mPaint);
+                  super.onDraw(canvas);
                 }
-
-                // Selection indicator (outline)
-                if (day.equals(mSelectedDate)) {
-                  mPaint.setStyle(Paint.Style.STROKE);
-                  mPaint.setStrokeWidth(2 * density);
-                  mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
-                  canvas.drawCircle(centerX, centerY, radius + density, mPaint);
-                }
-
-                super.onDraw(canvas);
               }
             };
-        tv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
-        tv.setGravity(Gravity.CENTER);
+        int buttonSize = (int) (120 - 4 * mDensity);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(buttonSize, buttonSize);
+        lp.gravity = Gravity.CENTER;
+        button.setLayoutParams(lp);
+        button.setRippleColor(ColorStateList.valueOf(mRippleColor));
+        container.addView(button);
       }
 
+      MaterialButton button = (MaterialButton) container.getChildAt(0);
       Calendar calendar = mDays.get(position);
-      tv.setTag(calendar);
+      button.setTag(calendar);
       DailyGame.Day day = DailyGame.Day.forCalendar(calendar);
 
       if (calendar.get(Calendar.MONTH) != mMonth - 1 || calendar.get(Calendar.YEAR) != mYear) {
-        tv.setText("");
-        tv.setBackground(null);
+        button.setText("");
+        button.setVisibility(View.INVISIBLE);
+        button.setStrokeWidth(0);
+        button.setClickable(false);
       } else {
         String text = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if (mHintDates.contains(day)) {
           text += "*";
         }
-        tv.setText(text);
-        if (!(tv.getBackground() instanceof RippleDrawable)) {
-          tv.setBackground(createCircularRipple());
+        button.setText(text);
+        button.setVisibility(View.VISIBLE);
+        button.setClickable(true);
+
+        if (day.equals(mSelectedDate)) {
+          button.setStrokeWidth((int) (2 * mDensity));
+          button.setStrokeColor(ColorStateList.valueOf(mTextPrimaryColor));
+        } else {
+          button.setStrokeWidth(0);
         }
 
         if (day.equals(mToday)) {
-          tv.setTypeface(null, Typeface.BOLD);
-          tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+          button.setTypeface(null, Typeface.BOLD);
+          button.setPaintFlags(button.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         } else {
-          tv.setTypeface(null, Typeface.NORMAL);
-          tv.setPaintFlags(tv.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
+          button.setTypeface(null, Typeface.NORMAL);
+          button.setPaintFlags(button.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
         }
 
         if (day.compareTo(mToday) > 0) {
-          tv.setTextColor(mTextSecondaryColor);
+          button.setTextColor(mTextSecondaryColor);
         } else {
-          tv.setTextColor(mTextPrimaryColor);
+          button.setTextColor(mTextPrimaryColor);
         }
       }
 
-      return tv;
-    }
-
-    private RippleDrawable createCircularRipple() {
-      return new RippleDrawable(
-          ColorStateList.valueOf(mRippleColor), null, new CircularRippleMask(mDensity));
+      return container;
     }
 
     private static int updateAlpha(int color, int alpha) {
       return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
-    }
-  }
-
-  private static class CircularRippleMask extends Drawable {
-    private final float mDensity;
-    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-    CircularRippleMask(float density) {
-      mDensity = density;
-      mPaint.setColor(Color.WHITE);
-      mPaint.setStyle(Paint.Style.FILL);
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-      Rect bounds = getBounds();
-      float centerX = bounds.centerX();
-      float centerY = bounds.centerY();
-      float radius = Math.min(bounds.width(), bounds.height()) / 2f - 2 * mDensity;
-      canvas.drawCircle(centerX, centerY, radius, mPaint);
-    }
-
-    @Override
-    public void setAlpha(int alpha) {}
-
-    @Override
-    public void setColorFilter(ColorFilter colorFilter) {}
-
-    @Override
-    public int getOpacity() {
-      return PixelFormat.TRANSLUCENT;
     }
   }
 }
