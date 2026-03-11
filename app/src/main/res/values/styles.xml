@@ -30,11 +30,8 @@
     <item name="android:paddingBottom">@dimen/status_bar_padding_bottom</item>
   </style>
 
-  <style name="HelpDialog" parent="Theme.Material3.DayNight.Dialog">
-    <item name="android:windowNoTitle">true</item>
-  </style>
 
-  <style name="AppTheme" parent="Theme.Material3.DayNight">
+  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     <item name="colorControlNormal">?attr/colorOnSurface</item>

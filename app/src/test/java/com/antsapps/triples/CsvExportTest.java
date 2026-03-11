@@ -17,11 +17,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
-@RunWith(RobolectricTestRunner.class)
-public class CsvExportTest {
+public class CsvExportTest extends BaseRobolectricTest {
 
   @Before
   // Set timezone to UTC

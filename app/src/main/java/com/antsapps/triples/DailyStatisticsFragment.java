@@ -23,7 +23,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
+import com.antsapps.triples.backend.DailyStatisticsUtil;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
 import java.text.DateFormat;
@@ -36,7 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class DailyStatisticsFragment extends Fragment {
+public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
   private Application mApplication;
   private List<DailyGame> mCompletedGames;
@@ -242,52 +244,12 @@ public class DailyStatisticsFragment extends Fragment {
   }
 
   private void updateStreaks() {
-    Set<DailyGame.Day> completedOnDayDays = new HashSet<>();
-    int totalSolved = 0;
-    for (DailyGame game : mCompletedGames) {
-      if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
-      totalSolved++;
-      if (game.isCompletedOnTime()) {
-        completedOnDayDays.add(game.getGameDay());
-      }
-    }
+    DailyStatisticsUtil.DailyStatistics dailyStatistics =
+        DailyStatisticsUtil.computeDailyStatistics(mCompletedGames);
 
-    int currentStreak = 0;
-    Calendar cal = Calendar.getInstance();
-    if (!completedOnDayDays.contains(DailyGame.Day.forCalendar(cal))) {
-      cal.add(Calendar.DAY_OF_YEAR, -1);
-    }
-    while (completedOnDayDays.contains(DailyGame.Day.forCalendar(cal))) {
-      currentStreak++;
-      cal.add(Calendar.DAY_OF_YEAR, -1);
-    }
-
-    int longestStreak = 0;
-    int tempStreak = 0;
-    List<DailyGame.Day> sortedDays = new ArrayList<>(completedOnDayDays);
-    Collections.sort(sortedDays);
-    Calendar lastCal = null;
-    for (DailyGame.Day day : sortedDays) {
-      Calendar currentCal = day.getCalendar();
-      if (lastCal != null) {
-        Calendar expectedCal = (Calendar) lastCal.clone();
-        expectedCal.add(Calendar.DAY_OF_YEAR, 1);
-        if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR)
-            && expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
-          tempStreak++;
-        } else {
-          tempStreak = 1;
-        }
-      } else {
-        tempStreak = 1;
-      }
-      lastCal = currentCal;
-      longestStreak = Math.max(longestStreak, tempStreak);
-    }
-
-    mCurrentStreakTv.setText(String.valueOf(currentStreak));
-    mLongestStreakTv.setText(String.valueOf(longestStreak));
-    mTotalSolvedTv.setText(String.valueOf(totalSolved));
+    mCurrentStreakTv.setText(String.valueOf(dailyStatistics.currentStreak));
+    mLongestStreakTv.setText(String.valueOf(dailyStatistics.longestStreak));
+    mTotalSolvedTv.setText(String.valueOf(dailyStatistics.totalGamesCompleted));
   }
 
   private static class CalendarAdapter extends BaseAdapter {

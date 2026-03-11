@@ -428,7 +428,7 @@ public class DBAdapter extends SQLiteOpenHelper {
               new Date(dailyGamesCursor.getLong(5)),
               DailyGame.Day.fromString(dailyGamesCursor.getString(6)),
               GameState.valueOf(dailyGamesCursor.getString(1)),
-              dailyGamesCursor.getInt(10) != 0,
+              dailyGamesCursor.getInt(9) != 0,
               Utils.triplesListFromByteArray(dailyGamesCursor.getBlob(7)),
               dailyGamesCursor.isNull(10) ? null : new Date(dailyGamesCursor.getLong(10)));
       dailyGames.add(game);

@@ -3,12 +3,19 @@ package com.antsapps.triples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.OnStateChangedListener;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -34,6 +41,8 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected FirebaseAnalytics mFirebaseAnalytics;
   private FirebaseAuth mFirebaseAuth;
   protected boolean mIsSignedIn = false;
+  private boolean mIsSyncing = false;
+  private OnStateChangedListener mOnStateChangedListener;
 
   @Nullable private OnSignInListener mSignInListener;
 
@@ -45,6 +54,50 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
 
     mFirebaseAuth = FirebaseAuth.getInstance();
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+  }
+
+  @Override
+  public void setContentView(int layoutResID) {
+    super.setContentView(layoutResID);
+    setupToolbar();
+  }
+
+  private void setupToolbar() {
+    Toolbar toolbar = findViewById(R.id.toolbar);
+    if (toolbar != null) {
+      setSupportActionBar(toolbar);
+    }
+
+    View appBarLayout = findViewById(R.id.app_bar_layout);
+    if (appBarLayout != null) {
+      ViewCompat.setOnApplyWindowInsetsListener(
+          appBarLayout,
+          (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            return insets;
+          });
+    }
+
+    View bottomInsetContainer = findViewById(R.id.bottom_inset_container);
+    if (bottomInsetContainer != null) {
+      ViewCompat.setOnApplyWindowInsetsListener(
+          bottomInsetContainer,
+          (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, 0, 0, systemBars.bottom);
+            return insets;
+          });
+    }
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == android.R.id.home) {
+      onBackPressed();
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   private void applyTheme() {
@@ -171,7 +224,28 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     }
     Application application = Application.getInstance(this);
     AchievementManager.syncAchievements(this, application);
-    CloudSaveManager.syncWithCloud(this, application);
+
+    if (!mIsSyncing) {
+      mIsSyncing = true;
+      CloudSaveManager.syncAll(this, application)
+          .addOnCompleteListener(
+              t -> {
+                mIsSyncing = false;
+              });
+    }
+
+    if (mOnStateChangedListener == null) {
+      mOnStateChangedListener =
+          new OnStateChangedListener() {
+            @Override
+            public void onStateChanged() {
+              if (isSignedIn() && !mIsSyncing) {
+                CloudSaveManager.saveAll(BaseTriplesActivity.this, application);
+              }
+            }
+          };
+      application.addOnStateChangedListener(mOnStateChangedListener);
+    }
   }
 
   public void signIn() {
@@ -220,6 +294,15 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
+  }
+
+  @Override
+  protected void onDestroy() {
+    if (mOnStateChangedListener != null) {
+      Application.getInstance(this).removeOnStateChangedListener(mOnStateChangedListener);
+      mOnStateChangedListener = null;
+    }
+    super.onDestroy();
   }
 
   @Override
