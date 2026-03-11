@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.widget.Button;
 import androidx.test.core.app.ActivityScenario;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.stats.ArcadeStatisticsActivity;
+import com.antsapps.triples.stats.ClassicStatisticsActivity;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowActivity;
 
@@ -25,9 +27,7 @@ public class NavigationTest extends BaseRobolectricTest {
             ShadowActivity shadowActivity = shadowOf(activity);
             Intent nextIntent = shadowActivity.getNextStartedActivity();
             assertThat(nextIntent.getComponent().getClassName())
-                .isEqualTo(StatisticsActivity.class.getName());
-            assertThat(nextIntent.getStringExtra(StatisticsActivity.GAME_TYPE))
-                .isEqualTo("Classic");
+                .isEqualTo(ClassicStatisticsActivity.class.getName());
           });
     }
   }
@@ -45,8 +45,7 @@ public class NavigationTest extends BaseRobolectricTest {
             ShadowActivity shadowActivity = shadowOf(activity);
             Intent nextIntent = shadowActivity.getNextStartedActivity();
             assertThat(nextIntent.getComponent().getClassName())
-                .isEqualTo(StatisticsActivity.class.getName());
-            assertThat(nextIntent.getStringExtra(StatisticsActivity.GAME_TYPE)).isEqualTo("Arcade");
+                .isEqualTo(ArcadeStatisticsActivity.class.getName());
           });
     }
   }
