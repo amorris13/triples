@@ -76,6 +76,22 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
+  protected String getCompletedStats() {
+    return formatClassicCompletedStats(mGame.getTimeElapsed());
+  }
+
+  @Override
+  protected void updatePerformanceDescriptionInternal(TextView performanceTv) {}
+
+  @Override
+  protected String getGameType() {
+    return "Daily";
+  }
+
+  @Override
+  protected void awardAchievements() {}
+
+  @Override
   protected Game getGame() {
     return mGame;
   }

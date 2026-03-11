@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
 import java.text.DateFormat;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class DailyStatisticsFragment extends Fragment {
+public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
   private Application mApplication;
   private List<DailyGame> mCompletedGames;
