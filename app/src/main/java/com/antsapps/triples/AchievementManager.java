@@ -5,7 +5,6 @@ import android.content.Context;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
-import com.antsapps.triples.backend.Game;
 import com.google.android.gms.games.PlayGames;
 import java.util.concurrent.TimeUnit;
 
