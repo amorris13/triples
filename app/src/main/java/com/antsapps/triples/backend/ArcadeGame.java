@@ -34,7 +34,7 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
       List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date,
+      Date dateStarted,
       GameState gameState,
       int numTriplesFound,
       boolean hintsUsed) {
@@ -45,7 +45,7 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
         tripleFindTimes,
         cardsInDeck,
         timeElapsed,
-        date,
+        dateStarted,
         gameState,
         hintsUsed);
     mNumTriplesFound = numTriplesFound;

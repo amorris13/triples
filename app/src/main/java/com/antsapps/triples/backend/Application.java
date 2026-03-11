@@ -251,16 +251,14 @@ public class Application extends OnStateChangedReporter {
     return null;
   }
 
-  public DailyGame getDailyGameForDate(long dateMillis) {
-    long daySeed = DailyGame.getStartOfDaySeed(dateMillis);
-
+  public DailyGame getDailyGameForDate(DailyGame.Day day) {
     for (DailyGame game : mDailyGames) {
-      if (game.getRandomSeed() == daySeed) {
+      if (game.getGameDay().equals(day)) {
         return game;
       }
     }
 
-    DailyGame game = DailyGame.createFromSeed(daySeed);
+    DailyGame game = DailyGame.createFromDay(day);
     addDailyGame(game);
     return game;
   }
@@ -289,13 +287,8 @@ public class Application extends OnStateChangedReporter {
         });
   }
 
-  public DailyGame getDailyGameBySeed(long seed) {
-    for (DailyGame game : mDailyGames) {
-      if (game.getRandomSeed() == seed) {
-        return game;
-      }
-    }
-    return null;
+  public DailyGame getDailyGameByGameDay(DailyGame.Day gameDay) {
+    return Iterables.find(mDailyGames, game -> game.getGameDay().equals(gameDay));
   }
 
   public boolean mergeClassicCompleted(List<ClassicGame> cloudGames) {
@@ -336,7 +329,7 @@ public class Application extends OnStateChangedReporter {
     }
     for (DailyGame cloudGame : cloudGames) {
       if (!localSeeds.contains(cloudGame.getRandomSeed())) {
-        DailyGame local = getDailyGameBySeed(cloudGame.getRandomSeed());
+        DailyGame local = getDailyGameByGameDay(cloudGame.getGameDay());
         if (local != null) {
           // Update local game with cloud data
           // For simplicity, just delete and re-add or update
@@ -378,7 +371,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public boolean mergeDailyCurrent(DailyGame cloudGame) {
-    DailyGame local = getDailyGameBySeed(cloudGame.getRandomSeed());
+    DailyGame local = getDailyGameByGameDay(cloudGame.getGameDay());
     if (local == null
         || (local.getGameState() != GameState.COMPLETED
             && cloudGame.getNumTriplesFound() > local.getNumTriplesFound())) {

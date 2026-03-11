@@ -5,6 +5,7 @@ import android.content.Context;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.DailyStatisticsUtil;
 import com.google.android.gms.games.PlayGames;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +41,14 @@ public class AchievementManager {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(context.getString(R.string.achievement_classic__20m));
     }
+  }
+
+  public static void awardDailyAchievements(Context context, Application application) {
+    DailyStatisticsUtil.DailyStatistics dailyStatistics =
+        DailyStatisticsUtil.computeDailyStatistics(application.getCompletedDailyGames());
+
+    awardDailyCountAchievements(context, dailyStatistics.totalGamesCompleted);
+    awardDailyStreakAchievements(context, dailyStatistics.longestStreak);
   }
 
   public static void awardArcadeAchievements(Context context, int triplesFound) {
@@ -95,6 +104,8 @@ public class AchievementManager {
       awardArcadeAchievements(context, maxArcadeTriples);
       awardArcadeCountAchievements(context, completedArcadeGames);
     }
+
+    awardDailyAchievements(context, application);
   }
 
   public static void awardCountAchievements(Context context, Application application) {
@@ -113,6 +124,8 @@ public class AchievementManager {
       }
     }
     awardArcadeCountAchievements(context, completedArcadeGames);
+
+    awardDailyAchievements(context, application);
   }
 
   private static void awardClassicCountAchievements(Context context, int count) {
@@ -174,6 +187,60 @@ public class AchievementManager {
     if (count >= 1) {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(context.getString(R.string.achievement_arcade_1_game));
+    }
+  }
+
+  private static void awardDailyCountAchievements(Context context, int count) {
+    if (count >= 500) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_500_puzzles));
+    }
+    if (count >= 250) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_250_puzzles));
+    }
+    if (count >= 100) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_100_puzzles));
+    }
+    if (count >= 50) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_50_puzzles));
+    }
+    if (count >= 10) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_10_puzzles));
+    }
+    if (count >= 1) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_1_puzzle));
+    }
+  }
+
+  private static void awardDailyStreakAchievements(Context context, int streak) {
+    if (streak >= 365) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_365_day_streak));
+    }
+    if (streak >= 180) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_180_day_streak));
+    }
+    if (streak >= 90) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_90_day_streak));
+    }
+    if (streak >= 30) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_30_day_streak));
+    }
+    if (streak >= 14) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_14_day_streak));
+    }
+    if (streak >= 7) {
+      PlayGames.getAchievementsClient((Activity) context)
+          .unlock(context.getString(R.string.achievement_daily_7_day_streak));
     }
   }
 }

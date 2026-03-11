@@ -33,7 +33,7 @@ public class CloudSaveManager {
   private static final String DAILY_COMPLETED = "DailyCompleted";
   private static final String CLASSIC_CURRENT = "ClassicCurrent";
   private static final String ARCADE_CURRENT = "ArcadeCurrent";
-  private static final String DAILY_CURRENT_PREFIX = "DailyCurrent_";
+  private static final String DAILY_CURRENT_PREFIX = "DailyInProgress_";
 
   public static void saveAll(final Activity activity, final Application application) {
     Log.d(TAG, "saveAll");
@@ -84,7 +84,7 @@ public class CloudSaveManager {
     for (DailyGame dailyCurrent : application.getCurrentDailyGames()) {
       saveToCloud(
           activity,
-          DAILY_CURRENT_PREFIX + dailyCurrent.getRandomSeed(),
+          DAILY_CURRENT_PREFIX + dailyCurrent.getGameDay().toString(),
           CloudSaveSerializer.serializeDailyGameState(dailyCurrent));
     }
   }
@@ -264,9 +264,10 @@ public class CloudSaveManager {
                                       application.mergeDailyCurrent(
                                           CloudSaveSerializer.deserializeDailyGameState(data));
                                   // Cleanup if completed
-                                  long seed =
-                                      Long.parseLong(name.substring(DAILY_CURRENT_PREFIX.length()));
-                                  DailyGame g = application.getDailyGameBySeed(seed);
+                                  DailyGame.Day gameDay =
+                                      DailyGame.Day.fromString(
+                                          name.substring(DAILY_CURRENT_PREFIX.length()));
+                                  DailyGame g = application.getDailyGameByGameDay(gameDay);
                                   if (g != null && g.getGameState() == Game.GameState.COMPLETED) {
                                     snapshotsClient.delete(metadata);
                                   }
@@ -275,9 +276,10 @@ public class CloudSaveManager {
 
                                 @Override
                                 public byte[] serializeMerged() {
-                                  long seed =
-                                      Long.parseLong(name.substring(DAILY_CURRENT_PREFIX.length()));
-                                  DailyGame g = application.getDailyGameBySeed(seed);
+                                  DailyGame.Day gameDay =
+                                      DailyGame.Day.fromString(
+                                          name.substring(DAILY_CURRENT_PREFIX.length()));
+                                  DailyGame g = application.getDailyGameByGameDay(gameDay);
                                   return (g != null && g.getGameState() != Game.GameState.COMPLETED)
                                       ? CloudSaveSerializer.serializeDailyGameState(g)
                                       : null;

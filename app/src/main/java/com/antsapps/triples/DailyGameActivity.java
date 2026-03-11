@@ -46,7 +46,8 @@ public class DailyGameActivity extends BaseGameActivity
     mGame.addOnUpdateCardsInPlayListener(this);
 
     TextView dateText = findViewById(R.id.daily_date_text);
-    dateText.setText(DateFormat.getDateInstance().format(mGame.getDateStarted()));
+    dateText.setText(
+        DateFormat.getDateInstance().format(mGame.getGameDay().getCalendar().getTime()));
 
     mCardsView = findViewById(R.id.cards_view);
 
@@ -89,7 +90,9 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  protected void awardAchievements() {}
+  protected void awardAchievements() {
+    AchievementManager.awardDailyAchievements(this, mApplication);
+  }
 
   @Override
   protected Game getGame() {

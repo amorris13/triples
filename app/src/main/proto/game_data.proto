@@ -25,7 +25,7 @@ message ArcadeGameSummary {
 }
 
 message DailyGameSummary {
-  int64 date_millis = 1;
+  string game_day = 1;
   int64 time_elapsed_millis = 2;
   bool hints_used = 3;
   int64 date_completed_millis = 4;
@@ -67,6 +67,7 @@ message ArcadeGameState {
 
 message DailyGameState {
   int64 seed = 1;
+  string game_day = 8;
   bytes cards_in_play = 2;
   bytes triple_find_times = 3;
   int64 time_elapsed_millis = 4;

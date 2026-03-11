@@ -59,6 +59,30 @@
   <string name="achievement_arcade_20_triples" translatable="false">CgkI3f-DytEMEAIQMg</string>
   <!--achievement Arcade: 25 triples-->
   <string name="achievement_arcade_25_triples" translatable="false">CgkI3f-DytEMEAIQNA</string>
+  <!--achievement Daily: 1 puzzle-->
+  <string name="achievement_daily_1_puzzle" translatable="false">CgkI3f-DytEMEAIQSg</string>
+  <!--achievement Daily: 10 puzzles-->
+  <string name="achievement_daily_10_puzzles" translatable="false">CgkI3f-DytEMEAIQQg</string>
+  <!--achievement Daily: 50 puzzles-->
+  <string name="achievement_daily_50_puzzles" translatable="false">CgkI3f-DytEMEAIQSw</string>
+  <!--achievement Daily: 100 puzzles-->
+  <string name="achievement_daily_100_puzzles" translatable="false">CgkI3f-DytEMEAIQRw</string>
+  <!--achievement Daily: 250 puzzles-->
+  <string name="achievement_daily_250_puzzles" translatable="false">CgkI3f-DytEMEAIQSA</string>
+  <!--achievement Daily: 500 puzzles-->
+  <string name="achievement_daily_500_puzzles" translatable="false">CgkI3f-DytEMEAIQTQ</string>
+  <!--achievement Daily: 7 day streak-->
+  <string name="achievement_daily_7_day_streak" translatable="false">CgkI3f-DytEMEAIQRQ</string>
+  <!--achievement Daily: 14 day streak-->
+  <string name="achievement_daily_14_day_streak" translatable="false">CgkI3f-DytEMEAIQRg</string>
+  <!--achievement Daily: 30 day streak-->
+  <string name="achievement_daily_30_day_streak" translatable="false">CgkI3f-DytEMEAIQRA</string>
+  <!--achievement Daily: 90 day streak-->
+  <string name="achievement_daily_90_day_streak" translatable="false">CgkI3f-DytEMEAIQTA</string>
+  <!--achievement Daily: 180 day streak-->
+  <string name="achievement_daily_180_day_streak" translatable="false">CgkI3f-DytEMEAIQSQ</string>
+  <!--achievement Daily: 365 day streak-->
+  <string name="achievement_daily_365_day_streak" translatable="false">CgkI3f-DytEMEAIQQw</string>
   <!--leaderboard Classic Game-->
   <string name="leaderboard_classic_game" translatable="false">CgkI3f-DytEMEAIQBw</string>
   <!--leaderboard Arcade Game-->
