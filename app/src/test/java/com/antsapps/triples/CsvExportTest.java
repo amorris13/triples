@@ -76,9 +76,9 @@ public class CsvExportTest {
 
   @Test
   public void testDailyCsvExportContent() {
-    long seed = 1700000000000L; // 2023-11-14 22:13:20
-    Date date = new Date(seed);
-    Date dateCompleted = new Date(seed + 120000); // 2 minutes later
+    long seed = 20231114L;
+    Date date = new Date(DailyGame.getTimestampFromSeed(seed));
+    Date dateCompleted = new Date(date.getTime() + 120000); // 2 minutes later
 
     DailyGame game =
         new DailyGame(
@@ -114,6 +114,6 @@ public class CsvExportTest {
 
     assertThat(csv)
         .contains("Puzzle Date,Date Completed,Time Elapsed (ms),Triples Found,Hints Used");
-    assertThat(csv).contains("2023-11-14,2023-11-14 22:15:20,120000,0/14,false");
+    assertThat(csv).contains("2023-11-14,2023-11-14 00:02:00,120000,0/14,false");
   }
 }

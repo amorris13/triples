@@ -52,7 +52,7 @@ public class CsvUtil {
     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     for (DailyGame game : games) {
-      csv.append(dateFormat.format(new Date(game.getRandomSeed())));
+      csv.append(dateFormat.format(new Date(DailyGame.getTimestampFromSeed(game.getRandomSeed()))));
       csv.append(",");
       if (game.getDateCompleted() != null) {
         csv.append(dateTimeFormat.format(game.getDateCompleted()));

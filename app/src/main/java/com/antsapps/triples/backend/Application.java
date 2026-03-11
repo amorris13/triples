@@ -250,7 +250,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public DailyGame getDailyGameForDate(long dateMillis) {
-    long daySeed = DailyGame.getStartOfDaySeed(dateMillis);
+    long daySeed = DailyGame.getDailySeed(dateMillis);
 
     for (DailyGame game : mDailyGames) {
       if (game.getRandomSeed() == daySeed) {

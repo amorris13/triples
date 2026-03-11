@@ -178,14 +178,14 @@ public class DailyStatisticsFragment extends Fragment {
             getActivity(),
             mCurrentMonth,
             mCompletedGames,
-            DailyGame.getStartOfDaySeed(mSelectedDate));
+            DailyGame.getDailySeed(mSelectedDate));
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener(
         (parent, view1, position, id) -> {
           Calendar day = (Calendar) adapter.getItem(position);
           if (adapter.isEnabled(position)) {
-            long daySeed = DailyGame.getStartOfDaySeed(day);
+            long daySeed = DailyGame.getDailySeed(day);
             mSelectedDate = (Calendar) day.clone();
             adapter.setSelectedSeed(daySeed);
             updateDetailSection();
@@ -199,7 +199,7 @@ public class DailyStatisticsFragment extends Fragment {
     DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
     mDetailDate.setText(df.format(mSelectedDate.getTime()));
 
-    long daySeed = DailyGame.getStartOfDaySeed(mSelectedDate);
+    long daySeed = DailyGame.getDailySeed(mSelectedDate);
     DailyGame game = null;
     for (DailyGame dg : mApplication.getDailyGames()) {
       if (dg.getRandomSeed() == daySeed) {
@@ -254,18 +254,17 @@ public class DailyStatisticsFragment extends Fragment {
     for (DailyGame game : mCompletedGames) {
       if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
       totalSolved++;
-      long seed = game.getRandomSeed();
-      if (game.getDateCompleted().getTime() - seed < DailyGame.STREAK_BUFFER_MILLIS) {
-        completedOnDaySeeds.add(seed);
+      if (game.isCompletedOnTime()) {
+        completedOnDaySeeds.add(game.getRandomSeed());
       }
     }
 
     int currentStreak = 0;
     Calendar cal = Calendar.getInstance();
-    if (!completedOnDaySeeds.contains(DailyGame.getStartOfDaySeed(cal))) {
+    if (!completedOnDaySeeds.contains(DailyGame.getDailySeed(cal))) {
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
-    while (completedOnDaySeeds.contains(DailyGame.getStartOfDaySeed(cal))) {
+    while (completedOnDaySeeds.contains(DailyGame.getDailySeed(cal))) {
       currentStreak++;
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
@@ -324,7 +323,7 @@ public class DailyStatisticsFragment extends Fragment {
       mSelectableItemBackground = outValue.resourceId;
       mMonth = month.get(Calendar.MONTH);
       mYear = month.get(Calendar.YEAR);
-      mTodaySeed = DailyGame.getStartOfDaySeed(Calendar.getInstance());
+      mTodaySeed = DailyGame.getDailySeed(Calendar.getInstance());
       mSelectedSeed = selectedSeed;
 
       mDays = new ArrayList<>();
@@ -349,7 +348,7 @@ public class DailyStatisticsFragment extends Fragment {
         if (game.areHintsUsed()) {
           mHintSeeds.add(seed);
         }
-        if (game.getDateCompleted().getTime() - seed < DailyGame.STREAK_BUFFER_MILLIS) {
+        if (game.isCompletedOnTime()) {
           mCompletedOnDaySeeds.add(seed);
         } else {
           mCompletedLateSeeds.add(seed);
@@ -408,7 +407,7 @@ public class DailyStatisticsFragment extends Fragment {
                 }
 
                 float density = mContext.getResources().getDisplayMetrics().density;
-                long daySeed = DailyGame.getStartOfDaySeed(day);
+                long daySeed = DailyGame.getDailySeed(day);
                 float centerX = getWidth() / 2f;
                 float centerY = getHeight() / 2f;
                 float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
@@ -443,7 +442,7 @@ public class DailyStatisticsFragment extends Fragment {
 
       Calendar day = mDays.get(position);
       tv.setTag(day);
-      long daySeed = DailyGame.getStartOfDaySeed(day);
+      long daySeed = DailyGame.getDailySeed(day);
 
       if (day.get(Calendar.MONTH) != mMonth || day.get(Calendar.YEAR) != mYear) {
         tv.setText("");

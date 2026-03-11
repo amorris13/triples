@@ -20,23 +20,46 @@ public class DailyGame extends Game {
   private final List<Set<Card>> mFoundTriples;
   private Date mDateCompleted;
 
-  public static long getStartOfDaySeed(long dateMillis) {
-    Calendar cal = Calendar.getInstance();
+  public static long getDailySeed(long dateMillis) {
+    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     cal.setTimeInMillis(dateMillis);
-    return getStartOfDaySeed(cal);
+    return getDailySeed(cal);
   }
 
-  public static long getStartOfDaySeed(Calendar cal) {
+  public static long getDailySeed(Calendar cal) {
+    return (long) cal.get(Calendar.YEAR) * 10000
+        + (cal.get(Calendar.MONTH) + 1) * 100
+        + cal.get(Calendar.DAY_OF_MONTH);
+  }
+
+  public static long getTimestampFromSeed(long seed) {
+    if (isOldSeed(seed)) {
+      return seed;
+    }
+    int year = (int) (seed / 10000);
+    int month = (int) ((seed / 100) % 100) - 1;
+    int day = (int) (seed % 100);
     Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    utcCal.set(
-        cal.get(Calendar.YEAR),
-        cal.get(Calendar.MONTH),
-        cal.get(Calendar.DAY_OF_MONTH),
-        0,
-        0,
-        0);
+    utcCal.set(year, month, day, 0, 0, 0);
     utcCal.set(Calendar.MILLISECOND, 0);
     return utcCal.getTimeInMillis();
+  }
+
+  public static boolean isOldSeed(long seed) {
+    return seed > 100000000L;
+  }
+
+  public static long migrateOldSeed(long oldSeed) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTimeInMillis(oldSeed);
+    return getDailySeed(cal);
+  }
+
+  public boolean isCompletedOnTime() {
+    if (mDateCompleted == null) {
+      return false;
+    }
+    return mDateCompleted.getTime() - getTimestampFromSeed(getRandomSeed()) < STREAK_BUFFER_MILLIS;
   }
 
   public static DailyGame createFromSeed(long seed) {
@@ -64,7 +87,7 @@ public class DailyGame extends Game {
             Collections.<Long>emptyList(),
             new Deck(Collections.<Card>emptyList()),
             0,
-            new Date(seed),
+            new Date(getTimestampFromSeed(seed)),
             GameState.STARTING,
             false,
             Collections.<Set<Card>>emptyList(),

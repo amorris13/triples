@@ -78,7 +78,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
-    long todaySeed = DailyGame.getStartOfDaySeed(System.currentTimeMillis());
+    long todaySeed = DailyGame.getDailySeed(System.currentTimeMillis());
     boolean dailyCompleted = false;
     for (DailyGame dg : mApplication.getCompletedDailyGames()) {
       if (dg.getRandomSeed() == todaySeed) {

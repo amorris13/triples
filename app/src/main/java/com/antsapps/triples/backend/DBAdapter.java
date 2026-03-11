@@ -413,10 +413,22 @@ public class DBAdapter extends SQLiteOpenHelper {
                 null);
     dailyGamesCursor.moveToFirst();
     while (!dailyGamesCursor.isAfterLast()) {
+      long seed = dailyGamesCursor.getLong(2);
+      if (DailyGame.isOldSeed(seed)) {
+        seed = DailyGame.migrateOldSeed(seed);
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_GAME_RANDOM, seed);
+        getWritableDatabase()
+            .update(
+                TABLE_DAILY_GAMES,
+                values,
+                COLUMN_GAME_ID + " = ?",
+                new String[] {String.valueOf(dailyGamesCursor.getLong(0))});
+      }
       DailyGame game =
           new DailyGame(
               dailyGamesCursor.getLong(0),
-              dailyGamesCursor.getLong(2),
+              seed,
               Utils.cardListFromByteArray(dailyGamesCursor.getBlob(3)),
               Utils.longListFromByteArray(dailyGamesCursor.getBlob(7)),
               new Deck(Collections.<Card>emptyList()),
