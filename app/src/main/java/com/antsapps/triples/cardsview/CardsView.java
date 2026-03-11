@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -104,18 +105,6 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
           cardView.setAlpha(0);
         }
       }
-      Rect target = calcBounds(i);
-      if (!target.equals(EMPTY_RECT)) {
-        // Animate from current translation back to 0 (the target position set by layout)
-        cardView.bringToFront();
-        cardView
-            .animate()
-            .translationX(0)
-            .translationY(0)
-            .alpha(1)
-            .setDuration(cardView.getAnimationDuration())
-            .start();
-      }
     }
     requestLayout();
     logValidTriple();
@@ -148,35 +137,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   protected abstract void logValidTriple();
 
   public void updateBounds() {
-    if (mOffScreenLocation.isEmpty() && getWidth() > 0 && getHeight() > 0) {
-      updateMeasuredDimensions(0, 0); // Trigger dimension calculation if needed
-    }
-    long start = System.currentTimeMillis();
-    for (int i = 0; i < mCards.size(); i++) {
-      Card card = mCards.get(i);
-      CardView cardView = mCardViews.get(card);
-      if (cardView != null) {
-        Rect oldBounds =
-            new Rect(
-                cardView.getLeft(), cardView.getTop(), cardView.getRight(), cardView.getBottom());
-        Rect target = calcBounds(i);
-        if (!target.equals(oldBounds)) {
-          // Set initial translation to stay at old position after layout
-          cardView.setTranslationX(oldBounds.left - target.left);
-          cardView.setTranslationY(oldBounds.top - target.top);
-          // Animate back to 0
-          cardView.bringToFront();
-          cardView
-              .animate()
-              .translationX(0)
-              .translationY(0)
-              .setDuration(cardView.getAnimationDuration())
-              .start();
-        }
-      }
-    }
-    long end = System.currentTimeMillis();
-    Log.i(TAG, "updateBounds took " + (end - start));
+    requestLayout();
   }
 
   protected abstract void updateMeasuredDimensions(
@@ -320,7 +281,11 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       CardView cv = mCardViews.remove(c);
       if (cv != null) {
         final boolean isLast = (i == triple.size() - 1);
-        cv.bringToFront();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          cv.setTranslationZ(100f);
+        } else {
+          cv.bringToFront();
+        }
         cv.animateFoundCard(
             targetBoundsInCardsView,
             interpolator,

@@ -1,7 +1,10 @@
 package com.antsapps.triples.cardsview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import com.antsapps.triples.backend.Card;
@@ -76,8 +79,41 @@ public class VerticalCardsView extends CardsView {
       Card card = mCards.get(i);
       CardView child = mCardViews.get(card);
       if (child != null) {
+        int oldLeft = child.getLeft();
+        int oldTop = child.getTop();
+        boolean wasLaidOut = oldLeft != 0 || oldTop != 0 || child.getWidth() != 0;
+
         Rect bounds = calcBounds(i);
         child.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
+
+        if (wasLaidOut && (oldLeft != bounds.left || oldTop != bounds.top)) {
+          // Position changed, animate from delta back to 0
+          child.setTranslationX(oldLeft - bounds.left);
+          child.setTranslationY(oldTop - bounds.top);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            child.setTranslationZ(50f);
+          }
+
+          child
+              .animate()
+              .translationX(0)
+              .translationY(0)
+              .setDuration(child.getAnimationDuration())
+              .setListener(
+                  new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        child.setTranslationZ(0);
+                      }
+                    }
+                  })
+              .start();
+        }
+
+        if (child.getAlpha() == 0) {
+          child.animate().alpha(1).setDuration(child.getAnimationDuration()).start();
+        }
       }
     }
   }
