@@ -5,9 +5,14 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -267,7 +272,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     private final DailyGame.Day mToday;
     private final int mMonth; // 1 indexed
     private final int mYear;
-    private final int mSelectableItemBackground;
+    private final int mRippleColor;
+    private final float mDensity;
     private DailyGame.Day mSelectedDate;
     private final Map<DailyGame.Day, Float> mProgressMap;
 
@@ -278,8 +284,9 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
 
       TypedValue outValue = new TypedValue();
-      mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
-      mSelectableItemBackground = outValue.resourceId;
+      mContext.getTheme().resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
+      mRippleColor = outValue.data;
+      mDensity = mContext.getResources().getDisplayMetrics().density;
       mMonth = month.get(Calendar.MONTH) + 1;
       mYear = month.get(Calendar.YEAR);
       mToday = DailyGame.Day.forToday();
@@ -425,7 +432,9 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
           text += "*";
         }
         tv.setText(text);
-        tv.setBackgroundResource(mSelectableItemBackground);
+        if (!(tv.getBackground() instanceof RippleDrawable)) {
+          tv.setBackground(createCircularRipple());
+        }
 
         if (day.equals(mToday)) {
           tv.setTypeface(null, Typeface.BOLD);
@@ -445,8 +454,44 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       return tv;
     }
 
+    private RippleDrawable createCircularRipple() {
+      return new RippleDrawable(
+          ColorStateList.valueOf(mRippleColor), null, new CircularRippleMask(mDensity));
+    }
+
     private static int updateAlpha(int color, int alpha) {
       return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
+    }
+  }
+
+  private static class CircularRippleMask extends Drawable {
+    private final float mDensity;
+    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    CircularRippleMask(float density) {
+      mDensity = density;
+      mPaint.setColor(Color.WHITE);
+      mPaint.setStyle(Paint.Style.FILL);
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+      Rect bounds = getBounds();
+      float centerX = bounds.centerX();
+      float centerY = bounds.centerY();
+      float radius = Math.min(bounds.width(), bounds.height()) / 2f - 2 * mDensity;
+      canvas.drawCircle(centerX, centerY, radius, mPaint);
+    }
+
+    @Override
+    public void setAlpha(int alpha) {}
+
+    @Override
+    public void setColorFilter(ColorFilter colorFilter) {}
+
+    @Override
+    public int getOpacity() {
+      return PixelFormat.TRANSLUCENT;
     }
   }
 }
