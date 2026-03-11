@@ -6,10 +6,11 @@
 
     <include layout="@layout/toolbar" />
 
-    <FrameLayout
-        android:id="@+id/statistics_container"
+    <ListView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:headerDividersEnabled="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

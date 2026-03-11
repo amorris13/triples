@@ -1,12 +1,15 @@
 package com.antsapps.triples.stats;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ClassicStatisticsFragment extends BaseStatisticsFragment {
+public class ClassicStatisticsActivity extends BaseStatisticsListActivity {
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
 
@@ -51,29 +54,42 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
   }
 
   @Override
-  protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getActivity(), Lists.<Game>newArrayList());
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setTitle(R.string.classic_label);
   }
 
   @Override
-  protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
-    return new ClassicStatisticsListHeaderView(getActivity());
+  protected int getAccentColor() {
+    return ContextCompat.getColor(this, R.color.classic_accent);
   }
 
   @Override
-  protected BaseStatisticsSummaryView createStatisticsSummaryView() {
-    return new ClassicStatisticsSummaryView(getActivity());
-  }
-
-  @Override
-  protected String getGameType() {
-    return "Classic";
-  }
-
   protected String getLeaderboardId() {
     return getString(R.string.leaderboard_classic_game);
   }
 
+  @Override
+  protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
+    return new ClassicStatisticsListHeaderView(this);
+  }
+
+  @Override
+  protected BaseStatisticsSummaryView createStatisticsSummaryView() {
+    return new ClassicStatisticsSummaryView(this);
+  }
+
+  @Override
+  protected ArrayAdapter<Game> createArrayAdapter() {
+    return new StatisticsGamesArrayAdapter(this, Lists.newArrayList());
+  }
+
+  @Override
+  protected void updateDataSet() {
+    onStatisticsChange(mApplication.getClassicStatistics(mSelectorView.getPeriod()));
+  }
+
+  @Override
   protected void deleteGame(Game game) {
     mApplication.deleteClassicGame((ClassicGame) game);
   }
@@ -81,11 +97,6 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
   @Override
   public void onPeriodChange(Period period) {
     onStatisticsChange(mApplication.getClassicStatistics(period));
-  }
-
-  @Override
-  protected void updateDataSet() {
-    onStatisticsChange(mApplication.getClassicStatistics(mSelectorView.getPeriod()));
   }
 
   @Override

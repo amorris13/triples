@@ -1,12 +1,15 @@
 package com.antsapps.triples.stats;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
@@ -16,7 +19,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
+public class ArcadeStatisticsActivity extends BaseStatisticsListActivity {
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
 
@@ -49,29 +52,42 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   }
 
   @Override
-  protected ArrayAdapter<Game> createArrayAdapter() {
-    return new StatisticsGamesArrayAdapter(getActivity(), Lists.<Game>newArrayList());
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setTitle(R.string.arcade_label);
   }
 
   @Override
-  protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
-    return new ArcadeStatisticsListHeaderView(getActivity());
+  protected int getAccentColor() {
+    return ContextCompat.getColor(this, R.color.arcade_accent);
   }
 
   @Override
-  protected BaseStatisticsSummaryView createStatisticsSummaryView() {
-    return new ArcadeStatisticsSummaryView(getActivity());
-  }
-
-  @Override
-  protected String getGameType() {
-    return "Arcade";
-  }
-
   protected String getLeaderboardId() {
     return getString(R.string.leaderboard_arcade_game);
   }
 
+  @Override
+  protected BaseStatisticsListHeaderView createStatisticsListHeaderView() {
+    return new ArcadeStatisticsListHeaderView(this);
+  }
+
+  @Override
+  protected BaseStatisticsSummaryView createStatisticsSummaryView() {
+    return new ArcadeStatisticsSummaryView(this);
+  }
+
+  @Override
+  protected ArrayAdapter<Game> createArrayAdapter() {
+    return new StatisticsGamesArrayAdapter(this, Lists.newArrayList());
+  }
+
+  @Override
+  protected void updateDataSet() {
+    onStatisticsChange(mApplication.getArcadeStatistics(mSelectorView.getPeriod()));
+  }
+
+  @Override
   protected void deleteGame(Game game) {
     mApplication.deleteArcadeGame((ArcadeGame) game);
   }
@@ -79,11 +95,6 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   @Override
   public void onPeriodChange(Period period) {
     onStatisticsChange(mApplication.getArcadeStatistics(period));
-  }
-
-  @Override
-  protected void updateDataSet() {
-    onStatisticsChange(mApplication.getArcadeStatistics(mSelectorView.getPeriod()));
   }
 
   @Override
