@@ -3,15 +3,14 @@ package com.antsapps.triples;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.view.ContextThemeWrapper;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import com.google.android.material.button.MaterialButton;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,6 +31,7 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
+import com.google.android.material.button.MaterialButton;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -363,7 +363,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       FrameLayout container = (FrameLayout) convertView;
       if (container == null) {
         container = new FrameLayout(mContext);
-        container.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
+        container.setLayoutParams(
+            new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
 
         MaterialButton button =
             new MaterialButton(new ContextThemeWrapper(mContext, R.style.DailyCalendarDayButton)) {
