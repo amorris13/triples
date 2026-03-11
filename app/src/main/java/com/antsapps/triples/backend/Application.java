@@ -9,8 +9,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class Application extends OnStateChangedReporter {
   private static final String TAG = "Application";
@@ -107,7 +109,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public void uploadToCloud(Activity activity) {
-    CloudSaveManager.saveToCloud(activity, this);
+    CloudSaveManager.saveAll(activity, this);
   }
 
   public void deleteClassicGame(ClassicGame game) {
@@ -272,6 +274,122 @@ public class Application extends OnStateChangedReporter {
             return game.getGameState() == GameState.COMPLETED;
           }
         });
+  }
+
+  public Iterable<DailyGame> getCurrentDailyGames() {
+    return Iterables.filter(
+        mDailyGames,
+        new Predicate<Game>() {
+          @Override
+          public boolean apply(Game game) {
+            return game.getGameState() == GameState.ACTIVE
+                || game.getGameState() == GameState.PAUSED
+                || game.getGameState() == GameState.STARTING;
+          }
+        });
+  }
+
+  public DailyGame getDailyGameBySeed(long seed) {
+    for (DailyGame game : mDailyGames) {
+      if (game.getRandomSeed() == seed) {
+        return game;
+      }
+    }
+    return null;
+  }
+
+  public boolean mergeClassicCompleted(List<ClassicGame> cloudGames) {
+    boolean changed = false;
+    Set<Long> localDates = new HashSet<>();
+    for (ClassicGame g : getCompletedClassicGames()) {
+      localDates.add(g.getDateStarted().getTime());
+    }
+    for (ClassicGame cloudGame : cloudGames) {
+      if (!localDates.contains(cloudGame.getDateStarted().getTime())) {
+        addClassicGame(cloudGame);
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  public boolean mergeArcadeCompleted(List<ArcadeGame> cloudGames) {
+    boolean changed = false;
+    Set<Long> localDates = new HashSet<>();
+    for (ArcadeGame g : getCompletedArcadeGames()) {
+      localDates.add(g.getDateStarted().getTime());
+    }
+    for (ArcadeGame cloudGame : cloudGames) {
+      if (!localDates.contains(cloudGame.getDateStarted().getTime())) {
+        addArcadeGame(cloudGame);
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  public boolean mergeDailyCompleted(List<DailyGame> cloudGames) {
+    boolean changed = false;
+    Set<Long> localSeeds = new HashSet<>();
+    for (DailyGame g : getCompletedDailyGames()) {
+      localSeeds.add(g.getRandomSeed());
+    }
+    for (DailyGame cloudGame : cloudGames) {
+      if (!localSeeds.contains(cloudGame.getRandomSeed())) {
+        DailyGame local = getDailyGameBySeed(cloudGame.getRandomSeed());
+        if (local != null) {
+          // Update local game with cloud data
+          // For simplicity, just delete and re-add or update
+          mDailyGames.remove(local);
+          database.removeDailyGame(local);
+        }
+        addDailyGame(cloudGame);
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  public boolean mergeClassicCurrent(ClassicGame cloudGame) {
+    ClassicGame localCurrent = Iterables.getFirst(getCurrentClassicGames(), null);
+    if (localCurrent == null
+        || cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed()
+        || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining()) {
+      if (localCurrent != null) {
+        deleteClassicGame(localCurrent);
+      }
+      addClassicGame(cloudGame);
+      return true;
+    }
+    return false;
+  }
+
+  public boolean mergeArcadeCurrent(ArcadeGame cloudGame) {
+    ArcadeGame localCurrent = Iterables.getFirst(getCurrentArcadeGames(), null);
+    if (localCurrent == null
+        || cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
+      if (localCurrent != null) {
+        deleteArcadeGame(localCurrent);
+      }
+      addArcadeGame(cloudGame);
+      return true;
+    }
+    return false;
+  }
+
+  public boolean mergeDailyCurrent(DailyGame cloudGame) {
+    DailyGame local = getDailyGameBySeed(cloudGame.getRandomSeed());
+    if (local == null
+        || (local.getGameState() != GameState.COMPLETED
+            && cloudGame.getNumTriplesFound() > local.getNumTriplesFound())) {
+      if (local != null) {
+        mDailyGames.remove(local);
+        database.removeDailyGame(local);
+      }
+      addDailyGame(cloudGame);
+      return true;
+    }
+    return false;
   }
 
   public List<DailyGame> getDailyGames() {

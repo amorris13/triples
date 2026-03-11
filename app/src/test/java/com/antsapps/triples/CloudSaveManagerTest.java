@@ -9,7 +9,6 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
-import com.antsapps.triples.backend.CloudSaveSerializer;
 import com.antsapps.triples.backend.Deck;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Lists;
@@ -88,14 +87,18 @@ public class CloudSaveManagerTest {
             15,
             false);
 
-    CloudSaveSerializer.CloudData cloudData =
-        new CloudSaveSerializer.CloudData(
-            Lists.newArrayList(cloudClassicNew, cloudClassicExisting),
-            Lists.newArrayList(cloudArcadeNew));
+    when(application.mergeClassicCompleted(
+            Lists.newArrayList(cloudClassicNew, cloudClassicExisting)))
+        .thenCallRealMethod();
+    when(application.mergeArcadeCompleted(Lists.newArrayList(cloudArcadeNew))).thenCallRealMethod();
 
-    boolean changed = CloudSaveManager.merge(application, cloudData);
+    boolean changedClassic =
+        application.mergeClassicCompleted(
+            Lists.newArrayList(cloudClassicNew, cloudClassicExisting));
+    boolean changedArcade = application.mergeArcadeCompleted(Lists.newArrayList(cloudArcadeNew));
 
-    assertThat(changed).isTrue();
+    assertThat(changedClassic).isTrue();
+    assertThat(changedArcade).isTrue();
     verify(application).addClassicGame(cloudClassicNew);
     verify(application).addArcadeGame(cloudArcadeNew);
   }

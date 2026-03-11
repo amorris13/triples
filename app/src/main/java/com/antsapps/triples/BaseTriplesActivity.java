@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.OnStateChangedListener;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -40,6 +41,8 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   protected FirebaseAnalytics mFirebaseAnalytics;
   private FirebaseAuth mFirebaseAuth;
   protected boolean mIsSignedIn = false;
+  private boolean mIsSyncing = false;
+  private OnStateChangedListener mOnStateChangedListener;
 
   @Nullable private OnSignInListener mSignInListener;
 
@@ -221,7 +224,28 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     }
     Application application = Application.getInstance(this);
     AchievementManager.syncAchievements(this, application);
-    CloudSaveManager.syncWithCloud(this, application);
+
+    if (!mIsSyncing) {
+      mIsSyncing = true;
+      CloudSaveManager.syncAll(this, application)
+          .addOnCompleteListener(
+              t -> {
+                mIsSyncing = false;
+              });
+    }
+
+    if (mOnStateChangedListener == null) {
+      mOnStateChangedListener =
+          new OnStateChangedListener() {
+            @Override
+            public void onStateChanged() {
+              if (isSignedIn() && !mIsSyncing) {
+                CloudSaveManager.saveAll(BaseTriplesActivity.this, application);
+              }
+            }
+          };
+      application.addOnStateChangedListener(mOnStateChangedListener);
+    }
   }
 
   public void signIn() {
@@ -270,6 +294,15 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
     if (mSignInListener != null) {
       mSignInListener.onSignInStateChanged(isSignedIn());
     }
+  }
+
+  @Override
+  protected void onDestroy() {
+    if (mOnStateChangedListener != null) {
+      Application.getInstance(this).removeOnStateChangedListener(mOnStateChangedListener);
+      mOnStateChangedListener = null;
+    }
+    super.onDestroy();
   }
 
   @Override
