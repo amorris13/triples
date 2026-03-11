@@ -82,7 +82,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private long id;
 
-  private final Date mDate;
+  private final Date mDateStarted;
 
   protected GameRenderer mGameRenderer;
 
@@ -97,7 +97,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date,
+      Date dateStarted,
       GameState gameState,
       boolean hintsUsed) {
     this.id = id;
@@ -106,7 +106,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     mTripleFindTimes = Lists.newArrayList(tripleFindTimes);
     mDeck = cardsInDeck;
     mTimer = new Timer(timeElapsed);
-    mDate = date;
+    mDateStarted = dateStarted;
     mGameState = gameState;
     mHintsUsed = hintsUsed;
   }
@@ -433,7 +433,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   @Override
   public int compareTo(Game another) {
-    return (int) Utils.compareTo(mDate, id, another.mDate, another.id);
+    return (int) Utils.compareTo(mDateStarted, id, another.mDateStarted, another.id);
   }
 
   public long getRandomSeed() {
@@ -453,7 +453,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   public Date getDateStarted() {
-    return mDate;
+    return mDateStarted;
   }
 
   public GameState getGameState() {

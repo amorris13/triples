@@ -47,7 +47,7 @@ public class DailyStatisticsFragment extends Fragment {
   private TextView mLongestStreakTv;
   private TextView mTotalSolvedTv;
   private Button mNextMonthBtn;
-  private Calendar mSelectedDate;
+  private DailyGame.Day mSelectedDay;
   private TextView mDetailDate;
   private TextView mDetailStatus;
   private Button mDetailPlayBtn;
@@ -112,11 +112,11 @@ public class DailyStatisticsFragment extends Fragment {
           mCurrentMonth.set(Calendar.MINUTE, 0);
           mCurrentMonth.set(Calendar.SECOND, 0);
           mCurrentMonth.set(Calendar.MILLISECOND, 0);
-          mSelectedDate = Calendar.getInstance();
+          mSelectedDay = DailyGame.Day.forToday();
           updateCalendar();
         });
 
-    mSelectedDate = Calendar.getInstance();
+    mSelectedDay = DailyGame.Day.forToday();
 
     GestureDetector gestureDetector =
         new GestureDetector(
@@ -153,8 +153,7 @@ public class DailyStatisticsFragment extends Fragment {
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
       mCompletedGames.add(game);
     }
-    Collections.sort(
-        mCompletedGames, (g1, g2) -> g2.getDateStarted().compareTo(g1.getDateStarted()));
+    Collections.sort(mCompletedGames, (g1, g2) -> g2.getGameDay().compareTo(g1.getGameDay()));
 
     updateCalendar();
     updateStreaks();
@@ -166,25 +165,23 @@ public class DailyStatisticsFragment extends Fragment {
     SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
     mMonthTitle.setText(sdf.format(mCurrentMonth.getTime()));
 
-    Calendar today = Calendar.getInstance();
+    Calendar now = Calendar.getInstance();
     boolean isCurrentMonth =
-        mCurrentMonth.get(Calendar.YEAR) == today.get(Calendar.YEAR)
-            && mCurrentMonth.get(Calendar.MONTH) == today.get(Calendar.MONTH);
+        mCurrentMonth.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+            && mCurrentMonth.get(Calendar.MONTH) == now.get(Calendar.MONTH);
 
     mNextMonthBtn.setEnabled(!isCurrentMonth);
 
     CalendarAdapter adapter =
-        new CalendarAdapter(
-            getActivity(), mCurrentMonth, mCompletedGames, DailyGame.getDailySeed(mSelectedDate));
+        new CalendarAdapter(getActivity(), mCurrentMonth, mCompletedGames, mSelectedDay);
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener(
         (parent, view1, position, id) -> {
           Calendar day = (Calendar) adapter.getItem(position);
           if (adapter.isEnabled(position)) {
-            long daySeed = DailyGame.getDailySeed(day);
-            mSelectedDate = (Calendar) day.clone();
-            adapter.setSelectedSeed(daySeed);
+            mSelectedDay = DailyGame.Day.forCalendar(day);
+            adapter.setSelectedDay(mSelectedDay);
             updateDetailSection();
           }
         });
@@ -194,12 +191,11 @@ public class DailyStatisticsFragment extends Fragment {
 
   private void updateDetailSection() {
     DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
-    mDetailDate.setText(df.format(mSelectedDate.getTime()));
+    mDetailDate.setText(df.format(mSelectedDay.getCalendar().getTime()));
 
-    long daySeed = DailyGame.getDailySeed(mSelectedDate);
     DailyGame game = null;
     for (DailyGame dg : mApplication.getDailyGames()) {
-      if (dg.getRandomSeed() == daySeed) {
+      if (dg.getGameDay().equals(mSelectedDay)) {
         game = dg;
         break;
       }
@@ -222,7 +218,7 @@ public class DailyStatisticsFragment extends Fragment {
       mDetailPlayBtn.setOnClickListener(
           v -> {
             Intent intent = new Intent(getActivity(), DailyGameActivity.class);
-            DailyGame newGame = mApplication.getDailyGameForDate(daySeed);
+            DailyGame newGame = mApplication.getDailyGameForDate(mSelectedDay);
             intent.putExtra(Game.ID_TAG, newGame.getId());
             startActivity(intent);
           });
@@ -246,34 +242,33 @@ public class DailyStatisticsFragment extends Fragment {
   }
 
   private void updateStreaks() {
-    Set<Long> completedOnDaySeeds = new HashSet<>();
+    Set<DailyGame.Day> completedOnDayDays = new HashSet<>();
     int totalSolved = 0;
     for (DailyGame game : mCompletedGames) {
       if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
       totalSolved++;
       if (game.isCompletedOnTime()) {
-        completedOnDaySeeds.add(game.getRandomSeed());
+        completedOnDayDays.add(game.getGameDay());
       }
     }
 
     int currentStreak = 0;
     Calendar cal = Calendar.getInstance();
-    if (!completedOnDaySeeds.contains(DailyGame.getDailySeed(cal))) {
+    if (!completedOnDayDays.contains(DailyGame.Day.forCalendar(cal))) {
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
-    while (completedOnDaySeeds.contains(DailyGame.getDailySeed(cal))) {
+    while (completedOnDayDays.contains(DailyGame.Day.forCalendar(cal))) {
       currentStreak++;
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
 
     int longestStreak = 0;
     int tempStreak = 0;
-    List<Long> sortedSeeds = new ArrayList<>(completedOnDaySeeds);
-    Collections.sort(sortedSeeds);
+    List<DailyGame.Day> sortedDays = new ArrayList<>(completedOnDayDays);
+    Collections.sort(sortedDays);
     Calendar lastCal = null;
-    for (Long seed : sortedSeeds) {
-      Calendar currentCal = Calendar.getInstance();
-      currentCal.setTimeInMillis(seed);
+    for (DailyGame.Day day : sortedDays) {
+      Calendar currentCal = day.getCalendar();
       if (lastCal != null) {
         Calendar expectedCal = (Calendar) lastCal.clone();
         expectedCal.add(Calendar.DAY_OF_YEAR, 1);
@@ -300,17 +295,20 @@ public class DailyStatisticsFragment extends Fragment {
     private final int mTextPrimaryColor;
     private final int mTextSecondaryColor;
     private final List<Calendar> mDays;
-    private final Set<Long> mCompletedOnDaySeeds;
-    private final Set<Long> mCompletedLateSeeds;
-    private final Set<Long> mHintSeeds;
-    private final long mTodaySeed;
-    private final int mMonth;
+    private final Set<DailyGame.Day> mCompletedOnDayDates;
+    private final Set<DailyGame.Day> mCompletedLateDates;
+    private final Set<DailyGame.Day> mHintDates;
+    private final DailyGame.Day mToday;
+    private final int mMonth; // 1 indexed
     private final int mYear;
     private final int mSelectableItemBackground;
-    private long mSelectedSeed;
+    private DailyGame.Day mSelectedDate;
 
     CalendarAdapter(
-        Context context, Calendar month, List<DailyGame> completedGames, long selectedSeed) {
+        Context context,
+        Calendar month,
+        List<DailyGame> completedGames,
+        DailyGame.Day selectedDay) {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
@@ -318,10 +316,10 @@ public class DailyStatisticsFragment extends Fragment {
       TypedValue outValue = new TypedValue();
       mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
       mSelectableItemBackground = outValue.resourceId;
-      mMonth = month.get(Calendar.MONTH);
+      mMonth = month.get(Calendar.MONTH) + 1;
       mYear = month.get(Calendar.YEAR);
-      mTodaySeed = DailyGame.getDailySeed(System.currentTimeMillis());
-      mSelectedSeed = selectedSeed;
+      mToday = DailyGame.Day.forToday();
+      mSelectedDate = selectedDay;
 
       mDays = new ArrayList<>();
       Calendar cal = (Calendar) month.clone();
@@ -336,25 +334,25 @@ public class DailyStatisticsFragment extends Fragment {
         cal.add(Calendar.DAY_OF_MONTH, 1);
       }
 
-      mCompletedOnDaySeeds = new HashSet<>();
-      mCompletedLateSeeds = new HashSet<>();
-      mHintSeeds = new HashSet<>();
+      mCompletedOnDayDates = new HashSet<>();
+      mCompletedLateDates = new HashSet<>();
+      mHintDates = new HashSet<>();
       for (DailyGame game : completedGames) {
         if (game.getDateCompleted() == null) continue;
-        long seed = game.getRandomSeed();
+        DailyGame.Day day = game.getGameDay();
         if (game.areHintsUsed()) {
-          mHintSeeds.add(seed);
+          mHintDates.add(day);
         }
         if (game.isCompletedOnTime()) {
-          mCompletedOnDaySeeds.add(seed);
+          mCompletedOnDayDates.add(day);
         } else {
-          mCompletedLateSeeds.add(seed);
+          mCompletedLateDates.add(day);
         }
       }
     }
 
-    void setSelectedSeed(long seed) {
-      mSelectedSeed = seed;
+    void setSelectedDay(DailyGame.Day day) {
+      mSelectedDate = day;
       notifyDataSetChanged();
     }
 
@@ -382,7 +380,7 @@ public class DailyStatisticsFragment extends Fragment {
     public boolean isEnabled(int position) {
       Calendar day = mDays.get(position);
       return day.get(Calendar.YEAR) == mYear
-          && day.get(Calendar.MONTH) == mMonth
+          && day.get(Calendar.MONTH) == mMonth - 1
           && day.getTimeInMillis() <= System.currentTimeMillis();
     }
 
@@ -391,30 +389,27 @@ public class DailyStatisticsFragment extends Fragment {
       TextView tv = (TextView) convertView;
       if (tv == null) {
         tv =
-            new TextView(mContext) {
+            new androidx.appcompat.widget.AppCompatTextView(mContext) {
               private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
               @Override
               protected void onDraw(Canvas canvas) {
-                Calendar day = (Calendar) getTag();
-                if (day == null
-                    || day.get(Calendar.MONTH) != mMonth
-                    || day.get(Calendar.YEAR) != mYear) {
+                DailyGame.Day day = DailyGame.Day.forCalendar((Calendar) getTag());
+                if (day == null || day.getMonth() != mMonth || day.getYear() != mYear) {
                   return;
                 }
 
                 float density = mContext.getResources().getDisplayMetrics().density;
-                long daySeed = DailyGame.getDailySeed(day);
                 float centerX = getWidth() / 2f;
                 float centerY = getHeight() / 2f;
                 float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
 
                 // Background circle for solved games
-                if (mCompletedOnDaySeeds.contains(daySeed)) {
+                if (mCompletedOnDayDates.contains(day)) {
                   mPaint.setStyle(Paint.Style.FILL);
                   mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
                   canvas.drawCircle(centerX, centerY, radius, mPaint);
-                } else if (mCompletedLateSeeds.contains(daySeed)) {
+                } else if (mCompletedLateDates.contains(day)) {
                   mPaint.setStyle(Paint.Style.FILL);
                   int color = ContextCompat.getColor(mContext, R.color.daily_accent);
                   mPaint.setColor(
@@ -423,7 +418,7 @@ public class DailyStatisticsFragment extends Fragment {
                 }
 
                 // Selection indicator (outline)
-                if (daySeed == mSelectedSeed) {
+                if (day.equals(mSelectedDate)) {
                   mPaint.setStyle(Paint.Style.STROKE);
                   mPaint.setStrokeWidth(2 * density);
                   mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
@@ -437,22 +432,22 @@ public class DailyStatisticsFragment extends Fragment {
         tv.setGravity(Gravity.CENTER);
       }
 
-      Calendar day = mDays.get(position);
-      tv.setTag(day);
-      long daySeed = DailyGame.getDailySeed(day);
+      Calendar calendar = mDays.get(position);
+      tv.setTag(calendar);
+      DailyGame.Day day = DailyGame.Day.forCalendar(calendar);
 
-      if (day.get(Calendar.MONTH) != mMonth || day.get(Calendar.YEAR) != mYear) {
+      if (calendar.get(Calendar.MONTH) != mMonth - 1 || calendar.get(Calendar.YEAR) != mYear) {
         tv.setText("");
         tv.setBackground(null);
       } else {
-        String text = String.valueOf(day.get(Calendar.DAY_OF_MONTH));
-        if (mHintSeeds.contains(daySeed)) {
+        String text = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        if (mHintDates.contains(day)) {
           text += "*";
         }
         tv.setText(text);
         tv.setBackgroundResource(mSelectableItemBackground);
 
-        if (daySeed == mTodaySeed) {
+        if (day.equals(mToday)) {
           tv.setTypeface(null, Typeface.BOLD);
           tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         } else {
@@ -460,7 +455,7 @@ public class DailyStatisticsFragment extends Fragment {
           tv.setPaintFlags(tv.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
         }
 
-        if (daySeed > mTodaySeed) {
+        if (day.compareTo(mToday) > 0) {
           tv.setTextColor(mTextSecondaryColor);
         } else {
           tv.setTextColor(mTextPrimaryColor);

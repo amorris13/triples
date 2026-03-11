@@ -76,8 +76,9 @@ public class CsvExportTest {
 
   @Test
   public void testDailyCsvExportContent() {
-    long seed = 20231114L;
-    Date date = new Date(DailyGame.getTimestampFromSeed(seed));
+    DailyGame.Day day = new DailyGame.Day(2023, 11, 14);
+    long seed = day.getSeed();
+    Date date = day.getCalendar().getTime();
     Date dateCompleted = new Date(date.getTime() + 120000); // 2 minutes later
 
     DailyGame game =
@@ -104,6 +105,7 @@ public class CsvExportTest {
             new Deck(Lists.<Card>newArrayList()),
             120000,
             date,
+            day,
             Game.GameState.COMPLETED,
             false,
             Lists.<Set<Card>>newArrayList(),

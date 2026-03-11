@@ -1,16 +1,101 @@
 package com.antsapps.triples.backend;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.TimeZone;
 
 public class DailyGame extends Game {
+
+  public static class Day implements Comparable<Day> {
+    private final int mYear;
+
+    private final int mMonth;
+    private final int mDay;
+
+    public Day(int year, int month, int day) {
+      Preconditions.checkArgument(year > 0 && year <= 9999);
+      Preconditions.checkArgument(month >= 1 && month <= 12);
+      Preconditions.checkArgument(day >= 1 && day <= 31);
+
+      mYear = year;
+      mMonth = month;
+      mDay = day;
+    }
+
+    public int getYear() {
+      return mYear;
+    }
+
+    public int getMonth() {
+      return mMonth;
+    }
+
+    public int getDay() {
+      return mDay;
+    }
+
+    public long getSeed() {
+      return (long) mYear * 10000 + mMonth * 100 + mDay;
+    }
+
+    public static Day fromString(String string) {
+      int dateInt = Integer.parseInt(string);
+      return new Day(dateInt / 10000, (dateInt / 100) % 100, dateInt % 100);
+    }
+
+    public static Day forToday() {
+      Calendar cal = Calendar.getInstance();
+      return forCalendar(cal);
+    }
+
+    public static Day forCalendar(Calendar cal) {
+      return new Day(
+          cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+    }
+
+    public Calendar getCalendar() {
+      Calendar cal = Calendar.getInstance();
+      cal.set(mYear, mMonth - 1, mDay, 0, 0, 0);
+      cal.set(Calendar.MILLISECOND, 0);
+      return cal;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%04d%02d%02d", mYear, mMonth, mDay);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (!(o instanceof Day day)) {
+        return false;
+      }
+      return mYear == day.mYear && mMonth == day.mMonth && mDay == day.mDay;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(mYear, mMonth, mDay);
+    }
+
+    @Override
+    public int compareTo(Day o) {
+      if (mYear != o.mYear) {
+        return mYear - o.mYear;
+      }
+      if (mMonth != o.mMonth) {
+        return mMonth - o.mMonth;
+      }
+      return mDay - o.mDay;
+    }
+  }
 
   public static final String GAME_TYPE_FOR_ANALYTICS = "daily";
 
@@ -18,51 +103,20 @@ public class DailyGame extends Game {
 
   private final List<Set<Card>> mAllTriples;
   private final List<Set<Card>> mFoundTriples;
+
+  private final Day mGameDay;
   private Date mDateCompleted;
-
-  public static long getDailySeed(long dateMillis) {
-    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    cal.setTimeInMillis(dateMillis);
-    return getDailySeed(cal);
-  }
-
-  public static long getDailySeed(Calendar cal) {
-    return (long) cal.get(Calendar.YEAR) * 10000
-        + (cal.get(Calendar.MONTH) + 1) * 100
-        + cal.get(Calendar.DAY_OF_MONTH);
-  }
-
-  public static long getTimestampFromSeed(long seed) {
-    if (isOldSeed(seed)) {
-      return seed;
-    }
-    int year = (int) (seed / 10000);
-    int month = (int) ((seed / 100) % 100) - 1;
-    int day = (int) (seed % 100);
-    Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    utcCal.set(year, month, day, 0, 0, 0);
-    utcCal.set(Calendar.MILLISECOND, 0);
-    return utcCal.getTimeInMillis();
-  }
-
-  public static boolean isOldSeed(long seed) {
-    return seed > 100000000L;
-  }
-
-  public static long migrateOldSeed(long oldSeed) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTimeInMillis(oldSeed);
-    return getDailySeed(cal);
-  }
 
   public boolean isCompletedOnTime() {
     if (mDateCompleted == null) {
       return false;
     }
-    return mDateCompleted.getTime() - getTimestampFromSeed(getRandomSeed()) < STREAK_BUFFER_MILLIS;
+    return mDateCompleted.getTime() - getGameDay().getCalendar().getTimeInMillis()
+        < STREAK_BUFFER_MILLIS;
   }
 
-  public static DailyGame createFromSeed(long seed) {
+  public static DailyGame createFromDay(Day day) {
+    long seed = day.getSeed();
     Random random = new Random(seed);
     List<Card> cardsInPlay = Lists.newArrayList();
     List<Set<Card>> allTriples;
@@ -87,7 +141,8 @@ public class DailyGame extends Game {
             Collections.<Long>emptyList(),
             new Deck(Collections.<Card>emptyList()),
             0,
-            new Date(getTimestampFromSeed(seed)),
+            new Date(),
+            day,
             GameState.STARTING,
             false,
             Collections.<Set<Card>>emptyList(),
@@ -102,7 +157,8 @@ public class DailyGame extends Game {
       List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date,
+      Date dateStarted,
+      Day gameDay,
       GameState gameState,
       boolean hintsUsed,
       List<Set<Card>> foundTriples,
@@ -114,12 +170,13 @@ public class DailyGame extends Game {
         tripleFindTimes,
         cardsInDeck,
         timeElapsed,
-        date,
+        dateStarted,
         gameState,
         hintsUsed);
     mAllTriples = Game.getAllValidTriples(mCardsInPlay);
     mFoundTriples = Lists.newArrayList(foundTriples);
     mNumTriplesFound = mFoundTriples.size();
+    mGameDay = gameDay;
     mDateCompleted = dateCompleted;
   }
 
@@ -164,6 +221,10 @@ public class DailyGame extends Game {
 
   public List<Set<Card>> getFoundTriples() {
     return Collections.unmodifiableList(mFoundTriples);
+  }
+
+  public DailyGame.Day getGameDay() {
+    return mGameDay;
   }
 
   public Date getDateCompleted() {

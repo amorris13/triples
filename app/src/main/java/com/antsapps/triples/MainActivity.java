@@ -78,7 +78,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void updateResumeButtons() {
-    long todaySeed = DailyGame.getDailySeed(System.currentTimeMillis());
+    long todaySeed = DailyGame.Day.forToday().getSeed();
     boolean dailyCompleted = false;
     for (DailyGame dg : mApplication.getCompletedDailyGames()) {
       if (dg.getRandomSeed() == todaySeed) {
@@ -147,7 +147,7 @@ public class MainActivity extends BaseTriplesActivity {
   }
 
   private void playDailyGame() {
-    DailyGame game = mApplication.getDailyGameForDate(System.currentTimeMillis());
+    DailyGame game = mApplication.getDailyGameForDate(DailyGame.Day.forToday());
     Intent intent = new Intent(this, DailyGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
     startActivity(intent);

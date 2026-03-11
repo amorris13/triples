@@ -249,16 +249,14 @@ public class Application extends OnStateChangedReporter {
     return null;
   }
 
-  public DailyGame getDailyGameForDate(long dateMillis) {
-    long daySeed = DailyGame.getDailySeed(dateMillis);
-
+  public DailyGame getDailyGameForDate(DailyGame.Day day) {
     for (DailyGame game : mDailyGames) {
-      if (game.getRandomSeed() == daySeed) {
+      if (game.getGameDay().equals(day)) {
         return game;
       }
     }
 
-    DailyGame game = DailyGame.createFromSeed(daySeed);
+    DailyGame game = DailyGame.createFromDay(day);
     addDailyGame(game);
     return game;
   }
