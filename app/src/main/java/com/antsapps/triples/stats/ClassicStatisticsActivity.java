@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
-import com.antsapps.triples.GamesServices;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
@@ -81,7 +80,7 @@ public class ClassicStatisticsActivity extends BaseStatisticsListActivity {
 
   @Override
   protected String getLeaderboardId() {
-    return GamesServices.Leaderboard.CLASSIC;
+    return getString(R.string.leaderboard_classic_game);
   }
 
   @Override

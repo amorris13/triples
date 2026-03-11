@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Google Play game services IDs. Save this file as res/values/games-ids.xml in your project.-->
+<resources>
+  <!--app_id-->
+  <string name="app_id" translatable="false">434215387101</string>
+  <!--package_name-->
+  <string name="package_name" translatable="false">com.antsapps.triples</string>
+  <!--achievement Classic: 1 game-->
+  <string name="achievement_classic_1_game" translatable="false">CgkI3f-DytEMEAIQBg</string>
+  <!--achievement Classic: 10 games-->
+  <string name="achievement_classic_10_games" translatable="false">CgkI3f-DytEMEAIQCw</string>
+  <!--achievement Classic: 50 Games-->
+  <string name="achievement_classic_50_games" translatable="false">CgkI3f-DytEMEAIQDA</string>
+  <!--achievement Classic: 100 games-->
+  <string name="achievement_classic_100_games" translatable="false">CgkI3f-DytEMEAIQDQ</string>
+  <!--achievement Classic: 500 games-->
+  <string name="achievement_classic_500_games" translatable="false">CgkI3f-DytEMEAIQDg</string>
+  <!--achievement Classic: 1000 games-->
+  <string name="achievement_classic_1000_games" translatable="false">CgkI3f-DytEMEAIQDw</string>
+  <!--achievement Classic: 5000 games-->
+  <string name="achievement_classic_5000_games" translatable="false">CgkI3f-DytEMEAIQLw</string>
+  <!--achievement Arcade: 1 game-->
+  <string name="achievement_arcade_1_game" translatable="false">CgkI3f-DytEMEAIQMw</string>
+  <!--achievement Arcade: 10 games-->
+  <string name="achievement_arcade_10_games" translatable="false">CgkI3f-DytEMEAIQLg</string>
+  <!--achievement Arcade: 50 games-->
+  <string name="achievement_arcade_50_games" translatable="false">CgkI3f-DytEMEAIQMA</string>
+  <!--achievement Arcade: 100 games-->
+  <string name="achievement_arcade_100_games" translatable="false">CgkI3f-DytEMEAIQOw</string>
+  <!--achievement Arcade: 500 games-->
+  <string name="achievement_arcade_500_games" translatable="false">CgkI3f-DytEMEAIQQQ</string>
+  <!--achievement Arcade: 1000 games-->
+  <string name="achievement_arcade_1000_games" translatable="false">CgkI3f-DytEMEAIQPw</string>
+  <!--achievement Arcade: 5000 games-->
+  <string name="achievement_arcade_5000_games" translatable="false">CgkI3f-DytEMEAIQPQ</string>
+  <!--achievement Classic: < 20m-->
+  <string name="achievement_classic__20m" translatable="false">CgkI3f-DytEMEAIQOA</string>
+  <!--achievement Classic: < 10m-->
+  <string name="achievement_classic__10m" translatable="false">CgkI3f-DytEMEAIQOQ</string>
+  <!--achievement Classic: < 5m-->
+  <string name="achievement_classic__5m" translatable="false">CgkI3f-DytEMEAIQNw</string>
+  <!--achievement Classic: < 2m-->
+  <string name="achievement_classic__2m" translatable="false">CgkI3f-DytEMEAIQNQ</string>
+  <!--achievement Classic: < 1m-->
+  <string name="achievement_classic__1m" translatable="false">CgkI3f-DytEMEAIQLQ</string>
+  <!--achievement Classic: < 45s-->
+  <string name="achievement_classic__45s" translatable="false">CgkI3f-DytEMEAIQPg</string>
+  <!--achievement Classic: < 30s-->
+  <string name="achievement_classic__30s" translatable="false">CgkI3f-DytEMEAIQQA</string>
+  <!--achievement Arcade: 2 triples-->
+  <string name="achievement_arcade_2_triples" translatable="false">CgkI3f-DytEMEAIQMQ</string>
+  <!--achievement Arcade: 5 triples-->
+  <string name="achievement_arcade_5_triples" translatable="false">CgkI3f-DytEMEAIQOg</string>
+  <!--achievement Arcade: 10 triples-->
+  <string name="achievement_arcade_10_triples" translatable="false">CgkI3f-DytEMEAIQNg</string>
+  <!--achievement Arcade: 15 triples-->
+  <string name="achievement_arcade_15_triples" translatable="false">CgkI3f-DytEMEAIQPA</string>
+  <!--achievement Arcade: 20 triples-->
+  <string name="achievement_arcade_20_triples" translatable="false">CgkI3f-DytEMEAIQMg</string>
+  <!--achievement Arcade: 25 triples-->
+  <string name="achievement_arcade_25_triples" translatable="false">CgkI3f-DytEMEAIQNA</string>
+  <!--achievement Daily: 1 puzzle-->
+  <string name="achievement_daily_1_puzzle" translatable="false">CgkI3f-DytEMEAIQSg</string>
+  <!--achievement Daily: 10 puzzles-->
+  <string name="achievement_daily_10_puzzles" translatable="false">CgkI3f-DytEMEAIQQg</string>
+  <!--achievement Daily: 50 puzzles-->
+  <string name="achievement_daily_50_puzzles" translatable="false">CgkI3f-DytEMEAIQSw</string>
+  <!--achievement Daily: 100 puzzles-->
+  <string name="achievement_daily_100_puzzles" translatable="false">CgkI3f-DytEMEAIQRw</string>
+  <!--achievement Daily: 250 puzzles-->
+  <string name="achievement_daily_250_puzzles" translatable="false">CgkI3f-DytEMEAIQSA</string>
+  <!--achievement Daily: 500 puzzles-->
+  <string name="achievement_daily_500_puzzles" translatable="false">CgkI3f-DytEMEAIQTQ</string>
+  <!--achievement Daily: 7 day streak-->
+  <string name="achievement_daily_7_day_streak" translatable="false">CgkI3f-DytEMEAIQRQ</string>
+  <!--achievement Daily: 14 day streak-->
+  <string name="achievement_daily_14_day_streak" translatable="false">CgkI3f-DytEMEAIQRg</string>
+  <!--achievement Daily: 30 day streak-->
+  <string name="achievement_daily_30_day_streak" translatable="false">CgkI3f-DytEMEAIQRA</string>
+  <!--achievement Daily: 90 day streak-->
+  <string name="achievement_daily_90_day_streak" translatable="false">CgkI3f-DytEMEAIQTA</string>
+  <!--achievement Daily: 180 day streak-->
+  <string name="achievement_daily_180_day_streak" translatable="false">CgkI3f-DytEMEAIQSQ</string>
+  <!--achievement Daily: 365 day streak-->
+  <string name="achievement_daily_365_day_streak" translatable="false">CgkI3f-DytEMEAIQQw</string>
+  <!--leaderboard Classic Game-->
+  <string name="leaderboard_classic_game" translatable="false">CgkI3f-DytEMEAIQBw</string>
+  <!--leaderboard Arcade Game-->
+  <string name="leaderboard_arcade_game" translatable="false">CgkI3f-DytEMEAIQEA</string>
+</resources>

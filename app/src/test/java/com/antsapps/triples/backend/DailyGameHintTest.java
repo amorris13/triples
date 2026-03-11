@@ -42,7 +42,7 @@ public class DailyGameHintTest {
 
   @Test
   public void addHint_hintsOnlyOneCardAtATime() {
-    DailyGame game = DailyGame.createFromSeed(12345L);
+    DailyGame game = DailyGame.createFromDay(new DailyGame.Day(2026, 03, 11));
     DummyRenderer renderer = new DummyRenderer();
     game.setGameRenderer(renderer);
 

@@ -9,8 +9,11 @@ import androidx.core.content.ContextCompat;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.ClassicStatistics;
+import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
+import com.antsapps.triples.backend.Period;
 import com.google.android.gms.games.PlayGames;
 import com.google.common.collect.ImmutableList;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +52,56 @@ public class ClassicGameActivity extends BaseGameActivity
   }
 
   @Override
+  protected String getCompletedStats() {
+    return formatClassicCompletedStats(mGame.getTimeElapsed());
+  }
+
+  @Override
+  protected void updatePerformanceDescriptionInternal(TextView performanceTv) {
+    Application app = Application.getInstance(this);
+    ClassicStatistics allTimeStats = app.getClassicStatistics(Period.ALL_TIME);
+    if (allTimeStats.getNumGames() <= 1) {
+      performanceTv.setText(R.string.performance_first_game);
+      return;
+    }
+
+    long currentTime = mGame.getTimeElapsed();
+    if (currentTime <= allTimeStats.getFastestTime()) {
+      performanceTv.setText(R.string.performance_classic_new_best);
+    } else if (currentTime
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
+            .getFastestTime()) {
+      performanceTv.setText(R.string.performance_classic_best_year);
+    } else if (currentTime
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
+            .getFastestTime()) {
+      performanceTv.setText(R.string.performance_classic_best_month);
+    } else if (currentTime
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
+            .getFastestTime()) {
+      performanceTv.setText(R.string.performance_classic_best_week);
+    } else if (currentTime
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
+            .getFastestTime()) {
+      performanceTv.setText(R.string.performance_classic_best_day);
+    } else if (currentTime < allTimeStats.getAverageTime()) {
+      performanceTv.setText(R.string.performance_classic_better_than_average);
+    } else {
+      performanceTv.setText(R.string.performance_classic_worse_than_average);
+    }
+  }
+
+  @Override
+  protected String getGameType() {
+    return "Classic";
+  }
+
+  @Override
+  protected void awardAchievements() {
+    AchievementManager.awardClassicAchievements(this, mGame.getTimeElapsed());
+  }
+
+  @Override
   protected Game getGame() {
     return mGame;
   }
@@ -81,15 +134,12 @@ public class ClassicGameActivity extends BaseGameActivity
     numRemainingText.setText(String.valueOf(numRemaining));
   }
 
-  @Override
-  public void onCardHinted(Card hintedCard) {}
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
     PlayGames.getLeaderboardsClient(this)
-        .submitScore(GamesServices.Leaderboard.CLASSIC, mGame.getTimeElapsed());
+        .submitScore(getString(R.string.leaderboard_classic_game), mGame.getTimeElapsed());
   }
 
   @Override

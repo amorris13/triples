@@ -4,9 +4,9 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class CsvUtil {
   public static String getClassicCsvContent(List<Game> games) {
@@ -48,9 +48,15 @@ public class CsvUtil {
     StringBuilder csv = new StringBuilder();
     csv.append("Puzzle Date,Date Completed,Time Elapsed (ms),Triples Found,Hints Used\n");
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     for (DailyGame game : games) {
-      csv.append(dateFormat.format(new Date(game.getRandomSeed())));
+      csv.append(
+          game.getGameDay().getYear()
+              + "-"
+              + game.getGameDay().getMonth()
+              + "-"
+              + game.getGameDay().getDay());
       csv.append(",");
       if (game.getDateCompleted() != null) {
         csv.append(dateTimeFormat.format(game.getDateCompleted()));

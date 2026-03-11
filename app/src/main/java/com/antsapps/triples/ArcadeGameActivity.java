@@ -8,9 +8,12 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
+import com.antsapps.triples.backend.ArcadeStatistics;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnTimerTickListener;
+import com.antsapps.triples.backend.Period;
 import com.google.android.gms.games.PlayGames;
 import com.google.common.collect.ImmutableList;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +52,56 @@ public class ArcadeGameActivity extends BaseGameActivity
   }
 
   @Override
+  protected String getCompletedStats() {
+    return getString(R.string.arcade_completed_stats, mGame.getNumTriplesFound());
+  }
+
+  @Override
+  protected void updatePerformanceDescriptionInternal(TextView performanceTv) {
+    Application app = Application.getInstance(this);
+    ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME);
+    if (allTimeStats.getNumGames() <= 1) {
+      performanceTv.setText(R.string.performance_first_game);
+      return;
+    }
+
+    int currentFound = mGame.getNumTriplesFound();
+    if (currentFound >= allTimeStats.getMostFound()) {
+      performanceTv.setText(R.string.performance_arcade_new_best);
+    } else if (currentFound
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
+            .getMostFound()) {
+      performanceTv.setText(R.string.performance_arcade_best_year);
+    } else if (currentFound
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
+            .getMostFound()) {
+      performanceTv.setText(R.string.performance_arcade_best_month);
+    } else if (currentFound
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
+            .getMostFound()) {
+      performanceTv.setText(R.string.performance_arcade_best_week);
+    } else if (currentFound
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
+            .getMostFound()) {
+      performanceTv.setText(R.string.performance_arcade_best_day);
+    } else if (currentFound > allTimeStats.getAverageFound()) {
+      performanceTv.setText(R.string.performance_arcade_better_than_average);
+    } else {
+      performanceTv.setText(R.string.performance_arcade_worse_than_average);
+    }
+  }
+
+  @Override
+  protected String getGameType() {
+    return "Arcade";
+  }
+
+  @Override
+  protected void awardAchievements() {
+    AchievementManager.awardArcadeAchievements(this, mGame.getNumTriplesFound());
+  }
+
+  @Override
   protected Game getGame() {
     return mGame;
   }
@@ -83,16 +136,13 @@ public class ArcadeGameActivity extends BaseGameActivity
     triplesFound.setText(String.valueOf(numTriplesFound));
   }
 
-  @Override
-  public void onCardHinted(Card hintedCard) {}
-
   protected void submitScore() {
     if (mGame.getGameState() != Game.GameState.COMPLETED || mGame.areHintsUsed()) {
       return;
     }
 
     PlayGames.getLeaderboardsClient(this)
-        .submitScore(GamesServices.Leaderboard.ARCADE, mGame.getNumTriplesFound());
+        .submitScore(getString(R.string.leaderboard_arcade_game), mGame.getNumTriplesFound());
   }
 
   @Override

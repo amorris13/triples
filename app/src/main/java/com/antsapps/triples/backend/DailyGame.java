@@ -1,34 +1,122 @@
 package com.antsapps.triples.backend;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
 public class DailyGame extends Game {
 
+  public static class Day implements Comparable<Day> {
+    private final int mYear;
+
+    private final int mMonth;
+    private final int mDay;
+
+    public Day(int year, int month, int day) {
+      Preconditions.checkArgument(year > 0 && year <= 9999);
+      Preconditions.checkArgument(month >= 1 && month <= 12);
+      Preconditions.checkArgument(day >= 1 && day <= 31);
+
+      mYear = year;
+      mMonth = month;
+      mDay = day;
+    }
+
+    public int getYear() {
+      return mYear;
+    }
+
+    public int getMonth() {
+      return mMonth;
+    }
+
+    public int getDay() {
+      return mDay;
+    }
+
+    public long getSeed() {
+      return (long) mYear * 10000 + mMonth * 100 + mDay;
+    }
+
+    public static Day fromString(String string) {
+      int dateInt = Integer.parseInt(string);
+      return new Day(dateInt / 10000, (dateInt / 100) % 100, dateInt % 100);
+    }
+
+    public static Day forToday() {
+      Calendar cal = Calendar.getInstance();
+      return forCalendar(cal);
+    }
+
+    public static Day forCalendar(Calendar cal) {
+      return new Day(
+          cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+    }
+
+    public Calendar getCalendar() {
+      Calendar cal = Calendar.getInstance();
+      cal.set(mYear, mMonth - 1, mDay, 0, 0, 0);
+      cal.set(Calendar.MILLISECOND, 0);
+      return cal;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%04d%02d%02d", mYear, mMonth, mDay);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (!(o instanceof Day day)) {
+        return false;
+      }
+      return mYear == day.mYear && mMonth == day.mMonth && mDay == day.mDay;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(mYear, mMonth, mDay);
+    }
+
+    @Override
+    public int compareTo(Day o) {
+      if (mYear != o.mYear) {
+        return mYear - o.mYear;
+      }
+      if (mMonth != o.mMonth) {
+        return mMonth - o.mMonth;
+      }
+      return mDay - o.mDay;
+    }
+  }
+
   public static final String GAME_TYPE_FOR_ANALYTICS = "daily";
+
+  public static final long STREAK_BUFFER_MILLIS = 48 * 60 * 60 * 1000L; // 48 hours
 
   private final List<Set<Card>> mAllTriples;
   private final List<Set<Card>> mFoundTriples;
+
+  private final Day mGameDay;
   private Date mDateCompleted;
 
-  public static long getStartOfDaySeed(long dateMillis) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTimeInMillis(dateMillis);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND, 0);
-    return cal.getTimeInMillis();
+  public boolean isCompletedOnTime() {
+    if (mDateCompleted == null) {
+      return false;
+    }
+    return mDateCompleted.getTime() - getGameDay().getCalendar().getTimeInMillis()
+        < STREAK_BUFFER_MILLIS;
   }
 
-  public static DailyGame createFromSeed(long seed) {
+  public static DailyGame createFromDay(Day day) {
+    long seed = day.getSeed();
     Random random = new Random(seed);
     List<Card> cardsInPlay = Lists.newArrayList();
     List<Set<Card>> allTriples;
@@ -53,7 +141,8 @@ public class DailyGame extends Game {
             Collections.<Long>emptyList(),
             new Deck(Collections.<Card>emptyList()),
             0,
-            new Date(seed),
+            new Date(),
+            day,
             GameState.STARTING,
             false,
             Collections.<Set<Card>>emptyList(),
@@ -68,7 +157,8 @@ public class DailyGame extends Game {
       List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date,
+      Date dateStarted,
+      Day gameDay,
       GameState gameState,
       boolean hintsUsed,
       List<Set<Card>> foundTriples,
@@ -80,12 +170,13 @@ public class DailyGame extends Game {
         tripleFindTimes,
         cardsInDeck,
         timeElapsed,
-        date,
+        dateStarted,
         gameState,
         hintsUsed);
     mAllTriples = Game.getAllValidTriples(mCardsInPlay);
     mFoundTriples = Lists.newArrayList(foundTriples);
     mNumTriplesFound = mFoundTriples.size();
+    mGameDay = gameDay;
     mDateCompleted = dateCompleted;
   }
 
@@ -99,39 +190,28 @@ public class DailyGame extends Game {
     return true;
   }
 
-  public interface OnTripleFoundListener {
-    void onTripleFound(Set<Card> triple);
-  }
-
-  private OnTripleFoundListener mOnTripleFoundListener;
-
-  public void setOnTripleFoundListener(OnTripleFoundListener listener) {
-    mOnTripleFoundListener = listener;
+  @Override
+  protected boolean isValidFoundTriple(Card... cards) {
+    return super.isValidFoundTriple(cards) && !mFoundTriples.contains(Sets.newHashSet(cards));
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    Set<Card> triple = Sets.newHashSet(cards);
-    if (!mFoundTriples.contains(triple) && mAllTriples.contains(triple)) {
-      mFoundTriples.add(triple);
-      mNumTriplesFound = mFoundTriples.size();
-      mTripleFindTimes.add(mTimer.getElapsed());
+  protected void recordFoundTriple(Card... cards) {
+    super.recordFoundTriple();
+    mFoundTriples.add(Sets.newHashSet(cards));
+    mNumTriplesFound = mFoundTriples.size();
+  }
 
-      mHintedCards.clear();
-      if (mGameRenderer != null) {
-        mGameRenderer.clearHintedCards();
-      }
+  @Override
+  protected void updateDeckAfterValidTriple(Card... cards) {
+    // Nothing to do here in puzzle mode.
+  }
 
-      if (mOnTripleFoundListener != null) {
-        mOnTripleFoundListener.onTripleFound(triple);
-      }
-
-      if (mFoundTriples.size() == mAllTriples.size()) {
-        mDateCompleted = new Date();
-        finish();
-      } else {
-        dispatchCardsInPlayUpdate(ImmutableList.copyOf(mCardsInPlay));
-      }
+  @Override
+  protected void checkIfFinished() {
+    if (mFoundTriples.size() == mAllTriples.size()) {
+      mDateCompleted = new Date();
+      finish();
     }
   }
 
@@ -141,6 +221,10 @@ public class DailyGame extends Game {
 
   public List<Set<Card>> getFoundTriples() {
     return Collections.unmodifiableList(mFoundTriples);
+  }
+
+  public DailyGame.Day getGameDay() {
+    return mGameDay;
   }
 
   public Date getDateCompleted() {

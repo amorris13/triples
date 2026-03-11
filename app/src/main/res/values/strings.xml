@@ -62,13 +62,13 @@
   <string name="date_played">DATE PLAYED</string>
   <string name="time_taken">TIME TAKEN</string>
   <string name="sign_in_why">Sign in with Google to share your scores with your friends.</string>
-  <string name="app_id">434215387101</string>
   <string name="leaderboards">Google Play Leaderboards</string>
   <string name="signout">Sign Out</string>
   <string name="time_remaining">TIME REMAINING</string>
   <string name="triples_found">TRIPLES FOUND</string>
   <string name="drawer_open">Open navigation drawer</string>
   <string name="drawer_close">Close navigation drawer</string>
+  <string name="game_modes_title">GAME MODES</string>
   <string name="arcade_label">Arcade</string>
   <string name="classic_label">Classic</string>
   <string name="daily_label">Daily Puzzle</string>
@@ -132,7 +132,10 @@
 
   <string name="rate_app">Rate App</string>
 
+  <string name="classic_description">Go through the whole deck (81 cards) in the shortest time possible. This requires patience and perseverance.</string>
+  <string name="arcade_description">Find as many triples as you can in 60 seconds.</string>
   <string name="zen_description">Unlimited play with a continuously recycled and reshuffled deck. No timer or counts are tracked.</string>
+  <string name="daily_puzzle_description">Find all possible triples in a fixed set of 15 cards. A new puzzle is available every day.</string>
   <string name="beginner_tutorial_button">Beginner Tutorial</string>
 
   <string name="beginner_title">Beginner Mode</string>

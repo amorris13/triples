@@ -1,7 +1,7 @@
 package com.antsapps.triples.views;
 
 import static com.antsapps.triples.cardsview.CardBackgroundDrawable.INSET_DP;
-import static com.antsapps.triples.cardsview.CardDrawable.DEFAULT_ANIMATION_DURATION_MS;
+import static com.antsapps.triples.cardsview.CardView.DEFAULT_ANIMATION_DURATION_MS;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -16,9 +16,8 @@ import android.view.View;
 import android.view.animation.CycleInterpolator;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.cardsview.CardDrawable;
+import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
-import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class FoundTriplesView extends View {
   private CardsView mCardsView;
 
   private final Paint mPlaceholderPaint;
-  private final Map<Card, CardDrawable> mCardDrawableCache = new HashMap<>();
+  private final Map<Card, CardView> mCardViewCache = new HashMap<>();
 
   private int mCardWidth;
   private int mCardHeight;
@@ -89,7 +88,7 @@ public class FoundTriplesView extends View {
     }
     mSlotWidth = width / COLUMNS;
     mCardWidth = mSlotWidth - 2 * mPadding;
-    mCardHeight = (int) (mCardWidth * VerticalCardsView.HEIGHT_OVER_WIDTH);
+    mCardHeight = (int) (mCardWidth * CardView.HEIGHT_OVER_WIDTH);
     mStackDisplacement = (int) (mCardHeight * STACK_DISPLACEMENT_PERCENT);
 
     int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);
@@ -109,6 +108,8 @@ public class FoundTriplesView extends View {
     int naturalHeight = existingBounds.height();
     int naturalDisplacement = (int) (naturalHeight * STACK_DISPLACEMENT_PERCENT);
     float scale = (float) mCardWidth / naturalWidth;
+    float centerX = naturalWidth / 2f;
+    float centerY = (naturalHeight + 2 * naturalDisplacement) / 2f;
 
     for (int i = 0; i < mTotalTriples; i++) {
       int row = i / COLUMNS;
@@ -119,8 +120,10 @@ public class FoundTriplesView extends View {
 
       canvas.save();
       canvas.translate(left, top);
-      float highlightScale = (i == mHighlightIndex) ? mHighlightScale : 1.0f;
-      canvas.scale(scale * highlightScale, scale * highlightScale, 0, 0);
+      canvas.scale(scale, scale);
+      if (i == mHighlightIndex) {
+        canvas.scale(mHighlightScale, mHighlightScale, centerX, centerY);
+      }
 
       if (mFoundTriples != null && i < mFoundTriples.size()) {
         drawTripleStack(
@@ -136,15 +139,17 @@ public class FoundTriplesView extends View {
   private void drawTripleStack(
       Canvas canvas, Set<Card> triple, int width, int height, int displacement) {
     int i = 0;
+    Rect bounds = new Rect(0, 0, width, height);
     for (Card card : getSortedTriples(triple)) {
-      Rect bounds = new Rect(0, i * displacement, width, i * displacement + height);
-      CardDrawable cardDrawable = mCardDrawableCache.get(card);
-      if (cardDrawable == null) {
-        cardDrawable = new CardDrawable(getContext(), null, card, null);
-        mCardDrawableCache.put(card, cardDrawable);
+      CardView cardView = mCardViewCache.get(card);
+      if (cardView == null) {
+        cardView = new CardView(getContext(), card);
+        mCardViewCache.put(card, cardView);
       }
-      cardDrawable.updateBounds(bounds, false);
-      cardDrawable.draw(canvas);
+      canvas.save();
+      canvas.translate(0, i * displacement);
+      cardView.drawCardContent(canvas, bounds);
+      canvas.restore();
       i++;
     }
   }

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.antsapps.triples"
-  android:versionCode="9"
-  android:versionName="1.3">
+  android:versionCode="10"
+  android:versionName="2.0">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -53,8 +53,7 @@
     <activity
       android:name=".HelpActivity"
       android:label="@string/help"
-      android:screenOrientation="portrait"
-      android:theme="@style/HelpDialog" />
+      android:screenOrientation="portrait" />
     <activity
       android:name=".SettingsActivity"
       android:label="@string/settings"

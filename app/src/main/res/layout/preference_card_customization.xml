@@ -113,32 +113,45 @@
         android:orientation="horizontal"
         android:layout_marginTop="8dp">
 
-        <com.antsapps.triples.cardsview.SampleCardView
+        <com.antsapps.triples.cardsview.CardView
             android:id="@+id/sample_card_0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <com.antsapps.triples.cardsview.SampleCardView
+        <com.antsapps.triples.cardsview.CardView
             android:id="@+id/sample_card_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <com.antsapps.triples.cardsview.SampleCardView
+        <com.antsapps.triples.cardsview.CardView
             android:id="@+id/sample_card_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/reset_button"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:text="RESET TO DEFAULTS" />
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset_button"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RESET TO DEFAULTS" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/random_button"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHOOSE RANDOM" />
+    </LinearLayout>
 
 </LinearLayout>

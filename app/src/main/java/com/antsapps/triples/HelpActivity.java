@@ -5,18 +5,18 @@ import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.Random;
+import java.util.Set;
 
-public class HelpActivity extends HelpActivityBase implements OnValidTripleSelectedListener {
+public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSelectedListener {
 
   private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -33,7 +33,9 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
 
     setContentView(R.layout.help);
 
-    getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
     mHelpCardsView = (CardsView) findViewById(R.id.cards_view);
     mHelpCardsView.setOnValidTripleSelectedListener(this);
@@ -61,7 +63,7 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
   }
 
   @Override
-  public void onValidTripleSelected(Collection<Card> validTriple) {
+  public void onValidTripleSelected(Set<Card> validTriple) {
     showAnotherTriple();
   }
 
@@ -70,6 +72,7 @@ public class HelpActivity extends HelpActivityBase implements OnValidTripleSelec
   }
 
   private void showAnotherTriple() {
+    mHelpCardsView.animateTripleFoundToOffscreen(Sets.newHashSet(mCardsShown));
     ImmutableList<Card> newCards = createValidTriple();
     mHelpCardsView.updateCardsInPlay(newCards);
     mCardsShown = newCards;

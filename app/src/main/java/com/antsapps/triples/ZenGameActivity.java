@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.TextView;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
@@ -33,12 +34,29 @@ public class ZenGameActivity extends BaseGameActivity {
       stub.setVisibility(View.GONE);
       findViewById(R.id.bottom_separator).setVisibility(View.GONE);
     }
+    mGame.addOnUpdateCardsInPlayListener(this);
   }
 
   @Override
   protected Game getGame() {
     return mGame;
   }
+
+  @Override
+  protected String getCompletedStats() {
+    return "";
+  }
+
+  @Override
+  protected void updatePerformanceDescriptionInternal(TextView performanceTv) {}
+
+  @Override
+  protected String getGameType() {
+    return "Classic";
+  }
+
+  @Override
+  protected void awardAchievements() {}
 
   @Override
   protected void saveGame() {

@@ -18,28 +18,25 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 import androidx.appcompat.app.ActionBar;
 import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.ArcadeGame;
-import com.antsapps.triples.backend.ArcadeStatistics;
-import com.antsapps.triples.backend.ClassicGame;
-import com.antsapps.triples.backend.ClassicStatistics;
-import com.antsapps.triples.backend.DailyGame;
-import com.antsapps.triples.backend.DatePeriod;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
+import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
-import com.antsapps.triples.backend.Period;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.common.collect.ImmutableList;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public abstract class BaseGameActivity extends BaseTriplesActivity
-    implements OnUpdateGameStateListener {
+    implements OnUpdateGameStateListener, OnUpdateCardsInPlayListener {
 
   public static final int VIEW_CARDS = 0;
   public static final int VIEW_PAUSED = 1;
@@ -89,8 +86,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
 
-    getGame().begin();
-
     findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
     ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
     findViewById(R.id.rate_app).setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
@@ -99,16 +94,26 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     findViewById(R.id.new_game_button)
         .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
 
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+    getGame().begin();
+
     if (originalGameState == GameState.STARTING) {
       mCardsView.shouldSlideIn();
     }
-
-    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
   }
 
   protected abstract Game getGame();
 
   protected abstract int getAccentColor();
+
+  protected abstract String getCompletedStats();
+
+  protected abstract void updatePerformanceDescriptionInternal(TextView performanceTv);
+
+  protected abstract String getGameType();
+
+  protected abstract void awardAchievements();
 
   /**
    * This must initialize the game (so that getGame() doesn't return null) and set the content view
@@ -173,6 +178,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     return super.onOptionsItemSelected(item);
   }
 
+  @Override
+  public void onUpdateCardsInPlay(
+      ImmutableList<Card> newCards,
+      ImmutableList<Card> oldCards,
+      int numRemaining,
+      int numTriplesFound) {}
+
+  public void animateFoundTriple(Set<Card> triple) {
+    mCardsView.animateTripleFoundToOffscreen(triple);
+  }
+
   private void handleHintSelection() {
     final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_dont_ask_for_hint), false)) {
@@ -206,7 +222,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  protected void updateHintUsedIndicator() {
+  private void updateHintUsedIndicator() {
     View hintUsedIndicator = findViewById(R.id.hint_used_text);
     if (hintUsedIndicator != null) {
       hintUsedIndicator.setVisibility(getGame().areHintsUsed() ? View.VISIBLE : View.GONE);
@@ -277,7 +293,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
     if (isSignedIn()) {
       submitScore();
-      AchievementManager.awardAchievementsForGame(this, getGame());
+      if (!getGame().areHintsUsed()) {
+        awardAchievements();
+      }
       Application application = Application.getInstance(this);
       AchievementManager.awardCountAchievements(this, application);
       application.uploadToCloud(this);
@@ -303,7 +321,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  private static String formatElapsedTime(long elapsedMillis) {
+  protected static String formatElapsedTime(long elapsedMillis) {
     long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis);
     if (seconds < 3600) {
       return String.format("%d:%02d", seconds / 60, seconds % 60);
@@ -312,7 +330,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  private String formatClassicCompletedStats(long timeElapsed) {
+  protected String formatClassicCompletedStats(long timeElapsed) {
     long seconds = TimeUnit.MILLISECONDS.toSeconds(timeElapsed);
     if (seconds < 60) {
       return getString(R.string.classic_completed_stats_seconds_format, seconds);
@@ -344,15 +362,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       }
 
       TextView outputTv = (TextView) findViewById(R.id.game_output);
-      Game game = getGame();
-      if (game instanceof ClassicGame) {
-        outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
-      } else if (game instanceof ArcadeGame) {
-        outputTv.setText(
-            getString(R.string.arcade_completed_stats, ((ArcadeGame) game).getNumTriplesFound()));
-      } else if (game instanceof DailyGame) {
-        outputTv.setText(formatClassicCompletedStats(game.getTimeElapsed()));
-      }
+      outputTv.setText(getCompletedStats());
 
       TextView fastestTv = (TextView) findViewById(R.id.fastest_triple);
       fastestTv.setText(formatElapsedTime(fastest));
@@ -382,70 +392,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       return;
     }
 
-    Application app = Application.getInstance(this);
-    if (game instanceof ArcadeGame) {
-      ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME);
-      if (allTimeStats.getNumGames() <= 1) {
-        performanceTv.setText(R.string.performance_first_game);
-        return;
-      }
-
-      int currentFound = ((ArcadeGame) game).getNumTriplesFound();
-      if (currentFound >= allTimeStats.getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_new_best);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_year);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_month);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_week);
-      } else if (currentFound
-          >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
-              .getMostFound()) {
-        performanceTv.setText(R.string.performance_arcade_best_day);
-      } else if (currentFound > allTimeStats.getAverageFound()) {
-        performanceTv.setText(R.string.performance_arcade_better_than_average);
-      } else {
-        performanceTv.setText(R.string.performance_arcade_worse_than_average);
-      }
-    } else if (game instanceof ClassicGame) {
-      ClassicStatistics allTimeStats = app.getClassicStatistics(Period.ALL_TIME);
-      if (allTimeStats.getNumGames() <= 1) {
-        performanceTv.setText(R.string.performance_first_game);
-        return;
-      }
-
-      long currentTime = game.getTimeElapsed();
-      if (currentTime <= allTimeStats.getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_new_best);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_year);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_month);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_week);
-      } else if (currentTime
-          <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
-              .getFastestTime()) {
-        performanceTv.setText(R.string.performance_classic_best_day);
-      } else if (currentTime < allTimeStats.getAverageTime()) {
-        performanceTv.setText(R.string.performance_classic_better_than_average);
-      } else {
-        performanceTv.setText(R.string.performance_classic_worse_than_average);
-      }
-    }
+    updatePerformanceDescriptionInternal(performanceTv);
   }
 
   @Override

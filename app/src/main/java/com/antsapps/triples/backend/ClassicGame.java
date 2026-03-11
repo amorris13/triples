@@ -32,7 +32,7 @@ public class ClassicGame extends Game {
       List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date,
+      Date dateStarted,
       GameState gameState,
       boolean hintsUsed) {
     super(
@@ -42,7 +42,7 @@ public class ClassicGame extends Game {
         tripleFindTimes,
         cardsInDeck,
         timeElapsed,
-        date,
+        dateStarted,
         gameState,
         hintsUsed);
   }
@@ -72,9 +72,7 @@ public class ClassicGame extends Game {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
-
+  protected void checkIfFinished() {
     if (!checkIfAnyValidTriples()) {
       finish();
     }

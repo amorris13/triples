@@ -14,16 +14,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
-@RunWith(RobolectricTestRunner.class)
-public class CsvExportTest {
+public class CsvExportTest extends BaseRobolectricTest {
+
+  @Before
+  // Set timezone to UTC
+  public void setTimeZoneToUtc() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  }
 
   @Test
   public void testClassicCsvExportContent() {
-    Date date = new Date(1700000000000L); // 2023-11-14 22:13:20
+    Date date = new Date(1700000000000L); // 2023-11-14 22:13:20 UTC
     ClassicGame game =
         new ClassicGame(
             1,
@@ -68,9 +73,10 @@ public class CsvExportTest {
 
   @Test
   public void testDailyCsvExportContent() {
-    long seed = 1700000000000L; // 2023-11-14 22:13:20
-    Date date = new Date(seed);
-    Date dateCompleted = new Date(seed + 120000); // 2 minutes later
+    DailyGame.Day day = new DailyGame.Day(2023, 11, 14);
+    long seed = day.getSeed();
+    Date date = day.getCalendar().getTime();
+    Date dateCompleted = new Date(date.getTime() + 120000); // 2 minutes later
 
     DailyGame game =
         new DailyGame(
@@ -96,6 +102,7 @@ public class CsvExportTest {
             new Deck(Lists.<Card>newArrayList()),
             120000,
             date,
+            day,
             Game.GameState.COMPLETED,
             false,
             Lists.<Set<Card>>newArrayList(),
@@ -106,6 +113,6 @@ public class CsvExportTest {
 
     assertThat(csv)
         .contains("Puzzle Date,Date Completed,Time Elapsed (ms),Triples Found,Hints Used");
-    assertThat(csv).contains("2023-11-14,2023-11-14 22:15:20,120000,0/14,false");
+    assertThat(csv).contains("2023-11-14,2023-11-14 00:02:00,120000,0/14,false");
   }
 }
