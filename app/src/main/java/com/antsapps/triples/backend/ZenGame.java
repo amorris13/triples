@@ -37,7 +37,7 @@ public class ZenGame extends Game {
       List<Long> tripleFindTimes,
       Deck cardsInDeck,
       long timeElapsed,
-      Date date,
+      Date dateStarted,
       GameState gameState,
       boolean hintsUsed,
       boolean isBeginner) {
@@ -48,7 +48,7 @@ public class ZenGame extends Game {
         tripleFindTimes,
         cardsInDeck,
         timeElapsed,
-        date,
+        dateStarted,
         gameState,
         hintsUsed);
     mIsBeginner = isBeginner;

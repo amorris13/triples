@@ -84,7 +84,7 @@ public class CloudSaveSerializer {
     for (DailyGame g : games) {
       builder.addDailyGames(
           DailyGameSummary.newBuilder()
-              .setDateMillis(g.getDateStarted().getTime())
+              .setGameDay(g.getGameDay().toString())
               .setTimeElapsedMillis(g.getTimeElapsed())
               .setHintsUsed(g.areHintsUsed())
               .setDateCompletedMillis(
@@ -100,15 +100,17 @@ public class CloudSaveSerializer {
     DailyCompletedData completedData = DailyCompletedData.parseFrom(data);
     List<DailyGame> games = new ArrayList<>(completedData.getDailyGamesCount());
     for (DailyGameSummary summary : completedData.getDailyGamesList()) {
+      DailyGame.Day gameDay = DailyGame.Day.fromString(summary.getGameDay());
       games.add(
           new DailyGame(
               -1,
-              summary.getDateMillis(),
+              gameDay.getSeed(),
               createFakeCardsInPlay(),
               Collections.<Long>emptyList(),
               new Deck(Collections.<Card>emptyList()),
               summary.getTimeElapsedMillis(),
-              new Date(summary.getDateMillis()),
+              gameDay.getCalendar().getTime(),
+              gameDay,
               Game.GameState.COMPLETED,
               summary.getHintsUsed(),
               Collections.<Set<Card>>emptyList(),
@@ -180,6 +182,7 @@ public class CloudSaveSerializer {
   public static byte[] serializeDailyGameState(DailyGame game) {
     return DailyGameState.newBuilder()
         .setSeed(game.getRandomSeed())
+        .setGameDay(game.getGameDay().toString())
         .setCardsInPlay(ByteString.copyFrom(game.getCardsInPlayAsByteArray()))
         .setTripleFindTimes(
             ByteString.copyFrom(Utils.longListToByteArray(game.getTripleFindTimes())))
@@ -201,6 +204,7 @@ public class CloudSaveSerializer {
         new Deck(Collections.<Card>emptyList()),
         state.getTimeElapsedMillis(),
         new Date(state.getSeed()),
+        DailyGame.Day.fromString(state.getGameDay()),
         fromGameStateProto(state.getGameState()),
         state.getHintsUsed(),
         Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()),

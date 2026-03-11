@@ -22,12 +22,13 @@ public class DBAdapter extends SQLiteOpenHelper {
   public static final String COLUMN_CARDS_IN_PLAY = "cards_in_play";
   public static final String COLUMN_CARDS_IN_DECK = "cards_in_deck";
   public static final String COLUMN_TIME_ELAPSED = "time_elapsed";
-  public static final String COLUMN_DATE = "date";
+  public static final String COLUMN_DATE_STARTED = "date";
   public static final String COLUMN_NUM_TRIPLES_FOUND = "num_triples_found"; // ARCADE only
   public static final String COLUMN_TRIPLE_FIND_TIMES = "triple_find_times";
   public static final String COLUMN_HINTS_USED = "hints_used";
   public static final String COLUMN_FOUND_TRIPLES = "found_triples"; // DAILY only
   public static final String COLUMN_DATE_COMPLETED = "date_completed"; // DAILY only
+  public static final String COLUMN_DAILY_GAME_DATE = "daily_game_date"; // DAILY only
 
   /** The name of the database file on the file system */
   private static final String DATABASE_NAME = "Triples.db";
@@ -51,7 +52,7 @@ public class DBAdapter extends SQLiteOpenHelper {
           + " BLOB, " //
           + COLUMN_TIME_ELAPSED
           + " INTEGER, " //
-          + COLUMN_DATE
+          + COLUMN_DATE_STARTED
           + " INTEGER, " //
           + COLUMN_TRIPLE_FIND_TIMES
           + " BLOB, " //
@@ -71,8 +72,10 @@ public class DBAdapter extends SQLiteOpenHelper {
           + " BLOB, " //
           + COLUMN_TIME_ELAPSED
           + " INTEGER, " //
-          + COLUMN_DATE
+          + COLUMN_DATE_STARTED
           + " INTEGER, " //
+          + COLUMN_DAILY_GAME_DATE
+          + " TEXT, " //
           + COLUMN_FOUND_TRIPLES
           + " BLOB, " //
           + COLUMN_TRIPLE_FIND_TIMES
@@ -97,7 +100,7 @@ public class DBAdapter extends SQLiteOpenHelper {
           + " BLOB, " //
           + COLUMN_TIME_ELAPSED
           + " INTEGER, " //
-          + COLUMN_DATE
+          + COLUMN_DATE_STARTED
           + " INTEGER, " //
           + COLUMN_NUM_TRIPLES_FOUND
           + " INTEGER, " //
@@ -244,7 +247,7 @@ public class DBAdapter extends SQLiteOpenHelper {
                   COLUMN_CARDS_IN_PLAY,
                   COLUMN_CARDS_IN_DECK,
                   COLUMN_TIME_ELAPSED,
-                  COLUMN_DATE,
+                  COLUMN_DATE_STARTED,
                   COLUMN_TRIPLE_FIND_TIMES,
                   COLUMN_HINTS_USED
                 },
@@ -299,7 +302,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
     values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
-    values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_DATE_STARTED, game.getDateStarted().getTime());
     values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
     values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
     return values;
@@ -323,7 +326,7 @@ public class DBAdapter extends SQLiteOpenHelper {
                   COLUMN_CARDS_IN_PLAY,
                   COLUMN_CARDS_IN_DECK,
                   COLUMN_TIME_ELAPSED,
-                  COLUMN_DATE,
+                  COLUMN_DATE_STARTED,
                   COLUMN_NUM_TRIPLES_FOUND,
                   COLUMN_TRIPLE_FIND_TIMES,
                   COLUMN_HINTS_USED
@@ -379,7 +382,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
     values.put(COLUMN_CARDS_IN_DECK, game.getCardsInDeckAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
-    values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_DATE_STARTED, game.getDateStarted().getTime());
     values.put(COLUMN_NUM_TRIPLES_FOUND, game.getNumTriplesFound());
     values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
     values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);
@@ -400,7 +403,8 @@ public class DBAdapter extends SQLiteOpenHelper {
                   COLUMN_GAME_RANDOM,
                   COLUMN_CARDS_IN_PLAY,
                   COLUMN_TIME_ELAPSED,
-                  COLUMN_DATE,
+                  COLUMN_DATE_STARTED,
+                  COLUMN_DAILY_GAME_DATE,
                   COLUMN_FOUND_TRIPLES,
                   COLUMN_TRIPLE_FIND_TIMES,
                   COLUMN_HINTS_USED,
@@ -418,14 +422,15 @@ public class DBAdapter extends SQLiteOpenHelper {
               dailyGamesCursor.getLong(0),
               dailyGamesCursor.getLong(2),
               Utils.cardListFromByteArray(dailyGamesCursor.getBlob(3)),
-              Utils.longListFromByteArray(dailyGamesCursor.getBlob(7)),
+              Utils.longListFromByteArray(dailyGamesCursor.getBlob(8)),
               new Deck(Collections.<Card>emptyList()),
               dailyGamesCursor.getLong(4),
               new Date(dailyGamesCursor.getLong(5)),
+              DailyGame.Day.fromString(dailyGamesCursor.getString(6)),
               GameState.valueOf(dailyGamesCursor.getString(1)),
-              dailyGamesCursor.getInt(8) != 0,
-              Utils.triplesListFromByteArray(dailyGamesCursor.getBlob(6)),
-              dailyGamesCursor.isNull(9) ? null : new Date(dailyGamesCursor.getLong(9)));
+              dailyGamesCursor.getInt(9) != 0,
+              Utils.triplesListFromByteArray(dailyGamesCursor.getBlob(7)),
+              dailyGamesCursor.isNull(10) ? null : new Date(dailyGamesCursor.getLong(10)));
       dailyGames.add(game);
       dailyGamesCursor.moveToNext();
     }
@@ -457,7 +462,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     values.put(COLUMN_GAME_RANDOM, game.getRandomSeed());
     values.put(COLUMN_CARDS_IN_PLAY, game.getCardsInPlayAsByteArray());
     values.put(COLUMN_TIME_ELAPSED, game.getTimeElapsed());
-    values.put(COLUMN_DATE, game.getDateStarted().getTime());
+    values.put(COLUMN_DATE_STARTED, game.getDateStarted().getTime());
+    values.put(COLUMN_DAILY_GAME_DATE, game.getGameDay().toString());
     values.put(COLUMN_FOUND_TRIPLES, Utils.triplesListToByteArray(game.getFoundTriples()));
     values.put(COLUMN_TRIPLE_FIND_TIMES, Utils.longListToByteArray(game.getTripleFindTimes()));
     values.put(COLUMN_HINTS_USED, game.areHintsUsed() ? 1 : 0);

@@ -5,14 +5,8 @@ import android.content.Context;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
-import com.antsapps.triples.backend.DailyGame;
+import com.antsapps.triples.backend.DailyStatisticsUtil;
 import com.google.android.gms.games.PlayGames;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class AchievementManager {
@@ -50,53 +44,11 @@ public class AchievementManager {
   }
 
   public static void awardDailyAchievements(Context context, Application application) {
-    Set<Long> completedOnDaySeeds = new HashSet<>();
-    int totalSolved = 0;
-    for (DailyGame game : application.getCompletedDailyGames()) {
-      if (game.getDateCompleted() == null || game.areHintsUsed()) continue;
-      totalSolved++;
-      long startSeed = getStartOfDay(game.getDateStarted().getTime());
-      if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
-        completedOnDaySeeds.add(startSeed);
-      }
-    }
+    DailyStatisticsUtil.DailyStatistics dailyStatistics =
+        DailyStatisticsUtil.computeDailyStatistics(application.getCompletedDailyGames());
 
-    awardDailyCountAchievements(context, totalSolved);
-
-    int longestStreak = 0;
-    int tempStreak = 0;
-    List<Long> sortedSeeds = new ArrayList<>(completedOnDaySeeds);
-    Collections.sort(sortedSeeds);
-    Calendar lastCal = null;
-    for (Long seed : sortedSeeds) {
-      Calendar currentCal = Calendar.getInstance();
-      currentCal.setTimeInMillis(seed);
-      if (lastCal != null) {
-        Calendar expectedCal = (Calendar) lastCal.clone();
-        expectedCal.add(Calendar.DAY_OF_YEAR, 1);
-        if (expectedCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR)
-            && expectedCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
-          tempStreak++;
-        } else {
-          tempStreak = 1;
-        }
-      } else {
-        tempStreak = 1;
-      }
-      lastCal = currentCal;
-      longestStreak = Math.max(longestStreak, tempStreak);
-    }
-    awardDailyStreakAchievements(context, longestStreak);
-  }
-
-  private static long getStartOfDay(long time) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTimeInMillis(time);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND, 0);
-    return cal.getTimeInMillis();
+    awardDailyCountAchievements(context, dailyStatistics.totalGamesCompleted);
+    awardDailyStreakAchievements(context, dailyStatistics.longestStreak);
   }
 
   public static void awardArcadeAchievements(Context context, int triplesFound) {

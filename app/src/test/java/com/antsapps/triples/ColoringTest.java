@@ -108,7 +108,7 @@ public class ColoringTest extends BaseRobolectricTest {
   @Test
   public void testDailyGameColoring() {
     Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
-    DailyGame game = DailyGame.createFromSeed(12345L);
+    DailyGame game = DailyGame.createFromDay(new DailyGame.Day(2026, 03, 11));
     app.addDailyGame(game);
 
     Intent intent =
