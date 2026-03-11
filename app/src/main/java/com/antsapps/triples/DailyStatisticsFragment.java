@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -32,9 +33,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class DailyStatisticsFragment extends Fragment implements CsvExportable {
@@ -178,7 +181,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         new CalendarAdapter(
             getActivity(),
             mCurrentMonth,
-            mCompletedGames,
+            mApplication.getDailyGames(),
             getStartOfDay(mSelectedDate.getTimeInMillis()));
     mCalendarGrid.setAdapter(adapter);
 
@@ -323,9 +326,10 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     private final int mYear;
     private final int mSelectableItemBackground;
     private long mSelectedSeed;
+    private final Map<Long, Float> mProgressMap;
 
     CalendarAdapter(
-        Context context, Calendar month, List<DailyGame> completedGames, long selectedSeed) {
+        Context context, Calendar month, List<DailyGame> allGames, long selectedSeed) {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
@@ -354,16 +358,21 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       mCompletedOnDaySeeds = new HashSet<>();
       mCompletedLateSeeds = new HashSet<>();
       mHintSeeds = new HashSet<>();
-      for (DailyGame game : completedGames) {
-        if (game.getDateCompleted() == null) continue;
+      mProgressMap = new HashMap<>();
+      for (DailyGame game : allGames) {
         long startSeed = getStartOfDay(game.getDateStarted().getTime());
         if (game.areHintsUsed()) {
           mHintSeeds.add(startSeed);
         }
-        if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
-          mCompletedOnDaySeeds.add(startSeed);
-        } else {
-          mCompletedLateSeeds.add(startSeed);
+        if (game.getDateCompleted() != null) {
+          if (getStartOfDay(game.getDateCompleted().getTime()) == startSeed) {
+            mCompletedOnDaySeeds.add(startSeed);
+          } else {
+            mCompletedLateSeeds.add(startSeed);
+          }
+        } else if (game.getNumTriplesFound() > 0) {
+          mProgressMap.put(
+              startSeed, (float) game.getNumTriplesFound() / game.getTotalTriplesCount());
         }
       }
     }
@@ -435,6 +444,17 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
                   mPaint.setColor(
                       Color.argb(128, Color.red(color), Color.green(color), Color.blue(color)));
                   canvas.drawCircle(centerX, centerY, radius, mPaint);
+                } else if (mProgressMap.containsKey(daySeed)) {
+                  float progress = mProgressMap.get(daySeed);
+                  mPaint.setStyle(Paint.Style.FILL);
+                  int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                  if (daySeed != mTodaySeed) {
+                    color = Color.argb(128, Color.red(color), Color.green(color), Color.blue(color));
+                  }
+                  mPaint.setColor(color);
+                  RectF rectF =
+                      new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+                  canvas.drawArc(rectF, -90, 360 * progress, true, mPaint);
                 }
 
                 // Selection indicator (outline)
