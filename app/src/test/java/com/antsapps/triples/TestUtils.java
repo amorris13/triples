@@ -1,7 +1,6 @@
 package com.antsapps.triples;
 
-import android.os.SystemClock;
-import android.view.MotionEvent;
+import android.view.View;
 import com.antsapps.triples.cardsview.VerticalCardsView;
 
 public class TestUtils {
@@ -14,14 +13,16 @@ public class TestUtils {
     int x = (index % VerticalCardsView.COLUMNS) * widthOfCard + widthOfCard / 2;
     int y = (index / VerticalCardsView.COLUMNS) * heightOfCard + heightOfCard / 2;
 
-    long downTime = SystemClock.uptimeMillis();
-    long eventTime = SystemClock.uptimeMillis();
-    MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
-    cardsView.dispatchTouchEvent(event);
-    event.recycle();
-
-    event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, y, 0);
-    cardsView.dispatchTouchEvent(event);
-    event.recycle();
+    // With the move to CardViews, we need to click the child View at that position
+    for (int i = 0; i < cardsView.getChildCount(); i++) {
+      View child = cardsView.getChildAt(i);
+      if (child.getLeft() <= x
+          && x <= child.getRight()
+          && child.getTop() <= y
+          && y <= child.getBottom()) {
+        child.performClick();
+        return;
+      }
+    }
   }
 }

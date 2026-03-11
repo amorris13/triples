@@ -18,8 +18,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.PatternIconView;
-import com.antsapps.triples.cardsview.SampleCardView;
 import com.antsapps.triples.cardsview.ShapeIconView;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class CardCustomizationPreference extends Preference {
   private Spinner[] colorSpinners = new Spinner[3];
   private Spinner[] shapeSpinners = new Spinner[3];
   private Spinner patternSpinner;
-  private SampleCardView[] sampleCards = new SampleCardView[3];
+  private CardView[] sampleCards = new CardView[3];
   private View resetButton;
   private View randomButton;
 
@@ -93,9 +93,9 @@ public class CardCustomizationPreference extends Preference {
 
     patternSpinner = (Spinner) holder.findViewById(R.id.pattern_spinner);
 
-    sampleCards[0] = (SampleCardView) holder.findViewById(R.id.sample_card_0);
-    sampleCards[1] = (SampleCardView) holder.findViewById(R.id.sample_card_1);
-    sampleCards[2] = (SampleCardView) holder.findViewById(R.id.sample_card_2);
+    sampleCards[0] = (CardView) holder.findViewById(R.id.sample_card_0);
+    sampleCards[1] = (CardView) holder.findViewById(R.id.sample_card_1);
+    sampleCards[2] = (CardView) holder.findViewById(R.id.sample_card_2);
 
     resetButton = holder.findViewById(R.id.reset_button);
     resetButton.setOnClickListener(v -> resetToDefaults());
