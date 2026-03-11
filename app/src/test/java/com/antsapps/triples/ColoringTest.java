@@ -152,8 +152,7 @@ public class ColoringTest extends BaseRobolectricTest {
   @Test
   public void testStatisticsColoring() {
     Intent intent =
-        new Intent(
-            ApplicationProvider.getApplicationContext(), ClassicStatisticsActivity.class);
+        new Intent(ApplicationProvider.getApplicationContext(), ClassicStatisticsActivity.class);
 
     try (ActivityScenario<ClassicStatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
@@ -169,8 +168,7 @@ public class ColoringTest extends BaseRobolectricTest {
     }
 
     intent =
-        new Intent(
-            ApplicationProvider.getApplicationContext(), ArcadeStatisticsActivity.class);
+        new Intent(ApplicationProvider.getApplicationContext(), ArcadeStatisticsActivity.class);
 
     try (ActivityScenario<ArcadeStatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
