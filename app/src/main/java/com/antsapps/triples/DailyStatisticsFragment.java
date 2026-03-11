@@ -8,6 +8,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -257,6 +263,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   }
 
   private static class CalendarAdapter extends BaseAdapter {
+    public static final int PADDING_DP = 4;
     private final Context mContext;
     private final int mTextPrimaryColor;
     private final int mTextSecondaryColor;
@@ -356,6 +363,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView tv = (TextView) convertView;
+      float density = mContext.getResources().getDisplayMetrics().density;
       if (tv == null) {
         tv =
             new androidx.appcompat.widget.AppCompatTextView(mContext) {
@@ -368,10 +376,9 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
                   return;
                 }
 
-                float density = mContext.getResources().getDisplayMetrics().density;
                 float centerX = getWidth() / 2f;
                 float centerY = getHeight() / 2f;
-                float radius = Math.min(getWidth(), getHeight()) / 2f - 4 * density;
+                float radius = Math.min(getWidth(), getHeight()) / 2f - PADDING_DP * density;
 
                 // Background circle for solved games
                 if (mCompletedOnDayDates.contains(day)) {
@@ -408,8 +415,26 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
                 super.onDraw(canvas);
               }
             };
-        tv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
+        tv.setLayoutParams(new GridView.LayoutParams((int) (48 * density), (int) (48 * density)));
         tv.setGravity(Gravity.CENTER);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          TypedValue outValue = new TypedValue();
+          mContext
+              .getTheme()
+              .resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
+
+          Drawable mask = new ShapeDrawable(new OvalShape());
+          ;
+          RippleDrawable ripple =
+              new RippleDrawable(
+                  ColorStateList.valueOf(outValue.data),
+                  null, // content
+                  mask);
+
+          int insetPx = (int) (PADDING_DP * density);
+          tv.setForeground(new InsetDrawable(ripple, insetPx, insetPx, insetPx, insetPx));
+        }
       }
 
       Calendar calendar = mDays.get(position);
@@ -418,14 +443,12 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
       if (calendar.get(Calendar.MONTH) != mMonth - 1 || calendar.get(Calendar.YEAR) != mYear) {
         tv.setText("");
-        tv.setBackground(null);
       } else {
         String text = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if (mHintDates.contains(day)) {
           text += "*";
         }
         tv.setText(text);
-        tv.setBackgroundResource(mSelectableItemBackground);
 
         if (day.equals(mToday)) {
           tv.setTypeface(null, Typeface.BOLD);
