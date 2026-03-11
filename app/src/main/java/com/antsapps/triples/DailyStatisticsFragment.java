@@ -368,7 +368,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         tv =
             new androidx.appcompat.widget.AppCompatTextView(mContext) {
               private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-              
+
               @Override
               protected void onDraw(Canvas canvas) {
                 DailyGame.Day day = DailyGame.Day.forCalendar((Calendar) getTag());
@@ -421,15 +421,16 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
           TypedValue outValue = new TypedValue();
           mContext
-                  .getTheme()
-                  .resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
+              .getTheme()
+              .resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
 
-          Drawable mask = new ShapeDrawable(new OvalShape());;
+          Drawable mask = new ShapeDrawable(new OvalShape());
+          ;
           RippleDrawable ripple =
-                  new RippleDrawable(
-                          ColorStateList.valueOf(outValue.data),
-                          null, // content
-                          mask);
+              new RippleDrawable(
+                  ColorStateList.valueOf(outValue.data),
+                  null, // content
+                  mask);
 
           int insetPx = (int) (PADDING_DP * density);
           tv.setForeground(new InsetDrawable(ripple, insetPx, insetPx, insetPx, insetPx));
