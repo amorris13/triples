@@ -109,6 +109,8 @@ public class FoundTriplesView extends View {
     int naturalHeight = existingBounds.height();
     int naturalDisplacement = (int) (naturalHeight * STACK_DISPLACEMENT_PERCENT);
     float scale = (float) mCardWidth / naturalWidth;
+    float centerX = naturalWidth / 2f;
+    float centerY = (naturalHeight + 2 * naturalDisplacement) / 2f;
 
     for (int i = 0; i < mTotalTriples; i++) {
       int row = i / COLUMNS;
@@ -119,8 +121,10 @@ public class FoundTriplesView extends View {
 
       canvas.save();
       canvas.translate(left, top);
-      float highlightScale = (i == mHighlightIndex) ? mHighlightScale : 1.0f;
-      canvas.scale(scale * highlightScale, scale * highlightScale, 0, 0);
+      canvas.scale(scale, scale);
+      if (i == mHighlightIndex) {
+        canvas.scale(mHighlightScale, mHighlightScale, centerX, centerY);
+      }
 
       if (mFoundTriples != null && i < mFoundTriples.size()) {
         drawTripleStack(

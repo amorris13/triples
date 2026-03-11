@@ -19,21 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class AchievementManager {
   private static final String TAG = "AchievementManager";
 
-  public static void awardAchievementsForGame(Context context, Game game) {
-    if (game.areHintsUsed()) {
-      return;
-    }
-
-    if (game instanceof ClassicGame) {
-      awardClassicAchievements(context, ((ClassicGame) game).getTimeElapsed());
-    } else if (game instanceof ArcadeGame) {
-      awardArcadeAchievements(context, ((ArcadeGame) game).getNumTriplesFound());
-    } else if (game instanceof DailyGame) {
-      awardDailyAchievements(context, Application.getInstance(context));
-    }
-  }
-
-  private static void awardClassicAchievements(Context context, long timeElapsed) {
+  public static void awardClassicAchievements(Context context, long timeElapsed) {
     if (timeElapsed <= TimeUnit.SECONDS.toMillis(30)) {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(context.getString(R.string.achievement_classic__30s));
@@ -64,7 +50,7 @@ public class AchievementManager {
     }
   }
 
-  private static void awardDailyAchievements(Context context, Application application) {
+  public static void awardDailyAchievements(Context context, Application application) {
     Set<Long> completedOnDaySeeds = new HashSet<>();
     int totalSolved = 0;
     for (DailyGame game : application.getCompletedDailyGames()) {
@@ -114,7 +100,7 @@ public class AchievementManager {
     return cal.getTimeInMillis();
   }
 
-  private static void awardArcadeAchievements(Context context, int triplesFound) {
+  public static void awardArcadeAchievements(Context context, int triplesFound) {
     if (triplesFound >= 25) {
       PlayGames.getAchievementsClient((Activity) context)
           .unlock(context.getString(R.string.achievement_arcade_25_triples));

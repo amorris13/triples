@@ -29,13 +29,11 @@ public class SettingsActivity extends BaseTriplesActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle item selection
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        // app icon in action bar clicked; go back
-        finish();
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    if (item.getItemId() == android.R.id.home) {
+      // app icon in action bar clicked; go back
+      finish();
+      return true;
     }
+    return super.onOptionsItemSelected(item);
   }
 }

@@ -9,8 +9,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.antsapps.triples.stats.ArcadeStatisticsFragment;
-import com.antsapps.triples.stats.BaseStatisticsFragment;
 import com.antsapps.triples.stats.ClassicStatisticsFragment;
+import com.antsapps.triples.util.CsvExportable;
 
 public class StatisticsActivity extends BaseTriplesActivity {
 
@@ -87,10 +87,8 @@ public class StatisticsActivity extends BaseTriplesActivity {
       return true;
     } else if (itemId == R.id.export_to_csv) {
       Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.statistics_container);
-      if (fragment instanceof BaseStatisticsFragment) {
-        ((BaseStatisticsFragment) fragment).exportToCsv();
-      } else if (fragment instanceof DailyStatisticsFragment) {
-        ((DailyStatisticsFragment) fragment).exportToCsv();
+      if (fragment instanceof CsvExportable) {
+        ((CsvExportable) fragment).exportToCsv();
       }
       return true;
     }

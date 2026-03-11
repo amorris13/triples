@@ -28,9 +28,6 @@
   <color name="colorOutline">#74777F</color>
   <color name="colorOutlineVariant">#C4C7CC</color>
 
-  <color name="action_bar_background">#00222d</color>
-  <color name="action_bar_stacked_background">#202020</color>
-
   <color name="classic_background">#E3F2FD</color>
   <color name="classic_accent">#1976D2</color>
 
@@ -62,8 +59,8 @@
   <!-- Card Colors -->
   <color name="card_background">#FFFFFF</color>
   <color name="card_shadow">#20202020</color>
-  <color name="card_selected_outline">#0000FF</color>
-  <color name="card_hint_outline">#400000FF</color>
+  <color name="card_selected_outline">#00677C</color>
+  <color name="card_hint_outline">#4000677C</color>
 
   <!-- Card Symbol Presets -->
   <color name="preset_color_0">#2196F3</color>
