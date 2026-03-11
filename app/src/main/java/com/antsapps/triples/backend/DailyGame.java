@@ -5,10 +5,10 @@ import com.google.common.collect.Sets;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
 
 public class DailyGame extends Game {
 

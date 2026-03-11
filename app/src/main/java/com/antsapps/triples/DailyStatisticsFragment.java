@@ -175,10 +175,7 @@ public class DailyStatisticsFragment extends Fragment {
 
     CalendarAdapter adapter =
         new CalendarAdapter(
-            getActivity(),
-            mCurrentMonth,
-            mCompletedGames,
-            DailyGame.getDailySeed(mSelectedDate));
+            getActivity(), mCurrentMonth, mCompletedGames, DailyGame.getDailySeed(mSelectedDate));
     mCalendarGrid.setAdapter(adapter);
 
     mCalendarGrid.setOnItemClickListener(
@@ -323,7 +320,7 @@ public class DailyStatisticsFragment extends Fragment {
       mSelectableItemBackground = outValue.resourceId;
       mMonth = month.get(Calendar.MONTH);
       mYear = month.get(Calendar.YEAR);
-      mTodaySeed = DailyGame.getDailySeed(Calendar.getInstance());
+      mTodaySeed = DailyGame.getDailySeed(System.currentTimeMillis());
       mSelectedSeed = selectedSeed;
 
       mDays = new ArrayList<>();

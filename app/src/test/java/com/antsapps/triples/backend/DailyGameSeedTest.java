@@ -46,10 +46,35 @@ public class DailyGameSeedTest {
   public void streakBuffer_within48Hours_isTrue() {
     long seed = 20240520L;
     long timestamp = DailyGame.getTimestampFromSeed(seed);
-    List<Card> cards = Lists.newArrayList(new Card(0,0,0,0), new Card(1,1,1,1), new Card(2,2,2,2));
+    List<Card> cards =
+        Lists.newArrayList(new Card(0, 0, 0, 0), new Card(1, 1, 1, 1), new Card(2, 2, 2, 2));
 
-    DailyGame gameOnTime = new DailyGame(1, seed, cards, Lists.newArrayList(), null, 0, new Date(timestamp), Game.GameState.COMPLETED, false, Lists.newArrayList(), new Date(timestamp + DailyGame.STREAK_BUFFER_MILLIS - 1));
-    DailyGame gameLate = new DailyGame(2, seed, cards, Lists.newArrayList(), null, 0, new Date(timestamp), Game.GameState.COMPLETED, false, Lists.newArrayList(), new Date(timestamp + DailyGame.STREAK_BUFFER_MILLIS + 1));
+    DailyGame gameOnTime =
+        new DailyGame(
+            1,
+            seed,
+            cards,
+            Lists.newArrayList(),
+            null,
+            0,
+            new Date(timestamp),
+            Game.GameState.COMPLETED,
+            false,
+            Lists.newArrayList(),
+            new Date(timestamp + DailyGame.STREAK_BUFFER_MILLIS - 1));
+    DailyGame gameLate =
+        new DailyGame(
+            2,
+            seed,
+            cards,
+            Lists.newArrayList(),
+            null,
+            0,
+            new Date(timestamp),
+            Game.GameState.COMPLETED,
+            false,
+            Lists.newArrayList(),
+            new Date(timestamp + DailyGame.STREAK_BUFFER_MILLIS + 1));
 
     assertThat(gameOnTime.isCompletedOnTime()).isTrue();
     assertThat(gameLate.isCompletedOnTime()).isFalse();
@@ -70,7 +95,8 @@ public class DailyGameSeedTest {
     long newSeed = 20240520L;
 
     assertThat(DailyGame.getTimestampFromSeed(oldSeed)).isEqualTo(oldSeed);
-    assertThat(DailyGame.getTimestampFromSeed(newSeed)).isEqualTo(1716163200000L); // 2024-05-20 00:00:00 UTC
+    assertThat(DailyGame.getTimestampFromSeed(newSeed))
+        .isEqualTo(1716163200000L); // 2024-05-20 00:00:00 UTC
   }
 
   @Test

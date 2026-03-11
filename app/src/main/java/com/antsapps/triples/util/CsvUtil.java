@@ -4,10 +4,10 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class CsvUtil {
   public static String getClassicCsvContent(List<Game> games) {
