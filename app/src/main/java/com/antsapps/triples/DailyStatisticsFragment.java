@@ -8,6 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -410,6 +415,22 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
             };
         tv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
         tv.setGravity(Gravity.CENTER);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          TypedValue outValue = new TypedValue();
+          mContext
+                  .getTheme()
+                  .resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
+
+          Drawable mask = new ShapeDrawable(new OvalShape());;
+          RippleDrawable ripple =
+                  new RippleDrawable(
+                          ColorStateList.valueOf(outValue.data),
+                          null, // content
+                          mask);
+
+          tv.setForeground(ripple);
+        }
       }
 
       Calendar calendar = mDays.get(position);
