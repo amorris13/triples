@@ -21,11 +21,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -56,7 +61,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   private List<DailyGame> mCompletedGames;
   private ViewPager2 mPager;
   private MonthPagerAdapter mPagerAdapter;
-  private TextSwitcher mMonthSwitcher;
+  private ViewSwitcher mMonthSwitcher;
   private TextView mCurrentStreakTv;
   private TextView mLongestStreakTv;
   private TextView mTotalSolvedTv;
@@ -79,20 +84,23 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mMonthSwitcher = view.findViewById(R.id.month_title_switcher);
     mMonthSwitcher.setFactory(
         () -> {
-          TextView tv = new TextView(getActivity());
-          tv.setGravity(Gravity.CENTER);
-          tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-          tv.setTypeface(null, Typeface.BOLD);
-          tv.setTextColor(ContextCompat.getColor(getActivity(), R.color.selector_month_nav));
-          return tv;
-        });
-
-    mMonthSwitcher.setOnClickListener(
-        v -> {
-          mSelectedDay = DailyGame.Day.forToday();
-          mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), true);
-          refreshVisibleCalendars();
-          updateDetailSection();
+          Button btn =
+              new Button(
+                  new ContextThemeWrapper(getActivity(), com.google.android.material.R.style.Widget_Material3_Button_TextButton),
+                  null,
+                  com.google.android.material.R.style.Widget_Material3_Button_TextButton);
+          btn.setGravity(Gravity.CENTER);
+          btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+          btn.setTypeface(null, Typeface.BOLD);
+          btn.setTextColor(ContextCompat.getColor(getActivity(), R.color.selector_month_nav));
+          btn.setOnClickListener(
+              v -> {
+                mSelectedDay = DailyGame.Day.forToday();
+                mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), true);
+                refreshVisibleCalendars();
+                updateDetailSection();
+              });
+          return btn;
         });
 
     mPager = view.findViewById(R.id.calendar_pager);
@@ -172,13 +180,9 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
   private void updateCalendarHeader(int position) {
     if (mLastPosition != -1 && position != mLastPosition) {
-      if (position > mLastPosition) {
-        mMonthSwitcher.setInAnimation(getActivity(), R.anim.slide_in_right);
-        mMonthSwitcher.setOutAnimation(getActivity(), R.anim.slide_out_left);
-      } else {
-        mMonthSwitcher.setInAnimation(getActivity(), R.anim.slide_in_left);
-        mMonthSwitcher.setOutAnimation(getActivity(), R.anim.slide_out_right);
-      }
+      boolean movingRight = position > mLastPosition;
+      mMonthSwitcher.setInAnimation(createSlideAnim(true, movingRight));
+      mMonthSwitcher.setOutAnimation(createSlideAnim(false, movingRight));
     } else {
       mMonthSwitcher.setInAnimation(null);
       mMonthSwitcher.setOutAnimation(null);
@@ -186,7 +190,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
     Calendar month = mPagerAdapter.getMonthAt(position);
     SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    mMonthSwitcher.setText(sdf.format(month.getTime()));
+    ((Button) mMonthSwitcher.getNextView()).setText(sdf.format(month.getTime()));
+    mMonthSwitcher.showNext();
 
     Calendar now = Calendar.getInstance();
     boolean isCurrentMonth =
@@ -194,6 +199,23 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
             && month.get(Calendar.MONTH) == now.get(Calendar.MONTH);
 
     mNextMonthBtn.setEnabled(!isCurrentMonth);
+  }
+
+  private Animation createSlideAnim(boolean appear, boolean slideLeft) {
+    float fromX = appear ? (slideLeft ? 1.0f : -1.0f) : 0;
+    float toX = appear ? 0 : (slideLeft ? -1.0f : 1.0f);
+    if (!appear) {
+      toX = slideLeft ? -1.0f : 1.0f;
+      fromX = 0;
+    }
+
+    AnimationSet set = new AnimationSet(true);
+    set.addAnimation(new TranslateAnimation(Animation.RELATIVE_TO_PARENT, fromX,
+        Animation.RELATIVE_TO_PARENT, toX, Animation.RELATIVE_TO_PARENT, 0,
+        Animation.RELATIVE_TO_PARENT, 0));
+    set.addAnimation(new AlphaAnimation(appear ? 0.0f : 1.0f, appear ? 1.0f : 0.0f));
+    set.setDuration(200);
+    return set;
   }
 
   private void updateDetailSection() {
@@ -408,14 +430,15 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         tv.setForeground(new InsetDrawable(ripple, insetPx, insetPx, insetPx, insetPx));
       }
 
-      container.addView(tv);
-      return new DayViewHolder(container);
+//      container.addView(tv);
+      return new DayViewHolder(tv);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DayViewHolder holder, int position) {
-      FrameLayout container = (FrameLayout) holder.itemView;
-      TextView tv = (TextView) container.getChildAt(0);
+//      FrameLayout container = (FrameLayout) holder.itemView;
+//      TextView tv = (TextView) container.getChildAt(0);
+      TextView tv = (TextView) holder.itemView;
       Calendar calendar = mDays.get(position);
       tv.setTag(calendar);
       DailyGame.Day day = DailyGame.Day.forCalendar(calendar);
@@ -482,7 +505,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
     MonthPagerAdapter() {
       Calendar earliest = Calendar.getInstance();
-      earliest.set(2023, Calendar.JANUARY, 1);
+      earliest.set(1970, Calendar.JANUARY, 1);
       for (DailyGame game : mApplication.getDailyGames()) {
         if (game.getGameDay().getCalendar().before(earliest)) {
           earliest = game.getGameDay().getCalendar();
