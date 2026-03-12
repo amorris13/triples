@@ -25,6 +25,7 @@ import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
+import com.antsapps.triples.util.AnalyticsUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
@@ -442,8 +443,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   private void logGameEvent(String event) {
-    Bundle bundle = new Bundle();
-    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
-    mFirebaseAnalytics.logEvent(event, bundle);
+    AnalyticsUtil.logGameEvent(mFirebaseAnalytics, event, getGame().getGameTypeForAnalytics());
   }
 }

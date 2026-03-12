@@ -11,6 +11,8 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.ZenGame;
+import com.antsapps.triples.util.AnalyticsUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -43,7 +45,11 @@ public class MainActivity extends BaseTriplesActivity {
 
     mClassicResumeButton = findViewById(R.id.classic_resume_button);
     mClassicResumeButton.setOnClickListener(
-        v -> resumeGame(mApplication.getCurrentClassicGames(), ClassicGameActivity.class));
+        v ->
+            resumeGame(
+                mApplication.getCurrentClassicGames(),
+                ClassicGameActivity.class,
+                ClassicGame.GAME_TYPE_FOR_ANALYTICS));
 
     mClassicNewGameButton = findViewById(R.id.classic_new_game_button);
     mClassicNewGameButton.setOnClickListener(v -> startNewClassicGame());
@@ -53,7 +59,11 @@ public class MainActivity extends BaseTriplesActivity {
 
     mArcadeResumeButton = findViewById(R.id.arcade_resume_button);
     mArcadeResumeButton.setOnClickListener(
-        v -> resumeGame(mApplication.getCurrentArcadeGames(), ArcadeGameActivity.class));
+        v ->
+            resumeGame(
+                mApplication.getCurrentArcadeGames(),
+                ArcadeGameActivity.class,
+                ArcadeGame.GAME_TYPE_FOR_ANALYTICS));
 
     mArcadeNewGameButton = findViewById(R.id.arcade_new_game_button);
     mArcadeNewGameButton.setOnClickListener(v -> startNewArcadeGame());
@@ -120,12 +130,18 @@ public class MainActivity extends BaseTriplesActivity {
     mDailyStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
   }
 
-  private void resumeGame(Iterable<? extends Game> currentGames, Class<?> activityClass) {
+  private void launchGame(Intent intent, String gameType, String event) {
+    AnalyticsUtil.logGameEvent(mFirebaseAnalytics, event, gameType);
+    startActivity(intent);
+  }
+
+  private void resumeGame(
+      Iterable<? extends Game> currentGames, Class<?> activityClass, String gameType) {
     Game game = Iterables.getFirst(currentGames, null);
     if (game != null) {
       Intent intent = new Intent(this, activityClass);
       intent.putExtra(Game.ID_TAG, game.getId());
-      startActivity(intent);
+      launchGame(intent, gameType, AnalyticsConstants.Event.RESUME_GAME);
     }
   }
 
@@ -137,20 +153,21 @@ public class MainActivity extends BaseTriplesActivity {
     mApplication.addClassicGame(game);
     Intent intent = new Intent(this, ClassicGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
-    startActivity(intent);
+    launchGame(intent, ClassicGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.NEW_GAME);
   }
 
   private void playZenGame(boolean isBeginner) {
     Intent intent = new Intent(this, ZenGameActivity.class);
     intent.putExtra(ZenGameActivity.IS_BEGINNER, isBeginner);
-    startActivity(intent);
+    String gameType = ZenGame.GAME_TYPE_FOR_ANALYTICS + (isBeginner ? "_beginner" : "");
+    launchGame(intent, gameType, AnalyticsConstants.Event.NEW_GAME);
   }
 
   private void playDailyGame() {
     DailyGame game = mApplication.getDailyGameForDate(DailyGame.Day.forToday());
     Intent intent = new Intent(this, DailyGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
-    startActivity(intent);
+    launchGame(intent, DailyGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.RESUME_GAME);
   }
 
   private void startNewArcadeGame() {
@@ -161,7 +178,7 @@ public class MainActivity extends BaseTriplesActivity {
     mApplication.addArcadeGame(game);
     Intent intent = new Intent(this, ArcadeGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
-    startActivity(intent);
+    launchGame(intent, ArcadeGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.NEW_GAME);
   }
 
   private void showStatistics(String gameType) {
