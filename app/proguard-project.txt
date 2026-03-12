@@ -63,3 +63,11 @@
     public static int d(...);
     public static int e(...);
 }
+
+# Protobuf Lite rules
+# These prevent R8 from stripping or renaming the fields that Protobuf uses via reflection.
+-keep class com.google.protobuf.GeneratedMessageLite { *; }
+-keep class * extends com.google.protobuf.GeneratedMessageLite {
+    <fields>;
+    <methods>;
+}
