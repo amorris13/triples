@@ -256,6 +256,50 @@ public class DBAdapterTest extends BaseRobolectricTest {
   }
 
   @Test
+  public void testUpgradeFromVersion4() {
+    SQLiteDatabase db = SQLiteDatabase.create(null);
+    try {
+      // Create version 4 schema
+      db.execSQL(
+          "CREATE TABLE games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER)");
+      db.execSQL(
+          "CREATE TABLE arcade_games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER, num_triples_found INTEGER)");
+
+      // Trigger upgrade
+      dbAdapter.onUpgrade(db, 4, 7);
+
+      assertColumnExists(db, DBAdapter.TABLE_CLASSIC_GAMES, DBAdapter.COLUMN_TRIPLE_FIND_TIMES);
+      assertColumnExists(db, DBAdapter.TABLE_ARCADE_GAMES, DBAdapter.COLUMN_TRIPLE_FIND_TIMES);
+      assertColumnExists(db, DBAdapter.TABLE_CLASSIC_GAMES, DBAdapter.COLUMN_HINTS_USED);
+      assertColumnExists(db, DBAdapter.TABLE_ARCADE_GAMES, DBAdapter.COLUMN_HINTS_USED);
+      assertTableExists(db, DBAdapter.TABLE_DAILY_GAMES);
+    } finally {
+      db.close();
+    }
+  }
+
+  @Test
+  public void testUpgradeFromVersion5() {
+    SQLiteDatabase db = SQLiteDatabase.create(null);
+    try {
+      // Create version 5 schema
+      db.execSQL(
+          "CREATE TABLE games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER, triple_find_times BLOB)");
+      db.execSQL(
+          "CREATE TABLE arcade_games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER, num_triples_found INTEGER, triple_find_times BLOB)");
+
+      // Trigger upgrade
+      dbAdapter.onUpgrade(db, 5, 7);
+
+      assertColumnExists(db, DBAdapter.TABLE_CLASSIC_GAMES, DBAdapter.COLUMN_HINTS_USED);
+      assertColumnExists(db, DBAdapter.TABLE_ARCADE_GAMES, DBAdapter.COLUMN_HINTS_USED);
+      assertTableExists(db, DBAdapter.TABLE_DAILY_GAMES);
+    } finally {
+      db.close();
+    }
+  }
+
+  @Test
   public void testUpgradeFromVersion6() {
     SQLiteDatabase db = SQLiteDatabase.create(null);
     try {
