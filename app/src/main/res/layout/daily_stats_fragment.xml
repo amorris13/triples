@@ -96,16 +96,12 @@
             android:text="&lt;"
             android:textColor="@color/selector_month_nav" />
 
-        <Button
-            android:id="@+id/month_title"
-            style="@style/Widget.Material3.Button.TextButton"
+        <TextSwitcher
+            android:id="@+id/month_title_switcher"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/selector_month_nav" />
+            android:layout_gravity="center_vertical" />
 
         <Button
             android:id="@+id/next_month"

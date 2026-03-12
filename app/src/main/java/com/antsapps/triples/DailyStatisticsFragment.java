@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -55,7 +56,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   private List<DailyGame> mCompletedGames;
   private ViewPager2 mPager;
   private MonthPagerAdapter mPagerAdapter;
-  private Button mMonthTitle;
+  private TextSwitcher mMonthSwitcher;
   private TextView mCurrentStreakTv;
   private TextView mLongestStreakTv;
   private TextView mTotalSolvedTv;
@@ -67,6 +68,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   private View mDetailResultsContainer;
   private TextView mDetailTriples;
   private TextView mDetailTime;
+  private int mLastPosition = -1;
 
   @Override
   public View onCreateView(
@@ -74,7 +76,25 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mApplication = Application.getInstance(getActivity());
     View view = inflater.inflate(R.layout.daily_stats_fragment, container, false);
 
-    mMonthTitle = view.findViewById(R.id.month_title);
+    mMonthSwitcher = view.findViewById(R.id.month_title_switcher);
+    mMonthSwitcher.setFactory(
+        () -> {
+          TextView tv = new TextView(getActivity());
+          tv.setGravity(Gravity.CENTER);
+          tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+          tv.setTypeface(null, Typeface.BOLD);
+          tv.setTextColor(ContextCompat.getColor(getActivity(), R.color.selector_month_nav));
+          return tv;
+        });
+
+    mMonthSwitcher.setOnClickListener(
+        v -> {
+          mSelectedDay = DailyGame.Day.forToday();
+          mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), true);
+          refreshVisibleCalendars();
+          updateDetailSection();
+        });
+
     mPager = view.findViewById(R.id.calendar_pager);
     mCurrentStreakTv = view.findViewById(R.id.current_streak_tv);
     mLongestStreakTv = view.findViewById(R.id.longest_streak_tv);
@@ -95,12 +115,14 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mPagerAdapter = new MonthPagerAdapter();
     mPager.setAdapter(mPagerAdapter);
     mPager.setOffscreenPageLimit(1);
-    mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), false);
+    mLastPosition = mPagerAdapter.getPositionForDay(mSelectedDay);
+    mPager.setCurrentItem(mLastPosition, false);
     mPager.registerOnPageChangeCallback(
         new ViewPager2.OnPageChangeCallback() {
           @Override
           public void onPageSelected(int position) {
-            updateCalendarHeader();
+            updateCalendarHeader(position);
+            mLastPosition = position;
           }
         });
 
@@ -115,21 +137,13 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
           mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
         });
 
-    mMonthTitle.setOnClickListener(
-        v -> {
-          mSelectedDay = DailyGame.Day.forToday();
-          mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), true);
-          refreshVisibleCalendars();
-          updateDetailSection();
-        });
-
     mCompletedGames = new ArrayList<>();
     for (DailyGame game : mApplication.getCompletedDailyGames()) {
       mCompletedGames.add(game);
     }
     Collections.sort(mCompletedGames, (g1, g2) -> g2.getGameDay().compareTo(g1.getGameDay()));
 
-    updateCalendarHeader();
+    updateCalendarHeader(mLastPosition);
     updateStreaks();
     updateDetailSection();
 
@@ -156,10 +170,23 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     }
   }
 
-  private void updateCalendarHeader() {
-    Calendar month = mPagerAdapter.getMonthAt(mPager.getCurrentItem());
+  private void updateCalendarHeader(int position) {
+    if (mLastPosition != -1 && position != mLastPosition) {
+      if (position > mLastPosition) {
+        mMonthSwitcher.setInAnimation(getActivity(), R.anim.slide_in_right);
+        mMonthSwitcher.setOutAnimation(getActivity(), R.anim.slide_out_left);
+      } else {
+        mMonthSwitcher.setInAnimation(getActivity(), R.anim.slide_in_left);
+        mMonthSwitcher.setOutAnimation(getActivity(), R.anim.slide_out_right);
+      }
+    } else {
+      mMonthSwitcher.setInAnimation(null);
+      mMonthSwitcher.setOutAnimation(null);
+    }
+
+    Calendar month = mPagerAdapter.getMonthAt(position);
     SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    mMonthTitle.setText(sdf.format(month.getTime()));
+    mMonthSwitcher.setText(sdf.format(month.getTime()));
 
     Calendar now = Calendar.getInstance();
     boolean isCurrentMonth =
