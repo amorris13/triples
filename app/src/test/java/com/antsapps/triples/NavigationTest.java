@@ -1,13 +1,23 @@
 package com.antsapps.triples;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.Button;
 import androidx.test.core.app.ActivityScenario;
+import com.antsapps.triples.backend.ArcadeGame;
+import com.antsapps.triples.backend.ClassicGame;
+import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
+import com.antsapps.triples.backend.ZenGame;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.shadows.ShadowActivity;
 
 public class NavigationTest extends BaseRobolectricTest {
@@ -56,6 +66,9 @@ public class NavigationTest extends BaseRobolectricTest {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       scenario.onActivity(
           activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
             Button newGameButton = activity.findViewById(R.id.classic_new_game_button);
             assertThat(newGameButton).isNotNull();
 
@@ -65,6 +78,12 @@ public class NavigationTest extends BaseRobolectricTest {
             Intent nextIntent = shadowActivity.getNextStartedActivity();
             assertThat(nextIntent.getComponent().getClassName())
                 .isEqualTo(ClassicGameActivity.class.getName());
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.NEW_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ClassicGame.GAME_TYPE_FOR_ANALYTICS);
           });
     }
   }
@@ -74,6 +93,9 @@ public class NavigationTest extends BaseRobolectricTest {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       scenario.onActivity(
           activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
             Button zenButton = activity.findViewById(R.id.zen_button);
             assertThat(zenButton).isNotNull();
 
@@ -84,6 +106,12 @@ public class NavigationTest extends BaseRobolectricTest {
             assertThat(nextIntent.getComponent().getClassName())
                 .isEqualTo(ZenGameActivity.class.getName());
             assertThat(nextIntent.getBooleanExtra(ZenGameActivity.IS_BEGINNER, true)).isFalse();
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.NEW_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ZenGame.GAME_TYPE_FOR_ANALYTICS);
           });
     }
   }
@@ -112,6 +140,9 @@ public class NavigationTest extends BaseRobolectricTest {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       scenario.onActivity(
           activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
             Button dailyButton = activity.findViewById(R.id.daily_play_button);
             assertThat(dailyButton).isNotNull();
 
@@ -122,6 +153,12 @@ public class NavigationTest extends BaseRobolectricTest {
             assertThat(nextIntent.getComponent().getClassName())
                 .isEqualTo(DailyGameActivity.class.getName());
             assertThat(nextIntent.hasExtra(Game.ID_TAG)).isTrue();
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.NEW_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(DailyGame.GAME_TYPE_FOR_ANALYTICS);
           });
     }
   }

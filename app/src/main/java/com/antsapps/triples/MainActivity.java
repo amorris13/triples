@@ -167,7 +167,7 @@ public class MainActivity extends BaseTriplesActivity {
     DailyGame game = mApplication.getDailyGameForDate(DailyGame.Day.forToday());
     Intent intent = new Intent(this, DailyGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
-    launchGame(intent, DailyGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.RESUME_GAME);
+    launchGame(intent, DailyGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.NEW_GAME);
   }
 
   private void startNewArcadeGame() {
