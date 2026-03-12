@@ -248,7 +248,8 @@ public class DBAdapter extends SQLiteOpenHelper {
         }
       }
       if (!exists) {
-        db.execSQL("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnDefinition);
+        db.execSQL(
+            "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnDefinition);
       }
     } finally {
       cursor.close();
