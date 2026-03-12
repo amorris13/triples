@@ -30,7 +30,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
         int numRemaining,
         int numTriplesFound);
 
-    void animateFoundTriple(Set<Card> triple);
+    void animateFoundTriple(Set<Card> triple, boolean hintUsed);
   }
 
   public interface GameRenderer {
@@ -223,6 +223,14 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     recordFoundTriple(cards);
 
+    boolean hintUsed = false;
+    for (Card c : cards) {
+      if (mHintedCards.contains(c)) {
+        hintUsed = true;
+        break;
+      }
+    }
+
     mHintedCards.clear();
     mGameRenderer.clearHintedCards();
     mGameRenderer.clearSelectedCards();
@@ -230,7 +238,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     updateDeckAfterValidTriple(cards);
 
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.animateFoundTriple(Sets.newHashSet(cards));
+      listener.animateFoundTriple(Sets.newHashSet(cards), hintUsed);
     }
 
     dispatchCardsInPlayUpdate(oldCards);

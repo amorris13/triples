@@ -186,8 +186,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       int numRemaining,
       int numTriplesFound) {}
 
-  public void animateFoundTriple(Set<Card> triple) {
+  @Override
+  public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
     mCardsView.animateTripleFoundToOffscreen(triple);
+    logTripleFoundEvent(hintUsed);
+  }
+
+  protected void logTripleFoundEvent(boolean hintUsed) {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    bundle.putBoolean(AnalyticsConstants.Param.HINT_USED, hintUsed);
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.FIND_TRIPLE, bundle);
   }
 
   private void handleHintSelection() {
