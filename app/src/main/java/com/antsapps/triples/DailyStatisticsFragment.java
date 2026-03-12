@@ -420,6 +420,10 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       tv.setTag(calendar);
       DailyGame.Day day = DailyGame.Day.forCalendar(calendar);
 
+      boolean enabled = isEnabled(position);
+      tv.setClickable(enabled);
+      tv.setFocusable(enabled);
+
       if (calendar.get(Calendar.MONTH) != mMonth - 1 || calendar.get(Calendar.YEAR) != mYear) {
         tv.setText("");
         tv.setOnClickListener(null);
