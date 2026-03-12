@@ -44,7 +44,6 @@ import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
 import com.google.android.material.button.MaterialButton;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,7 +87,9 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         () -> {
           MaterialButton btn =
               new MaterialButton(
-                  new ContextThemeWrapper(getActivity(), com.google.android.material.R.style.Widget_Material3_Button_TextButton),
+                  new ContextThemeWrapper(
+                      getActivity(),
+                      com.google.android.material.R.style.Widget_Material3_Button_TextButton),
                   null,
                   com.google.android.material.R.attr.borderlessButtonStyle);
           btn.setGravity(Gravity.CENTER);
@@ -205,9 +206,16 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     float toX = appear ? 0 : (slideLeft ? -1.0f : 1.0f);
 
     AnimationSet set = new AnimationSet(true);
-    set.addAnimation(new TranslateAnimation(Animation.RELATIVE_TO_PARENT, fromX,
-        Animation.RELATIVE_TO_PARENT, toX, Animation.RELATIVE_TO_PARENT, 0,
-        Animation.RELATIVE_TO_PARENT, 0));
+    set.addAnimation(
+        new TranslateAnimation(
+            Animation.RELATIVE_TO_PARENT,
+            fromX,
+            Animation.RELATIVE_TO_PARENT,
+            toX,
+            Animation.RELATIVE_TO_PARENT,
+            0,
+            Animation.RELATIVE_TO_PARENT,
+            0));
     set.addAnimation(new AlphaAnimation(appear ? 0.0f : 1.0f, appear ? 1.0f : 0.0f));
     set.setDuration(200);
     return set;
@@ -425,14 +433,14 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         tv.setForeground(new InsetDrawable(ripple, insetPx, insetPx, insetPx, insetPx));
       }
 
-//      container.addView(tv);
+      //      container.addView(tv);
       return new DayViewHolder(tv);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DayViewHolder holder, int position) {
-//      FrameLayout container = (FrameLayout) holder.itemView;
-//      TextView tv = (TextView) container.getChildAt(0);
+      //      FrameLayout container = (FrameLayout) holder.itemView;
+      //      TextView tv = (TextView) container.getChildAt(0);
       TextView tv = (TextView) holder.itemView;
       Calendar calendar = mDays.get(position);
       tv.setTag(calendar);
@@ -444,11 +452,11 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       tv.setFocusable(enabled);
       if (enabled) {
         tv.setOnClickListener(
-                v -> {
-                  mSelectedDay = DailyGame.Day.forCalendar(calendar);
-                  refreshVisibleCalendars();
-                  updateDetailSection();
-                });
+            v -> {
+              mSelectedDay = DailyGame.Day.forCalendar(calendar);
+              refreshVisibleCalendars();
+              updateDetailSection();
+            });
       }
 
       if (calendar.get(Calendar.MONTH) != mMonth - 1 || calendar.get(Calendar.YEAR) != mYear) {
@@ -474,7 +482,6 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         } else {
           tv.setTextColor(mTextPrimaryColor);
         }
-
       }
     }
 
