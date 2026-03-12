@@ -20,7 +20,7 @@ import com.antsapps.triples.backend.Card;
 
 public class SymbolDrawable extends Drawable {
 
-  public static final int OUTLINE_WIDTH = 2;
+  public static final int OUTLINE_WIDTH = 3;
 
   private final Card mCard;
 
