@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import androidx.test.core.app.ActivityScenario;
+import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
@@ -131,6 +132,123 @@ public class NavigationTest extends BaseRobolectricTest {
             assertThat(nextIntent.getComponent().getClassName())
                 .isEqualTo(ZenGameActivity.class.getName());
             assertThat(nextIntent.getBooleanExtra(ZenGameActivity.IS_BEGINNER, false)).isTrue();
+          });
+    }
+  }
+
+  @Test
+  public void testNavigateToNewArcadeGame() {
+    try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
+            Button newGameButton = activity.findViewById(R.id.arcade_new_game_button);
+            assertThat(newGameButton).isNotNull();
+
+            newGameButton.performClick();
+
+            ShadowActivity shadowActivity = shadowOf(activity);
+            Intent nextIntent = shadowActivity.getNextStartedActivity();
+            assertThat(nextIntent.getComponent().getClassName())
+                .isEqualTo(ArcadeGameActivity.class.getName());
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.NEW_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ArcadeGame.GAME_TYPE_FOR_ANALYTICS);
+          });
+    }
+  }
+
+  @Test
+  public void testNavigateToResumeClassicGame() {
+    Application app =
+        Application.getInstance(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+    for (ClassicGame g : app.getCurrentClassicGames()) {
+      app.deleteClassicGame(g);
+    }
+    ClassicGame game = ClassicGame.createFromSeed(123456789L);
+    game.begin();
+    game.commitTriple(
+        game.getCardsInPlay().get(0),
+        game.getCardsInPlay().get(1),
+        game.getCardsInPlay().get(2)); // Make it resumable
+    app.addClassicGame(game);
+    app.saveClassicGame(game);
+
+    try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
+            activity.runOnUiThread(() -> activity.onResume());
+            org.robolectric.shadows.ShadowLooper.idleMainLooper();
+            Button resumeButton = activity.findViewById(R.id.classic_resume_button);
+            assertThat(resumeButton).isNotNull();
+            // assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+
+            resumeButton.performClick();
+
+            ShadowActivity shadowActivity = shadowOf(activity);
+            Intent nextIntent = shadowActivity.getNextStartedActivity();
+            assertThat(nextIntent.getComponent().getClassName())
+                .isEqualTo(ClassicGameActivity.class.getName());
+            assertThat(nextIntent.getLongExtra(Game.ID_TAG, -1)).isEqualTo(game.getId());
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.RESUME_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ClassicGame.GAME_TYPE_FOR_ANALYTICS);
+          });
+    }
+  }
+
+  @Test
+  public void testNavigateToResumeArcadeGame() {
+    Application app =
+        Application.getInstance(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+    for (ArcadeGame g : app.getCurrentArcadeGames()) {
+      app.deleteArcadeGame(g);
+    }
+    ArcadeGame game = ArcadeGame.createFromSeed(987654321L);
+    game.begin();
+    game.commitTriple(
+        game.getCardsInPlay().get(0),
+        game.getCardsInPlay().get(1),
+        game.getCardsInPlay().get(2)); // Make it resumable
+    app.addArcadeGame(game);
+    app.saveArcadeGame(game);
+
+    try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
+            activity.runOnUiThread(() -> activity.onResume());
+            org.robolectric.shadows.ShadowLooper.idleMainLooper();
+            Button resumeButton = activity.findViewById(R.id.arcade_resume_button);
+            assertThat(resumeButton).isNotNull();
+            // assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+
+            resumeButton.performClick();
+
+            ShadowActivity shadowActivity = shadowOf(activity);
+            Intent nextIntent = shadowActivity.getNextStartedActivity();
+            assertThat(nextIntent.getComponent().getClassName())
+                .isEqualTo(ArcadeGameActivity.class.getName());
+            assertThat(nextIntent.getLongExtra(Game.ID_TAG, -1)).isEqualTo(game.getId());
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.RESUME_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ArcadeGame.GAME_TYPE_FOR_ANALYTICS);
           });
     }
   }
