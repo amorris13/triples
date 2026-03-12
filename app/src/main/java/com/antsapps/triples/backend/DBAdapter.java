@@ -152,11 +152,30 @@ public class DBAdapter extends SQLiteOpenHelper {
     Log.w(DATABASE_NAME, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
     if (oldVersion < 4) {
-      String[] sql = new String[] {CREATE_ARCADE_GAMES};
       db.beginTransaction();
       try {
-        // Create tables & test data
-        execMultipleSQL(db, sql);
+        if (!tableExists(db, TABLE_ARCADE_GAMES)) {
+          db.execSQL(
+              "CREATE TABLE "
+                  + TABLE_ARCADE_GAMES
+                  + "("
+                  + COLUMN_GAME_ID
+                  + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                  + COLUMN_GAME_STATE
+                  + " TEXT, "
+                  + COLUMN_GAME_RANDOM
+                  + " INTEGER, "
+                  + COLUMN_CARDS_IN_PLAY
+                  + " BLOB, "
+                  + COLUMN_CARDS_IN_DECK
+                  + " BLOB, "
+                  + COLUMN_TIME_ELAPSED
+                  + " INTEGER, "
+                  + COLUMN_DATE_STARTED
+                  + " INTEGER, "
+                  + COLUMN_NUM_TRIPLES_FOUND
+                  + " INTEGER)");
+        }
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
@@ -167,18 +186,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     if (oldVersion < 5) {
       db.beginTransaction();
       try {
-        db.execSQL(
-            "ALTER TABLE "
-                + TABLE_CLASSIC_GAMES
-                + " ADD COLUMN "
-                + COLUMN_TRIPLE_FIND_TIMES
-                + " BLOB");
-        db.execSQL(
-            "ALTER TABLE "
-                + TABLE_ARCADE_GAMES
-                + " ADD COLUMN "
-                + COLUMN_TRIPLE_FIND_TIMES
-                + " BLOB");
+        addColumnIfMissing(db, TABLE_CLASSIC_GAMES, COLUMN_TRIPLE_FIND_TIMES, "BLOB");
+        addColumnIfMissing(db, TABLE_ARCADE_GAMES, COLUMN_TRIPLE_FIND_TIMES, "BLOB");
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
@@ -189,18 +198,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     if (oldVersion < 6) {
       db.beginTransaction();
       try {
-        db.execSQL(
-            "ALTER TABLE "
-                + TABLE_CLASSIC_GAMES
-                + " ADD COLUMN "
-                + COLUMN_HINTS_USED
-                + " INTEGER DEFAULT 0");
-        db.execSQL(
-            "ALTER TABLE "
-                + TABLE_ARCADE_GAMES
-                + " ADD COLUMN "
-                + COLUMN_HINTS_USED
-                + " INTEGER DEFAULT 0");
+        addColumnIfMissing(db, TABLE_CLASSIC_GAMES, COLUMN_HINTS_USED, "INTEGER DEFAULT 0");
+        addColumnIfMissing(db, TABLE_ARCADE_GAMES, COLUMN_HINTS_USED, "INTEGER DEFAULT 0");
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
@@ -211,13 +210,49 @@ public class DBAdapter extends SQLiteOpenHelper {
     if (oldVersion < 7) {
       db.beginTransaction();
       try {
-        db.execSQL(CREATE_DAILY_GAMES);
+        if (!tableExists(db, TABLE_DAILY_GAMES)) {
+          db.execSQL(CREATE_DAILY_GAMES);
+        }
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());
       } finally {
         db.endTransaction();
       }
+    }
+  }
+
+  private boolean tableExists(SQLiteDatabase db, String tableName) {
+    Cursor cursor =
+        db.rawQuery(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            new String[] {tableName});
+    try {
+      return cursor.getCount() > 0;
+    } finally {
+      cursor.close();
+    }
+  }
+
+  private void addColumnIfMissing(
+      SQLiteDatabase db, String tableName, String columnName, String columnDefinition) {
+    if (!tableExists(db, tableName)) return;
+    Cursor cursor = db.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+    try {
+      boolean exists = false;
+      int nameColumnIndex = cursor.getColumnIndexOrThrow("name");
+      while (cursor.moveToNext()) {
+        if (cursor.getString(nameColumnIndex).equals(columnName)) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        db.execSQL(
+            "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnDefinition);
+      }
+    } finally {
+      cursor.close();
     }
   }
 
