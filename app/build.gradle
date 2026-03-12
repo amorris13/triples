@@ -10,7 +10,7 @@ android {
         applicationId "com.antsapps.triples"
         minSdkVersion 21
         targetSdk 36
-        versionCode 10
+        versionCode 11
         versionName System.getenv("VERSION_NAME") ?: "2.0"
     }
 
