@@ -9,6 +9,7 @@ public class AnalyticsConstants {
     public static final String SETTING_VALUE = "setting_value";
     public static final String MODE = "mode";
     public static final String TAB_NAME = "tab_name";
+    public static final String HINT_USED = "hint_used";
 
     private Param() {}
     ;
@@ -28,6 +29,7 @@ public class AnalyticsConstants {
     public static final String CHANGE_SETTING = "change_setting";
     public static final String SWITCH_GAME_MODE = "switch_game_mode";
     public static final String SELECT_TAB = "select_tab";
+    public static final String FIND_TRIPLE = "find_triple";
 
     private Event() {}
     ;

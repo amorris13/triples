@@ -134,7 +134,7 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
-  public void animateFoundTriple(Set<Card> triple) {
+  public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
     int index = mGame.getFoundTriples().indexOf(triple);
     mCardsView.animateTripleFound(
         mFoundTriplesView.getCardBoundsInWindow(index, triple),
@@ -142,6 +142,7 @@ public class DailyGameActivity extends BaseGameActivity
         () ->
             mFoundTriplesView.setFoundTriples(
                 mGame.getFoundTriples(), mGame.getTotalTriplesCount()));
+    logTripleFoundEvent(hintUsed);
   }
 
   @Override
