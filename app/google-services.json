@@ -3,7 +3,7 @@
     "project_number": "434215387101",
     "firebase_url": "https://api-project-434215387101.firebaseio.com",
     "project_id": "api-project-434215387101",
-    "storage_bucket": "api-project-434215387101.appspot.com"
+    "storage_bucket": "api-project-434215387101.firebasestorage.app"
   },
   "client": [
     {
@@ -15,23 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "434215387101-1oo3s7m5hgn7ljagg408p9tfsu4th08a.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "434215387101-ajgfuavupcrh2iucfmq6e23lbld1qkdq.apps.googleusercontent.com",
+          "client_id": "434215387101-0pkkdc1amhvuu1nba0asor3qgpbi1ijl.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.antsapps.triples",
             "certificate_hash": "6438e07d69dbcd327cbb879fd5c0fe41a23f2da0"
-          }
-        },
-        {
-          "client_id": "434215387101-g0b9pfg3kee93sq6hf23oluf3p096os4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.antsapps.triples",
-            "certificate_hash": "4f77249393118a629f3535f252cd1e72196ba789"
           }
         },
         {
@@ -41,6 +29,26 @@
             "package_name": "com.antsapps.triples",
             "certificate_hash": "22a056f977eec174ba00a1fea63e83474b072879"
           }
+        },
+        {
+          "client_id": "434215387101-g0b9pfg3kee93sq6hf23oluf3p096os4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antsapps.triples",
+            "certificate_hash": "5f4033d0e0aae5fdcf6f783736dfd57fe7782a28"
+          }
+        },
+        {
+          "client_id": "434215387101-i4vm4srcf9j9f2uem12j2ttcpsth672r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antsapps.triples",
+            "certificate_hash": "4f77249393118a629f3535f252cd1e72196ba789"
+          }
+        },
+        {
+          "client_id": "434215387101-1oo3s7m5hgn7ljagg408p9tfsu4th08a.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -49,20 +57,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "434215387101-1oo3s7m5hgn7ljagg408p9tfsu4th08a.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
