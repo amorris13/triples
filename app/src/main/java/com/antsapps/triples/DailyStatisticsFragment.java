@@ -43,6 +43,8 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
+import com.google.android.material.button.MaterialButton;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,11 +86,11 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mMonthSwitcher = view.findViewById(R.id.month_title_switcher);
     mMonthSwitcher.setFactory(
         () -> {
-          Button btn =
-              new Button(
+          MaterialButton btn =
+              new MaterialButton(
                   new ContextThemeWrapper(getActivity(), com.google.android.material.R.style.Widget_Material3_Button_TextButton),
                   null,
-                  com.google.android.material.R.style.Widget_Material3_Button_TextButton);
+                  com.google.android.material.R.attr.borderlessButtonStyle);
           btn.setGravity(Gravity.CENTER);
           btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
           btn.setTypeface(null, Typeface.BOLD);
@@ -167,10 +169,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
           RecyclerView grid = monthView.findViewById(R.id.month_grid);
           if (grid != null) {
             for (int k = 0; k < grid.getChildCount(); k++) {
-              View dayFrame = grid.getChildAt(k);
-              if (dayFrame instanceof ViewGroup vg && vg.getChildCount() > 0) {
-                vg.getChildAt(0).invalidate();
-              }
+              grid.getChildAt(k).invalidate();
             }
           }
         }
@@ -204,10 +203,6 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   private Animation createSlideAnim(boolean appear, boolean slideLeft) {
     float fromX = appear ? (slideLeft ? 1.0f : -1.0f) : 0;
     float toX = appear ? 0 : (slideLeft ? -1.0f : 1.0f);
-    if (!appear) {
-      toX = slideLeft ? -1.0f : 1.0f;
-      fromX = 0;
-    }
 
     AnimationSet set = new AnimationSet(true);
     set.addAnimation(new TranslateAnimation(Animation.RELATIVE_TO_PARENT, fromX,
@@ -444,8 +439,17 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       DailyGame.Day day = DailyGame.Day.forCalendar(calendar);
 
       boolean enabled = isEnabled(position);
+      tv.setEnabled(enabled);
       tv.setClickable(enabled);
       tv.setFocusable(enabled);
+      if (enabled) {
+        tv.setOnClickListener(
+                v -> {
+                  mSelectedDay = DailyGame.Day.forCalendar(calendar);
+                  refreshVisibleCalendars();
+                  updateDetailSection();
+                });
+      }
 
       if (calendar.get(Calendar.MONTH) != mMonth - 1 || calendar.get(Calendar.YEAR) != mYear) {
         tv.setText("");
@@ -471,14 +475,6 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
           tv.setTextColor(mTextPrimaryColor);
         }
 
-        tv.setOnClickListener(
-            v -> {
-              if (isEnabled(position)) {
-                mSelectedDay = DailyGame.Day.forCalendar(calendar);
-                refreshVisibleCalendars();
-                updateDetailSection();
-              }
-            });
       }
     }
 
