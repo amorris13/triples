@@ -94,12 +94,13 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mPagerAdapter = new MonthPagerAdapter();
     mPager.setAdapter(mPagerAdapter);
     mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), false);
-    mPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-      @Override
-      public void onPageSelected(int position) {
-        updateCalendarHeader();
-      }
-    });
+    mPager.registerOnPageChangeCallback(
+        new ViewPager2.OnPageChangeCallback() {
+          @Override
+          public void onPageSelected(int position) {
+            updateCalendarHeader();
+          }
+        });
 
     view.findViewById(R.id.prev_month)
         .setOnClickListener(
@@ -227,8 +228,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     private final int mYear;
     private final Map<DailyGame.Day, Float> mProgressMap;
 
-    CalendarAdapter(
-        Context context, Calendar month, List<DailyGame> allGames) {
+    CalendarAdapter(Context context, Calendar month, List<DailyGame> allGames) {
       mContext = context;
       mTextPrimaryColor = ContextCompat.getColor(mContext, R.color.color_text_primary);
       mTextSecondaryColor = ContextCompat.getColor(mContext, R.color.color_text_secondary);
@@ -280,57 +280,58 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     @Override
     public DayViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
       float density = mContext.getResources().getDisplayMetrics().density;
-      TextView tv = new androidx.appcompat.widget.AppCompatTextView(mContext) {
-        private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      TextView tv =
+          new androidx.appcompat.widget.AppCompatTextView(mContext) {
+            private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        @Override
-        protected void onDraw(Canvas canvas) {
-          Object tag = getTag();
-          if (!(tag instanceof Calendar)) return;
-          DailyGame.Day day = DailyGame.Day.forCalendar((Calendar) tag);
-          if (day == null || day.getMonth() != mMonth || day.getYear() != mYear) {
-            return;
-          }
+            @Override
+            protected void onDraw(Canvas canvas) {
+              Object tag = getTag();
+              if (!(tag instanceof Calendar)) return;
+              DailyGame.Day day = DailyGame.Day.forCalendar((Calendar) tag);
+              if (day == null || day.getMonth() != mMonth || day.getYear() != mYear) {
+                return;
+              }
 
-          float centerX = getWidth() / 2f;
-          float centerY = getHeight() / 2f;
-          float radius = Math.min(getWidth(), getHeight()) / 2f - PADDING_DP * density;
+              float centerX = getWidth() / 2f;
+              float centerY = getHeight() / 2f;
+              float radius = Math.min(getWidth(), getHeight()) / 2f - PADDING_DP * density;
 
-          // Background circle for solved games
-          if (mCompletedOnDayDates.contains(day)) {
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
-            canvas.drawCircle(centerX, centerY, radius, mPaint);
-          } else if (mCompletedLateDates.contains(day)) {
-            mPaint.setStyle(Paint.Style.FILL);
-            int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-            mPaint.setColor(updateAlpha(color, 128));
-            canvas.drawCircle(centerX, centerY, radius, mPaint);
-          } else if (mProgressMap.containsKey(day)) {
-            float progress = mProgressMap.get(day);
-            mPaint.setStyle(Paint.Style.FILL);
-            int color = ContextCompat.getColor(mContext, R.color.daily_accent);
-            if (!day.equals(mToday)) {
-              color = updateAlpha(color, 128);
+              // Background circle for solved games
+              if (mCompletedOnDayDates.contains(day)) {
+                mPaint.setStyle(Paint.Style.FILL);
+                mPaint.setColor(ContextCompat.getColor(mContext, R.color.daily_accent));
+                canvas.drawCircle(centerX, centerY, radius, mPaint);
+              } else if (mCompletedLateDates.contains(day)) {
+                mPaint.setStyle(Paint.Style.FILL);
+                int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                mPaint.setColor(updateAlpha(color, 128));
+                canvas.drawCircle(centerX, centerY, radius, mPaint);
+              } else if (mProgressMap.containsKey(day)) {
+                float progress = mProgressMap.get(day);
+                mPaint.setStyle(Paint.Style.FILL);
+                int color = ContextCompat.getColor(mContext, R.color.daily_accent);
+                if (!day.equals(mToday)) {
+                  color = updateAlpha(color, 128);
+                }
+                mPaint.setColor(color);
+                RectF rectF =
+                    new RectF(
+                        centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+                canvas.drawArc(rectF, -90, 360 * progress, true, mPaint);
+              }
+
+              // Selection indicator (outline)
+              if (day.equals(mSelectedDay)) {
+                mPaint.setStyle(Paint.Style.STROKE);
+                mPaint.setStrokeWidth(2 * density);
+                mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
+                canvas.drawCircle(centerX, centerY, radius + density, mPaint);
+              }
+
+              super.onDraw(canvas);
             }
-            mPaint.setColor(color);
-            RectF rectF =
-                new RectF(
-                    centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-            canvas.drawArc(rectF, -90, 360 * progress, true, mPaint);
-          }
-
-          // Selection indicator (outline)
-          if (day.equals(mSelectedDay)) {
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(2 * density);
-            mPaint.setColor(ContextCompat.getColor(mContext, R.color.color_text_primary));
-            canvas.drawCircle(centerX, centerY, radius + density, mPaint);
-          }
-
-          super.onDraw(canvas);
-        }
-      };
+          };
       tv.setLayoutParams(new RecyclerView.LayoutParams((int) (48 * density), (int) (48 * density)));
       tv.setGravity(Gravity.CENTER);
 
@@ -382,13 +383,14 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
           tv.setTextColor(mTextPrimaryColor);
         }
 
-        tv.setOnClickListener(v -> {
-          if (isEnabled(position)) {
-            mSelectedDay = DailyGame.Day.forCalendar(calendar);
-            mPagerAdapter.notifyDataSetChanged();
-            updateDetailSection();
-          }
-        });
+        tv.setOnClickListener(
+            v -> {
+              if (isEnabled(position)) {
+                mSelectedDay = DailyGame.Day.forCalendar(calendar);
+                mPagerAdapter.notifyDataSetChanged();
+                updateDetailSection();
+              }
+            });
       }
     }
 
@@ -439,7 +441,9 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     @NonNull
     @Override
     public MonthViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      View view = LayoutInflater.from(getActivity()).inflate(R.layout.daily_stats_month_page, parent, false);
+      View view =
+          LayoutInflater.from(getActivity())
+              .inflate(R.layout.daily_stats_month_page, parent, false);
       return new MonthViewHolder(view);
     }
 
@@ -470,21 +474,28 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
     class MonthViewHolder extends RecyclerView.ViewHolder {
       RecyclerView grid;
+
       MonthViewHolder(View itemView) {
         super(itemView);
         grid = itemView.findViewById(R.id.month_grid);
         grid.setLayoutManager(new GridLayoutManager(getActivity(), 7));
-        grid.addItemDecoration(new RecyclerView.ItemDecoration() {
-          @Override
-          public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            int spacing = (int) (4 * getActivity().getResources().getDisplayMetrics().density);
-            outRect.left = spacing / 2;
-            outRect.right = spacing / 2;
-            outRect.top = spacing / 2;
-            outRect.bottom = spacing / 2;
-          }
-        });
+        grid.addItemDecoration(
+            new RecyclerView.ItemDecoration() {
+              @Override
+              public void getItemOffsets(
+                  @NonNull Rect outRect,
+                  @NonNull View view,
+                  @NonNull RecyclerView parent,
+                  @NonNull RecyclerView.State state) {
+                int spacing = (int) (4 * getActivity().getResources().getDisplayMetrics().density);
+                outRect.left = spacing / 2;
+                outRect.right = spacing / 2;
+                outRect.top = spacing / 2;
+                outRect.bottom = spacing / 2;
+              }
+            });
       }
+
       void bind(Calendar month) {
         grid.setAdapter(new CalendarAdapter(getActivity(), month, mApplication.getDailyGames()));
       }
