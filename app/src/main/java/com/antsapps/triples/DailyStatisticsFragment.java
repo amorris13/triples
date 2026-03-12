@@ -93,6 +93,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
     mPagerAdapter = new MonthPagerAdapter();
     mPager.setAdapter(mPagerAdapter);
+    mPager.setOffscreenPageLimit(1);
     mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), false);
     mPager.registerOnPageChangeCallback(
         new ViewPager2.OnPageChangeCallback() {
@@ -117,7 +118,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         v -> {
           mSelectedDay = DailyGame.Day.forToday();
           mPager.setCurrentItem(mPagerAdapter.getPositionForDay(mSelectedDay), true);
-          mPagerAdapter.notifyDataSetChanged();
+          refreshVisibleCalendars();
           updateDetailSection();
         });
 
@@ -132,6 +133,21 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     updateDetailSection();
 
     return view;
+  }
+
+  private void refreshVisibleCalendars() {
+    for (int i = 0; i < mPager.getChildCount(); i++) {
+      View page = mPager.getChildAt(i);
+      if (page instanceof RecyclerView rv) {
+        for (int j = 0; j < rv.getChildCount(); j++) {
+          View monthView = rv.getChildAt(j);
+          RecyclerView grid = monthView.findViewById(R.id.month_grid);
+          if (grid != null && grid.getAdapter() != null) {
+            grid.getAdapter().notifyDataSetChanged();
+          }
+        }
+      }
+    }
   }
 
   private void updateCalendarHeader() {
@@ -332,7 +348,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
               super.onDraw(canvas);
             }
           };
-      tv.setLayoutParams(new RecyclerView.LayoutParams((int) (48 * density), (int) (48 * density)));
+      tv.setLayoutParams(
+          new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (48 * density)));
       tv.setGravity(Gravity.CENTER);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -387,7 +404,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
             v -> {
               if (isEnabled(position)) {
                 mSelectedDay = DailyGame.Day.forCalendar(calendar);
-                mPagerAdapter.notifyDataSetChanged();
+                refreshVisibleCalendars();
                 updateDetailSection();
               }
             });
@@ -416,16 +433,14 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     private final int mCount;
 
     MonthPagerAdapter() {
-      mStartMonth = Calendar.getInstance();
-      DailyGame.Day earliestDay = null;
+      Calendar earliest = Calendar.getInstance();
+      earliest.set(2023, Calendar.JANUARY, 1);
       for (DailyGame game : mApplication.getDailyGames()) {
-        if (earliestDay == null || game.getGameDay().compareTo(earliestDay) < 0) {
-          earliestDay = game.getGameDay();
+        if (game.getGameDay().getCalendar().before(earliest)) {
+          earliest = game.getGameDay().getCalendar();
         }
       }
-      if (earliestDay != null) {
-        mStartMonth.setTime(earliestDay.getCalendar().getTime());
-      }
+      mStartMonth = earliest;
       mStartMonth.set(Calendar.DAY_OF_MONTH, 1);
       mStartMonth.set(Calendar.HOUR_OF_DAY, 0);
       mStartMonth.set(Calendar.MINUTE, 0);

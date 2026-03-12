@@ -133,7 +133,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/calendar_pager"
         android:layout_width="match_parent"
-        android:layout_height="310dp" />
+        android:layout_height="320dp" />
 
     <LinearLayout
         android:id="@+id/date_detail_container"
