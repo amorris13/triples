@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -142,8 +143,13 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         for (int j = 0; j < rv.getChildCount(); j++) {
           View monthView = rv.getChildAt(j);
           RecyclerView grid = monthView.findViewById(R.id.month_grid);
-          if (grid != null && grid.getAdapter() != null) {
-            grid.getAdapter().notifyDataSetChanged();
+          if (grid != null) {
+            for (int k = 0; k < grid.getChildCount(); k++) {
+              View dayFrame = grid.getChildAt(k);
+              if (dayFrame instanceof ViewGroup vg && vg.getChildCount() > 0) {
+                vg.getChildAt(0).invalidate();
+              }
+            }
           }
         }
       }
@@ -296,6 +302,11 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     @Override
     public DayViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
       float density = mContext.getResources().getDisplayMetrics().density;
+
+      FrameLayout container = new FrameLayout(mContext);
+      container.setLayoutParams(
+          new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (48 * density)));
+
       TextView tv =
           new androidx.appcompat.widget.AppCompatTextView(mContext) {
             private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -348,8 +359,11 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
               super.onDraw(canvas);
             }
           };
-      tv.setLayoutParams(
-          new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (48 * density)));
+
+      FrameLayout.LayoutParams tvParams =
+          new FrameLayout.LayoutParams((int) (48 * density), (int) (48 * density));
+      tvParams.gravity = Gravity.CENTER;
+      tv.setLayoutParams(tvParams);
       tv.setGravity(Gravity.CENTER);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -366,12 +380,15 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
         int insetPx = (int) (PADDING_DP * density);
         tv.setForeground(new InsetDrawable(ripple, insetPx, insetPx, insetPx, insetPx));
       }
-      return new DayViewHolder(tv);
+
+      container.addView(tv);
+      return new DayViewHolder(container);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DayViewHolder holder, int position) {
-      TextView tv = (TextView) holder.itemView;
+      FrameLayout container = (FrameLayout) holder.itemView;
+      TextView tv = (TextView) container.getChildAt(0);
       Calendar calendar = mDays.get(position);
       tv.setTag(calendar);
       DailyGame.Day day = DailyGame.Day.forCalendar(calendar);
