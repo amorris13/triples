@@ -191,12 +191,18 @@ public class CardView extends View {
     }
   }
 
+  @Override
   public void setSelected(boolean selected) {
     if (mSelected != selected) {
       mSelected = selected;
       regenerateCache();
       invalidate();
     }
+  }
+
+  @Override
+  public boolean isSelected() {
+    return mSelected;
   }
 
   public void setHinted(boolean hinted) {
