@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
-import androidx.preference.SeekBarPreference;
 import com.antsapps.triples.backend.Application;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -27,7 +26,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     setupListeners(getPreferenceScreen());
 
-    SeekBarPreference animationDurationPref =
+    MaterialSliderPreference animationDurationPref =
         findPreference(getString(R.string.pref_animation_speed));
     if (animationDurationPref != null) {
       animationDurationPref.setSummary(

@@ -2,7 +2,6 @@ package com.antsapps.triples;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import androidx.preference.SeekBarPreference;
 import androidx.test.core.app.ActivityScenario;
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ public class AnimationDurationSummaryTest extends BaseRobolectricTest {
             SettingsFragment fragment =
                 (SettingsFragment)
                     activity.getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
-            SeekBarPreference animationDurationPref =
+            MaterialSliderPreference animationDurationPref =
                 fragment.findPreference(activity.getString(R.string.pref_animation_speed));
 
             assertThat(animationDurationPref).isNotNull();

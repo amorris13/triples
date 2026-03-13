@@ -24,15 +24,12 @@
       android:title="Theme"
       android:summary="%s" />
 
-  <androidx.preference.SeekBarPreference
+  <com.antsapps.triples.MaterialSliderPreference
       android:defaultValue="800"
       android:key="@string/pref_animation_speed"
-      android:min="0"
-      android:max="1000"
-      app:seekBarIncrement="100"
-      app:adjustable="true"
-      app:showSeekBarValue="false"
-      app:updatesContinuously="true"
+      app:valueFrom="0"
+      app:valueTo="1000"
+      app:stepSize="100"
       android:title="@string/pref_animation_duration_title"/>
 
   <androidx.preference.PreferenceCategory
