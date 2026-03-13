@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import androidx.lifecycle.ViewModelProvider;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Game;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
+
+  private ArcadeStatisticsViewModel mViewModel;
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
 
@@ -78,13 +81,18 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   public void onPeriodChange(Period period) {
-    onStatisticsChange(mApplication.getArcadeStatistics(period));
+    mViewModel.setPeriod(period);
   }
 
   @Override
-  protected void updateDataSet() {
-    onStatisticsChange(mApplication.getArcadeStatistics(mSelectorView.getPeriod()));
+  protected void initViewModel() {
+    mViewModel = new ViewModelProvider(this).get(ArcadeStatisticsViewModel.class);
+    mViewModel.init(mApplication);
+    mViewModel.getStatistics().observe(getViewLifecycleOwner(), this::onStatisticsChange);
   }
+
+  @Override
+  protected void updateDataSet() {}
 
   @Override
   public void exportToCsv() {

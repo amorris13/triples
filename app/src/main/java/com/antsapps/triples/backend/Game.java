@@ -288,7 +288,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected void checkIfFinished() {}
 
-  protected void finish() {
+  public void finish() {
     if (mGameState == GameState.COMPLETED) {
       return;
     }

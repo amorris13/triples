@@ -12,10 +12,13 @@ import android.widget.Button;
 import androidx.test.core.app.ActivityScenario;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -249,6 +252,71 @@ public class NavigationTest extends BaseRobolectricTest {
                 .logEvent(eq(AnalyticsConstants.Event.RESUME_GAME), bundleCaptor.capture());
             assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
                 .isEqualTo(ArcadeGame.GAME_TYPE_FOR_ANALYTICS);
+          });
+    }
+  }
+
+  @Test
+  public void testMainActivityReactiveUpdates() {
+    Application app =
+        Application.getInstance(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+
+    try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            Button resumeButton = activity.findViewById(R.id.classic_resume_button);
+            assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.GONE);
+
+            // Add a game in progress reactively
+            ClassicGame game = ClassicGame.createFromSeed(12345L);
+            game.setGameRenderer(
+                new Game.GameRenderer() {
+                  @Override
+                  public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
+                  @Override
+                  public void addHint(Card card) {}
+
+                  @Override
+                  public void clearHintedCards() {}
+
+                  @Override
+                  public void clearSelectedCards() {}
+
+                  @Override
+                  public java.util.Set<Card> getSelectedCards() {
+                    return Sets.newHashSet();
+                  }
+                });
+            game.begin();
+            java.util.Set<Card> triple = game.getAllValidTriples(game.getCardsInPlay()).get(0);
+            game.commitTriple(triple.toArray(new Card[0]));
+            app.addClassicGame(game);
+
+            org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+            // Button should now be visible without activity restart/onResume
+            assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+            assertThat(resumeButton.getText().toString())
+                .contains(String.valueOf(game.getCardsRemaining()));
+
+            // Complete the game reactively
+            while (game.getGameState() != Game.GameState.COMPLETED) {
+              java.util.List<java.util.Set<Card>> triples =
+                  game.getAllValidTriples(game.getCardsInPlay());
+              if (triples.isEmpty()) {
+                break;
+              }
+              game.commitTriple(triples.get(0).toArray(new Card[0]));
+              app.saveClassicGame(game);
+            }
+            game.finish();
+            app.saveClassicGame(game);
+
+            org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+            // Button should disappear
+            assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.GONE);
           });
     }
   }

@@ -20,13 +20,13 @@ public abstract class BaseGameListFragment extends ListFragment implements OnSta
   public void onCreate(Bundle savedInstanceState) {
     setHasOptionsMenu(true);
     super.onCreate(savedInstanceState);
+    mApplication = Application.getInstance(getActivity());
   }
 
   /** Called when the activity is first created. */
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    mApplication = Application.getInstance(getActivity());
 
     mAdapter = createArrayAdapter();
     setListAdapter(mAdapter);

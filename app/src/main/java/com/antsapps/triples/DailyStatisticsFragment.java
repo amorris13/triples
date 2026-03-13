@@ -33,12 +33,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.DailyGame;
-import com.antsapps.triples.backend.DailyStatisticsUtil;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
@@ -48,7 +48,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +58,8 @@ import java.util.Set;
 public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
   private Application mApplication;
-  private List<DailyGame> mCompletedGames;
+  private DailyStatisticsViewModel mViewModel;
+  private List<DailyGame> mDailyGames;
   private ViewPager2 mPager;
   private MonthPagerAdapter mPagerAdapter;
   private ViewSwitcher mMonthSwitcher;
@@ -80,6 +80,8 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mApplication = Application.getInstance(getActivity());
+    mViewModel = new ViewModelProvider(this).get(DailyStatisticsViewModel.class);
+    mViewModel.init(mApplication);
     View view = inflater.inflate(R.layout.daily_stats_fragment, container, false);
 
     mMonthSwitcher = view.findViewById(R.id.month_title_switcher);
@@ -148,30 +150,44 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
           mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
         });
 
-    mCompletedGames = new ArrayList<>();
-    for (DailyGame game : mApplication.getCompletedDailyGames()) {
-      mCompletedGames.add(game);
-    }
-    Collections.sort(mCompletedGames, (g1, g2) -> g2.getGameDay().compareTo(g1.getGameDay()));
+    mDailyGames = new ArrayList<>();
+
+    mViewModel
+        .getDailyGames()
+        .observe(
+            getViewLifecycleOwner(),
+            games -> {
+              mDailyGames = games;
+              refreshVisibleCalendars();
+              updateDetailSection();
+            });
+
+    mViewModel
+        .getDailyStatistics()
+        .observe(
+            getViewLifecycleOwner(),
+            stats -> {
+              mCurrentStreakTv.setText(String.valueOf(stats.currentStreak));
+              mLongestStreakTv.setText(String.valueOf(stats.longestStreak));
+              mTotalSolvedTv.setText(String.valueOf(stats.totalGamesCompleted));
+            });
 
     updateCalendarHeader(mLastPosition);
-    updateStreaks();
     updateDetailSection();
 
     return view;
   }
 
   private void refreshVisibleCalendars() {
-    for (int i = 0; i < mPager.getChildCount(); i++) {
-      View page = mPager.getChildAt(i);
-      if (page instanceof RecyclerView rv) {
-        for (int j = 0; j < rv.getChildCount(); j++) {
-          View monthView = rv.getChildAt(j);
-          RecyclerView grid = monthView.findViewById(R.id.month_grid);
-          if (grid != null) {
-            for (int k = 0; k < grid.getChildCount(); k++) {
-              grid.getChildAt(k).invalidate();
-            }
+    View internalRecyclerView = mPager.getChildAt(0);
+    if (internalRecyclerView instanceof RecyclerView rv) {
+      for (int i = 0; i < rv.getChildCount(); i++) {
+        View child = rv.getChildAt(i);
+        RecyclerView.ViewHolder holder = rv.getChildViewHolder(child);
+        if (holder instanceof MonthPagerAdapter.MonthViewHolder monthViewHolder) {
+          RecyclerView grid = monthViewHolder.grid;
+          if (grid != null && grid.getAdapter() instanceof CalendarAdapter adapter) {
+            adapter.updateData(mDailyGames);
           }
         }
       }
@@ -270,16 +286,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
 
   public void exportToCsv() {
     ShareUtil.shareCsv(
-        getActivity(), "daily_statistics.csv", CsvUtil.getDailyCsvContent(mCompletedGames));
-  }
-
-  private void updateStreaks() {
-    DailyStatisticsUtil.DailyStatistics dailyStatistics =
-        DailyStatisticsUtil.computeDailyStatistics(mCompletedGames);
-
-    mCurrentStreakTv.setText(String.valueOf(dailyStatistics.currentStreak));
-    mLongestStreakTv.setText(String.valueOf(dailyStatistics.longestStreak));
-    mTotalSolvedTv.setText(String.valueOf(dailyStatistics.totalGamesCompleted));
+        getActivity(), "daily_statistics.csv", CsvUtil.getDailyCsvContent(mDailyGames));
   }
 
   private static class DayViewHolder extends RecyclerView.ViewHolder {
@@ -332,6 +339,19 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       mCompletedLateDates = new HashSet<>();
       mHintDates = new HashSet<>();
       mProgressMap = new HashMap<>();
+      updateDataInternal(allGames);
+    }
+
+    void updateData(List<DailyGame> allGames) {
+      updateDataInternal(allGames);
+      notifyDataSetChanged();
+    }
+
+    private void updateDataInternal(List<DailyGame> allGames) {
+      mCompletedOnDayDates.clear();
+      mCompletedLateDates.clear();
+      mHintDates.clear();
+      mProgressMap.clear();
       for (DailyGame game : allGames) {
         DailyGame.Day day = game.getGameDay();
         if (game.areHintsUsed()) {
@@ -586,7 +606,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       }
 
       void bind(Calendar month) {
-        grid.setAdapter(new CalendarAdapter(getActivity(), month, mApplication.getDailyGames()));
+        grid.setAdapter(new CalendarAdapter(getActivity(), month, mDailyGames));
       }
     }
   }

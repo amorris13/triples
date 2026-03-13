@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import androidx.lifecycle.ViewModelProvider;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ClassicStatisticsFragment extends BaseStatisticsFragment {
+
+  private ClassicStatisticsViewModel mViewModel;
 
   protected static class StatisticsGamesArrayAdapter extends ArrayAdapter<Game> {
 
@@ -80,13 +83,18 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
 
   @Override
   public void onPeriodChange(Period period) {
-    onStatisticsChange(mApplication.getClassicStatistics(period));
+    mViewModel.setPeriod(period);
   }
 
   @Override
-  protected void updateDataSet() {
-    onStatisticsChange(mApplication.getClassicStatistics(mSelectorView.getPeriod()));
+  protected void initViewModel() {
+    mViewModel = new ViewModelProvider(this).get(ClassicStatisticsViewModel.class);
+    mViewModel.init(mApplication);
+    mViewModel.getStatistics().observe(getViewLifecycleOwner(), this::onStatisticsChange);
   }
+
+  @Override
+  protected void updateDataSet() {}
 
   @Override
   public void exportToCsv() {
