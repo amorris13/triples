@@ -23,19 +23,18 @@ public class AnimationDurationSummaryTest extends BaseRobolectricTest {
             assertThat(animationDurationPref).isNotNull();
 
             // Initial value
-            int initialValue = animationDurationPref.getValue();
             assertThat(animationDurationPref.getSummary().toString())
-                .isEqualTo(
-                    activity.getString(R.string.pref_animation_duration_summary, initialValue));
+                .isEqualTo(activity.getString(R.string.pref_animation_duration_summary, 800));
+            assertThat(SettingsFragment.getAnimationDuration(activity)).isEqualTo(800);
 
             // Change value and verify summary updates
-            int newValue = 500;
-            // In a real app, sliding the seekbar triggers onPreferenceChange.
-            // We simulate this by calling the listener directly.
-            fragment.onPreferenceChange(animationDurationPref, newValue);
+            animationDurationPref.setValue(5);
+            animationDurationPref.callChangeListener(5);
 
+            assertThat(animationDurationPref.getValue()).isEqualTo(5);
             assertThat(animationDurationPref.getSummary().toString())
-                .isEqualTo(activity.getString(R.string.pref_animation_duration_summary, newValue));
+                .isEqualTo(activity.getString(R.string.pref_animation_duration_summary, 500));
+            assertThat(SettingsFragment.getAnimationDuration(activity)).isEqualTo(500);
           });
     }
   }
