@@ -322,6 +322,84 @@ public class NavigationTest extends BaseRobolectricTest {
   }
 
   @Test
+  public void testDailyPuzzleReactiveUpdates() {
+    Application app =
+        Application.getInstance(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+
+    try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            Button dailyPlayButton = activity.findViewById(R.id.daily_play_button);
+            Button dailyStatsButton = activity.findViewById(R.id.daily_statistics_button);
+            android.view.View dailyCompletedText = activity.findViewById(R.id.daily_completed_text);
+
+            assertThat(dailyPlayButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+            assertThat(dailyPlayButton.getText().toString())
+                .isEqualTo(activity.getString(R.string.play));
+
+            // Start a daily game and find a triple
+            DailyGame game = app.getDailyGameForDate(DailyGame.Day.forToday());
+            game.setGameRenderer(
+                new Game.GameRenderer() {
+                  @Override
+                  public void updateCardsInPlay(ImmutableList<Card> newCards) {}
+
+                  @Override
+                  public void addHint(Card card) {}
+
+                  @Override
+                  public void clearHintedCards() {}
+
+                  @Override
+                  public void clearSelectedCards() {}
+
+                  @Override
+                  public java.util.Set<Card> getSelectedCards() {
+                    return Sets.newHashSet();
+                  }
+                });
+            java.util.Set<Card> triple = game.getAllValidTriples(game.getCardsInPlay()).get(0);
+            game.commitTriple(triple.toArray(new Card[0]));
+            app.saveDailyGame(game);
+
+            org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+            // Check progress text
+            assertThat(dailyPlayButton.getText().toString())
+                .isEqualTo(
+                    activity.getString(
+                        R.string.daily_play_progress_format, 1, game.getTotalTriplesCount()));
+
+            // Complete the game
+            while (game.getGameState() != Game.GameState.COMPLETED) {
+              java.util.List<java.util.Set<Card>> triples =
+                  game.getAllValidTriples(game.getCardsInPlay());
+              java.util.Set<Card> unfoundTriple = null;
+              for (java.util.Set<Card> t : triples) {
+                if (!game.getFoundTriples().contains(t)) {
+                  unfoundTriple = t;
+                  break;
+                }
+              }
+              if (unfoundTriple == null) break;
+              game.commitTriple(unfoundTriple.toArray(new Card[0]));
+              app.saveDailyGame(game);
+            }
+            org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+            // Check completed state
+            assertThat(dailyPlayButton.getVisibility()).isEqualTo(android.view.View.GONE);
+            assertThat(dailyCompletedText.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+
+            // Check streak in statistics button
+            // Since we just completed today's game, current streak should be 1
+            assertThat(dailyStatsButton.getText().toString())
+                .isEqualTo(activity.getString(R.string.statistics_streak_format, 1));
+          });
+    }
+  }
+
+  @Test
   public void testNavigateToDailyGame() {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       scenario.onActivity(

@@ -29,6 +29,7 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mArcadeNewGameButton;
   private MaterialButton mDailyPlayButton;
   private MaterialButton mDailyStatisticsButton;
+  private android.widget.TextView mDailyCompletedText;
   private MaterialButton mZenButton;
   private MaterialButton mClassicStatisticsButton;
   private MaterialButton mArcadeStatisticsButton;
@@ -81,18 +82,40 @@ public class MainActivity extends BaseTriplesActivity {
     mDailyStatisticsButton = findViewById(R.id.daily_statistics_button);
     mDailyStatisticsButton.setOnClickListener(v -> showStatistics("Daily"));
 
+    mDailyCompletedText = findViewById(R.id.daily_completed_text);
+
     mZenButton = findViewById(R.id.zen_button);
     mZenButton.setOnClickListener(v -> playZenGame(false));
 
     mViewModel
-        .getDailyCompleted()
+        .getDailyState()
         .observe(
             this,
-            dailyCompleted -> {
-              findViewById(R.id.daily_play_button)
-                  .setVisibility(dailyCompleted ? View.GONE : View.VISIBLE);
-              findViewById(R.id.daily_completed_text)
-                  .setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
+            state -> {
+              if (state.completed) {
+                mDailyPlayButton.setVisibility(View.GONE);
+                mDailyCompletedText.setVisibility(View.VISIBLE);
+              } else {
+                mDailyPlayButton.setVisibility(View.VISIBLE);
+                mDailyCompletedText.setVisibility(View.GONE);
+                if (state.triplesFound > 0) {
+                  mDailyPlayButton.setText(
+                      getString(
+                          R.string.daily_play_progress_format,
+                          state.triplesFound,
+                          state.totalTriples));
+                } else {
+                  mDailyPlayButton.setText(R.string.play);
+                }
+              }
+
+              if (state.currentStreak > 0) {
+                mDailyStatisticsButton.setText(
+                    getString(R.string.statistics_streak_format, state.currentStreak));
+              } else {
+                mDailyStatisticsButton.setText(
+                    getString(R.string.statistics_format, state.totalSolved));
+              }
             });
 
     mViewModel
@@ -141,14 +164,6 @@ public class MainActivity extends BaseTriplesActivity {
             this,
             count -> {
               mArcadeStatisticsButton.setText(getString(R.string.statistics_format, count));
-            });
-
-    mViewModel
-        .getDailyCompletedCount()
-        .observe(
-            this,
-            count -> {
-              mDailyStatisticsButton.setText(getString(R.string.statistics_format, count));
             });
   }
 
