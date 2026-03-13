@@ -10,14 +10,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.Interpolator;
 import androidx.annotation.Nullable;
-import com.antsapps.triples.R;
 import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
 

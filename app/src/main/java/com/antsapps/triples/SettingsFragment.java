@@ -31,37 +31,43 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     setupAnalyticsLogging(getPreferenceScreen());
 
-    SeekBarPreference animationDurationPreference = findPreference(getString(R.string.pref_animation_speed));
-    updateAnimationDurationSummary(animationDurationPreference, animationDurationPreference.getValue());
-    animationDurationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
-      updateAnimationDurationSummary((SeekBarPreference) preference, (int) newValue);
-      logAnalyticsEventOnPreferenceChange(preference, newValue);
-      return true;
-    });
+    SeekBarPreference animationDurationPreference =
+        findPreference(getString(R.string.pref_animation_speed));
+    updateAnimationDurationSummary(
+        animationDurationPreference, animationDurationPreference.getValue());
+    animationDurationPreference.setOnPreferenceChangeListener(
+        (preference, newValue) -> {
+          updateAnimationDurationSummary((SeekBarPreference) preference, (int) newValue);
+          logAnalyticsEventOnPreferenceChange(preference, newValue);
+          return true;
+        });
 
-    findPreference(getString(R.string.pref_theme)).setOnPreferenceChangeListener((preference, newValue) -> {
-        String theme = (String) newValue;
-        switch (theme) {
-          case "light":
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            break;
-          case "dark":
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            break;
-          case "system":
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            break;
-        }
-        logAnalyticsEventOnPreferenceChange(preference, newValue);
-        return true;
-      });
+    findPreference(getString(R.string.pref_theme))
+        .setOnPreferenceChangeListener(
+            (preference, newValue) -> {
+              String theme = (String) newValue;
+              switch (theme) {
+                case "light":
+                  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                  break;
+                case "dark":
+                  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                  break;
+                case "system":
+                  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                  break;
+              }
+              logAnalyticsEventOnPreferenceChange(preference, newValue);
+              return true;
+            });
 
     updateAccountPreferences();
   }
 
-  private void updateAnimationDurationSummary(SeekBarPreference animationDurationPreference, int value) {
+  private void updateAnimationDurationSummary(
+      SeekBarPreference animationDurationPreference, int value) {
     animationDurationPreference.setSummary(
-          getString(R.string.pref_animation_duration_summary, value * ANIMATION_DURATION_MULTIPLIER));
+        getString(R.string.pref_animation_duration_summary, value * ANIMATION_DURATION_MULTIPLIER));
   }
 
   public void updateAccountPreferences() {
@@ -129,10 +135,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
       if (p instanceof PreferenceGroup) {
         setupAnalyticsLogging((PreferenceGroup) p);
       } else {
-        p.setOnPreferenceChangeListener((preference, newValue) -> {
-          logAnalyticsEventOnPreferenceChange(preference, newValue);
-          return true;
-        });
+        p.setOnPreferenceChangeListener(
+            (preference, newValue) -> {
+              logAnalyticsEventOnPreferenceChange(preference, newValue);
+              return true;
+            });
       }
     }
   }
@@ -146,9 +153,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
   public static int getAnimationDuration(Context context) {
     int prefValue =
-            PreferenceManager.getDefaultSharedPreferences(context)
-                    .getInt(
-                            context.getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION);
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .getInt(context.getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION);
     return prefValue <= 10 ? prefValue * ANIMATION_DURATION_MULTIPLIER : prefValue;
   }
 }
