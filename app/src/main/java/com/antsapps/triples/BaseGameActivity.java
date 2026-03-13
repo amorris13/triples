@@ -89,7 +89,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     findViewById(R.id.bottom_separator).setBackgroundColor(getAccentColor());
     ((TextView) findViewById(R.id.paused)).setTextColor(getAccentColor());
-    findViewById(R.id.rate_app).setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.statistics_button)
         .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.new_game_button)
@@ -312,6 +311,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     } else {
       shouldSubmitScoreOnSignIn = true;
     }
+    requestInAppReview();
   }
 
   protected abstract void submitScore();
@@ -434,7 +434,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     startActivity(intent);
   }
 
-  public void rateApp(View view) {
+  private void requestInAppReview() {
     ReviewManager manager = ReviewManagerFactory.create(this);
     manager
         .requestReviewFlow()
