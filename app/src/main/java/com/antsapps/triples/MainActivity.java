@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import androidx.lifecycle.ViewModelProvider;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
@@ -20,6 +21,7 @@ import com.google.common.collect.Lists;
 public class MainActivity extends BaseTriplesActivity {
 
   private Application mApplication;
+  private MainViewModel mViewModel;
 
   private MaterialButton mClassicResumeButton;
   private MaterialButton mArcadeResumeButton;
@@ -42,6 +44,8 @@ public class MainActivity extends BaseTriplesActivity {
     }
 
     mApplication = Application.getInstance(getApplication());
+    mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+    mViewModel.init(mApplication);
 
     mClassicResumeButton = findViewById(R.id.classic_resume_button);
     mClassicResumeButton.setOnClickListener(
@@ -79,55 +83,73 @@ public class MainActivity extends BaseTriplesActivity {
 
     mZenButton = findViewById(R.id.zen_button);
     mZenButton.setOnClickListener(v -> playZenGame(false));
-  }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-    updateResumeButtons();
-  }
+    mViewModel
+        .getDailyCompleted()
+        .observe(
+            this,
+            dailyCompleted -> {
+              findViewById(R.id.daily_play_button)
+                  .setVisibility(dailyCompleted ? View.GONE : View.VISIBLE);
+              findViewById(R.id.daily_completed_text)
+                  .setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
+            });
 
-  private void updateResumeButtons() {
-    long todaySeed = DailyGame.Day.forToday().getSeed();
-    boolean dailyCompleted = false;
-    for (DailyGame dg : mApplication.getCompletedDailyGames()) {
-      if (dg.getRandomSeed() == todaySeed) {
-        dailyCompleted = true;
-        break;
-      }
-    }
-    findViewById(R.id.daily_play_button).setVisibility(dailyCompleted ? View.GONE : View.VISIBLE);
-    findViewById(R.id.daily_completed_text)
-        .setVisibility(dailyCompleted ? View.VISIBLE : View.GONE);
+    mViewModel
+        .getClassicResumeState()
+        .observe(
+            this,
+            state -> {
+              if (state.visible) {
+                mClassicResumeButton.setVisibility(View.VISIBLE);
+                mClassicResumeButton.setText(
+                    getString(R.string.resume_game_classic_format, Integer.parseInt(state.text)));
+                mClassicNewGameButton.setText(R.string.start_again);
+              } else {
+                mClassicResumeButton.setVisibility(View.GONE);
+                mClassicNewGameButton.setText(R.string.new_game);
+              }
+            });
 
-    ClassicGame classicGame = Iterables.getFirst(mApplication.getCurrentClassicGames(), null);
-    if (classicGame != null && !classicGame.getTripleFindTimes().isEmpty()) {
-      mClassicResumeButton.setVisibility(View.VISIBLE);
-      mClassicResumeButton.setText(
-          getString(R.string.resume_game_classic_format, classicGame.getCardsRemaining()));
-      mClassicNewGameButton.setText(R.string.start_again);
-    } else {
-      mClassicResumeButton.setVisibility(View.GONE);
-      mClassicNewGameButton.setText(R.string.new_game);
-    }
-    int numClassicCompleted = Iterables.size(mApplication.getCompletedClassicGames());
-    mClassicStatisticsButton.setText(getString(R.string.statistics_format, numClassicCompleted));
+    mViewModel
+        .getArcadeResumeState()
+        .observe(
+            this,
+            state -> {
+              if (state.visible) {
+                mArcadeResumeButton.setVisibility(View.VISIBLE);
+                mArcadeResumeButton.setText(
+                    getString(R.string.resume_game_arcade_format, Integer.parseInt(state.text)));
+                mArcadeNewGameButton.setText(R.string.start_again);
+              } else {
+                mArcadeResumeButton.setVisibility(View.GONE);
+                mArcadeNewGameButton.setText(R.string.new_game);
+              }
+            });
 
-    ArcadeGame arcadeGame = Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
-    if (arcadeGame != null && !arcadeGame.getTripleFindTimes().isEmpty()) {
-      mArcadeResumeButton.setVisibility(View.VISIBLE);
-      mArcadeResumeButton.setText(
-          getString(R.string.resume_game_arcade_format, arcadeGame.getNumTriplesFound()));
-      mArcadeNewGameButton.setText(R.string.start_again);
-    } else {
-      mArcadeResumeButton.setVisibility(View.GONE);
-      mArcadeNewGameButton.setText(R.string.new_game);
-    }
-    int numArcadeCompleted = Iterables.size(mApplication.getCompletedArcadeGames());
-    mArcadeStatisticsButton.setText(getString(R.string.statistics_format, numArcadeCompleted));
+    mViewModel
+        .getClassicCompletedCount()
+        .observe(
+            this,
+            count -> {
+              mClassicStatisticsButton.setText(getString(R.string.statistics_format, count));
+            });
 
-    int numDailyCompleted = Iterables.size(mApplication.getCompletedDailyGames());
-    mDailyStatisticsButton.setText(getString(R.string.statistics_format, numDailyCompleted));
+    mViewModel
+        .getArcadeCompletedCount()
+        .observe(
+            this,
+            count -> {
+              mArcadeStatisticsButton.setText(getString(R.string.statistics_format, count));
+            });
+
+    mViewModel
+        .getDailyCompletedCount()
+        .observe(
+            this,
+            count -> {
+              mDailyStatisticsButton.setText(getString(R.string.statistics_format, count));
+            });
   }
 
   private void launchGame(Intent intent, String gameType, String event) {

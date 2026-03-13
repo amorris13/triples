@@ -3,6 +3,8 @@ package com.antsapps.triples.backend;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import com.antsapps.triples.CloudSaveManager;
 import com.antsapps.triples.backend.Game.GameState;
 import com.google.common.base.Predicate;
@@ -23,6 +25,13 @@ public class Application extends OnStateChangedReporter {
   private final List<ClassicGame> mClassicGames = Lists.newArrayList();
   private final List<ArcadeGame> mArcadeGames = Lists.newArrayList();
   private final List<DailyGame> mDailyGames = Lists.newArrayList();
+
+  private final MutableLiveData<List<ClassicGame>> mClassicGamesLiveData =
+      new MutableLiveData<>(mClassicGames);
+  private final MutableLiveData<List<ArcadeGame>> mArcadeGamesLiveData =
+      new MutableLiveData<>(mArcadeGames);
+  private final MutableLiveData<List<DailyGame>> mDailyGamesLiveData =
+      new MutableLiveData<>(mDailyGames);
 
   private ZenGame mZenGame;
   private ZenGame mBeginnerGame;
@@ -397,5 +406,26 @@ public class Application extends OnStateChangedReporter {
     mBeginnerGame = null;
     database.clearAllData();
     notifyStateChanged();
+  }
+
+  /** This should be called whenever the state of the object is changed. */
+  @Override
+  protected void notifyStateChanged() {
+    mClassicGamesLiveData.setValue(mClassicGames);
+    mArcadeGamesLiveData.setValue(mArcadeGames);
+    mDailyGamesLiveData.setValue(mDailyGames);
+    super.notifyStateChanged();
+  }
+
+  public LiveData<List<ClassicGame>> getClassicGamesLiveData() {
+    return mClassicGamesLiveData;
+  }
+
+  public LiveData<List<ArcadeGame>> getArcadeGamesLiveData() {
+    return mArcadeGamesLiveData;
+  }
+
+  public LiveData<List<DailyGame>> getDailyGamesLiveData() {
+    return mDailyGamesLiveData;
   }
 }

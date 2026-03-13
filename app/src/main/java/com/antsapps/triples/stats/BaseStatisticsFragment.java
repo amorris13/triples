@@ -41,6 +41,8 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     ListView listView = (ListView) inflater.inflate(R.layout.stats_fragment, null);
 
+    initViewModel();
+
     mGameServicesView = new StatisticsGamesServicesView(getActivity(), getLeaderboardId());
     mGameServicesView.setActivity(mGameListActivity);
     mGameListActivity.setSignInListener(mGameServicesView);
@@ -78,6 +80,8 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
   protected abstract BaseStatisticsListHeaderView createStatisticsListHeaderView();
 
   protected abstract BaseStatisticsSummaryView createStatisticsSummaryView();
+
+  protected abstract void initViewModel();
 
   public abstract void exportToCsv();
 
