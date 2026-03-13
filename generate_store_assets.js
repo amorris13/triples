@@ -129,8 +129,8 @@ function createAchievementTemplate(label, mode, symbolType) {
     <rect x="158" y="44" width="56" height="56" fill="#2196F3"/>`;
   } else if (symbolType === 'triangles') {
     symbol = `
-    <path d="M 59 100 L 87 44 L 115 100 Z" fill="#FF9800"/>
-    <path d="M 125 100 L 153 44 L 181 100 Z" fill="#FF9800"/>`;
+    <path d="M 59 100 L 87 44 L 115 100 Z" fill="#FFB300"/>
+    <path d="M 125 100 L 153 44 L 181 100 Z" fill="#FFB300"/>`;
   } else if (symbolType === 'triangles_alt') {
     symbol = `
     <path d="M 59 100 L 87 44 L 115 100 Z" fill="#FFFFFF" opacity="0.8"/>

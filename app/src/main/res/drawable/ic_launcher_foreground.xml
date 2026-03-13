@@ -34,10 +34,10 @@
         android:strokeColor="#C4C7CC"/>
     <path
         android:pathData="M195,284L223,228L251,284Z"
-        android:fillColor="#FF9800"/>
+        android:fillColor="#FFB300"/>
     <path
         android:pathData="M261,284L289,228L317,284Z"
-        android:fillColor="#FF9800"/>
+        android:fillColor="#FFB300"/>
     <path
         android:pathData="M188,296L412,296A8,8 0,0 1,420 304L420,432A8,8 0,0 1,412 440L188,440A8,8 0,0 1,180 432L180,304A8,8 0,0 1,188 296z"
         android:fillColor="#B0B0B0"/>
