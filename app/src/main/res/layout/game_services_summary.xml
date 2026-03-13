@@ -40,17 +40,36 @@
     android:orientation="vertical"
     android:id="@+id/games_services_bar">
 
-    <com.google.android.material.button.MaterialButton
+    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="@string/leaderboards"
-      android:id="@+id/leaderboards"
-      app:icon="@drawable/games_controller_green"
-      app:iconPadding="8dp"
-      android:singleLine="false"
-      android:layout_weight="1"
-      style="@style/Widget.Material3.Button.TextButton"
-      android:layout_gravity="center"/>
+      android:orientation="horizontal">
+
+      <com.google.android.material.button.MaterialButton
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/leaderboards"
+        android:id="@+id/leaderboards"
+        app:icon="@drawable/games_controller_green"
+        app:iconPadding="8dp"
+        android:singleLine="false"
+        android:layout_weight="1"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_gravity="center"/>
+
+      <com.google.android.material.button.MaterialButton
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/achievements"
+        android:id="@+id/achievements"
+        app:icon="@drawable/ic_trophy"
+        app:iconPadding="8dp"
+        android:singleLine="false"
+        android:layout_weight="1"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_gravity="center"/>
+
+    </LinearLayout>
 
     <View
       android:layout_width="fill_parent"
