@@ -31,9 +31,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     setupAnalyticsLogging(getPreferenceScreen());
 
-    updateAnimationDurationSummary();
-    findPreference(getString(R.string.pref_animation_speed)).setOnPreferenceChangeListener((preference, newValue) -> {
-      updateAnimationDurationSummary();
+    SeekBarPreference animationDurationPreference = findPreference(getString(R.string.pref_animation_speed));
+    updateAnimationDurationSummary(animationDurationPreference, animationDurationPreference.getValue());
+    animationDurationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+      updateAnimationDurationSummary((SeekBarPreference) preference, (int) newValue);
       logAnalyticsEventOnPreferenceChange(preference, newValue);
       return true;
     });
@@ -58,10 +59,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     updateAccountPreferences();
   }
 
-  private void updateAnimationDurationSummary() {
-    SeekBarPreference animationDurationPreference = findPreference(getString(R.string.pref_animation_speed));
+  private void updateAnimationDurationSummary(SeekBarPreference animationDurationPreference, int value) {
     animationDurationPreference.setSummary(
-          getString(R.string.pref_animation_duration_summary, animationDurationPreference.getValue() * ANIMATION_DURATION_MULTIPLIER));
+          getString(R.string.pref_animation_duration_summary, value * ANIMATION_DURATION_MULTIPLIER));
   }
 
   public void updateAccountPreferences() {
@@ -145,8 +145,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
   }
 
   public static int getAnimationDuration(Context context) {
-    return Math.min(PreferenceManager.getDefaultSharedPreferences(context)
-            .getInt(
-                    context.getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION), 10) * ANIMATION_DURATION_MULTIPLIER;
+    int prefValue =
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .getInt(
+                            context.getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION);
+    return prefValue <= 10 ? prefValue * ANIMATION_DURATION_MULTIPLIER : prefValue;
   }
 }
