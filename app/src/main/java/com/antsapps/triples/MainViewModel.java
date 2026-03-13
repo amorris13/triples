@@ -14,25 +14,21 @@ public class MainViewModel extends ViewModel {
 
   public static class ClassicResumeState {
     public final boolean visible;
-    public final String text;
-    public final String newGameText;
+    public final int cardsRemaining;
 
-    public ClassicResumeState(boolean visible, String text, String newGameText) {
+    public ClassicResumeState(boolean visible, int cardsRemaining) {
       this.visible = visible;
-      this.text = text;
-      this.newGameText = newGameText;
+      this.cardsRemaining = cardsRemaining;
     }
   }
 
   public static class ArcadeResumeState {
     public final boolean visible;
-    public final String text;
-    public final String newGameText;
+    public final int triplesFound;
 
-    public ArcadeResumeState(boolean visible, String text, String newGameText) {
+    public ArcadeResumeState(boolean visible, int triplesFound) {
       this.visible = visible;
-      this.text = text;
-      this.newGameText = newGameText;
+      this.triplesFound = triplesFound;
     }
   }
 
@@ -43,7 +39,14 @@ public class MainViewModel extends ViewModel {
   private final MediatorLiveData<Integer> mArcadeCompletedCount = new MediatorLiveData<>();
   private final MediatorLiveData<Integer> mDailyCompletedCount = new MediatorLiveData<>();
 
+  private boolean mInitialized = false;
+
   public void init(Application application) {
+    if (mInitialized) {
+      return;
+    }
+    mInitialized = true;
+
     mClassicResumeState.addSource(
         application.getClassicGamesLiveData(),
         games -> {
@@ -57,10 +60,9 @@ public class MainViewModel extends ViewModel {
                   null);
           if (classicGame != null && !classicGame.getTripleFindTimes().isEmpty()) {
             mClassicResumeState.setValue(
-                new ClassicResumeState(
-                    true, String.valueOf(classicGame.getCardsRemaining()), null));
+                new ClassicResumeState(true, classicGame.getCardsRemaining()));
           } else {
-            mClassicResumeState.setValue(new ClassicResumeState(false, null, null));
+            mClassicResumeState.setValue(new ClassicResumeState(false, 0));
           }
         });
 
@@ -76,10 +78,9 @@ public class MainViewModel extends ViewModel {
                               || g.getGameState() == Game.GameState.PAUSED),
                   null);
           if (arcadeGame != null && !arcadeGame.getTripleFindTimes().isEmpty()) {
-            mArcadeResumeState.setValue(
-                new ArcadeResumeState(true, String.valueOf(arcadeGame.getNumTriplesFound()), null));
+            mArcadeResumeState.setValue(new ArcadeResumeState(true, arcadeGame.getNumTriplesFound()));
           } else {
-            mArcadeResumeState.setValue(new ArcadeResumeState(false, null, null));
+            mArcadeResumeState.setValue(new ArcadeResumeState(false, 0));
           }
         });
 

@@ -103,7 +103,7 @@ public class MainActivity extends BaseTriplesActivity {
               if (state.visible) {
                 mClassicResumeButton.setVisibility(View.VISIBLE);
                 mClassicResumeButton.setText(
-                    getString(R.string.resume_game_classic_format, Integer.parseInt(state.text)));
+                    getString(R.string.resume_game_classic_format, state.cardsRemaining));
                 mClassicNewGameButton.setText(R.string.start_again);
               } else {
                 mClassicResumeButton.setVisibility(View.GONE);
@@ -119,7 +119,7 @@ public class MainActivity extends BaseTriplesActivity {
               if (state.visible) {
                 mArcadeResumeButton.setVisibility(View.VISIBLE);
                 mArcadeResumeButton.setText(
-                    getString(R.string.resume_game_arcade_format, Integer.parseInt(state.text)));
+                    getString(R.string.resume_game_arcade_format, state.triplesFound));
                 mArcadeNewGameButton.setText(R.string.start_again);
               } else {
                 mArcadeResumeButton.setVisibility(View.GONE);

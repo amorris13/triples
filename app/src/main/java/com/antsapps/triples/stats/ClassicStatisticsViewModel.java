@@ -12,7 +12,14 @@ public class ClassicStatisticsViewModel extends ViewModel {
   private final MediatorLiveData<ClassicStatistics> mStatistics = new MediatorLiveData<>();
   private final MutableLiveData<Period> mPeriod = new MutableLiveData<>(Period.ALL_TIME);
 
+  private boolean mInitialized = false;
+
   public void init(Application application) {
+    if (mInitialized) {
+      return;
+    }
+    mInitialized = true;
+
     mStatistics.addSource(application.getClassicGamesLiveData(), games -> update(application));
     mStatistics.addSource(mPeriod, period -> update(application));
   }

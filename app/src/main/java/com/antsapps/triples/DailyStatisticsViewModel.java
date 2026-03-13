@@ -15,7 +15,14 @@ public class DailyStatisticsViewModel extends ViewModel {
   private final MediatorLiveData<DailyStatisticsUtil.DailyStatistics> mDailyStatistics =
       new MediatorLiveData<>();
 
+  private boolean mInitialized = false;
+
   public void init(Application application) {
+    if (mInitialized) {
+      return;
+    }
+    mInitialized = true;
+
     mDailyGames.addSource(
         application.getDailyGamesLiveData(),
         games -> {
