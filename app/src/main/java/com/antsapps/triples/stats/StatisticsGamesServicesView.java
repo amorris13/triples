@@ -31,6 +31,7 @@ class StatisticsGamesServicesView extends FrameLayout
 
     v.findViewById(R.id.sign_in_button).setOnClickListener(this);
     v.findViewById(R.id.leaderboards).setOnClickListener(this);
+    v.findViewById(R.id.achievements).setOnClickListener(this);
 
     updateSignedInState();
   }
@@ -54,6 +55,17 @@ class StatisticsGamesServicesView extends FrameLayout
                   mActivity.startActivityForResult(task.getResult(), 26);
                 } else {
                   Log.e(TAG, "Error getting leaderboard intent", task.getException());
+                }
+              });
+    } else if (view.getId() == R.id.achievements) {
+      PlayGames.getAchievementsClient(mActivity)
+          .getAchievementsIntent()
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  mActivity.startActivityForResult(task.getResult(), 27);
+                } else {
+                  Log.e(TAG, "Error getting achievements intent", task.getException());
                 }
               });
     }
