@@ -18,8 +18,8 @@
     <!-- Card 2 Center X: 256, Y: 256. 2 triangles of 56px width with 10px spacing: 56+10+56 = 122px total width.
          (240 - 122) / 2 = 59px start offset from card X. X starts at 136+59=195.
          Y offset remains (144 - 56) / 2 = 44px. Y starts at 184+44=228. -->
-    <path d="M 195 284 L 223 228 L 251 284 Z" fill="#FF9800"/>
-    <path d="M 261 284 L 289 228 L 317 284 Z" fill="#FF9800"/>
+    <path d="M 195 284 L 223 228 L 251 284 Z" fill="#FFB300"/>
+    <path d="M 261 284 L 289 228 L 317 284 Z" fill="#FFB300"/>
   </g>
 
   <!-- Card 3 (Front-Right) -->
