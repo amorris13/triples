@@ -141,15 +141,6 @@
           android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/rate_app"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rate_app"
-            android:textAllCaps="true"
-            android:onClick="rateApp"
-            android:layout_marginRight="10dp"/>
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/statistics_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -4,7 +4,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.Button;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import com.antsapps.triples.backend.Application;
@@ -51,13 +50,11 @@ public class RateAppTest extends BaseRobolectricTest {
 
             assertThat(game.getGameState()).isEqualTo(Game.GameState.COMPLETED);
 
-            // Check for Rate App button
-            View rateAppButton =
-                activity.findViewById(R.id.view_switcher).findViewById(R.id.rate_app);
-            assertThat(rateAppButton).isNotNull();
-            assertThat(rateAppButton.getVisibility()).isEqualTo(View.VISIBLE);
-            assertThat(((Button) rateAppButton).getText().toString().equalsIgnoreCase("Rate App"))
-                .isTrue();
+            // Check that Rate App button is NOT present
+            int rateAppId =
+                activity.getResources().getIdentifier("rate_app", "id", activity.getPackageName());
+            View rateAppButton = rateAppId == 0 ? null : activity.findViewById(rateAppId);
+            assertThat(rateAppButton).isNull();
           });
     }
   }
