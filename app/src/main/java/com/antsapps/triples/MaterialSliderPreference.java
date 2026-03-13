@@ -60,17 +60,29 @@ public class MaterialSliderPreference extends Preference {
   @Override
   protected void onSetInitialValue(Object defaultValue) {
     if (defaultValue == null) {
-      mValue = getPersistedInt((int) mValue);
+      mValue = roundToStep(getPersistedInt((int) mValue));
     } else {
-      mValue = (int) defaultValue;
+      mValue = roundToStep((int) defaultValue);
       persistInt((int) mValue);
     }
   }
 
   public void setValue(int value) {
-    mValue = value;
-    persistInt(value);
-    notifyChanged();
+    float roundedValue = roundToStep(value);
+    if (mValue != roundedValue) {
+      mValue = roundedValue;
+      persistInt((int) roundedValue);
+      notifyChanged();
+    }
+  }
+
+  private float roundToStep(float value) {
+    if (mStepSize <= 0) {
+      return Math.max(mValueFrom, Math.min(mValueTo, value));
+    }
+    int steps = Math.round((value - mValueFrom) / mStepSize);
+    float rounded = mValueFrom + steps * mStepSize;
+    return Math.max(mValueFrom, Math.min(mValueTo, rounded));
   }
 
   public int getValue() {

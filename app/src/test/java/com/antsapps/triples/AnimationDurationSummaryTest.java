@@ -2,7 +2,10 @@ package com.antsapps.triples;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.content.SharedPreferences;
+import androidx.preference.PreferenceManager;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 
 public class AnimationDurationSummaryTest extends BaseRobolectricTest {
@@ -35,6 +38,34 @@ public class AnimationDurationSummaryTest extends BaseRobolectricTest {
 
             assertThat(animationDurationPref.getSummary().toString())
                 .isEqualTo(activity.getString(R.string.pref_animation_duration_summary, newValue));
+          });
+    }
+  }
+
+  @Test
+  public void testLegacyValueMigration() {
+    // Set a legacy non-discrete value
+    SharedPreferences prefs =
+        PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext());
+    String key =
+        ApplicationProvider.getApplicationContext().getString(R.string.pref_animation_speed);
+    prefs.edit().putInt(key, 867).commit();
+
+    try (ActivityScenario<SettingsActivity> scenario =
+        ActivityScenario.launch(SettingsActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            SettingsFragment fragment =
+                (SettingsFragment)
+                    activity.getSupportFragmentManager().findFragmentByTag(".SettingsFragment");
+            MaterialSliderPreference animationDurationPref = fragment.findPreference(key);
+
+            assertThat(animationDurationPref).isNotNull();
+
+            // Should be rounded to nearest multiple (900)
+            assertThat(animationDurationPref.getValue()).isEqualTo(900);
+            assertThat(animationDurationPref.getSummary().toString())
+                .isEqualTo(activity.getString(R.string.pref_animation_duration_summary, 900));
           });
     }
   }
