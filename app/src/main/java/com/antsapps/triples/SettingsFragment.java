@@ -2,7 +2,6 @@ package com.antsapps.triples;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -12,7 +11,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.SeekBarPreference;
 import com.antsapps.triples.backend.Application;
-import com.google.android.gms.games.PlayGames;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -45,7 +43,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     Preference userPref = findPreference("account_user");
     Preference signInOutPref = findPreference("account_signin_out");
-    Preference achievementsPref = findPreference("account_achievements");
     Preference deleteDataPref = findPreference("account_delete_data");
 
     if (activity.isSignedIn()) {
@@ -57,24 +54,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             activity.signOut();
             return true;
           });
-      achievementsPref.setVisible(true);
-      achievementsPref.setOnPreferenceClickListener(
-          preference -> {
-            PlayGames.getAchievementsClient(activity)
-                .getAchievementsIntent()
-                .addOnCompleteListener(
-                    task -> {
-                      if (task.isSuccessful()) {
-                        activity.startActivityForResult(task.getResult(), 27);
-                      } else {
-                        Log.e(
-                            "SettingsFragment",
-                            "Error getting achievements intent",
-                            task.getException());
-                      }
-                    });
-            return true;
-          });
     } else {
       userPref.setSummary(R.string.account_not_signed_in);
       signInOutPref.setTitle(R.string.account_sign_in);
@@ -83,7 +62,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             activity.signIn();
             return true;
           });
-      achievementsPref.setVisible(false);
     }
 
     deleteDataPref.setOnPreferenceClickListener(

@@ -12,10 +12,9 @@
     android:id="@+id/sign_in_bar"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:background="@color/color_background_tertiary"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="10dp"
+    android:padding="4dp"
     >
 
     <com.google.android.gms.common.SignInButton
@@ -48,25 +47,25 @@
       <com.google.android.material.button.MaterialButton
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
         android:text="@string/leaderboards"
         android:id="@+id/leaderboards"
-        app:icon="@drawable/games_controller_green"
+        app:icon="@drawable/ic_crown"
         app:iconPadding="8dp"
-        android:singleLine="false"
         android:layout_weight="1"
-        style="@style/Widget.Material3.Button.TextButton"
+        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
         android:layout_gravity="center"/>
 
       <com.google.android.material.button.MaterialButton
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
         android:text="@string/achievements"
         android:id="@+id/achievements"
         app:icon="@drawable/ic_trophy"
         app:iconPadding="8dp"
-        android:singleLine="false"
         android:layout_weight="1"
-        style="@style/Widget.Material3.Button.TextButton"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_gravity="center"/>
 
     </LinearLayout>
