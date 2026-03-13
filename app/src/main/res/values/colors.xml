@@ -37,8 +37,8 @@
   <color name="zen_background">#F3E5F5</color>
   <color name="zen_accent">#7B1FA2</color>
 
-  <color name="daily_background">#FFF3E0</color>
-  <color name="daily_accent">#FF9800</color>
+  <color name="daily_background">#FFF8E1</color>
+  <color name="daily_accent">#FFB300</color>
 
   <color name="color_fastest">#4CAF50</color>
   <color name="color_slowest">#F44336</color>
@@ -64,7 +64,7 @@
 
   <!-- Card Symbol Presets -->
   <color name="preset_color_0">#2196F3</color>
-  <color name="preset_color_1">#FF9800</color>
+  <color name="preset_color_1">#FFB300</color>
   <color name="preset_color_2">#F44336</color>
   <color name="preset_color_3">#4CAF50</color>
   <color name="preset_color_4">#9C27B0</color>
