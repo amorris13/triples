@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +52,7 @@ public class ZenGameTest {
     Card c3 = cardsInPlay.get(positions.get(2));
 
     // Commit triple
-    game.commitTriple(c1, c2, c3);
+    game.onValidTripleSelected(Sets.newHashSet(c1, c2, c3));
 
     // In Zen mode, cards are re-added to deck.
     // Deck size should remain the same after committing a triple (3 cards removed from play, 3

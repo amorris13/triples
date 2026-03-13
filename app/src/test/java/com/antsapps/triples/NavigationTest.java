@@ -16,6 +16,7 @@ import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
+import com.google.common.collect.Sets;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -172,10 +173,10 @@ public class NavigationTest extends BaseRobolectricTest {
     }
     ClassicGame game = ClassicGame.createFromSeed(123456789L);
     game.begin();
-    game.commitTriple(
+    game.onValidTripleSelected(Sets.newHashSet(
         game.getCardsInPlay().get(0),
         game.getCardsInPlay().get(1),
-        game.getCardsInPlay().get(2)); // Make it resumable
+        game.getCardsInPlay().get(2))); // Make it resumable
     app.addClassicGame(game);
     app.saveClassicGame(game);
 
@@ -217,10 +218,10 @@ public class NavigationTest extends BaseRobolectricTest {
     }
     ArcadeGame game = ArcadeGame.createFromSeed(987654321L);
     game.begin();
-    game.commitTriple(
+    game.onValidTripleSelected(Sets.newHashSet(
         game.getCardsInPlay().get(0),
         game.getCardsInPlay().get(1),
-        game.getCardsInPlay().get(2)); // Make it resumable
+        game.getCardsInPlay().get(2))); // Make it resumable
     app.addArcadeGame(game);
     app.saveArcadeGame(game);
 

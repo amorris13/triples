@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class ArcadeGame extends Game implements OnTimerTickListener {
 
@@ -75,9 +76,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
-
+  protected void updateDeckAfterValidTriple(Set<Card> cards) {
+    super.updateDeckAfterValidTriple(cards);
     mDeck.readdCards(cards);
   }
 

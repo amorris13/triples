@@ -59,7 +59,7 @@ public class DailyGameTest {
     List<Set<Card>> allTriples = Game.getAllValidTriples(cards);
 
     Set<Card> triple = allTriples.get(0);
-    game.commitTriple(triple.toArray(new Card[0]));
+    game.onValidTripleSelected(triple);
 
     assertThat(game.getNumTriplesFound()).isEqualTo(1);
     assertThat(game.getFoundTriples()).contains(triple);
@@ -75,8 +75,8 @@ public class DailyGameTest {
     List<Set<Card>> allTriples = Game.getAllValidTriples(cards);
 
     Set<Card> triple = allTriples.get(0);
-    game.commitTriple(triple.toArray(new Card[0]));
-    game.commitTriple(triple.toArray(new Card[0]));
+    game.onValidTripleSelected(triple);
+    game.onValidTripleSelected(triple);
 
     assertThat(game.getNumTriplesFound()).isEqualTo(1);
   }
@@ -91,7 +91,7 @@ public class DailyGameTest {
     List<Set<Card>> allTriples = Game.getAllValidTriples(cards);
 
     for (Set<Card> triple : allTriples) {
-      game.commitTriple(triple.toArray(new Card[0]));
+      game.onValidTripleSelected(triple);
     }
 
     assertThat(game.getGameState()).isEqualTo(Game.GameState.COMPLETED);

@@ -207,10 +207,6 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   @Override
   public void onValidTripleSelected(Set<Card> cards) {
-    commitTriple(Iterables.toArray(cards, Card.class));
-  }
-
-  public void commitTriple(Card... cards) {
     Preconditions.checkState(mGameState != GameState.COMPLETED, "Game is already completed.");
     ImmutableList<Card> oldCards = ImmutableList.copyOf(mCardsInPlay);
     if (!mCardsInPlay.containsAll(Lists.newArrayList(cards))) {
@@ -238,7 +234,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     updateDeckAfterValidTriple(cards);
 
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.animateFoundTriple(Sets.newHashSet(cards), hintUsed);
+      listener.animateFoundTriple(cards, hintUsed);
     }
 
     dispatchCardsInPlayUpdate(oldCards);
@@ -246,18 +242,18 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     checkIfFinished();
   }
 
-  protected boolean isValidFoundTriple(Card... cards) {
+  protected boolean isValidFoundTriple(Set<Card> cards) {
     return isValidTriple(cards);
   }
 
-  protected void recordFoundTriple(Card... cards) {
+  protected void recordFoundTriple(Set<Card> cards) {
     mNumTriplesFound++;
     mTripleFindTimes.add(mTimer.getElapsed());
   }
 
-  protected void updateDeckAfterValidTriple(Card... cards) {
-    for (int i = 0; i < 3; i++) {
-      mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
+  protected void updateDeckAfterValidTriple(Set<Card> cards) {
+    for (Card card : cards) {
+      mCardsInPlay.set(mCardsInPlay.indexOf(card), null);
     }
 
     // Add more cards up to the minimum.
