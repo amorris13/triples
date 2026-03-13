@@ -234,7 +234,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
     updateDeckAfterValidTriple(cards);
 
     for (OnUpdateCardsInPlayListener listener : mCardsInPlayListeners) {
-      listener.animateFoundTriple(Sets.newHashSet(cards), hintUsed);
+      listener.animateFoundTriple(cards, hintUsed);
     }
 
     dispatchCardsInPlayUpdate(oldCards);
