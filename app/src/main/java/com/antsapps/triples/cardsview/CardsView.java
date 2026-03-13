@@ -17,7 +17,6 @@ import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +27,6 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
   protected ImmutableList<Card> mCards = ImmutableList.of();
   protected final Map<Card, CardView> mCardViews = Maps.newHashMap();
-  private final Set<Card> mCurrentlySelected = Sets.newHashSet();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
@@ -79,7 +77,6 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
     long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
-        mCurrentlySelected.remove(oldCard);
         if (mCardViews.containsKey(oldCard)) {
           // Card was removed but not by finding it (e.g. game reset)
           CardView cardView = mCardViews.remove(oldCard);
@@ -117,14 +114,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
     cardView.setOnClickListener(
         v -> {
           if (!isEnabled()) return;
-          Card tappedCard = ((CardView) v).getCard();
-          if (mCurrentlySelected.contains(tappedCard)) {
-            mCurrentlySelected.remove(tappedCard);
-            ((CardView) v).setSelected(false);
-          } else {
-            mCurrentlySelected.add(tappedCard);
-            ((CardView) v).setSelected(true);
-          }
+          v.setSelected(!v.isSelected());
           checkSelectedCards();
         });
     return cardView;
@@ -153,18 +143,19 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   }
 
   private void checkSelectedCards() {
-    if (mCurrentlySelected.size() == 3) {
-      if (Game.isValidTriple(mCurrentlySelected)) {
-        mOnValidTripleSelectedListener.onValidTripleSelected(mCurrentlySelected);
+    Set<Card> selectedCards = getSelectedCards();
+    if (selectedCards.size() == 3) {
+      if (Game.isValidTriple(selectedCards)) {
+        mOnValidTripleSelectedListener.onValidTripleSelected(selectedCards);
       } else {
-        for (Card card : mCurrentlySelected) {
+        for (Card card : selectedCards) {
           CardView cardView = mCardViews.get(card);
           if (cardView != null) {
             cardView.onIncorrectTriple();
           }
         }
       }
-      mCurrentlySelected.clear();
+      clearSelectedCards();
     }
   }
 
@@ -194,7 +185,13 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
 
   @Override
   public Set<Card> getSelectedCards() {
-    return mCurrentlySelected;
+    Set<Card> selectedCards = Sets.newHashSet();
+    for (CardView cardView : mCardViews.values()) {
+      if (cardView.isSelected()) {
+        selectedCards.add(cardView.getCard());
+      }
+    }
+    return selectedCards;
   }
 
   @Override
@@ -206,15 +203,9 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
     }
 
     // Remove incorrectly selected cards
-    Iterator<Card> iter = mCurrentlySelected.iterator();
-    while (iter.hasNext()) {
-      Card selectedCard = iter.next();
-      if (!mCurrentlyHinted.contains(selectedCard)) {
-        CardView selectedView = mCardViews.get(selectedCard);
-        if (selectedView != null) {
-          selectedView.setSelected(false);
-        }
-        iter.remove();
+    for (CardView cv : mCardViews.values()) {
+      if (cv.isSelected() && !mCurrentlyHinted.contains(cv.getCard())) {
+        cv.setSelected(false);
       }
     }
   }
@@ -231,13 +222,9 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
 
   @Override
   public void clearSelectedCards() {
-    for (Card card : mCurrentlySelected) {
-      CardView cardView = mCardViews.get(card);
-      if (cardView != null) {
-        cardView.setSelected(false);
-      }
+    for (CardView cardView : mCardViews.values()) {
+      cardView.setSelected(false);
     }
-    mCurrentlySelected.clear();
   }
 
   public void onAlreadyFoundTriple(Set<Card> triple) {
@@ -299,6 +286,6 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
       i++;
     }
 
-    mCurrentlySelected.clear();
+    clearSelectedCards();
   }
 }
