@@ -59,29 +59,30 @@ public class ArcadeGameActivity extends BaseGameActivity
   @Override
   protected void updatePerformanceDescriptionInternal(TextView performanceTv) {
     Application app = Application.getInstance(this);
-    ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME);
+    ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME, true);
     if (allTimeStats.getNumGames() <= 1) {
       performanceTv.setText(R.string.performance_first_game);
       return;
     }
 
     int currentFound = mGame.getNumTriplesFound();
+    allTimeStats = app.getArcadeStatistics(Period.ALL_TIME, false);
     if (currentFound >= allTimeStats.getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_new_best);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)), false)
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_year);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)), false)
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_month);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)), false)
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_week);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
+        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)), false)
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_day);
     } else if (currentFound > allTimeStats.getAverageFound()) {

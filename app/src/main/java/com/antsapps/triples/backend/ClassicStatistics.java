@@ -10,8 +10,8 @@ public class ClassicStatistics extends Statistics {
   private long mFastDate;
   private long mSlowDate;
 
-  ClassicStatistics(Iterable<? extends Game> iterable, Period period) {
-    super(iterable, period);
+  ClassicStatistics(Iterable<? extends Game> iterable, Period period, boolean includeHinted) {
+    super(iterable, period, includeHinted);
     precalcStatistics();
   }
 

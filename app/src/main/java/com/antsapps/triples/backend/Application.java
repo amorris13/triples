@@ -159,8 +159,8 @@ public class Application extends OnStateChangedReporter {
         });
   }
 
-  public ClassicStatistics getClassicStatistics(Period period) {
-    return new ClassicStatistics(getCompletedClassicGames(), period);
+  public ClassicStatistics getClassicStatistics(Period period, boolean includeHinted) {
+    return new ClassicStatistics(getCompletedClassicGames(), period, includeHinted);
   }
 
   public void addArcadeGame(ArcadeGame game) {
@@ -213,8 +213,8 @@ public class Application extends OnStateChangedReporter {
         });
   }
 
-  public ArcadeStatistics getArcadeStatistics(Period period) {
-    return new ArcadeStatistics(getCompletedArcadeGames(), period);
+  public ArcadeStatistics getArcadeStatistics(Period period, boolean includeHinted) {
+    return new ArcadeStatistics(getCompletedArcadeGames(), period, includeHinted);
   }
 
   public ZenGame getZenGame(boolean isBeginner) {
