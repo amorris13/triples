@@ -7,6 +7,8 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.animation.AccelerateDecelerateInterpolator;
+
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import java.util.List;
@@ -99,6 +101,7 @@ public class VerticalCardsView extends CardsView {
               .translationX(0)
               .translationY(0)
               .setDuration(child.getAnimationDuration())
+              .setInterpolator(new AccelerateDecelerateInterpolator())
               .setListener(
                   new AnimatorListenerAdapter() {
                     @Override
