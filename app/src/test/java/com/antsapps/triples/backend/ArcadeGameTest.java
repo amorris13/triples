@@ -4,6 +4,8 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.antsapps.triples.BaseRobolectricTest;
+import com.google.common.collect.Sets;
+
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -40,7 +42,7 @@ public class ArcadeGameTest extends BaseRobolectricTest {
     Set<Card> triple = validTriples.get(0);
     int initialTriplesFound = game.getNumTriplesFound();
 
-    game.commitTriple(triple.toArray(new Card[0]));
+    game.onValidTripleSelected(triple);
 
     assertWithMessage("ArcadeGame.mNumTriplesFound should only increment by 1")
         .that(game.getNumTriplesFound())

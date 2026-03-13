@@ -191,19 +191,19 @@ public class DailyGame extends Game {
   }
 
   @Override
-  protected boolean isValidFoundTriple(Card... cards) {
-    return super.isValidFoundTriple(cards) && !mFoundTriples.contains(Sets.newHashSet(cards));
+  protected boolean isValidFoundTriple(Set<Card> cards) {
+    return super.isValidFoundTriple(cards) && !mFoundTriples.contains(cards);
   }
 
   @Override
-  protected void recordFoundTriple(Card... cards) {
-    super.recordFoundTriple();
+  protected void recordFoundTriple(Set<Card> cards) {
+    super.recordFoundTriple(cards);
     mFoundTriples.add(Sets.newHashSet(cards));
     mNumTriplesFound = mFoundTriples.size();
   }
 
   @Override
-  protected void updateDeckAfterValidTriple(Card... cards) {
+  protected void updateDeckAfterValidTriple(Set<Card> cards) {
     // Nothing to do here in puzzle mode.
   }
 

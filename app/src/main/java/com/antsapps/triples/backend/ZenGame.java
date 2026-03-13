@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class ZenGame extends Game {
 
@@ -70,16 +71,12 @@ public class ZenGame extends Game {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
+  protected void updateDeckAfterValidTriple(Set<Card> cards) {
+    super.updateDeckAfterValidTriple(cards);
 
     // Zen mode: unlimited play by recycling cards
     mDeck.readdCards(cards);
     mDeck.shuffle(new Random());
-
-    // In Zen mode, we always ensure there are cards in play and valid triples.
-    // The super.commitTriple already handles adding cards from deck if needed.
-    // Since we re-add cards to the deck, the deck will never be empty.
   }
 
   public boolean isBeginner() {

@@ -2,6 +2,8 @@ package com.antsapps.triples.backend;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.collect.Sets;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -54,7 +56,7 @@ public class DeckTest {
 
     Card card1 = new Card(0, 0, 0, 0);
     Card card2 = new Card(1, 1, 1, 1);
-    deck.readdCards(card1, card2);
+    deck.readdCards(Sets.newHashSet(card1, card2));
 
     assertThat(deck.getCardsRemaining()).isEqualTo(2);
     assertThat(deck.getNextCard()).isEqualTo(card1);

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class Deck {
 
@@ -64,7 +65,7 @@ public class Deck {
   }
 
   /** To take cards from in play and re-add them to the deck. */
-  public void readdCards(Card... cards) {
+  public void readdCards(Set<Card> cards) {
     for (Card card : cards) {
       mCards.add(card);
     }
