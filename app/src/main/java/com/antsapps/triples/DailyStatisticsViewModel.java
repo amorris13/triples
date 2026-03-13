@@ -19,14 +19,16 @@ public class DailyStatisticsViewModel extends ViewModel {
     mDailyGames.addSource(
         application.getDailyGamesLiveData(),
         games -> {
+          List<DailyGame> dailyGames = Lists.newArrayList(games);
+          Collections.sort(dailyGames, (g1, g2) -> g2.getGameDay().compareTo(g1.getGameDay()));
+          mDailyGames.setValue(dailyGames);
+
           List<DailyGame> completedGames = Lists.newArrayList();
           for (DailyGame game : games) {
             if (game.getGameState() == DailyGame.GameState.COMPLETED) {
               completedGames.add(game);
             }
           }
-          Collections.sort(completedGames, (g1, g2) -> g2.getGameDay().compareTo(g1.getGameDay()));
-          mDailyGames.setValue(completedGames);
           mDailyStatistics.setValue(DailyStatisticsUtil.computeDailyStatistics(completedGames));
         });
   }

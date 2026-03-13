@@ -86,10 +86,10 @@ public class MainViewModel extends ViewModel {
     mDailyCompleted.addSource(
         application.getDailyGamesLiveData(),
         games -> {
-          long todaySeed = DailyGame.Day.forToday().getSeed();
+          DailyGame.Day today = DailyGame.Day.forToday();
           boolean dailyCompleted = false;
           for (DailyGame dg : games) {
-            if (dg.getRandomSeed() == todaySeed && dg.getGameState() == Game.GameState.COMPLETED) {
+            if (dg.getGameDay().equals(today) && dg.getGameState() == Game.GameState.COMPLETED) {
               dailyCompleted = true;
               break;
             }
