@@ -114,7 +114,7 @@ public class MainViewModel extends ViewModel {
             if (dg.getGameDay().equals(today)) {
               todayGame = dg;
             }
-            if (dg.getGameState() == Game.GameState.COMPLETED) {
+            if (dg.getGameState() == Game.GameState.COMPLETED && !dg.areHintsUsed()) {
               completedGames.add(dg);
             }
           }
@@ -140,7 +140,7 @@ public class MainViewModel extends ViewModel {
         games -> {
           int count = 0;
           for (ClassicGame g : games) {
-            if (g.getGameState() == Game.GameState.COMPLETED) {
+            if (g.getGameState() == Game.GameState.COMPLETED && !g.areHintsUsed()) {
               count++;
             }
           }
@@ -152,7 +152,7 @@ public class MainViewModel extends ViewModel {
         games -> {
           int count = 0;
           for (ArcadeGame g : games) {
-            if (g.getGameState() == Game.GameState.COMPLETED) {
+            if (g.getGameState() == Game.GameState.COMPLETED && !g.areHintsUsed()) {
               count++;
             }
           }

@@ -8,8 +8,8 @@ public class ArcadeStatistics extends Statistics {
   private long mMostFoundDate;
   private long mLeastFoundDate;
 
-  ArcadeStatistics(Iterable<? extends ArcadeGame> iterable, Period period) {
-    super(iterable, period);
+  ArcadeStatistics(Iterable<? extends ArcadeGame> iterable, Period period, boolean includeHinted) {
+    super(iterable, period, includeHinted);
     precalcStatistics();
   }
 

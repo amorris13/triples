@@ -25,7 +25,7 @@ public class ClassicStatisticsViewModel extends ViewModel {
   }
 
   private void update(Application application) {
-    mStatistics.setValue(application.getClassicStatistics(mPeriod.getValue()));
+    mStatistics.setValue(application.getClassicStatistics(mPeriod.getValue(), false));
   }
 
   public LiveData<ClassicStatistics> getStatistics() {

@@ -25,7 +25,7 @@ public class ArcadeStatisticsViewModel extends ViewModel {
   }
 
   private void update(Application application) {
-    mStatistics.setValue(application.getArcadeStatistics(mPeriod.getValue()));
+    mStatistics.setValue(application.getArcadeStatistics(mPeriod.getValue(), false));
   }
 
   public LiveData<ArcadeStatistics> getStatistics() {

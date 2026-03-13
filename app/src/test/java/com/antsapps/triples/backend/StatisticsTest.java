@@ -66,7 +66,7 @@ public class StatisticsTest {
     Game g1 = createGame(1, now);
     List<Game> games = ImmutableList.of(g1);
 
-    Statistics stats = new Statistics(games, Period.ALL_TIME);
+    Statistics stats = new Statistics(games, Period.ALL_TIME, true);
     assertThat(stats.getNumGames()).isEqualTo(1);
     assertThat(stats.getData()).containsExactly(g1);
   }

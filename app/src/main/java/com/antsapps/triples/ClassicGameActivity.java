@@ -59,29 +59,30 @@ public class ClassicGameActivity extends BaseGameActivity
   @Override
   protected void updatePerformanceDescriptionInternal(TextView performanceTv) {
     Application app = Application.getInstance(this);
-    ClassicStatistics allTimeStats = app.getClassicStatistics(Period.ALL_TIME);
+    ClassicStatistics allTimeStats = app.getClassicStatistics(Period.ALL_TIME, true);
     if (allTimeStats.getNumGames() <= 1) {
       performanceTv.setText(R.string.performance_first_game);
       return;
     }
 
+    allTimeStats = app.getClassicStatistics(Period.ALL_TIME, false);
     long currentTime = mGame.getTimeElapsed();
     if (currentTime <= allTimeStats.getFastestTime()) {
       performanceTv.setText(R.string.performance_classic_new_best);
     } else if (currentTime
-        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)))
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)), false)
             .getFastestTime()) {
       performanceTv.setText(R.string.performance_classic_best_year);
     } else if (currentTime
-        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)))
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)), false)
             .getFastestTime()) {
       performanceTv.setText(R.string.performance_classic_best_month);
     } else if (currentTime
-        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)))
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)), false)
             .getFastestTime()) {
       performanceTv.setText(R.string.performance_classic_best_week);
     } else if (currentTime
-        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)))
+        <= app.getClassicStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)), false)
             .getFastestTime()) {
       performanceTv.setText(R.string.performance_classic_best_day);
     } else if (currentTime < allTimeStats.getAverageTime()) {
