@@ -48,6 +48,8 @@
   <string name="period">Period:</string>
   <string name="statistics">STATISTICS</string>
   <string name="statistics_format">STATISTICS (%1$d played)</string>
+  <string name="statistics_streak_format">STATISTICS (%1$d streak)</string>
+  <string name="daily_play_progress_format">Play (%1$d/%2$d found)</string>
   <string name="all_time">All Time</string>
   <string name="past_day">Past Day</string>
   <string name="past_week">Past Week</string>

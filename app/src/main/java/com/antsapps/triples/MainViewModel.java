@@ -7,8 +7,11 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
+import com.antsapps.triples.backend.DailyStatisticsUtil;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import java.util.List;
 
 public class MainViewModel extends ViewModel {
 
@@ -32,12 +35,28 @@ public class MainViewModel extends ViewModel {
     }
   }
 
+  public static class DailyState {
+    public final boolean completed;
+    public final int triplesFound;
+    public final int totalTriples;
+    public final int currentStreak;
+    public final int totalSolved;
+
+    public DailyState(
+        boolean completed, int triplesFound, int totalTriples, int currentStreak, int totalSolved) {
+      this.completed = completed;
+      this.triplesFound = triplesFound;
+      this.totalTriples = totalTriples;
+      this.currentStreak = currentStreak;
+      this.totalSolved = totalSolved;
+    }
+  }
+
   private final MediatorLiveData<ClassicResumeState> mClassicResumeState = new MediatorLiveData<>();
   private final MediatorLiveData<ArcadeResumeState> mArcadeResumeState = new MediatorLiveData<>();
-  private final MediatorLiveData<Boolean> mDailyCompleted = new MediatorLiveData<>();
+  private final MediatorLiveData<DailyState> mDailyState = new MediatorLiveData<>();
   private final MediatorLiveData<Integer> mClassicCompletedCount = new MediatorLiveData<>();
   private final MediatorLiveData<Integer> mArcadeCompletedCount = new MediatorLiveData<>();
-  private final MediatorLiveData<Integer> mDailyCompletedCount = new MediatorLiveData<>();
 
   private boolean mInitialized = false;
 
@@ -85,18 +104,35 @@ public class MainViewModel extends ViewModel {
           }
         });
 
-    mDailyCompleted.addSource(
+    mDailyState.addSource(
         application.getDailyGamesLiveData(),
         games -> {
           DailyGame.Day today = DailyGame.Day.forToday();
-          boolean dailyCompleted = false;
+          DailyGame todayGame = null;
+          List<DailyGame> completedGames = Lists.newArrayList();
           for (DailyGame dg : games) {
-            if (dg.getGameDay().equals(today) && dg.getGameState() == Game.GameState.COMPLETED) {
-              dailyCompleted = true;
-              break;
+            if (dg.getGameDay().equals(today)) {
+              todayGame = dg;
+            }
+            if (dg.getGameState() == Game.GameState.COMPLETED) {
+              completedGames.add(dg);
             }
           }
-          mDailyCompleted.setValue(dailyCompleted);
+          DailyStatisticsUtil.DailyStatistics stats =
+              DailyStatisticsUtil.computeDailyStatistics(completedGames);
+
+          boolean completed =
+              todayGame != null && todayGame.getGameState() == Game.GameState.COMPLETED;
+          int triplesFound = todayGame != null ? todayGame.getNumTriplesFound() : 0;
+          int totalTriples = todayGame != null ? todayGame.getTotalTriplesCount() : 0;
+
+          mDailyState.setValue(
+              new DailyState(
+                  completed,
+                  triplesFound,
+                  totalTriples,
+                  stats.currentStreak,
+                  stats.totalGamesCompleted));
         });
 
     mClassicCompletedCount.addSource(
@@ -122,18 +158,6 @@ public class MainViewModel extends ViewModel {
           }
           mArcadeCompletedCount.setValue(count);
         });
-
-    mDailyCompletedCount.addSource(
-        application.getDailyGamesLiveData(),
-        games -> {
-          int count = 0;
-          for (DailyGame g : games) {
-            if (g.getGameState() == Game.GameState.COMPLETED) {
-              count++;
-            }
-          }
-          mDailyCompletedCount.setValue(count);
-        });
   }
 
   public LiveData<ClassicResumeState> getClassicResumeState() {
@@ -144,8 +168,8 @@ public class MainViewModel extends ViewModel {
     return mArcadeResumeState;
   }
 
-  public LiveData<Boolean> getDailyCompleted() {
-    return mDailyCompleted;
+  public LiveData<DailyState> getDailyState() {
+    return mDailyState;
   }
 
   public LiveData<Integer> getClassicCompletedCount() {
@@ -154,9 +178,5 @@ public class MainViewModel extends ViewModel {
 
   public LiveData<Integer> getArcadeCompletedCount() {
     return mArcadeCompletedCount;
-  }
-
-  public LiveData<Integer> getDailyCompletedCount() {
-    return mDailyCompletedCount;
   }
 }
