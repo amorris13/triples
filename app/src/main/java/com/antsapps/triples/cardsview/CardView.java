@@ -18,11 +18,11 @@ import android.view.animation.CycleInterpolator;
 import android.view.animation.Interpolator;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.R;
+import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
 
 public class CardView extends View {
 
-  public static final int DEFAULT_ANIMATION_DURATION_MS = 800;
   public static final float HEIGHT_OVER_WIDTH = (float) ((Math.sqrt(5) - 1) / 2);
 
   private Card mCard;
@@ -208,7 +208,7 @@ public class CardView extends View {
         animate()
             .scaleX(1.15f)
             .scaleY(1.15f)
-            .setDuration(getAnimationDuration())
+            .setDuration(SettingsFragment.getAnimationDuration(getContext()))
             .setInterpolator(new CycleInterpolator(0.5f))
             .start();
       }
@@ -229,7 +229,7 @@ public class CardView extends View {
       animate()
           .scaleX(1.2f)
           .scaleY(1.2f)
-          .setDuration(getAnimationDuration())
+          .setDuration(SettingsFragment.getAnimationDuration(getContext()))
           .setInterpolator(new CycleInterpolator(0.5f))
           .setListener(
               new AnimatorListenerAdapter() {
@@ -244,7 +244,7 @@ public class CardView extends View {
     } else {
       animate()
           .rotation(5)
-          .setDuration(getAnimationDuration())
+          .setDuration(SettingsFragment.getAnimationDuration(getContext()))
           .setInterpolator(new CycleInterpolator(4))
           .setListener(
               new AnimatorListenerAdapter() {
@@ -268,7 +268,7 @@ public class CardView extends View {
         .scaleX((float) target.width() / getWidth())
         .scaleY((float) target.height() / getHeight())
         .setInterpolator(interpolator)
-        .setDuration(getAnimationDuration())
+        .setDuration(SettingsFragment.getAnimationDuration(getContext()))
         .setListener(
             new AnimatorListenerAdapter() {
               @Override
@@ -279,12 +279,6 @@ public class CardView extends View {
               }
             })
         .start();
-  }
-
-  public int getAnimationDuration() {
-    return PreferenceManager.getDefaultSharedPreferences(getContext())
-        .getInt(
-            getContext().getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS);
   }
 
   public void setShouldSlideIn() {

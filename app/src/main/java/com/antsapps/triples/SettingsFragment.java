@@ -1,7 +1,9 @@
 package com.antsapps.triples;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Button;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -14,8 +16,10 @@ import com.antsapps.triples.backend.Application;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-public class SettingsFragment extends PreferenceFragmentCompat
-    implements Preference.OnPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat {
+
+  public static final int DEFAULT_ANIMATION_DURATION = 8;
+  public static final int ANIMATION_DURATION_MULTIPLIER = 100;
 
   private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -25,16 +29,39 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
-    setupListeners(getPreferenceScreen());
+    setupAnalyticsLogging(getPreferenceScreen());
 
-    SeekBarPreference animationDurationPref =
-        findPreference(getString(R.string.pref_animation_speed));
-    if (animationDurationPref != null) {
-      animationDurationPref.setSummary(
-          getString(R.string.pref_animation_duration_summary, animationDurationPref.getValue()));
-    }
+    updateAnimationDurationSummary();
+    findPreference(getString(R.string.pref_animation_speed)).setOnPreferenceChangeListener((preference, newValue) -> {
+      updateAnimationDurationSummary();
+      logAnalyticsEventOnPreferenceChange(preference, newValue);
+      return true;
+    });
+
+    findPreference(getString(R.string.pref_theme)).setOnPreferenceChangeListener((preference, newValue) -> {
+        String theme = (String) newValue;
+        switch (theme) {
+          case "light":
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            break;
+          case "dark":
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            break;
+          case "system":
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            break;
+        }
+        logAnalyticsEventOnPreferenceChange(preference, newValue);
+        return true;
+      });
 
     updateAccountPreferences();
+  }
+
+  private void updateAnimationDurationSummary() {
+    SeekBarPreference animationDurationPreference = findPreference(getString(R.string.pref_animation_speed));
+    animationDurationPreference.setSummary(
+          getString(R.string.pref_animation_duration_summary, animationDurationPreference.getValue() * ANIMATION_DURATION_MULTIPLIER));
   }
 
   public void updateAccountPreferences() {
@@ -96,41 +123,30 @@ public class SettingsFragment extends PreferenceFragmentCompat
     CloudSaveManager.deleteFromCloud(activity);
   }
 
-  private void setupListeners(PreferenceGroup group) {
+  private void setupAnalyticsLogging(PreferenceGroup group) {
     for (int i = 0; i < group.getPreferenceCount(); i++) {
       Preference p = group.getPreference(i);
       if (p instanceof PreferenceGroup) {
-        setupListeners((PreferenceGroup) p);
+        setupAnalyticsLogging((PreferenceGroup) p);
       } else {
-        p.setOnPreferenceChangeListener(this);
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
+          logAnalyticsEventOnPreferenceChange(preference, newValue);
+          return true;
+        });
       }
     }
   }
 
-  @Override
-  public boolean onPreferenceChange(Preference preference, Object newValue) {
-    if (preference.getKey().equals(getString(R.string.pref_animation_speed))) {
-      preference.setSummary(
-          getString(R.string.pref_animation_duration_summary, (Integer) newValue));
-    }
-    if (preference.getKey().equals(getString(R.string.pref_theme))) {
-      String theme = (String) newValue;
-      switch (theme) {
-        case "light":
-          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-          break;
-        case "dark":
-          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-          break;
-        case "system":
-          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-          break;
-      }
-    }
+  private void logAnalyticsEventOnPreferenceChange(Preference preference, Object newValue) {
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.SETTING_NAME, preference.getKey());
     bundle.putString(AnalyticsConstants.Param.SETTING_VALUE, String.valueOf(newValue));
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.CHANGE_SETTING, bundle);
-    return true;
+  }
+
+  public static int getAnimationDuration(Context context) {
+    return Math.min(PreferenceManager.getDefaultSharedPreferences(context)
+            .getInt(
+                    context.getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION), 10) * ANIMATION_DURATION_MULTIPLIER;
   }
 }

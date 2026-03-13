@@ -25,11 +25,10 @@
       android:summary="%s" />
 
   <androidx.preference.SeekBarPreference
-      android:defaultValue="800"
+      android:defaultValue="8"
       android:key="@string/pref_animation_speed"
       android:min="0"
-      android:max="1000"
-      app:seekBarIncrement="100"
+      android:max="10"
       app:adjustable="true"
       app:showSeekBarValue="false"
       app:updatesContinuously="true"

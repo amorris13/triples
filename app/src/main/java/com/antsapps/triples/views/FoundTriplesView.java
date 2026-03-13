@@ -1,7 +1,6 @@
 package com.antsapps.triples.views;
 
 import static com.antsapps.triples.cardsview.CardBackgroundDrawable.INSET_DP;
-import static com.antsapps.triples.cardsview.CardView.DEFAULT_ANIMATION_DURATION_MS;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -10,11 +9,11 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import com.antsapps.triples.R;
+import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
@@ -166,7 +165,7 @@ public class FoundTriplesView extends View {
     }
     mHighlightIndex = index;
     mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
-    mHighlightAnimator.setDuration(getAnimationDuration());
+    mHighlightAnimator.setDuration(SettingsFragment.getAnimationDuration(getContext()));
     mHighlightAnimator.setInterpolator(new CycleInterpolator(0.5f));
     mHighlightAnimator.addUpdateListener(
         animation -> {
@@ -174,12 +173,6 @@ public class FoundTriplesView extends View {
           invalidate();
         });
     mHighlightAnimator.start();
-  }
-
-  private int getAnimationDuration() {
-    return PreferenceManager.getDefaultSharedPreferences(getContext())
-        .getInt(
-            getContext().getString(R.string.pref_animation_speed), DEFAULT_ANIMATION_DURATION_MS);
   }
 
   public Map<Card, Rect> getCardBoundsInWindow(int index, Set<Card> triple) {
