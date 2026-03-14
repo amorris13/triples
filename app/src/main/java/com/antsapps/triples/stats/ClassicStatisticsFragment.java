@@ -54,6 +54,11 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
   }
 
   @Override
+  public void onIncludeHintedChange(boolean includeHinted) {
+    mViewModel.setIncludeHinted(includeHinted);
+  }
+
+  @Override
   protected ArrayAdapter<Game> createArrayAdapter() {
     return new StatisticsGamesArrayAdapter(getActivity(), Lists.<Game>newArrayList());
   }

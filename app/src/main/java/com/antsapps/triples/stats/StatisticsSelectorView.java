@@ -24,6 +24,10 @@ class StatisticsSelectorView extends FrameLayout {
     void onPeriodChange(Period period);
   }
 
+  interface OnIncludeHintedChangeListener {
+    void onIncludeHintedChange(boolean includeHinted);
+  }
+
   private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
   private static final Map<String, Period> PERIODS = Maps.newLinkedHashMap();
@@ -31,6 +35,7 @@ class StatisticsSelectorView extends FrameLayout {
   private Period mCurrentPeriod;
 
   private OnPeriodChangeListener mOnPeriodChangeListener;
+  private OnIncludeHintedChangeListener mOnIncludeHintedChangeListener;
 
   public StatisticsSelectorView(Context context) {
     this(context, null);
@@ -48,6 +53,17 @@ class StatisticsSelectorView extends FrameLayout {
     View v = inflater.inflate(R.layout.stats_selector, this);
 
     initSpinner();
+    initCheckbox();
+  }
+
+  private void initCheckbox() {
+    android.widget.CheckBox includeHintedCheckbox = findViewById(R.id.include_hinted_checkbox);
+    includeHintedCheckbox.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> {
+          if (mOnIncludeHintedChangeListener != null) {
+            mOnIncludeHintedChangeListener.onIncludeHintedChange(isChecked);
+          }
+        });
   }
 
   private void initSpinner() {
@@ -100,6 +116,10 @@ class StatisticsSelectorView extends FrameLayout {
 
   public void setOnPeriodChangeListener(OnPeriodChangeListener listener) {
     mOnPeriodChangeListener = listener;
+  }
+
+  public void setOnIncludeHintedChangeListener(OnIncludeHintedChangeListener listener) {
+    mOnIncludeHintedChangeListener = listener;
   }
 
   protected void setAccentColor(int accentColor) {

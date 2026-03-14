@@ -25,9 +25,6 @@ public class ClassicStatistics extends Statistics {
     long slowDate = 0;
 
     for (Game game : mGamesInPeriod) {
-      if (game.areHintsUsed()) {
-        continue;
-      }
       long time = game.getTimeElapsed();
       long date = game.getDateStarted().getTime();
 
@@ -50,16 +47,11 @@ public class ClassicStatistics extends Statistics {
       }
     }
 
-    int numGamesNotHinted = 0;
-    for (Game game : mGamesInPeriod) {
-      if (!game.areHintsUsed()) {
-        numGamesNotHinted++;
-      }
-    }
+    int numGames = mGamesInPeriod.size();
 
     mFastTime = fastTime;
     mSlowTime = slowTime;
-    mAverageTime = numGamesNotHinted != 0 ? sumTime / numGamesNotHinted : 0;
+    mAverageTime = numGames != 0 ? sumTime / numGames : 0;
     mStartDate = startDate;
     mFinishDate = finishDate;
     mFastDate = fastDate;

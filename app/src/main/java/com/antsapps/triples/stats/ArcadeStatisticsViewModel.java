@@ -11,6 +11,7 @@ import com.antsapps.triples.backend.Period;
 public class ArcadeStatisticsViewModel extends ViewModel {
   private final MediatorLiveData<ArcadeStatistics> mStatistics = new MediatorLiveData<>();
   private final MutableLiveData<Period> mPeriod = new MutableLiveData<>(Period.ALL_TIME);
+  private final MutableLiveData<Boolean> mIncludeHinted = new MutableLiveData<>(false);
 
   private boolean mInitialized = false;
 
@@ -22,10 +23,12 @@ public class ArcadeStatisticsViewModel extends ViewModel {
 
     mStatistics.addSource(application.getArcadeGamesLiveData(), games -> update(application));
     mStatistics.addSource(mPeriod, period -> update(application));
+    mStatistics.addSource(mIncludeHinted, includeHinted -> update(application));
   }
 
   private void update(Application application) {
-    mStatistics.setValue(application.getArcadeStatistics(mPeriod.getValue(), false));
+    mStatistics.setValue(
+        application.getArcadeStatistics(mPeriod.getValue(), mIncludeHinted.getValue()));
   }
 
   public LiveData<ArcadeStatistics> getStatistics() {
@@ -34,5 +37,9 @@ public class ArcadeStatisticsViewModel extends ViewModel {
 
   public void setPeriod(Period period) {
     mPeriod.setValue(period);
+  }
+
+  public void setIncludeHinted(boolean includeHinted) {
+    mIncludeHinted.setValue(includeHinted);
   }
 }
