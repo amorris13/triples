@@ -18,8 +18,17 @@
 
   <Spinner
     android:id="@+id/period_spinner"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
+    android:layout_weight="1"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical" />
+
+  <CheckBox
+    android:id="@+id/include_hinted_checkbox"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:text="@string/include_hinted_games"
+    android:textSize="12sp" />
 
 </LinearLayout>

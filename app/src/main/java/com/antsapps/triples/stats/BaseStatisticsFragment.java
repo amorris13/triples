@@ -22,6 +22,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
     implements OnStatisticsChangeListener,
         OnComparatorChangeListener<Game>,
         StatisticsSelectorView.OnPeriodChangeListener,
+        StatisticsSelectorView.OnIncludeHintedChangeListener,
         CsvExportable {
   private BaseTriplesActivity mGameListActivity;
   private Comparator<Game> mComparator = GameProperty.TIME_ELAPSED.createReversableComparator();
@@ -50,6 +51,7 @@ public abstract class BaseStatisticsFragment extends BaseGameListFragment
 
     mSelectorView = new StatisticsSelectorView(getActivity());
     mSelectorView.setOnPeriodChangeListener(this);
+    mSelectorView.setOnIncludeHintedChangeListener(this);
     listView.addHeaderView(mSelectorView, null, false);
 
     int accentColor = getAccentColor();
