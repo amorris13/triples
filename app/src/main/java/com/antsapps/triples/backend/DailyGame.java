@@ -237,7 +237,7 @@ public class DailyGame extends Game {
       return false;
     }
 
-    Set<Card> selectedCards = mGameRenderer.getSelectedCards();
+    Set<Card> selectedCards = Sets.newHashSet(mGameRenderer.getSelectedCards());
 
     // Calculate target triple
     Set<Card> targetTriple = null;

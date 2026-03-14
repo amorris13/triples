@@ -6,7 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.CardCustomizationUtils;
+import com.antsapps.triples.R;
 
 public class PatternIconView extends View {
 
@@ -29,21 +31,30 @@ public class PatternIconView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    mPaint.setShader(
-        CardCustomizationUtils.getCustomShadedShader(getContext(), Color.BLACK, mPattern));
+    int color = ContextCompat.getColor(getContext(), R.color.color_text_primary);
+    if (mPattern.equals("none")) {
+      mPaint.setShader(null);
+      mPaint.setColor(Color.TRANSPARENT);
+    } else if (mPattern.equals("solid")) {
+      mPaint.setShader(null);
+      mPaint.setColor(color);
+    } else {
+      mPaint.setShader(CardCustomizationUtils.getCustomShadedShader(getContext(), color, mPattern));
+    }
     mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
+
     int width = getWidth();
     int height = getHeight();
     int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
-    canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
+    int size = Math.min(width, height) - 2 * margin;
 
-    // Draw outline for better visibility of the pattern area
-    mPaint.setShader(null);
-    mPaint.setColor(Color.BLACK);
-    mPaint.setStyle(Paint.Style.STROKE);
-    mPaint.setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
-    canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
+    int left = (width - size) / 2;
+    int top = (height - size) / 2;
+    int right = left + size;
+    int bottom = top + size;
+
+    canvas.drawRect(left, top, right, bottom, mPaint);
   }
 
   @Override

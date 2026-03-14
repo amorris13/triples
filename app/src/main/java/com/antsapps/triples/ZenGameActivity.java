@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.TextView;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
+import java.util.List;
 
 /** Zen/Beginner Game */
 public class ZenGameActivity extends BaseGameActivity {
@@ -30,6 +32,8 @@ public class ZenGameActivity extends BaseGameActivity {
     if (isBeginner) {
       stub.setLayoutResource(R.layout.beginner_statusbar);
       stub.inflate();
+      mTripleExplanationView.setVisibility(View.VISIBLE);
+      updateTripleExplanation(new java.util.ArrayList<>(mCardsView.getSelectedCards()));
     } else {
       stub.setVisibility(View.GONE);
       findViewById(R.id.bottom_separator).setVisibility(View.GONE);
@@ -49,6 +53,15 @@ public class ZenGameActivity extends BaseGameActivity {
 
   @Override
   protected void updatePerformanceDescriptionInternal(TextView performanceTv) {}
+
+  @Override
+  protected void updateTripleExplanation(List<Card> selectedCards) {
+    if (mGame.isBeginner()) {
+      super.updateTripleExplanation(selectedCards);
+    } else {
+      mTripleExplanationView.setVisibility(View.GONE);
+    }
+  }
 
   @Override
   protected String getGameType() {
