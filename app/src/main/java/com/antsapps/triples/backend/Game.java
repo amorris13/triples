@@ -42,7 +42,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
     void clearSelectedCards();
 
-    Set<Card> getSelectedCards();
+    java.util.Collection<Card> getSelectedCards();
   }
 
   /**
@@ -488,7 +488,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       return false;
     }
 
-    Set<Card> selectedCards = mGameRenderer.getSelectedCards();
+    Set<Card> selectedCards = Sets.newHashSet(mGameRenderer.getSelectedCards());
 
     // Calculate target triple
     Set<Card> targetTriple;

@@ -32,8 +32,18 @@ public class ColorIconView extends View {
     mPaint.setColor(mColor);
     mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
+
+    int width = getWidth();
+    int height = getHeight();
     int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
-    canvas.drawRect(margin, margin, getWidth() - margin, getHeight() - margin, mPaint);
+    int size = Math.min(width, height) - 2 * margin;
+
+    int left = (width - size) / 2;
+    int top = (height - size) / 2;
+    int right = left + size;
+    int bottom = top + size;
+
+    canvas.drawRect(left, top, right, bottom, mPaint);
   }
 
   @Override

@@ -58,8 +58,18 @@ public class ShapeIconView extends View {
       mDrawable.getPaint().setStyle(Paint.Style.STROKE);
       float density = getResources().getDisplayMetrics().density;
       mDrawable.getPaint().setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
+
+      int width = getWidth();
+      int height = getHeight();
       int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
-      mDrawable.setBounds(new Rect(margin, margin, getWidth() - margin, getHeight() - margin));
+      int size = Math.min(width, height) - 2 * margin;
+
+      int left = (width - size) / 2;
+      int top = (height - size) / 2;
+      int right = left + size;
+      int bottom = top + size;
+
+      mDrawable.setBounds(new Rect(left, top, right, bottom));
       mDrawable.draw(canvas);
     }
   }

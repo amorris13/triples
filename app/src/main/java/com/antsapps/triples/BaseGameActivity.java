@@ -201,19 +201,19 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
     mCardsView.animateTripleFoundToOffscreen(triple);
     mLastTriple = ImmutableList.copyOf(triple);
-    updateTripleExplanation(mCardsView.getSelectedCards());
+    updateTripleExplanation(new java.util.ArrayList<>(mCardsView.getSelectedCards()));
     logTripleFoundEvent(hintUsed);
   }
 
   @Override
-  public void onSelectionChanged(Set<Card> selectedCards) {
+  public void onSelectionChanged(List<Card> selectedCards) {
     if (selectedCards.size() == 3) {
       mLastTriple = ImmutableList.copyOf(selectedCards);
     }
     updateTripleExplanation(selectedCards);
   }
 
-  protected void updateTripleExplanation(Set<Card> selectedCards) {
+  protected void updateTripleExplanation(List<Card> selectedCards) {
     if (mTripleExplanationView == null) return;
     if (!selectedCards.isEmpty() || mLastTriple == null) {
       mTripleExplanationView.setCards(ImmutableList.copyOf(selectedCards));

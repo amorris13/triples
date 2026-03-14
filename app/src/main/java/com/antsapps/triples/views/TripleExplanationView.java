@@ -83,9 +83,8 @@ public class TripleExplanationView extends LinearLayout {
     for (int i = 0; i < 3; i++) {
       if (i < cards.size()) {
         Card card = cards.get(i);
-        mCardViews[i].setVisibility(VISIBLE);
-        mCardViews[i].setCard(card);
         mCardViews[i].setAlpha(1f);
+        mCardViews[i].setCard(card);
         mNumberIcons[i].setVisibility(VISIBLE);
         mNumberIcons[i].setNumber(card.mNumber);
         mShapeIcons[i].setVisibility(VISIBLE);
@@ -97,7 +96,6 @@ public class TripleExplanationView extends LinearLayout {
         mColorIcons[i].setColor(CardCustomizationUtils.getColorForId(getContext(), card.mColor));
       } else {
         mCardViews[i].setAlpha(0.05f);
-        mCardViews[i].setVisibility(VISIBLE);
         mCardViews[i].setCard(new Card(0, 0, 0, 0)); // Dummy card for background
         mNumberIcons[i].setVisibility(INVISIBLE);
         mShapeIcons[i].setVisibility(INVISIBLE);
