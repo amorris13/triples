@@ -166,7 +166,7 @@ function generateCardBack() {
       <rect x="${BLEED + 32}" y="${BLEED + 32}" width="${CARD_WIDTH - 64}" height="${CARD_HEIGHT - 64}" rx="${CORNER_RADIUS - 16}" fill="none" stroke="${tealColor}" stroke-width="2" />
 
       <!-- Center Logo -->
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="140" fill="${tealColor}">Triples</text>
+      <text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="140" fill="${tealColor}">Triples</text>
     </svg>
   `;
 }
