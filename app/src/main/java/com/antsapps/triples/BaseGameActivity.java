@@ -26,6 +26,7 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
 import com.antsapps.triples.util.AnalyticsUtil;
+import com.antsapps.triples.views.TripleExplanationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
@@ -37,7 +38,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public abstract class BaseGameActivity extends BaseTriplesActivity
-    implements OnUpdateGameStateListener, OnUpdateCardsInPlayListener {
+    implements OnUpdateGameStateListener,
+        OnUpdateCardsInPlayListener,
+        CardsView.OnSelectionChangedListener {
 
   public static final int VIEW_CARDS = 0;
   public static final int VIEW_PAUSED = 1;
@@ -46,6 +49,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   private ViewAnimator mViewAnimator;
   protected CardsView mCardsView;
   private GameState mGameState;
+  protected TripleExplanationView mTripleExplanationView;
+  private ImmutableList<Card> mLastTriple;
 
   private boolean shouldSubmitScoreOnSignIn = false;
 
@@ -55,32 +60,39 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.game);
 
+    mCardsView = (CardsView) findViewById(R.id.cards_view);
+    mTripleExplanationView = findViewById(R.id.triple_explanation);
+    if (mCardsView != null) {
+      mCardsView.setOnSelectionChangedListener(this);
+    }
+
     init(savedInstanceState);
 
     getGame().addOnUpdateGameStateListener(this);
     GameState originalGameState = getGame().getGameState();
 
-    mCardsView = (CardsView) findViewById(R.id.cards_view);
-    if (mCardsView.getOnValidTripleSelectedListener() == null) {
-      mCardsView.setOnValidTripleSelectedListener(getGame());
-    }
-    mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
-    getGame().setGameRenderer(mCardsView);
+    if (mCardsView != null) {
+      if (mCardsView.getOnValidTripleSelectedListener() == null) {
+        mCardsView.setOnValidTripleSelectedListener(getGame());
+      }
+      mCardsView.setEnabled(originalGameState != GameState.COMPLETED);
+      getGame().setGameRenderer(mCardsView);
 
-    mCardsView
-        .getViewTreeObserver()
-        .addOnGlobalLayoutListener(
-            new ViewTreeObserver.OnGlobalLayoutListener() {
-              @Override
-              public void onGlobalLayout() {
-                // Ensure width and height are greater than 0 before refreshing drawables
-                if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
-                  mCardsView.refreshDrawables();
-                  mCardsView.updateBounds();
-                  mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+      mCardsView
+          .getViewTreeObserver()
+          .addOnGlobalLayoutListener(
+              new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                  // Ensure width and height are greater than 0 before refreshing drawables
+                  if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+                    mCardsView.refreshDrawables();
+                    mCardsView.updateBounds();
+                    mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                  }
                 }
-              }
-            });
+              });
+    }
 
     mViewAnimator = findViewById(R.id.view_switcher);
 
@@ -188,7 +200,28 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   @Override
   public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
     mCardsView.animateTripleFoundToOffscreen(triple);
+    mLastTriple = ImmutableList.copyOf(triple);
+    updateTripleExplanation(mCardsView.getSelectedCards());
     logTripleFoundEvent(hintUsed);
+  }
+
+  @Override
+  public void onSelectionChanged(Set<Card> selectedCards) {
+    if (selectedCards.size() == 3) {
+      mLastTriple = ImmutableList.copyOf(selectedCards);
+    }
+    updateTripleExplanation(selectedCards);
+  }
+
+  protected void updateTripleExplanation(Set<Card> selectedCards) {
+    if (mTripleExplanationView == null) return;
+    if (selectedCards.size() == 3) {
+      mTripleExplanationView.setCards(ImmutableList.copyOf(selectedCards));
+    } else if (selectedCards.isEmpty() && mLastTriple != null) {
+      mTripleExplanationView.setCards(mLastTriple);
+    } else {
+      mTripleExplanationView.setVisibility(View.GONE);
+    }
   }
 
   protected void logTripleFoundEvent(boolean hintUsed) {

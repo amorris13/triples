@@ -25,10 +25,16 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   private static final String TAG = "CardsView";
 
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
+
+  public interface OnSelectionChangedListener {
+    void onSelectionChanged(Set<Card> selectedCards);
+  }
+
   protected ImmutableList<Card> mCards = ImmutableList.of();
   protected final Map<Card, CardView> mCardViews = Maps.newHashMap();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
+  private OnSelectionChangedListener mOnSelectionChangedListener;
   protected Rect mOffScreenLocation = new Rect();
 
   /**
@@ -144,6 +150,9 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
 
   private void checkSelectedCards() {
     Set<Card> selectedCards = getSelectedCards();
+    if (mOnSelectionChangedListener != null) {
+      mOnSelectionChangedListener.onSelectionChanged(selectedCards);
+    }
     if (selectedCards.size() == 3) {
       if (Game.isValidTriple(selectedCards)) {
         mOnValidTripleSelectedListener.onValidTripleSelected(selectedCards);
@@ -181,6 +190,10 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
 
   public OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
     return mOnValidTripleSelectedListener;
+  }
+
+  public void setOnSelectionChangedListener(OnSelectionChangedListener listener) {
+    mOnSelectionChangedListener = listener;
   }
 
   @Override
@@ -224,6 +237,9 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   public void clearSelectedCards() {
     for (CardView cardView : mCardViews.values()) {
       cardView.setSelected(false);
+    }
+    if (mOnSelectionChangedListener != null) {
+      mOnSelectionChangedListener.onSelectionChanged(Sets.<Card>newHashSet());
     }
   }
 

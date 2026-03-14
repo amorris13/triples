@@ -135,6 +135,11 @@ public class CardCustomizationUtils {
     return new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
   }
 
+  public static String getShadedPattern(Context context) {
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+    return sharedPref.getString(context.getString(R.string.pref_shaded_pattern), "stripes");
+  }
+
   public static int[] initIntArray(int value, int length) {
     int[] arr = new int[length];
     Arrays.fill(arr, value);
