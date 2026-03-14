@@ -9,7 +9,6 @@ const CARD_WIDTH = 1050; // 3.5" at 300 DPI
 const CARD_HEIGHT = 750; // 2.5" at 300 DPI
 
 const CORNER_RADIUS = 38; // ~1/8 inch at 300 DPI
-const INSET = 60; // Padding from card edge to symbols
 const STROKE_WIDTH = 20;
 const STRIPE_WIDTH = 10;
 
@@ -25,18 +24,22 @@ if (!fs.existsSync(OUTPUT_DIR)) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
 
-function getShapePath(shapeId, x, y, size) {
+function getShapePath(shapeId, x, y, size, fill = null, stroke = null, strokeWidth = null) {
   const cx = x + size / 2;
   const cy = y + size / 2;
   const r = size / 2;
+  const fillAttr = fill ? `fill="${fill}"` : '';
+  const strokeAttr = stroke ? `stroke="${stroke}"` : '';
+  const strokeWidthAttr = strokeWidth ? `stroke-width="${strokeWidth}"` : '';
+  const attrs = `${fillAttr} ${strokeAttr} ${strokeWidthAttr}`;
 
   switch (shapeId) {
     case 0: // Square
-      return `<rect x="${x}" y="${y}" width="${size}" height="${size}" />`;
+      return `<rect x="${x}" y="${y}" width="${size}" height="${size}" ${attrs} />`;
     case 1: // Circle
-      return `<circle cx="${cx}" cy="${cy}" r="${r}" />`;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" ${attrs} />`;
     case 2: // Triangle
-      return `<path d="M ${x},${y + size} L ${cx},${y} L ${x + size},${y + size} Z" />`;
+      return `<path d="M ${x},${y + size} L ${cx},${y} L ${x + size},${y + size} Z" ${attrs} />`;
     default:
       return '';
   }
@@ -92,9 +95,7 @@ function generateSVG(number, shape, pattern, colorId) {
   return `
     <svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       ${defs}
-      <!-- Bleed area and background -->
       <rect x="0" y="0" width="${WIDTH}" height="${HEIGHT}" fill="white" />
-      <!-- Card border (at cut line) -->
       <rect x="${BLEED}" y="${BLEED}" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="${CORNER_RADIUS}" fill="none" stroke="#C4C7CC" stroke-width="1" />
       <g fill="${fillAttr}" stroke="${color}" stroke-width="${STROKE_WIDTH}">
         ${symbols}
@@ -103,8 +104,70 @@ function generateSVG(number, shape, pattern, colorId) {
   `;
 }
 
+function generateCardBack() {
+  const bgColor = '#F8F6F0';
+  const tealColor = '#00424E';
+  const symbolSize = 25;
+  const spacing = 45;
+
+  let symbols = '';
+  for (let x = -spacing; x < WIDTH + spacing; x += spacing) {
+    for (let y = -spacing; y < HEIGHT + spacing; y += spacing) {
+      const offsetX = (Math.floor(y / spacing) % 2 === 0) ? 0 : spacing / 2;
+      const posX = x + offsetX;
+
+      const dx = posX - WIDTH / 2;
+      const dy = y - HEIGHT / 2;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      const centerVoidRadius = 250;
+      const fadeStart = 450;
+      let opacity = 1;
+      if (dist < centerVoidRadius) {
+        opacity = 0;
+      } else if (dist < fadeStart) {
+        opacity = (dist - centerVoidRadius) / (fadeStart - centerVoidRadius);
+      }
+
+      if (opacity > 0) {
+        const shapeId = Math.floor(Math.random() * 3);
+        let color;
+        // Match reference image: Square -> Blue, Circle -> Red, Triangle -> Orange
+        if (shapeId === 0) color = COLORS[0]; // Square -> Blue
+        else if (shapeId === 1) color = COLORS[2]; // Circle -> Red
+        else color = COLORS[1]; // Triangle -> Orange
+
+        const rotation = (Math.random() - 0.5) * 40; // Reduced rotation
+        symbols += `<g transform="translate(${posX},${y}) rotate(${rotation})">
+          ${getShapePath(shapeId, -symbolSize/2, -symbolSize/2, symbolSize, color, null, null)}
+        </g>`;
+      }
+    }
+  }
+
+  return `
+    <svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="${WIDTH}" height="${HEIGHT}" fill="${bgColor}" />
+
+      <!-- Symbol pattern -->
+      <g opacity="0.4">
+        ${symbols}
+      </g>
+
+      <!-- Inner frame -->
+      <rect x="${BLEED + 20}" y="${BLEED + 20}" width="${CARD_WIDTH - 40}" height="${CARD_HEIGHT - 40}" rx="${CORNER_RADIUS - 10}" fill="none" stroke="${tealColor}" stroke-width="5" />
+      <rect x="${BLEED + 32}" y="${BLEED + 32}" width="${CARD_WIDTH - 64}" height="${CARD_HEIGHT - 64}" rx="${CORNER_RADIUS - 16}" fill="none" stroke="${tealColor}" stroke-width="2" />
+
+      <!-- Center Logo -->
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="140" fill="${tealColor}">Triples</text>
+    </svg>
+  `;
+}
+
 async function run() {
-  console.log('Generating 81 poker-sized cards with bleed...');
+  console.log('Generating 81 poker-sized cards and card back...');
+
+  // Generate 81 cards
   for (let n = 0; n < 3; n++) {
     for (let s = 0; s < 3; s++) {
       for (let p = 0; p < 3; p++) {
@@ -115,12 +178,19 @@ async function run() {
           const pngPath = path.join(OUTPUT_DIR, `${baseName}.png`);
 
           fs.writeFileSync(svgPath, svg);
-          await sharp(Buffer.from(svg))
-            .toFile(pngPath);
+          await sharp(Buffer.from(svg)).toFile(pngPath);
         }
       }
     }
   }
+
+  // Generate card back
+  const backSvg = generateCardBack();
+  const backSvgPath = path.join(OUTPUT_DIR, 'card_back.svg');
+  const backPngPath = path.join(OUTPUT_DIR, 'card_back.png');
+  fs.writeFileSync(backSvgPath, backSvg);
+  await sharp(Buffer.from(backSvg)).toFile(backPngPath);
+
   console.log('Done!');
 }
 
