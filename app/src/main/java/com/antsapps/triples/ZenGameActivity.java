@@ -32,7 +32,8 @@ public class ZenGameActivity extends BaseGameActivity {
     if (isBeginner) {
       stub.setLayoutResource(R.layout.beginner_statusbar);
       stub.inflate();
-      mTripleExplanationView.setVisibility(View.GONE); // Default to gone until selection
+      mTripleExplanationView.setVisibility(View.VISIBLE);
+      updateTripleExplanation(mCardsView.getSelectedCards());
     } else {
       stub.setVisibility(View.GONE);
       findViewById(R.id.bottom_separator).setVisibility(View.GONE);

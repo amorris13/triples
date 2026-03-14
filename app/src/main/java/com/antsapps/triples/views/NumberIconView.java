@@ -2,13 +2,14 @@ package com.antsapps.triples.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import com.antsapps.triples.CardCustomizationUtils;
+import com.antsapps.triples.R;
 
 public class NumberIconView extends View {
   private int mNumber;
@@ -30,7 +31,7 @@ public class NumberIconView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    mPaint.setColor(Color.BLACK);
+    mPaint.setColor(ContextCompat.getColor(getContext(), R.color.color_text_primary));
     mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
     int width = getWidth();

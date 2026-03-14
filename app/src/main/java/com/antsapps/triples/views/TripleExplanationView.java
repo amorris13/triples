@@ -14,6 +14,7 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.PatternIconView;
 import com.antsapps.triples.cardsview.ShapeIconView;
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public class TripleExplanationView extends LinearLayout {
@@ -75,45 +76,80 @@ public class TripleExplanationView extends LinearLayout {
   }
 
   public void setCards(List<Card> cards) {
-    if (cards == null || cards.size() < 3) {
-      setVisibility(GONE);
-      return;
+    if (cards == null) {
+      cards = ImmutableList.of();
     }
     setVisibility(VISIBLE);
     for (int i = 0; i < 3; i++) {
-      Card card = cards.get(i);
-      mCardViews[i].setCard(card);
-      mNumberIcons[i].setNumber(card.mNumber);
-      mShapeIcons[i].setShape(CardCustomizationUtils.getShapeForId(getContext(), card.mShape));
-      mShapeIcons[i].setColor(ContextCompat.getColor(getContext(), R.color.color_text_primary));
-      mPatternIcons[i].setPattern(getPatternName(card.mPattern));
-      mColorIcons[i].setColor(CardCustomizationUtils.getColorForId(getContext(), card.mColor));
+      if (i < cards.size()) {
+        Card card = cards.get(i);
+        mCardViews[i].setVisibility(VISIBLE);
+        mCardViews[i].setCard(card);
+        mCardViews[i].setAlpha(1f);
+        mNumberIcons[i].setVisibility(VISIBLE);
+        mNumberIcons[i].setNumber(card.mNumber);
+        mShapeIcons[i].setVisibility(VISIBLE);
+        mShapeIcons[i].setShape(CardCustomizationUtils.getShapeForId(getContext(), card.mShape));
+        mShapeIcons[i].setColor(ContextCompat.getColor(getContext(), R.color.color_text_primary));
+        mPatternIcons[i].setVisibility(VISIBLE);
+        mPatternIcons[i].setPattern(getPatternName(card.mPattern));
+        mColorIcons[i].setVisibility(VISIBLE);
+        mColorIcons[i].setColor(CardCustomizationUtils.getColorForId(getContext(), card.mColor));
+      } else {
+        mCardViews[i].setAlpha(0.05f);
+        mCardViews[i].setVisibility(VISIBLE);
+        mCardViews[i].setCard(new Card(0, 0, 0, 0)); // Dummy card for background
+        mNumberIcons[i].setVisibility(INVISIBLE);
+        mShapeIcons[i].setVisibility(INVISIBLE);
+        mPatternIcons[i].setVisibility(INVISIBLE);
+        mColorIcons[i].setVisibility(INVISIBLE);
+      }
     }
 
-    updateRow(
-        mNumberConclusion,
-        mNumberResult,
-        cards.get(0).mNumber,
-        cards.get(1).mNumber,
-        cards.get(2).mNumber);
-    updateRow(
-        mShapeConclusion,
-        mShapeResult,
-        cards.get(0).mShape,
-        cards.get(1).mShape,
-        cards.get(2).mShape);
-    updateRow(
-        mPatternConclusion,
-        mPatternResult,
-        cards.get(0).mPattern,
-        cards.get(1).mPattern,
-        cards.get(2).mPattern);
-    updateRow(
-        mColorConclusion,
-        mColorResult,
-        cards.get(0).mColor,
-        cards.get(1).mColor,
-        cards.get(2).mColor);
+    if (cards.size() == 3) {
+      mNumberConclusion.setVisibility(VISIBLE);
+      mShapeConclusion.setVisibility(VISIBLE);
+      mPatternConclusion.setVisibility(VISIBLE);
+      mColorConclusion.setVisibility(VISIBLE);
+      mNumberResult.setVisibility(VISIBLE);
+      mShapeResult.setVisibility(VISIBLE);
+      mPatternResult.setVisibility(VISIBLE);
+      mColorResult.setVisibility(VISIBLE);
+
+      updateRow(
+          mNumberConclusion,
+          mNumberResult,
+          cards.get(0).mNumber,
+          cards.get(1).mNumber,
+          cards.get(2).mNumber);
+      updateRow(
+          mShapeConclusion,
+          mShapeResult,
+          cards.get(0).mShape,
+          cards.get(1).mShape,
+          cards.get(2).mShape);
+      updateRow(
+          mPatternConclusion,
+          mPatternResult,
+          cards.get(0).mPattern,
+          cards.get(1).mPattern,
+          cards.get(2).mPattern);
+      updateRow(
+          mColorConclusion,
+          mColorResult,
+          cards.get(0).mColor,
+          cards.get(1).mColor,
+          cards.get(2).mColor);
+    } else {
+      mNumberConclusion.setVisibility(GONE);
+      mShapeConclusion.setVisibility(GONE);
+      mPatternConclusion.setVisibility(GONE);
+      mColorConclusion.setVisibility(GONE);
+      mNumberResult.setVisibility(GONE);
+      mShapeResult.setVisibility(GONE);
+      mPatternResult.setVisibility(GONE);
+      mColorResult.setVisibility(GONE);
+    }
   }
 
   private void updateRow(TextView conclusionTv, ImageView resultIv, int v0, int v1, int v2) {

@@ -215,12 +215,10 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   protected void updateTripleExplanation(Set<Card> selectedCards) {
     if (mTripleExplanationView == null) return;
-    if (selectedCards.size() == 3) {
+    if (!selectedCards.isEmpty() || mLastTriple == null) {
       mTripleExplanationView.setCards(ImmutableList.copyOf(selectedCards));
-    } else if (selectedCards.isEmpty() && mLastTriple != null) {
-      mTripleExplanationView.setCards(mLastTriple);
     } else {
-      mTripleExplanationView.setVisibility(View.GONE);
+      mTripleExplanationView.setCards(mLastTriple);
     }
   }
 

@@ -2,7 +2,6 @@ package com.antsapps.triples.cardsview;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
@@ -16,7 +15,7 @@ import com.antsapps.triples.CardCustomizationUtils;
 public class ShapeIconView extends View {
 
   private Shape mShape;
-  private int mColor = Color.BLACK;
+  private int mColor = android.graphics.Color.BLACK;
   private final ShapeDrawable mDrawable = new ShapeDrawable();
 
   public ShapeIconView(Context context) {
