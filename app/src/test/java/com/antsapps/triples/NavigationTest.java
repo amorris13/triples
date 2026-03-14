@@ -15,10 +15,9 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
+import com.antsapps.triples.backend.FakeGameRenderer;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -269,25 +268,7 @@ public class NavigationTest extends BaseRobolectricTest {
 
             // Add a game in progress reactively
             ClassicGame game = ClassicGame.createFromSeed(12345L);
-            game.setGameRenderer(
-                new Game.GameRenderer() {
-                  @Override
-                  public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-
-                  @Override
-                  public void addHint(Card card) {}
-
-                  @Override
-                  public void clearHintedCards() {}
-
-                  @Override
-                  public void clearSelectedCards() {}
-
-                  @Override
-                  public java.util.Set<Card> getSelectedCards() {
-                    return Sets.newHashSet();
-                  }
-                });
+            game.setGameRenderer(new FakeGameRenderer());
             game.begin();
             java.util.Set<Card> triple = game.getAllValidTriples(game.getCardsInPlay()).get(0);
             game.commitTriple(triple.toArray(new Card[0]));
@@ -339,25 +320,7 @@ public class NavigationTest extends BaseRobolectricTest {
 
             // Start a daily game and find a triple
             DailyGame game = app.getDailyGameForDate(DailyGame.Day.forToday());
-            game.setGameRenderer(
-                new Game.GameRenderer() {
-                  @Override
-                  public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-
-                  @Override
-                  public void addHint(Card card) {}
-
-                  @Override
-                  public void clearHintedCards() {}
-
-                  @Override
-                  public void clearSelectedCards() {}
-
-                  @Override
-                  public java.util.Set<Card> getSelectedCards() {
-                    return Sets.newHashSet();
-                  }
-                });
+            game.setGameRenderer(new FakeGameRenderer());
             java.util.Set<Card> triple = game.getAllValidTriples(game.getCardsInPlay()).get(0);
             game.commitTriple(triple.toArray(new Card[0]));
             app.saveDailyGame(game);

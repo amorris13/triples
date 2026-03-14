@@ -13,25 +13,7 @@ public class ArcadeGameTest extends BaseRobolectricTest {
   @Test
   public void testCommitTripleIncrementsOnce() {
     ArcadeGame game = ArcadeGame.createFromSeed(12345L);
-    game.setGameRenderer(
-        new Game.GameRenderer() {
-          @Override
-          public void updateCardsInPlay(com.google.common.collect.ImmutableList<Card> newCards) {}
-
-          @Override
-          public void addHint(Card card) {}
-
-          @Override
-          public void clearHintedCards() {}
-
-          @Override
-          public void clearSelectedCards() {}
-
-          @Override
-          public Set<Card> getSelectedCards() {
-            return new java.util.HashSet<>();
-          }
-        });
+    game.setGameRenderer(new FakeGameRenderer());
 
     List<Card> cardsInPlay = game.getCardsInPlay();
     List<Set<Card>> validTriples = Game.getAllValidTriples(cardsInPlay);
