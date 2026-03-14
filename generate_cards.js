@@ -111,22 +111,29 @@ function generateCardBack() {
   const spacing = 45;
 
   let symbols = '';
+  const voidHalfWidth = 320;
+  const voidHalfHeight = 110;
+  const voidCornerRadius = 50;
+  const fadeWidth = 150;
+
   for (let x = -spacing; x < WIDTH + spacing; x += spacing) {
     for (let y = -spacing; y < HEIGHT + spacing; y += spacing) {
       const offsetX = (Math.floor(y / spacing) % 2 === 0) ? 0 : spacing / 2;
       const posX = x + offsetX;
 
-      const dx = posX - WIDTH / 2;
-      const dy = y - HEIGHT / 2;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dx = Math.abs(posX - WIDTH / 2);
+      const dy = Math.abs(y - HEIGHT / 2);
 
-      const centerVoidRadius = 250;
-      const fadeStart = 450;
+      // Calculate distance from a rounded rectangle
+      const qx = Math.max(dx - voidHalfWidth + voidCornerRadius, 0);
+      const qy = Math.max(dy - voidHalfHeight + voidCornerRadius, 0);
+      const dist = Math.sqrt(qx * qx + qy * qy) - voidCornerRadius;
+
       let opacity = 1;
-      if (dist < centerVoidRadius) {
+      if (dist < 0) {
         opacity = 0;
-      } else if (dist < fadeStart) {
-        opacity = (dist - centerVoidRadius) / (fadeStart - centerVoidRadius);
+      } else if (dist < fadeWidth) {
+        opacity = dist / fadeWidth;
       }
 
       if (opacity > 0) {
