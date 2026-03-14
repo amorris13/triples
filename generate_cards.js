@@ -2,12 +2,16 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-const WIDTH = 1050;
-const HEIGHT = 649;
-const CORNER_RADIUS = 26; // 4dp * 6.5 approx
-const INSET = 52; // 8dp * 6.5 approx
-const STROKE_WIDTH = 20; // 3dp * 6.5 approx
-const STRIPE_WIDTH = 10; // 1.5dp * 6.5 approx
+const WIDTH = 1122; // 3.5" + 2 * 36px bleed
+const HEIGHT = 822; // 2.5" + 2 * 36px bleed
+const BLEED = 36;
+const CARD_WIDTH = 1050; // 3.5" at 300 DPI
+const CARD_HEIGHT = 750; // 2.5" at 300 DPI
+
+const CORNER_RADIUS = 38; // ~1/8 inch at 300 DPI
+const INSET = 60; // Padding from card edge to symbols
+const STROKE_WIDTH = 20;
+const STRIPE_WIDTH = 10;
 
 const COLORS = [
   '#2196F3', // Blue
@@ -40,10 +44,8 @@ function getShapePath(shapeId, x, y, size) {
 
 function generateSVG(number, shape, pattern, colorId) {
   const color = COLORS[colorId];
-  const cardWidth = WIDTH - 2 * INSET;
-  const cardHeight = HEIGHT - 2 * INSET;
 
-  const halfSideLength = WIDTH / 10;
+  const halfSideLength = CARD_WIDTH / 10;
   const size = halfSideLength * 2;
   const gap = halfSideLength / 2;
 
@@ -90,7 +92,10 @@ function generateSVG(number, shape, pattern, colorId) {
   return `
     <svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       ${defs}
-      <rect x="${INSET}" y="${INSET}" width="${cardWidth}" height="${cardHeight}" rx="${CORNER_RADIUS}" fill="white" stroke="#C4C7CC" stroke-width="1" />
+      <!-- Bleed area and background -->
+      <rect x="0" y="0" width="${WIDTH}" height="${HEIGHT}" fill="white" />
+      <!-- Card border (at cut line) -->
+      <rect x="${BLEED}" y="${BLEED}" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="${CORNER_RADIUS}" fill="none" stroke="#C4C7CC" stroke-width="1" />
       <g fill="${fillAttr}" stroke="${color}" stroke-width="${STROKE_WIDTH}">
         ${symbols}
       </g>
@@ -99,7 +104,7 @@ function generateSVG(number, shape, pattern, colorId) {
 }
 
 async function run() {
-  console.log('Generating 81 cards...');
+  console.log('Generating 81 poker-sized cards with bleed...');
   for (let n = 0; n < 3; n++) {
     for (let s = 0; s < 3; s++) {
       for (let p = 0; p < 3; p++) {
