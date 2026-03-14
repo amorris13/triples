@@ -38,10 +38,10 @@ public class NumberIconView extends View {
     int height = getHeight();
     int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
 
-    int radius = (int) (2 * density);
+    int radius = (int) (3 * density);
     int centerX = width / 2;
     int centerY = height / 2;
-    int gap = (int) (6 * density);
+    int gap = (int) (8 * density);
 
     switch (mNumber) {
       case 0:

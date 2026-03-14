@@ -141,14 +141,14 @@ public class TripleExplanationView extends LinearLayout {
           cards.get(1).mColor,
           cards.get(2).mColor);
     } else {
-      mNumberConclusion.setVisibility(GONE);
-      mShapeConclusion.setVisibility(GONE);
-      mPatternConclusion.setVisibility(GONE);
-      mColorConclusion.setVisibility(GONE);
-      mNumberResult.setVisibility(GONE);
-      mShapeResult.setVisibility(GONE);
-      mPatternResult.setVisibility(GONE);
-      mColorResult.setVisibility(GONE);
+      mNumberConclusion.setVisibility(INVISIBLE);
+      mShapeConclusion.setVisibility(INVISIBLE);
+      mPatternConclusion.setVisibility(INVISIBLE);
+      mColorConclusion.setVisibility(INVISIBLE);
+      mNumberResult.setVisibility(INVISIBLE);
+      mShapeResult.setVisibility(INVISIBLE);
+      mPatternResult.setVisibility(INVISIBLE);
+      mColorResult.setVisibility(INVISIBLE);
     }
   }
 

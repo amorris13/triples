@@ -47,13 +47,6 @@ public class PatternIconView extends View {
     int height = getHeight();
     int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
     canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
-
-    // Draw outline for better visibility of the pattern area
-    mPaint.setShader(null);
-    mPaint.setColor(color);
-    mPaint.setStyle(Paint.Style.STROKE);
-    mPaint.setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
-    canvas.drawRect(margin, margin, width - margin, height - margin, mPaint);
   }
 
   @Override
