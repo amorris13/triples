@@ -7,11 +7,9 @@ import com.antsapps.triples.BaseRobolectricTest;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.ArcadeStatistics;
-import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.ClassicStatistics;
-import com.google.common.collect.ImmutableList;
-import java.util.Set;
+import com.antsapps.triples.backend.FakeGameRenderer;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,32 +31,13 @@ public class IncludeHintedStatisticsTest extends BaseRobolectricTest {
     mArcadeViewModel.init(mApplication);
   }
 
-  private static class StubRenderer implements com.antsapps.triples.backend.Game.GameRenderer {
-    @Override
-    public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-
-    @Override
-    public void addHint(Card card) {}
-
-    @Override
-    public void clearHintedCards() {}
-
-    @Override
-    public void clearSelectedCards() {}
-
-    @Override
-    public Set<Card> getSelectedCards() {
-      return java.util.Collections.emptySet();
-    }
-  }
-
   @Test
   public void classicStatistics_includeHinted() {
     AtomicReference<ClassicStatistics> statsRef = new AtomicReference<>();
     mClassicViewModel.getStatistics().observeForever(statsRef::set);
 
     ClassicGame game = ClassicGame.createFromSeed(1234L);
-    game.setGameRenderer(new StubRenderer());
+    game.setGameRenderer(new FakeGameRenderer());
     game.finish();
     game.addHint(); // This sets mHintsUsed = true
     mApplication.addClassicGame(game);
@@ -81,7 +60,7 @@ public class IncludeHintedStatisticsTest extends BaseRobolectricTest {
     mArcadeViewModel.getStatistics().observeForever(statsRef::set);
 
     ArcadeGame game = ArcadeGame.createFromSeed(1234L);
-    game.setGameRenderer(new StubRenderer());
+    game.setGameRenderer(new FakeGameRenderer());
     game.finish();
     game.addHint(); // This sets mHintsUsed = true
     mApplication.addArcadeGame(game);

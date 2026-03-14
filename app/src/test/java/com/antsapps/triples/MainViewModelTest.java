@@ -8,9 +8,8 @@ import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
+import com.antsapps.triples.backend.FakeGameRenderer;
 import com.antsapps.triples.backend.Game;
-import com.google.common.collect.ImmutableList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,25 +21,6 @@ public class MainViewModelTest extends BaseRobolectricTest {
 
   private Application mApplication;
   private MainViewModel mViewModel;
-
-  private static class TestRenderer implements Game.GameRenderer {
-    @Override
-    public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-
-    @Override
-    public void addHint(Card card) {}
-
-    @Override
-    public void clearHintedCards() {}
-
-    @Override
-    public void clearSelectedCards() {}
-
-    @Override
-    public Set<Card> getSelectedCards() {
-      return Collections.emptySet();
-    }
-  }
 
   @Before
   public void setUp() {
@@ -55,7 +35,7 @@ public class MainViewModelTest extends BaseRobolectricTest {
     mViewModel.getClassicResumeState().observeForever(state::set);
 
     ClassicGame game = ClassicGame.createFromSeed(1234L);
-    game.setGameRenderer(new TestRenderer());
+    game.setGameRenderer(new FakeGameRenderer());
     game.begin();
     // Find a valid triple from the cards in play
     List<Set<Card>> allTriples = Game.getAllValidTriples(game.getCardsInPlay());
@@ -76,7 +56,7 @@ public class MainViewModelTest extends BaseRobolectricTest {
     mViewModel.getClassicResumeState().observeForever(state::set);
 
     ClassicGame game = ClassicGame.createFromSeed(1234L);
-    game.setGameRenderer(new TestRenderer());
+    game.setGameRenderer(new FakeGameRenderer());
     game.begin();
     mApplication.addClassicGame(game);
 
@@ -92,7 +72,7 @@ public class MainViewModelTest extends BaseRobolectricTest {
     mViewModel.getArcadeResumeState().observeForever(state::set);
 
     ArcadeGame game = ArcadeGame.createFromSeed(1234L);
-    game.setGameRenderer(new TestRenderer());
+    game.setGameRenderer(new FakeGameRenderer());
     game.begin();
     // Find a valid triple from the cards in play
     List<Set<Card>> allTriples = Game.getAllValidTriples(game.getCardsInPlay());
@@ -113,7 +93,7 @@ public class MainViewModelTest extends BaseRobolectricTest {
     mViewModel.getDailyState().observeForever(state::set);
 
     DailyGame todayGame = mApplication.getDailyGameForDate(DailyGame.Day.forToday());
-    todayGame.setGameRenderer(new TestRenderer());
+    todayGame.setGameRenderer(new FakeGameRenderer());
     todayGame.begin();
     // Find a valid triple from the cards in play
     List<Set<Card>> allTriples = Game.getAllValidTriples(todayGame.getCardsInPlay());

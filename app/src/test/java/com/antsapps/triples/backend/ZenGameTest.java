@@ -4,38 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.junit.Test;
 
 public class ZenGameTest {
 
-  private static class TestRenderer implements Game.GameRenderer {
-    @Override
-    public void updateCardsInPlay(ImmutableList<Card> newCards) {}
-
-    @Override
-    public void addHint(Card card) {}
-
-    @Override
-    public void clearHintedCards() {}
-
-    @Override
-    public Set<Card> getSelectedCards() {
-      return Collections.emptySet();
-    }
-
-    @Override
-    public void clearSelectedCards() {}
-  }
-
   @Test
   public void testZenGameRecycling() {
     ZenGame game = ZenGame.createFromSeed(12345L, false);
-    game.setGameRenderer(new TestRenderer());
+    game.setGameRenderer(new FakeGameRenderer());
     game.begin();
 
     int initialDeckSize = game.mDeck.getCardsRemaining();
