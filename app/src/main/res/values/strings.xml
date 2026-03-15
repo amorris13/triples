@@ -120,10 +120,10 @@
   <string name="performance_classic_new_best">New personal best!</string>
   <string name="performance_classic_better_than_average">Faster than your average!</string>
   <string name="performance_classic_worse_than_average">Keep practicing to beat your average!</string>
-  <string name="performance_classic_best_year">Best score this year!</string>
-  <string name="performance_classic_best_month">Best score this month!</string>
-  <string name="performance_classic_best_week">Best score this week!</string>
-  <string name="performance_classic_best_day">Best score today!</string>
+  <string name="performance_classic_best_year">Fastest time this year!</string>
+  <string name="performance_classic_best_month">Fastest time this month!</string>
+  <string name="performance_classic_best_week">Fastest time this week!</string>
+  <string name="performance_classic_best_day">Fastest time today!</string>
   <string name="performance_arcade_new_best">New record for triples found!</string>
   <string name="performance_arcade_better_than_average">More triples than your average!</string>
   <string name="performance_arcade_worse_than_average">Keep practicing to beat your average!</string>
