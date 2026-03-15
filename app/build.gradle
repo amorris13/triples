@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'io.github.takahirom.roborazzi'
 
 android {
     namespace 'com.antsapps.triples'
@@ -40,8 +41,15 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            all {
+                systemProperty 'robolectric.graphicsMode', 'NATIVE'
+            }
         }
     }
+}
+
+roborazzi {
+    outputDir = file("src/test/screenshots")
 }
 
 dependencies {
@@ -51,6 +59,9 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.15.2'
     testImplementation 'androidx.test:core:1.6.1'
     testImplementation 'androidx.test.ext:junit:1.2.1'
+    testImplementation 'io.github.takahirom.roborazzi:roborazzi:1.40.1'
+    testImplementation 'io.github.takahirom.roborazzi:roborazzi-junit-rule:1.40.1'
+    testImplementation 'androidx.compose.ui:ui-test-junit4:1.7.8'
     implementation 'com.google.guava:guava:33.5.0-android'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
