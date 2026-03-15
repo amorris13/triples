@@ -14,7 +14,7 @@
 
             <!-- Cards Row -->
             <TableRow
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -27,25 +27,31 @@
 
                 <com.antsapps.triples.views.SingleScaledCardView
                     android:id="@+id/card_icon_0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
                 <com.antsapps.triples.views.SingleScaledCardView
                     android:id="@+id/card_icon_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
                 <com.antsapps.triples.views.SingleScaledCardView
                     android:id="@+id/card_icon_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <View />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:text="@string/all_different"
+                    android:textSize="12sp"
+                    android:visibility="invisible" />
             </TableRow>
 
             <!-- Number Row -->
             <TableRow
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -55,20 +61,20 @@
                     android:text="@string/number"
                     android:textSize="14sp" />
 
-                <com.antsapps.triples.views.NumberIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/number_icon_0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.NumberIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/number_icon_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.NumberIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/number_icon_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -93,7 +99,7 @@
 
             <!-- Shape Row -->
             <TableRow
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -103,20 +109,20 @@
                     android:text="@string/shape"
                     android:textSize="14sp" />
 
-                <com.antsapps.triples.views.ShapeIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/shape_icon_0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.ShapeIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/shape_icon_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.ShapeIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/shape_icon_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -141,7 +147,7 @@
 
             <!-- Pattern Row -->
             <TableRow
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -151,20 +157,20 @@
                     android:text="@string/pattern"
                     android:textSize="14sp" />
 
-                <com.antsapps.triples.views.PatternIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/pattern_icon_0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.PatternIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/pattern_icon_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.PatternIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/pattern_icon_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -189,7 +195,7 @@
 
             <!-- Color Row -->
             <TableRow
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -199,20 +205,20 @@
                     android:text="@string/colour"
                     android:textSize="14sp" />
 
-                <com.antsapps.triples.views.ColorIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/color_icon_0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.ColorIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/color_icon_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
-                <com.antsapps.triples.views.ColorIconView
+                <com.antsapps.triples.views.PropertyIllustrationView
                     android:id="@+id/color_icon_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"

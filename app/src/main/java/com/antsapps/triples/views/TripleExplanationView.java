@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardsView;
@@ -17,10 +16,10 @@ import java.util.List;
 public class TripleExplanationView extends FrameLayout {
 
   private SingleScaledCardView[] mCardIcons = new SingleScaledCardView[3];
-  private NumberIconView[] mNumberIcons = new NumberIconView[3];
-  private ShapeIconView[] mShapeIcons = new ShapeIconView[3];
-  private PatternIconView[] mPatternIcons = new PatternIconView[3];
-  private ColorIconView[] mColorIcons = new ColorIconView[3];
+  private PropertyIllustrationView[] mNumberIcons = new PropertyIllustrationView[3];
+  private PropertyIllustrationView[] mShapeIcons = new PropertyIllustrationView[3];
+  private PropertyIllustrationView[] mPatternIcons = new PropertyIllustrationView[3];
+  private PropertyIllustrationView[] mColorIcons = new PropertyIllustrationView[3];
 
   private TextView mNumberConclusion;
   private TextView mShapeConclusion;
@@ -72,9 +71,7 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   public void setCardsView(CardsView cardsView) {
-    for (SingleScaledCardView cardIcon : mCardIcons) {
-      cardIcon.setCardsView(cardsView);
-    }
+    // SingleScaledCardView no longer needs cardsView
   }
 
   public void setCards(List<Card> cards) {
@@ -96,10 +93,10 @@ public class TripleExplanationView extends FrameLayout {
 
       if (hasCard) {
         mCardIcons[i].setCard(card);
-        mNumberIcons[i].setNumber(card.mNumber);
-        mShapeIcons[i].setShape(CardCustomizationUtils.getShapeForId(getContext(), card.mShape));
-        mPatternIcons[i].setPattern(card.mPattern);
-        mColorIcons[i].setColor(CardCustomizationUtils.getColorForId(getContext(), card.mColor));
+        mNumberIcons[i].setProperty(PropertyIllustrationView.PropertyType.NUMBER, card.mNumber);
+        mShapeIcons[i].setProperty(PropertyIllustrationView.PropertyType.SHAPE, card.mShape);
+        mPatternIcons[i].setProperty(PropertyIllustrationView.PropertyType.PATTERN, card.mPattern);
+        mColorIcons[i].setProperty(PropertyIllustrationView.PropertyType.COLOR, card.mColor);
       }
     }
 
