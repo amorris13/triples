@@ -30,7 +30,8 @@ public class ZenGameActivity extends BaseGameActivity {
     if (isBeginner) {
       stub.setLayoutResource(R.layout.beginner_statusbar);
       stub.inflate();
-      mExplanationView.setVisibility(View.VISIBLE);
+      mExplanationEnabled = true;
+      updateExplanation(mCardsView.getSelectedCards());
     } else {
       stub.setVisibility(View.GONE);
       findViewById(R.id.bottom_separator).setVisibility(View.GONE);

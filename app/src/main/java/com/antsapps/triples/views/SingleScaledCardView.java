@@ -8,11 +8,13 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
+import com.antsapps.triples.cardsview.CardsView;
 
 public class SingleScaledCardView extends View {
 
   private Card mCard;
   private CardView mCardView;
+  private CardsView mCardsView;
 
   public SingleScaledCardView(Context context) {
     this(context, null);
@@ -20,6 +22,11 @@ public class SingleScaledCardView extends View {
 
   public SingleScaledCardView(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
+  }
+
+  public void setCardsView(CardsView cardsView) {
+    mCardsView = cardsView;
+    invalidate();
   }
 
   public void setCard(Card card) {
@@ -46,8 +53,17 @@ public class SingleScaledCardView extends View {
       return;
     }
 
-    int width = getWidth();
-    int height = getHeight();
-    mCardView.drawCardContent(canvas, new Rect(0, 0, width, height));
+    int cardWidth = (mCardsView != null) ? mCardsView.cardWidth() : 0;
+    if (cardWidth == 0) {
+      cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
+    }
+    int cardHeight = (int) (cardWidth * CardView.HEIGHT_OVER_WIDTH);
+
+    float scale = (float) getWidth() / cardWidth;
+
+    canvas.save();
+    canvas.scale(scale, scale);
+    mCardView.drawCardContent(canvas, new Rect(0, 0, cardWidth, cardHeight));
+    canvas.restore();
   }
 }

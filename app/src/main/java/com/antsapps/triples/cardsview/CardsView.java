@@ -128,9 +128,9 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
     return cardView;
   }
 
-  protected abstract int cardWidth();
+  public abstract int cardWidth();
 
-  protected abstract int cardHeight();
+  public abstract int cardHeight();
 
   protected abstract void logValidTriple();
 

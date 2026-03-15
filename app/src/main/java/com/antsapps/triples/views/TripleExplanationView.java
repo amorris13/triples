@@ -2,9 +2,13 @@ package com.antsapps.triples.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,21 +19,27 @@ import java.util.List;
 
 public class TripleExplanationView extends FrameLayout {
 
-  private SingleScaledCardView[] mCardIcons = new SingleScaledCardView[3];
-  private PropertyIllustrationView[] mNumberIcons = new PropertyIllustrationView[3];
-  private PropertyIllustrationView[] mShapeIcons = new PropertyIllustrationView[3];
-  private PropertyIllustrationView[] mPatternIcons = new PropertyIllustrationView[3];
-  private PropertyIllustrationView[] mColorIcons = new PropertyIllustrationView[3];
+  private static class PropertyRow {
+    PropertyIllustrationView[] icons = new PropertyIllustrationView[3];
+    TextView conclusion;
+    ImageView tickCross;
+    PropertyIllustrationView.PropertyType type;
 
-  private TextView mNumberConclusion;
-  private TextView mShapeConclusion;
-  private TextView mPatternConclusion;
-  private TextView mColorConclusion;
+    PropertyRow(PropertyIllustrationView.PropertyType type) {
+      this.type = type;
+    }
+  }
 
-  private ImageView mNumberTickCross;
-  private ImageView mShapeTickCross;
-  private ImageView mPatternTickCross;
-  private ImageView mColorTickCross;
+  private SingleScaledCardView[] mCardViews = new SingleScaledCardView[3];
+  private PropertyRow[] mPropertyRows =
+      new PropertyRow[] {
+        new PropertyRow(PropertyIllustrationView.PropertyType.NUMBER),
+        new PropertyRow(PropertyIllustrationView.PropertyType.SHAPE),
+        new PropertyRow(PropertyIllustrationView.PropertyType.PATTERN),
+        new PropertyRow(PropertyIllustrationView.PropertyType.COLOR)
+      };
+
+  private CardsView mCardsView;
 
   public TripleExplanationView(@NonNull Context context) {
     this(context, null);
@@ -39,64 +49,128 @@ public class TripleExplanationView extends FrameLayout {
     super(context, attrs);
     LayoutInflater.from(context).inflate(R.layout.triple_explanation, this, true);
 
-    mCardIcons[0] = findViewById(R.id.card_icon_0);
-    mCardIcons[1] = findViewById(R.id.card_icon_1);
-    mCardIcons[2] = findViewById(R.id.card_icon_2);
+    TableLayout table = findViewById(R.id.table_layout);
+    mCardViews[0] = findViewById(R.id.card_0);
+    mCardViews[1] = findViewById(R.id.card_1);
+    mCardViews[2] = findViewById(R.id.card_2);
 
-    mNumberIcons[0] = findViewById(R.id.number_icon_0);
-    mNumberIcons[1] = findViewById(R.id.number_icon_1);
-    mNumberIcons[2] = findViewById(R.id.number_icon_2);
+    for (PropertyRow row : mPropertyRows) {
+      table.addView(createRow(context, row));
+    }
+  }
 
-    mShapeIcons[0] = findViewById(R.id.shape_icon_0);
-    mShapeIcons[1] = findViewById(R.id.shape_icon_1);
-    mShapeIcons[2] = findViewById(R.id.shape_icon_2);
+  private TableRow createRow(Context context, PropertyRow propertyRow) {
+    TableRow row = new TableRow(context);
+    row.setLayoutParams(
+        new TableLayout.LayoutParams(
+            TableLayout.LayoutParams.MATCH_PARENT,
+            (int) (48 * context.getResources().getDisplayMetrics().density)));
+    row.setGravity(Gravity.CENTER_VERTICAL);
 
-    mPatternIcons[0] = findViewById(R.id.pattern_icon_0);
-    mPatternIcons[1] = findViewById(R.id.pattern_icon_1);
-    mPatternIcons[2] = findViewById(R.id.pattern_icon_2);
+    // Label
+    TextView label = new TextView(context);
+    label.setLayoutParams(
+        new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+    label.setPadding(0, 0, (int) (8 * context.getResources().getDisplayMetrics().density), 0);
+    label.setTextSize(14);
+    switch (propertyRow.type) {
+      case NUMBER:
+        label.setText(R.string.number);
+        break;
+      case SHAPE:
+        label.setText(R.string.shape);
+        break;
+      case PATTERN:
+        label.setText(R.string.pattern);
+        break;
+      case COLOR:
+        label.setText(R.string.colour);
+        break;
+    }
+    row.addView(label);
 
-    mColorIcons[0] = findViewById(R.id.color_icon_0);
-    mColorIcons[1] = findViewById(R.id.color_icon_1);
-    mColorIcons[2] = findViewById(R.id.color_icon_2);
+    // Illustrations
+    for (int i = 0; i < 3; i++) {
+      PropertyIllustrationView illustration = new PropertyIllustrationView(context);
+      TableRow.LayoutParams lp =
+          new TableRow.LayoutParams(
+              0, (int) (40 * context.getResources().getDisplayMetrics().density));
+      illustration.setLayoutParams(lp);
+      propertyRow.icons[i] = illustration;
+      row.addView(illustration);
+    }
 
-    mNumberConclusion = findViewById(R.id.number_conclusion);
-    mShapeConclusion = findViewById(R.id.shape_conclusion);
-    mPatternConclusion = findViewById(R.id.pattern_conclusion);
-    mColorConclusion = findViewById(R.id.color_conclusion);
+    // Conclusion Container
+    LinearLayout conclusionContainer = new LinearLayout(context);
+    conclusionContainer.setLayoutParams(
+        new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+    conclusionContainer.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
+    conclusionContainer.setOrientation(LinearLayout.HORIZONTAL);
 
-    mNumberTickCross = findViewById(R.id.number_tick_cross);
-    mShapeTickCross = findViewById(R.id.shape_tick_cross);
-    mPatternTickCross = findViewById(R.id.pattern_tick_cross);
-    mColorTickCross = findViewById(R.id.color_tick_cross);
+    propertyRow.conclusion = new TextView(context);
+    propertyRow.conclusion.setLayoutParams(
+        new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    propertyRow.conclusion.setPadding(
+        (int) (4 * context.getResources().getDisplayMetrics().density), 0, 0, 0);
+    propertyRow.conclusion.setTextSize(12);
+    conclusionContainer.addView(propertyRow.conclusion);
+
+    propertyRow.tickCross = new ImageView(context);
+    propertyRow.tickCross.setLayoutParams(
+        new LinearLayout.LayoutParams(
+            (int) (20 * context.getResources().getDisplayMetrics().density),
+            (int) (20 * context.getResources().getDisplayMetrics().density)));
+    propertyRow.tickCross.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+    conclusionContainer.addView(propertyRow.tickCross);
+
+    row.addView(conclusionContainer);
+
+    return row;
   }
 
   public void setCardsView(CardsView cardsView) {
-    // SingleScaledCardView no longer needs cardsView
+    mCardsView = cardsView;
+    for (SingleScaledCardView cardView : mCardViews) {
+      cardView.setCardsView(cardsView);
+    }
+    for (PropertyRow row : mPropertyRows) {
+      for (PropertyIllustrationView icon : row.icons) {
+        icon.setCardsView(cardsView);
+      }
+    }
   }
 
   public void setCards(List<Card> cards) {
-    if (cards.isEmpty()) {
-      setVisibility(GONE);
-      return;
-    }
-    setVisibility(VISIBLE);
-
     for (int i = 0; i < 3; i++) {
       boolean hasCard = i < cards.size();
       Card card = hasCard ? cards.get(i) : null;
 
-      mCardIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
-      mNumberIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
-      mShapeIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
-      mPatternIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
-      mColorIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
+      mCardViews[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
+      mCardViews[i].setCard(card);
 
-      if (hasCard) {
-        mCardIcons[i].setCard(card);
-        mNumberIcons[i].setProperty(PropertyIllustrationView.PropertyType.NUMBER, card.mNumber);
-        mShapeIcons[i].setProperty(PropertyIllustrationView.PropertyType.SHAPE, card.mShape);
-        mPatternIcons[i].setProperty(PropertyIllustrationView.PropertyType.PATTERN, card.mPattern);
-        mColorIcons[i].setProperty(PropertyIllustrationView.PropertyType.COLOR, card.mColor);
+      for (PropertyRow row : mPropertyRows) {
+        row.icons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
+        if (hasCard) {
+          int value = 0;
+          switch (row.type) {
+            case NUMBER:
+              value = card.mNumber;
+              break;
+            case SHAPE:
+              value = card.mShape;
+              break;
+            case PATTERN:
+              value = card.mPattern;
+              break;
+            case COLOR:
+              value = card.mColor;
+              break;
+          }
+          row.icons[i].setProperty(row.type, value);
+        }
       }
     }
 
@@ -105,41 +179,39 @@ public class TripleExplanationView extends FrameLayout {
 
   private void updateConclusions(List<Card> cards) {
     if (cards.size() < 3) {
-      mNumberConclusion.setText("");
-      mShapeConclusion.setText("");
-      mPatternConclusion.setText("");
-      mColorConclusion.setText("");
-      mNumberTickCross.setImageDrawable(null);
-      mShapeTickCross.setImageDrawable(null);
-      mPatternTickCross.setImageDrawable(null);
-      mColorTickCross.setImageDrawable(null);
+      for (PropertyRow row : mPropertyRows) {
+        row.conclusion.setText("");
+        row.tickCross.setImageDrawable(null);
+      }
       return;
     }
 
-    updateConclusion(
-        mNumberConclusion,
-        mNumberTickCross,
-        cards.get(0).mNumber,
-        cards.get(1).mNumber,
-        cards.get(2).mNumber);
-    updateConclusion(
-        mShapeConclusion,
-        mShapeTickCross,
-        cards.get(0).mShape,
-        cards.get(1).mShape,
-        cards.get(2).mShape);
-    updateConclusion(
-        mPatternConclusion,
-        mPatternTickCross,
-        cards.get(0).mPattern,
-        cards.get(1).mPattern,
-        cards.get(2).mPattern);
-    updateConclusion(
-        mColorConclusion,
-        mColorTickCross,
-        cards.get(0).mColor,
-        cards.get(1).mColor,
-        cards.get(2).mColor);
+    for (PropertyRow row : mPropertyRows) {
+      int v0 = 0, v1 = 0, v2 = 0;
+      switch (row.type) {
+        case NUMBER:
+          v0 = cards.get(0).mNumber;
+          v1 = cards.get(1).mNumber;
+          v2 = cards.get(2).mNumber;
+          break;
+        case SHAPE:
+          v0 = cards.get(0).mShape;
+          v1 = cards.get(1).mShape;
+          v2 = cards.get(2).mShape;
+          break;
+        case PATTERN:
+          v0 = cards.get(0).mPattern;
+          v1 = cards.get(1).mPattern;
+          v2 = cards.get(2).mPattern;
+          break;
+        case COLOR:
+          v0 = cards.get(0).mColor;
+          v1 = cards.get(1).mColor;
+          v2 = cards.get(2).mColor;
+          break;
+      }
+      updateConclusion(row.conclusion, row.tickCross, v0, v1, v2);
+    }
   }
 
   private void updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {

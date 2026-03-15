@@ -48,6 +48,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   private GameState mGameState;
 
   protected TripleExplanationView mExplanationView;
+  protected boolean mExplanationEnabled = false;
   private List<Card> mLastSelectedTriple = ImmutableList.of();
 
   private boolean shouldSubmitScoreOnSignIn = false;
@@ -138,7 +139,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     menu.findItem(R.id.shuffle).setVisible(mGameState == GameState.ACTIVE);
 
     MenuItem explanationItem = menu.findItem(R.id.explanation);
-    explanationItem.setChecked(mExplanationView.getVisibility() == View.VISIBLE);
+    explanationItem.setChecked(mExplanationEnabled);
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
@@ -476,25 +477,29 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   protected void onSelectionChanged(Set<Card> selectedCards) {
     if (selectedCards.size() == 3) {
       mLastSelectedTriple = ImmutableList.copyOf(selectedCards);
+    } else if (selectedCards.size() == 1) {
+      mLastSelectedTriple = ImmutableList.of();
     }
     updateExplanation(selectedCards);
   }
 
-  private void updateExplanation(Set<Card> selectedCards) {
+  protected void updateExplanation(Set<Card> selectedCards) {
+    if (!mExplanationEnabled) {
+      mExplanationView.setVisibility(View.GONE);
+      return;
+    }
     if (selectedCards.isEmpty()) {
       mExplanationView.setCards(mLastSelectedTriple);
+      mExplanationView.setVisibility(mLastSelectedTriple.isEmpty() ? View.GONE : View.VISIBLE);
     } else {
       mExplanationView.setCards(ImmutableList.copyOf(selectedCards));
+      mExplanationView.setVisibility(View.VISIBLE);
     }
   }
 
   protected void toggleExplanation() {
-    if (mExplanationView.getVisibility() == View.VISIBLE) {
-      mExplanationView.setVisibility(View.GONE);
-    } else {
-      mExplanationView.setVisibility(View.VISIBLE);
-      updateExplanation(mCardsView.getSelectedCards());
-    }
+    mExplanationEnabled = !mExplanationEnabled;
+    updateExplanation(mCardsView.getSelectedCards());
     invalidateOptionsMenu();
   }
 }

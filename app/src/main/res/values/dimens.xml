@@ -12,5 +12,4 @@
   <dimen name="stats_vert_padding">8dp</dimen>
   <dimen name="triple_dot_padding">10dp</dimen>
   <dimen name="status_bar_padding_bottom">16dp</dimen>
-  <dimen name="explanation_card_width">40dp</dimen>
 </resources>

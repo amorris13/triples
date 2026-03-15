@@ -2,14 +2,16 @@ package com.antsapps.triples.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.CardCustomizationUtils;
+import com.antsapps.triples.cardsview.CardView;
+import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.cardsview.SymbolDrawable;
 
 public class PropertyIllustrationView extends View {
@@ -26,6 +28,8 @@ public class PropertyIllustrationView extends View {
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final ShapeDrawable mShapeDrawable = new ShapeDrawable();
   private String mCachedPattern;
+  private CardsView mCardsView;
+  private int mOnSurfaceColor;
 
   public PropertyIllustrationView(Context context) {
     this(context, null);
@@ -35,8 +39,20 @@ public class PropertyIllustrationView extends View {
     super(context, attrs);
     mCachedPattern =
         getContext()
-            .getSharedPreferences(getContext().getPackageName() + "_preferences", Context.MODE_PRIVATE)
+            .getSharedPreferences(
+                getContext().getPackageName() + "_preferences", Context.MODE_PRIVATE)
             .getString("pref_shaded_pattern", "stripes");
+
+    TypedValue typedValue = new TypedValue();
+    getContext()
+        .getTheme()
+        .resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+    mOnSurfaceColor = typedValue.data;
+  }
+
+  public void setCardsView(CardsView cardsView) {
+    mCardsView = cardsView;
+    invalidate();
   }
 
   public void setProperty(PropertyType type, int value) {
@@ -49,25 +65,30 @@ public class PropertyIllustrationView extends View {
   }
 
   @Override
-  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int width = MeasureSpec.getSize(widthMeasureSpec);
-    // Use a ratio that makes it shorter than a card.
-    // Card ratio is 0.618. Let's use 0.3 for property illustrations.
-    int height = (int) (width * 0.3f);
-    setMeasuredDimension(width, height);
-  }
-
-  @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
+    int cardWidth = (mCardsView != null) ? mCardsView.cardWidth() : 0;
+    if (cardWidth == 0) {
+      cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
+    }
+    int cardHeight = (int) (cardWidth * CardView.HEIGHT_OVER_WIDTH);
+
     int width = getWidth();
     int height = getHeight();
     if (width == 0 || height == 0) return;
 
-    // Matching CardView symbol sizing: width / 5
-    int symbolSize = width / 5;
-    int centerX = width / 2;
-    int centerY = height / 2;
+    float scaleX = (float) width / cardWidth;
+    float scaleY = (float) height / cardHeight;
+    float scale = Math.min(scaleX, scaleY);
+
+    canvas.save();
+    canvas.translate((width - cardWidth * scale) / 2, (height - cardHeight * scale) / 2);
+    canvas.scale(scale, scale);
+
+    // Matching CardView symbol sizing: cardWidth / 5 diameter (radius = cardWidth / 10)
+    int symbolSize = cardWidth / 5;
+    int centerX = cardWidth / 2;
+    int centerY = cardHeight / 2;
     float density = getResources().getDisplayMetrics().density;
 
     switch (mPropertyType) {
@@ -84,35 +105,36 @@ public class PropertyIllustrationView extends View {
         drawColor(canvas, mValue, centerX, centerY, symbolSize);
         break;
     }
+    canvas.restore();
   }
 
   private void drawNumber(Canvas canvas, int value, int centerX, int centerY, int symbolSize) {
     mPaint.setShader(null);
-    mPaint.setColor(Color.DKGRAY);
+    mPaint.setColor(mOnSurfaceColor);
     mPaint.setStyle(Paint.Style.FILL);
-    int radius = symbolSize / 2;
-    int gap = symbolSize / 4;
+    int halfSideLength = symbolSize / 2;
+    int gap = halfSideLength / 2;
 
     switch (value) {
       case 0:
-        canvas.drawCircle(centerX, centerY, radius, mPaint);
+        canvas.drawCircle(centerX, centerY, halfSideLength, mPaint);
         break;
       case 1:
-        canvas.drawCircle(centerX - gap / 2 - radius, centerY, radius, mPaint);
-        canvas.drawCircle(centerX + gap / 2 + radius, centerY, radius, mPaint);
+        canvas.drawCircle(centerX - gap / 2 - halfSideLength, centerY, halfSideLength, mPaint);
+        canvas.drawCircle(centerX + gap / 2 + halfSideLength, centerY, halfSideLength, mPaint);
         break;
       case 2:
-        canvas.drawCircle(centerX - gap - radius * 2, centerY, radius, mPaint);
-        canvas.drawCircle(centerX, centerY, radius, mPaint);
-        canvas.drawCircle(centerX + gap + radius * 2, centerY, radius, mPaint);
+        canvas.drawCircle(centerX - gap - halfSideLength * 2, centerY, halfSideLength, mPaint);
+        canvas.drawCircle(centerX, centerY, halfSideLength, mPaint);
+        canvas.drawCircle(centerX + gap + halfSideLength * 2, centerY, halfSideLength, mPaint);
         break;
     }
   }
 
   private void drawShape(Canvas canvas, int centerX, int centerY, int symbolSize, float density) {
-    mShapeDrawable.getPaint().setColor(Color.DKGRAY);
+    mShapeDrawable.getPaint().setColor(mOnSurfaceColor);
     mShapeDrawable.getPaint().setStyle(Paint.Style.STROKE);
-    mShapeDrawable.getPaint().setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
+    mShapeDrawable.getPaint().setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density / 2);
     int left = centerX - symbolSize / 2;
     int top = centerY - symbolSize / 2;
     mShapeDrawable.setBounds(new Rect(left, top, left + symbolSize, top + symbolSize));
@@ -127,24 +149,16 @@ public class PropertyIllustrationView extends View {
     int bottom = top + symbolSize;
 
     if (value == 0) {
-      mPaint.setShader(null);
-      mPaint.setColor(Color.DKGRAY);
-      mPaint.setStyle(Paint.Style.STROKE);
-      mPaint.setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
-      canvas.drawRect(left, top, right, bottom, mPaint);
+      // Empty - do nothing as requested
     } else if (value == 1) {
-      String pattern =
-          getContext()
-              .getSharedPreferences(
-                  getContext().getPackageName() + "_preferences", Context.MODE_PRIVATE)
-              .getString("pref_shaded_pattern", "stripes");
       mPaint.setShader(
-          CardCustomizationUtils.getCustomShadedShader(getContext(), Color.DKGRAY, pattern));
+          CardCustomizationUtils.getCustomShadedShader(
+              getContext(), mOnSurfaceColor, mCachedPattern));
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawRect(left, top, right, bottom, mPaint);
     } else {
       mPaint.setShader(null);
-      mPaint.setColor(Color.DKGRAY);
+      mPaint.setColor(mOnSurfaceColor);
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawRect(left, top, right, bottom, mPaint);
     }

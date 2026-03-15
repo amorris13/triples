@@ -4,22 +4,17 @@ import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.backend.OnValidTripleSelectedListener;
-import com.antsapps.triples.cardsview.CardsView;
+import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.antsapps.triples.views.TripleExplanationView;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.Random;
-import java.util.Set;
 
-public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSelectedListener {
+public class HelpActivity extends BaseTriplesActivity {
 
   private FirebaseAnalytics mFirebaseAnalytics;
 
-  private CardsView mHelpCardsView;
   private TripleExplanationView mExplanationView;
   private ImmutableList<Card> mCardsShown;
 
@@ -33,16 +28,10 @@ public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSe
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    mHelpCardsView = (CardsView) findViewById(R.id.cards_view);
-    mHelpCardsView.setOnValidTripleSelectedListener(this);
-
     mExplanationView = (TripleExplanationView) findViewById(R.id.triple_explanation);
-    mExplanationView.setCardsView(mHelpCardsView);
+    mExplanationView.setCardsView(new VerticalCardsView(this));
 
-    ImmutableList<Card> newCards = createValidTriple();
-    mHelpCardsView.updateCardsInPlay(newCards);
-    mCardsShown = newCards;
-    mExplanationView.setCards(mCardsShown);
+    showAnotherTriple();
 
     findViewById(R.id.beginner_tutorial_button)
         .setOnClickListener(
@@ -56,20 +45,8 @@ public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSe
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.VIEW_HELP, null);
   }
 
-  @Override
-  public void onValidTripleSelected(Set<Card> validTriple) {
-    showAnotherTriple();
-  }
-
-  public void showAnother(View view) {
-    showAnotherTriple();
-  }
-
   private void showAnotherTriple() {
-    mHelpCardsView.animateTripleFoundToOffscreen(Sets.newHashSet(mCardsShown));
-    ImmutableList<Card> newCards = createValidTriple();
-    mHelpCardsView.updateCardsInPlay(newCards);
-    mCardsShown = newCards;
+    mCardsShown = createValidTriple();
     mExplanationView.setCards(mCardsShown);
   }
 
