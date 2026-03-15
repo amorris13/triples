@@ -18,6 +18,8 @@ import java.util.Set;
 
 public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSelectedListener {
 
+  public static Random sRandom = new Random();
+
   private FirebaseAnalytics mFirebaseAnalytics;
 
   private CardsView mHelpCardsView;
@@ -116,7 +118,7 @@ public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSe
   }
 
   public static ImmutableList<Card> createValidTriple() {
-    Random random = new Random();
+    Random random = sRandom;
     Card card0 = createRandomCard(random);
     Card card1 = createRandomCard(random);
     while (card1.equals(card0)) {

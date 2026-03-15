@@ -36,6 +36,8 @@ public class Application extends OnStateChangedReporter {
   private ZenGame mZenGame;
   private ZenGame mBeginnerGame;
 
+  public static Long sSeed = null;
+
   public final DBAdapter database;
 
   private Application(Context context) {
@@ -59,7 +61,7 @@ public class Application extends OnStateChangedReporter {
 
   private void prefillDatabaseIfEmpty() {
     if (mClassicGames.isEmpty()) {
-      Random random = new Random();
+      Random random = sSeed != null ? new Random(sSeed) : new Random();
       for (int i = 0; i < 10; i++) {
         long seed = random.nextLong();
         ClassicGame game =
@@ -78,7 +80,7 @@ public class Application extends OnStateChangedReporter {
       }
     }
     if (mArcadeGames.isEmpty()) {
-      Random random = new Random();
+      Random random = sSeed != null ? new Random(sSeed) : new Random();
       for (int i = 0; i < 10; i++) {
         long seed = random.nextLong();
         ArcadeGame game =
@@ -218,14 +220,15 @@ public class Application extends OnStateChangedReporter {
   }
 
   public ZenGame getZenGame(boolean isBeginner) {
+    long seed = sSeed != null ? sSeed : System.currentTimeMillis();
     if (isBeginner) {
       if (mBeginnerGame == null) {
-        mBeginnerGame = ZenGame.createFromSeed(System.currentTimeMillis(), true);
+        mBeginnerGame = ZenGame.createFromSeed(seed, true);
       }
       return mBeginnerGame;
     } else {
       if (mZenGame == null) {
-        mZenGame = ZenGame.createFromSeed(System.currentTimeMillis(), false);
+        mZenGame = ZenGame.createFromSeed(seed, false);
       }
       return mZenGame;
     }
