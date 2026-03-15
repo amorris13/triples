@@ -37,6 +37,7 @@ public class HelpActivity extends BaseTriplesActivity implements OnValidTripleSe
     mHelpCardsView.setOnValidTripleSelectedListener(this);
 
     mExplanationView = (TripleExplanationView) findViewById(R.id.triple_explanation);
+    mExplanationView.setCardsView(mHelpCardsView);
 
     ImmutableList<Card> newCards = createValidTriple();
     mHelpCardsView.updateCardsInPlay(newCards);

@@ -61,6 +61,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mViewAnimator = findViewById(R.id.view_switcher);
     mExplanationView = findViewById(R.id.triple_explanation);
+    mExplanationView.setCardsView(mCardsView);
 
     init(savedInstanceState);
 

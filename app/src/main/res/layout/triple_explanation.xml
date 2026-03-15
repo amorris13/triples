@@ -8,15 +8,11 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <LinearLayout
-            android:id="@+id/cards_row"
+        <com.antsapps.triples.views.ExplanationCardsView
+            android:id="@+id/explanation_cards_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="8dp">
-            <!-- Cards will be added here programmatically -->
-        </LinearLayout>
+            android:layout_marginBottom="8dp" />
 
         <TableLayout
             android:layout_width="match_parent"

@@ -5,19 +5,18 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.cardsview.CardView;
+import com.antsapps.triples.cardsview.CardsView;
 import java.util.List;
 
 public class TripleExplanationView extends FrameLayout {
 
-  private LinearLayout mCardsRow;
+  private ExplanationCardsView mExplanationCardsView;
   private NumberIconView[] mNumberIcons = new NumberIconView[3];
   private ShapeIconView[] mShapeIcons = new ShapeIconView[3];
   private PatternIconView[] mPatternIcons = new PatternIconView[3];
@@ -41,7 +40,7 @@ public class TripleExplanationView extends FrameLayout {
     super(context, attrs);
     LayoutInflater.from(context).inflate(R.layout.triple_explanation, this, true);
 
-    mCardsRow = findViewById(R.id.cards_row);
+    mExplanationCardsView = findViewById(R.id.explanation_cards_view);
 
     mNumberIcons[0] = findViewById(R.id.number_icon_0);
     mNumberIcons[1] = findViewById(R.id.number_icon_1);
@@ -70,17 +69,12 @@ public class TripleExplanationView extends FrameLayout {
     mColorTickCross = findViewById(R.id.color_tick_cross);
   }
 
+  public void setCardsView(CardsView cardsView) {
+    mExplanationCardsView.setCardsView(cardsView);
+  }
+
   public void setCards(List<Card> cards) {
-    mCardsRow.removeAllViews();
-    for (Card card : cards) {
-      CardView cardView = new CardView(getContext(), card);
-      int width = getResources().getDimensionPixelSize(R.dimen.explanation_card_width);
-      int height = (int) (width * CardView.HEIGHT_OVER_WIDTH);
-      LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
-      params.setMargins(4, 0, 4, 0);
-      cardView.setLayoutParams(params);
-      mCardsRow.addView(cardView);
-    }
+    mExplanationCardsView.setCards(cards);
 
     for (int i = 0; i < 3; i++) {
       boolean hasCard = i < cards.size();
