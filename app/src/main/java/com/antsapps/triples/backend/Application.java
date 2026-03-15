@@ -143,7 +143,8 @@ public class Application extends OnStateChangedReporter {
           @Override
           public boolean apply(Game game) {
             return game.getGameState() == GameState.ACTIVE
-                || game.getGameState() == GameState.PAUSED;
+                || game.getGameState() == GameState.PAUSED
+                || game.getGameState() == GameState.STARTING;
           }
         });
   }
@@ -197,7 +198,8 @@ public class Application extends OnStateChangedReporter {
           @Override
           public boolean apply(Game game) {
             return game.getGameState() == GameState.ACTIVE
-                || game.getGameState() == GameState.PAUSED;
+                || game.getGameState() == GameState.PAUSED
+                || game.getGameState() == GameState.STARTING;
           }
         });
   }
@@ -353,29 +355,49 @@ public class Application extends OnStateChangedReporter {
   }
 
   public boolean mergeClassicCurrent(ClassicGame cloudGame) {
-    ClassicGame localCurrent = Iterables.getFirst(getCurrentClassicGames(), null);
-    if (localCurrent == null
-        || cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed()
-        || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining()) {
-      if (localCurrent != null) {
-        deleteClassicGame(localCurrent);
+    for (ClassicGame localCompleted : getCompletedClassicGames()) {
+      if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
+        return false;
       }
+    }
+
+    ClassicGame localCurrent = Iterables.getFirst(getCurrentClassicGames(), null);
+    if (localCurrent == null) {
       addClassicGame(cloudGame);
       return true;
     }
+
+    if (localCurrent.getDateStarted().equals(cloudGame.getDateStarted())
+        && (cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed()
+            || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining())) {
+      deleteClassicGame(localCurrent);
+      addClassicGame(cloudGame);
+      return true;
+    }
+
     return false;
   }
 
   public boolean mergeArcadeCurrent(ArcadeGame cloudGame) {
-    ArcadeGame localCurrent = Iterables.getFirst(getCurrentArcadeGames(), null);
-    if (localCurrent == null
-        || cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
-      if (localCurrent != null) {
-        deleteArcadeGame(localCurrent);
+    for (ArcadeGame localCompleted : getCompletedArcadeGames()) {
+      if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
+        return false;
       }
+    }
+
+    ArcadeGame localCurrent = Iterables.getFirst(getCurrentArcadeGames(), null);
+    if (localCurrent == null) {
       addArcadeGame(cloudGame);
       return true;
     }
+
+    if (localCurrent.getDateStarted().equals(cloudGame.getDateStarted())
+        && cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
+      deleteArcadeGame(localCurrent);
+      addArcadeGame(cloudGame);
+      return true;
+    }
+
     return false;
   }
 

@@ -18,7 +18,7 @@ public class ClassicGame extends Game {
             Collections.<Long>emptyList(),
             new Deck(new Random(seed)),
             0,
-            new Date(),
+            new Date(seed),
             GameState.STARTING,
             false);
     game.init();

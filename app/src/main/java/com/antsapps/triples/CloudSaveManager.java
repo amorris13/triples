@@ -260,18 +260,8 @@ public class CloudSaveManager {
                               new Merger() {
                                 @Override
                                 public boolean merge(byte[] data) throws IOException {
-                                  boolean changed =
-                                      application.mergeDailyCurrent(
-                                          CloudSaveSerializer.deserializeDailyGameState(data));
-                                  // Cleanup if completed
-                                  DailyGame.Day gameDay =
-                                      DailyGame.Day.fromString(
-                                          name.substring(DAILY_CURRENT_PREFIX.length()));
-                                  DailyGame g = application.getDailyGameByGameDay(gameDay);
-                                  if (g != null && g.getGameState() == Game.GameState.COMPLETED) {
-                                    snapshotsClient.delete(metadata);
-                                  }
-                                  return changed;
+                                  return application.mergeDailyCurrent(
+                                      CloudSaveSerializer.deserializeDailyGameState(data));
                                 }
 
                                 @Override
@@ -321,7 +311,8 @@ public class CloudSaveManager {
                               .build();
                       snapshotsClient.commitAndClose(snapshot, metadataChange);
                     } else {
-                      snapshotsClient.discardAndClose(snapshot);
+                      snapshotsClient.delete(snapshot.getMetadata());
+                      Log.d(TAG, "Cloud delete successful: " + snapshotName);
                     }
                   } else {
                     snapshotsClient.discardAndClose(snapshot);
