@@ -98,6 +98,9 @@
     <string name="pref_hide_hint_title">Hide Hint Icon</string>
     <string name="pref_hide_hint_summary">Hide the hint icon in the game action bar</string>
 
+    <string name="pref_show_triple_explanation_title">Show Triple Explanation</string>
+    <string name="pref_show_triple_explanation_summary">Show a breakdown of why cards form a triple</string>
+
     <string name="hint_used_indicator">HINT USED</string>
 
     <string name="cards_remaining_format">Cards remaining: %1$d</string>
@@ -113,6 +116,8 @@
   <string name="shape_2">Shape 3</string>
 
   <string name="shaded_pattern">Shaded Pattern</string>
+
+  <string name="pref_show_triple_explanation">pref_show_triple_explanation</string>
 
   <string name="pref_animation_duration_title">Animation Duration</string>
   <string name="pref_animation_duration_summary">%1$d ms</string>

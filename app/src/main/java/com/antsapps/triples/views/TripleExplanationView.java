@@ -1,10 +1,12 @@
 package com.antsapps.triples.views;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -17,7 +19,7 @@ import com.antsapps.triples.cardsview.ShapeIconView;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 
-public class TripleExplanationView extends LinearLayout {
+public class TripleExplanationView extends RelativeLayout {
 
   private CardView[] mCardViews = new CardView[3];
   private NumberIconView[] mNumberIcons = new NumberIconView[3];
@@ -41,8 +43,17 @@ public class TripleExplanationView extends LinearLayout {
 
   public TripleExplanationView(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-    setOrientation(VERTICAL);
     LayoutInflater.from(context).inflate(R.layout.triple_explanation, this, true);
+
+    findViewById(R.id.dismiss_button)
+        .setOnClickListener(
+            v -> {
+              PreferenceManager.getDefaultSharedPreferences(getContext())
+                  .edit()
+                  .putBoolean(getContext().getString(R.string.pref_show_triple_explanation), false)
+                  .apply();
+              setVisibility(View.GONE);
+            });
 
     mCardViews[0] = findViewById(R.id.card_0);
     mCardViews[1] = findViewById(R.id.card_1);
@@ -79,7 +90,6 @@ public class TripleExplanationView extends LinearLayout {
     if (cards == null) {
       cards = ImmutableList.of();
     }
-    setVisibility(VISIBLE);
     for (int i = 0; i < 3; i++) {
       if (i < cards.size()) {
         Card card = cards.get(i);

@@ -82,6 +82,11 @@ public class DailyGameActivity extends BaseGameActivity
   }
 
   @Override
+  protected void updateTripleExplanation(List<Card> selectedCards) {
+    super.updateTripleExplanation(selectedCards);
+  }
+
+  @Override
   protected void updatePerformanceDescriptionInternal(TextView performanceTv) {}
 
   @Override

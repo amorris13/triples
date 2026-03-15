@@ -2,6 +2,7 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.TextView;
@@ -56,11 +57,12 @@ public class ZenGameActivity extends BaseGameActivity {
 
   @Override
   protected void updateTripleExplanation(List<Card> selectedCards) {
-    if (mGame.isBeginner()) {
-      super.updateTripleExplanation(selectedCards);
-    } else {
-      mTripleExplanationView.setVisibility(View.GONE);
-    }
+    super.updateTripleExplanation(selectedCards);
+  }
+
+  @Override
+  protected boolean isTripleExplanationEnabledByDefault() {
+    return mGame.isBeginner();
   }
 
   @Override

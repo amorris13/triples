@@ -215,11 +215,29 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   protected void updateTripleExplanation(List<Card> selectedCards) {
     if (mTripleExplanationView == null) return;
-    if (!selectedCards.isEmpty() || mLastTriple == null) {
-      mTripleExplanationView.setCards(ImmutableList.copyOf(selectedCards));
+
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    String key = getString(R.string.pref_show_triple_explanation);
+    boolean shouldShow;
+    if (!prefs.contains(key)) {
+      shouldShow = isTripleExplanationEnabledByDefault();
     } else {
-      mTripleExplanationView.setCards(mLastTriple);
+      shouldShow = prefs.getBoolean(key, false);
     }
+
+    mTripleExplanationView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+
+    if (shouldShow) {
+      if (!selectedCards.isEmpty() || mLastTriple == null) {
+        mTripleExplanationView.setCards(ImmutableList.copyOf(selectedCards));
+      } else {
+        mTripleExplanationView.setCards(mLastTriple);
+      }
+    }
+  }
+
+  protected boolean isTripleExplanationEnabledByDefault() {
+    return false;
   }
 
   protected void logTripleFoundEvent(boolean hintUsed) {

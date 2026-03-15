@@ -16,6 +16,7 @@ import com.antsapps.triples.backend.OnTimerTickListener;
 import com.antsapps.triples.backend.Period;
 import com.google.android.gms.games.PlayGames;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Classic Game */
@@ -54,6 +55,11 @@ public class ClassicGameActivity extends BaseGameActivity
   @Override
   protected String getCompletedStats() {
     return formatClassicCompletedStats(mGame.getTimeElapsed());
+  }
+
+  @Override
+  protected void updateTripleExplanation(List<Card> selectedCards) {
+    super.updateTripleExplanation(selectedCards);
   }
 
   @Override

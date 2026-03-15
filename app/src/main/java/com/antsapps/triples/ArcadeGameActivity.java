@@ -16,6 +16,7 @@ import com.antsapps.triples.backend.OnTimerTickListener;
 import com.antsapps.triples.backend.Period;
 import com.google.android.gms.games.PlayGames;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Arcade Game */
@@ -54,6 +55,11 @@ public class ArcadeGameActivity extends BaseGameActivity
   @Override
   protected String getCompletedStats() {
     return getString(R.string.arcade_completed_stats, mGame.getNumTriplesFound());
+  }
+
+  @Override
+  protected void updateTripleExplanation(List<Card> selectedCards) {
+    super.updateTripleExplanation(selectedCards);
   }
 
   @Override
