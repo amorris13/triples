@@ -25,6 +25,7 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
 import com.antsapps.triples.util.AnalyticsUtil;
+import com.antsapps.triples.views.TripleExplanationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
@@ -46,6 +47,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   protected CardsView mCardsView;
   private GameState mGameState;
 
+  protected TripleExplanationView mExplanationView;
+  private List<Card> mLastSelectedTriple = ImmutableList.of();
+
   private boolean shouldSubmitScoreOnSignIn = false;
 
   /** Called when the activity is first created. */
@@ -54,12 +58,15 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.game);
 
+    mCardsView = (CardsView) findViewById(R.id.cards_view);
+    mViewAnimator = findViewById(R.id.view_switcher);
+    mExplanationView = findViewById(R.id.triple_explanation);
+
     init(savedInstanceState);
 
     getGame().addOnUpdateGameStateListener(this);
     GameState originalGameState = getGame().getGameState();
 
-    mCardsView = (CardsView) findViewById(R.id.cards_view);
     if (mCardsView.getOnValidTripleSelectedListener() == null) {
       mCardsView.setOnValidTripleSelectedListener(getGame());
     }
@@ -81,7 +88,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
               }
             });
 
-    mViewAnimator = findViewById(R.id.view_switcher);
+    mCardsView.setOnSelectionChangedListener(this::onSelectionChanged);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -129,6 +136,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     menu.findItem(R.id.play).setVisible(mGameState == GameState.PAUSED);
     menu.findItem(R.id.shuffle).setVisible(mGameState == GameState.ACTIVE);
 
+    MenuItem explanationItem = menu.findItem(R.id.explanation);
+    explanationItem.setChecked(mExplanationView.getVisibility() == View.VISIBLE);
+
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
     menu.findItem(R.id.hint).setVisible(!hideHint);
@@ -166,6 +176,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
       startActivity(helpIntent);
       return true;
+    } else if (itemId == R.id.explanation) {
+      toggleExplanation();
+      return true;
     } else if (itemId == R.id.settings) {
       Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
       startActivity(settingsIntent);
@@ -186,6 +199,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   @Override
   public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
+    mLastSelectedTriple = ImmutableList.copyOf(triple);
+    updateExplanation(mCardsView.getSelectedCards());
     mCardsView.animateTripleFoundToOffscreen(triple);
     logTripleFoundEvent(hintUsed);
   }
@@ -455,5 +470,30 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   private void logGameEvent(String event) {
     AnalyticsUtil.logGameEvent(mFirebaseAnalytics, event, getGame().getGameTypeForAnalytics());
+  }
+
+  protected void onSelectionChanged(Set<Card> selectedCards) {
+    if (selectedCards.size() == 3) {
+      mLastSelectedTriple = ImmutableList.copyOf(selectedCards);
+    }
+    updateExplanation(selectedCards);
+  }
+
+  private void updateExplanation(Set<Card> selectedCards) {
+    if (selectedCards.isEmpty()) {
+      mExplanationView.setCards(mLastSelectedTriple);
+    } else {
+      mExplanationView.setCards(ImmutableList.copyOf(selectedCards));
+    }
+  }
+
+  protected void toggleExplanation() {
+    if (mExplanationView.getVisibility() == View.VISIBLE) {
+      mExplanationView.setVisibility(View.GONE);
+    } else {
+      mExplanationView.setVisibility(View.VISIBLE);
+      updateExplanation(mCardsView.getSelectedCards());
+    }
+    invalidateOptionsMenu();
   }
 }
