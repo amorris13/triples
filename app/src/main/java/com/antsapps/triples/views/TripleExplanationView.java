@@ -78,6 +78,12 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   public void setCards(List<Card> cards) {
+    if (cards.isEmpty()) {
+      setVisibility(GONE);
+      return;
+    }
+    setVisibility(VISIBLE);
+
     for (int i = 0; i < 3; i++) {
       boolean hasCard = i < cards.size();
       Card card = hasCard ? cards.get(i) : null;

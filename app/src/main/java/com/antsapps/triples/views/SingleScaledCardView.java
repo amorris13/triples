@@ -40,8 +40,26 @@ public class SingleScaledCardView extends View {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int width = MeasureSpec.getSize(widthMeasureSpec);
-    int height = (int) (width * CardView.HEIGHT_OVER_WIDTH);
+    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+    int width;
+    int height;
+
+    if (heightMode == MeasureSpec.EXACTLY) {
+      height = heightSize;
+      width = (int) (height / CardView.HEIGHT_OVER_WIDTH);
+    } else if (widthMode == MeasureSpec.EXACTLY) {
+      width = widthSize;
+      height = (int) (width * CardView.HEIGHT_OVER_WIDTH);
+    } else {
+      // Default to 24dp height
+      height = (int) (24 * getResources().getDisplayMetrics().density);
+      width = (int) (height / CardView.HEIGHT_OVER_WIDTH);
+    }
+
     setMeasuredDimension(width, height);
   }
 
@@ -52,15 +70,10 @@ public class SingleScaledCardView extends View {
       return;
     }
 
-    Rect naturalBounds = mCardsView.calcBounds(0);
-    int naturalWidth = naturalBounds.width();
-    int naturalHeight = naturalBounds.height();
+    int height = getHeight();
+    int width = (int) (height / CardView.HEIGHT_OVER_WIDTH);
+    int left = (getWidth() - width) / 2;
 
-    float scale = (float) getWidth() / naturalWidth;
-
-    canvas.save();
-    canvas.scale(scale, scale);
-    mCardView.drawCardContent(canvas, new Rect(0, 0, naturalWidth, naturalHeight));
-    canvas.restore();
+    mCardView.drawCardContent(canvas, new Rect(left, 0, left + width, height));
   }
 }

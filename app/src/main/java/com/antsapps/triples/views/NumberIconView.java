@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.antsapps.triples.cardsview.CardView;
 
 public class NumberIconView extends View {
   private int mNumber;
@@ -31,8 +32,7 @@ public class NumberIconView extends View {
     mPaint.setColor(Color.DKGRAY);
     mPaint.setStyle(Paint.Style.FILL);
 
-    float density = getResources().getDisplayMetrics().density;
-    int symbolSize = (int) (12 * density);
+    int symbolSize = getWidth() / 5;
     int gap = symbolSize / 4;
 
     int centerX = getWidth() / 2;
@@ -61,8 +61,26 @@ public class NumberIconView extends View {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-    int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+    int width;
+    int height;
+
+    if (heightMode == MeasureSpec.EXACTLY) {
+      height = heightSize;
+      width = (int) (height / CardView.HEIGHT_OVER_WIDTH);
+    } else if (widthMode == MeasureSpec.EXACTLY) {
+      width = widthSize;
+      height = (int) (width * CardView.HEIGHT_OVER_WIDTH);
+    } else {
+      // Default to 24dp height
+      height = (int) (24 * getResources().getDisplayMetrics().density);
+      width = (int) (height / CardView.HEIGHT_OVER_WIDTH);
+    }
+
     setMeasuredDimension(width, height);
   }
 }

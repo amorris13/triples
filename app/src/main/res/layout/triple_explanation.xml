@@ -14,56 +14,61 @@
 
             <!-- Cards Row -->
             <TableRow
-                android:layout_marginBottom="8dp"
+                android:layout_height="48dp"
                 android:gravity="center_vertical">
 
-                <View />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="8dp"
+                    android:text="@string/pattern"
+                    android:textSize="14sp"
+                    android:visibility="invisible" />
 
                 <com.antsapps.triples.views.SingleScaledCardView
                     android:id="@+id/card_icon_0"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="2dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.SingleScaledCardView
                     android:id="@+id/card_icon_1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="2dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.SingleScaledCardView
                     android:id="@+id/card_icon_2"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="2dp" />
+                    android:layout_height="40dp" />
 
                 <View />
             </TableRow>
 
             <!-- Number Row -->
-            <TableRow android:gravity="center_vertical">
+            <TableRow
+                android:layout_height="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="4dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/number"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
                 <com.antsapps.triples.views.NumberIconView
                     android:id="@+id/number_icon_0"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.NumberIconView
                     android:id="@+id/number_icon_1"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.NumberIconView
                     android:id="@+id/number_icon_2"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -76,40 +81,42 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="4dp"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:id="@+id/number_tick_cross"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:scaleType="centerInside" />
                 </LinearLayout>
             </TableRow>
 
             <!-- Shape Row -->
-            <TableRow android:gravity="center_vertical">
+            <TableRow
+                android:layout_height="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="4dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/shape"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
                 <com.antsapps.triples.views.ShapeIconView
                     android:id="@+id/shape_icon_0"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.ShapeIconView
                     android:id="@+id/shape_icon_1"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.ShapeIconView
                     android:id="@+id/shape_icon_2"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -122,40 +129,42 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="4dp"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:id="@+id/shape_tick_cross"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:scaleType="centerInside" />
                 </LinearLayout>
             </TableRow>
 
             <!-- Pattern Row -->
-            <TableRow android:gravity="center_vertical">
+            <TableRow
+                android:layout_height="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="4dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/pattern"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
                 <com.antsapps.triples.views.PatternIconView
                     android:id="@+id/pattern_icon_0"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.PatternIconView
                     android:id="@+id/pattern_icon_1"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.PatternIconView
                     android:id="@+id/pattern_icon_2"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -168,40 +177,42 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="4dp"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:id="@+id/pattern_tick_cross"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:scaleType="centerInside" />
                 </LinearLayout>
             </TableRow>
 
             <!-- Color Row -->
-            <TableRow android:gravity="center_vertical">
+            <TableRow
+                android:layout_height="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="4dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/colour"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
                 <com.antsapps.triples.views.ColorIconView
                     android:id="@+id/color_icon_0"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.ColorIconView
                     android:id="@+id/color_icon_1"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <com.antsapps.triples.views.ColorIconView
                     android:id="@+id/color_icon_2"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
+                    android:layout_height="40dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -214,12 +225,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="4dp"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:id="@+id/color_tick_cross"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:scaleType="centerInside" />
                 </LinearLayout>
             </TableRow>
