@@ -32,7 +32,7 @@ public class NumberIconView extends View {
     mPaint.setStyle(Paint.Style.FILL);
 
     float density = getResources().getDisplayMetrics().density;
-    int symbolSize = (int) (8 * density);
+    int symbolSize = (int) (12 * density);
     int gap = symbolSize / 4;
 
     int centerX = getWidth() / 2;

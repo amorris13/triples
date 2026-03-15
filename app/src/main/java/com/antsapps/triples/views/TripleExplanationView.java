@@ -16,7 +16,7 @@ import java.util.List;
 
 public class TripleExplanationView extends FrameLayout {
 
-  private ExplanationCardsView mExplanationCardsView;
+  private SingleScaledCardView[] mCardIcons = new SingleScaledCardView[3];
   private NumberIconView[] mNumberIcons = new NumberIconView[3];
   private ShapeIconView[] mShapeIcons = new ShapeIconView[3];
   private PatternIconView[] mPatternIcons = new PatternIconView[3];
@@ -40,7 +40,9 @@ public class TripleExplanationView extends FrameLayout {
     super(context, attrs);
     LayoutInflater.from(context).inflate(R.layout.triple_explanation, this, true);
 
-    mExplanationCardsView = findViewById(R.id.explanation_cards_view);
+    mCardIcons[0] = findViewById(R.id.card_icon_0);
+    mCardIcons[1] = findViewById(R.id.card_icon_1);
+    mCardIcons[2] = findViewById(R.id.card_icon_2);
 
     mNumberIcons[0] = findViewById(R.id.number_icon_0);
     mNumberIcons[1] = findViewById(R.id.number_icon_1);
@@ -70,22 +72,24 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   public void setCardsView(CardsView cardsView) {
-    mExplanationCardsView.setCardsView(cardsView);
+    for (SingleScaledCardView cardIcon : mCardIcons) {
+      cardIcon.setCardsView(cardsView);
+    }
   }
 
   public void setCards(List<Card> cards) {
-    mExplanationCardsView.setCards(cards);
-
     for (int i = 0; i < 3; i++) {
       boolean hasCard = i < cards.size();
       Card card = hasCard ? cards.get(i) : null;
 
+      mCardIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
       mNumberIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
       mShapeIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
       mPatternIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
       mColorIcons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
 
       if (hasCard) {
+        mCardIcons[i].setCard(card);
         mNumberIcons[i].setNumber(card.mNumber);
         mShapeIcons[i].setShape(CardCustomizationUtils.getShapeForId(getContext(), card.mShape));
         mPatternIcons[i].setPattern(card.mPattern);
@@ -137,13 +141,13 @@ public class TripleExplanationView extends FrameLayout {
 
   private void updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {
     if (v0 == v1 && v1 == v2) {
-      text.setText(R.string.all_same);
+      text.setText(R.string.same);
       icon.setImageResource(R.drawable.ic_tick);
     } else if (v0 != v1 && v1 != v2 && v0 != v2) {
-      text.setText(R.string.all_different);
+      text.setText(R.string.diff);
       icon.setImageResource(R.drawable.ic_tick);
     } else {
-      text.setText(R.string.two_and_one);
+      text.setText(R.string.two_and_one_short);
       icon.setImageResource(R.drawable.ic_cross);
     }
   }

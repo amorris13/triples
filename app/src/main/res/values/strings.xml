@@ -42,6 +42,9 @@
   <string name="all_same">all the same.</string>
   <string name="all_different">all different.</string>
   <string name="two_and_one">two and one.</string>
+  <string name="same">same</string>
+  <string name="diff">diff</string>
+  <string name="two_and_one_short">2 &amp; 1</string>
   <string name="graph">GRAPH</string>
   <string name="summary">SUMMARY</string>
   <string name="number_completed">"Number finished:"</string>

@@ -31,7 +31,7 @@ public class PatternIconView extends View {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
     float density = getResources().getDisplayMetrics().density;
-    int symbolSize = (int) (8 * density);
+    int symbolSize = (int) (12 * density);
     int left = (getWidth() - symbolSize) / 2;
     int top = (getHeight() - symbolSize) / 2;
     int right = left + symbolSize;
@@ -58,12 +58,6 @@ public class PatternIconView extends View {
       mPaint.setShader(
           CardCustomizationUtils.getCustomShadedShader(getContext(), Color.DKGRAY, pattern));
       mPaint.setStyle(Paint.Style.FILL);
-      canvas.drawRect(left, top, right, bottom, mPaint);
-
-      mPaint.setShader(null);
-      mPaint.setColor(Color.DKGRAY);
-      mPaint.setStyle(Paint.Style.STROKE);
-      mPaint.setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density);
       canvas.drawRect(left, top, right, bottom, mPaint);
     } else {
       // Solid

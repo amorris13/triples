@@ -30,7 +30,7 @@ public class ColorIconView extends View {
     mPaint.setColor(mColor);
     mPaint.setStyle(Paint.Style.FILL);
     float density = getResources().getDisplayMetrics().density;
-    int symbolSize = (int) (8 * density);
+    int symbolSize = (int) (12 * density);
     int left = (getWidth() - symbolSize) / 2;
     int top = (getHeight() - symbolSize) / 2;
     canvas.drawRect(left, top, left + symbolSize, top + symbolSize, mPaint);
