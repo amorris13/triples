@@ -10,3 +10,4 @@
 .idea/
 gradle/gradle-daemon-jvm.properties
 node_modules/
+output/
