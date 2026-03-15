@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -332,11 +331,14 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected static String formatElapsedTime(long elapsedMillis) {
-    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis);
-    if (seconds < 3600) {
-      return String.format("%d:%02d", seconds / 60, seconds % 60);
+    long hours = TimeUnit.MILLISECONDS.toHours(elapsedMillis);
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedMillis) % 60;
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) % 60;
+    long hundredths = (elapsedMillis % 1000) / 10;
+    if (hours == 0) {
+      return String.format("%d:%02d.%02d", minutes, seconds, hundredths);
     } else {
-      return DateUtils.formatElapsedTime(seconds);
+      return String.format("%d:%02d:%02d.%02d", hours, minutes, seconds, hundredths);
     }
   }
 
