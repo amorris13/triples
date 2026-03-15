@@ -46,9 +46,7 @@ public class PatternIconView extends View {
 
     int width = getWidth();
     int height = getHeight();
-    int margin = (int) (CardCustomizationUtils.ICON_MARGIN_DP * density);
-    int size = Math.min(width, height) - 2 * margin;
-    size = (int) (size * 0.8f); // Scale down slightly to match symbol feel
+    int size = (int) (18 * density);
 
     int left = (width - size) / 2;
     int top = (height - size) / 2;

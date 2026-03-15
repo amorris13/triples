@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.antsapps.triples.CardCustomizationUtils;
@@ -26,11 +25,6 @@ public class TripleExplanationView extends RelativeLayout {
   private ShapeIconView[] mShapeIcons = new ShapeIconView[3];
   private PatternIconView[] mPatternIcons = new PatternIconView[3];
   private ColorIconView[] mColorIcons = new ColorIconView[3];
-
-  private TextView mNumberConclusion;
-  private TextView mShapeConclusion;
-  private TextView mPatternConclusion;
-  private TextView mColorConclusion;
 
   private ImageView mNumberResult;
   private ImageView mShapeResult;
@@ -75,11 +69,6 @@ public class TripleExplanationView extends RelativeLayout {
     mColorIcons[1] = findViewById(R.id.color_icon_1);
     mColorIcons[2] = findViewById(R.id.color_icon_2);
 
-    mNumberConclusion = findViewById(R.id.number_conclusion);
-    mShapeConclusion = findViewById(R.id.shape_conclusion);
-    mPatternConclusion = findViewById(R.id.pattern_conclusion);
-    mColorConclusion = findViewById(R.id.color_conclusion);
-
     mNumberResult = findViewById(R.id.number_result);
     mShapeResult = findViewById(R.id.shape_result);
     mPatternResult = findViewById(R.id.pattern_result);
@@ -115,44 +104,17 @@ public class TripleExplanationView extends RelativeLayout {
     }
 
     if (cards.size() == 3) {
-      mNumberConclusion.setVisibility(VISIBLE);
-      mShapeConclusion.setVisibility(VISIBLE);
-      mPatternConclusion.setVisibility(VISIBLE);
-      mColorConclusion.setVisibility(VISIBLE);
       mNumberResult.setVisibility(VISIBLE);
       mShapeResult.setVisibility(VISIBLE);
       mPatternResult.setVisibility(VISIBLE);
       mColorResult.setVisibility(VISIBLE);
 
+      updateRow(mNumberResult, cards.get(0).mNumber, cards.get(1).mNumber, cards.get(2).mNumber);
+      updateRow(mShapeResult, cards.get(0).mShape, cards.get(1).mShape, cards.get(2).mShape);
       updateRow(
-          mNumberConclusion,
-          mNumberResult,
-          cards.get(0).mNumber,
-          cards.get(1).mNumber,
-          cards.get(2).mNumber);
-      updateRow(
-          mShapeConclusion,
-          mShapeResult,
-          cards.get(0).mShape,
-          cards.get(1).mShape,
-          cards.get(2).mShape);
-      updateRow(
-          mPatternConclusion,
-          mPatternResult,
-          cards.get(0).mPattern,
-          cards.get(1).mPattern,
-          cards.get(2).mPattern);
-      updateRow(
-          mColorConclusion,
-          mColorResult,
-          cards.get(0).mColor,
-          cards.get(1).mColor,
-          cards.get(2).mColor);
+          mPatternResult, cards.get(0).mPattern, cards.get(1).mPattern, cards.get(2).mPattern);
+      updateRow(mColorResult, cards.get(0).mColor, cards.get(1).mColor, cards.get(2).mColor);
     } else {
-      mNumberConclusion.setVisibility(INVISIBLE);
-      mShapeConclusion.setVisibility(INVISIBLE);
-      mPatternConclusion.setVisibility(INVISIBLE);
-      mColorConclusion.setVisibility(INVISIBLE);
       mNumberResult.setVisibility(INVISIBLE);
       mShapeResult.setVisibility(INVISIBLE);
       mPatternResult.setVisibility(INVISIBLE);
@@ -160,15 +122,12 @@ public class TripleExplanationView extends RelativeLayout {
     }
   }
 
-  private void updateRow(TextView conclusionTv, ImageView resultIv, int v0, int v1, int v2) {
+  private void updateRow(ImageView resultIv, int v0, int v1, int v2) {
     if (v0 == v1 && v1 == v2) {
-      conclusionTv.setText(R.string.explanation_all_same);
       resultIv.setImageResource(R.drawable.ic_tick);
     } else if (v0 != v1 && v1 != v2 && v0 != v2) {
-      conclusionTv.setText(R.string.explanation_all_different);
       resultIv.setImageResource(R.drawable.ic_tick);
     } else {
-      conclusionTv.setText(R.string.explanation_two_and_one);
       resultIv.setImageResource(R.drawable.ic_cross);
     }
   }
