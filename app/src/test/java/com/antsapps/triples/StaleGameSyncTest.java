@@ -30,32 +30,32 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
     long seed = 123456789L;
     Date dateStarted = new Date(seed);
     // Create and complete a game locally
-    ClassicGame localGame = new ClassicGame(
-        -1,
-        seed,
-        Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(),
-        new Deck(new Random(seed)),
-        0,
-        dateStarted,
-        Game.GameState.COMPLETED,
-        false
-    );
+    ClassicGame localGame =
+        new ClassicGame(
+            -1,
+            seed,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(new Random(seed)),
+            0,
+            dateStarted,
+            Game.GameState.COMPLETED,
+            false);
     mApplication.addClassicGame(localGame);
     mApplication.saveClassicGame(localGame);
 
     // Create a "cloud" game with the same seed (start date) but it's still active
-    ClassicGame cloudGame = new ClassicGame(
-        -1,
-        seed,
-        Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(),
-        new Deck(new Random(seed)),
-        0,
-        dateStarted,
-        Game.GameState.ACTIVE,
-        false
-    );
+    ClassicGame cloudGame =
+        new ClassicGame(
+            -1,
+            seed,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(new Random(seed)),
+            0,
+            dateStarted,
+            Game.GameState.ACTIVE,
+            false);
 
     // Try to merge it as a current game
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
@@ -70,31 +70,31 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
     long seed = 123456789L;
     Date dateStarted = new Date(seed);
     // Create a game locally
-    ClassicGame localGame = new ClassicGame(
-        -1,
-        seed,
-        Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(),
-        new Deck(new Random(seed)),
-        0,
-        dateStarted,
-        Game.GameState.ACTIVE,
-        false
-    );
+    ClassicGame localGame =
+        new ClassicGame(
+            -1,
+            seed,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(new Random(seed)),
+            0,
+            dateStarted,
+            Game.GameState.ACTIVE,
+            false);
     mApplication.addClassicGame(localGame);
 
     // Create a cloud game with same seed but more progress (more time elapsed)
-    ClassicGame cloudGame = new ClassicGame(
-        -1,
-        seed,
-        localGame.getCardsInPlay(),
-        localGame.getTripleFindTimes(),
-        new Deck(new Random(seed)),
-        10000, // more time elapsed
-        dateStarted,
-        Game.GameState.ACTIVE,
-        false
-    );
+    ClassicGame cloudGame =
+        new ClassicGame(
+            -1,
+            seed,
+            localGame.getCardsInPlay(),
+            localGame.getTripleFindTimes(),
+            new Deck(new Random(seed)),
+            10000, // more time elapsed
+            dateStarted,
+            Game.GameState.ACTIVE,
+            false);
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
@@ -108,17 +108,17 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
     long seed2 = 222L;
     Date dateStarted2 = new Date(seed2);
 
-    ClassicGame cloudGame = new ClassicGame(
-        -1,
-        seed2,
-        Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(),
-        new Deck(new Random(seed2)),
-        0,
-        dateStarted2,
-        Game.GameState.ACTIVE,
-        false
-    );
+    ClassicGame cloudGame =
+        new ClassicGame(
+            -1,
+            seed2,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(new Random(seed2)),
+            0,
+            dateStarted2,
+            Game.GameState.ACTIVE,
+            false);
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
@@ -134,30 +134,30 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
     long seed2 = 222L;
     Date dateStarted2 = new Date(seed2);
 
-    ClassicGame localGame = new ClassicGame(
-        -1,
-        seed1,
-        Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(),
-        new Deck(new Random(seed1)),
-        0,
-        dateStarted1,
-        Game.GameState.ACTIVE,
-        false
-    );
+    ClassicGame localGame =
+        new ClassicGame(
+            -1,
+            seed1,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(new Random(seed1)),
+            0,
+            dateStarted1,
+            Game.GameState.ACTIVE,
+            false);
     mApplication.addClassicGame(localGame);
 
-    ClassicGame cloudGame = new ClassicGame(
-        -1,
-        seed2,
-        Collections.<Card>emptyList(),
-        Collections.<Long>emptyList(),
-        new Deck(new Random(seed2)),
-        0,
-        dateStarted2,
-        Game.GameState.ACTIVE,
-        false
-    );
+    ClassicGame cloudGame =
+        new ClassicGame(
+            -1,
+            seed2,
+            Collections.<Card>emptyList(),
+            Collections.<Long>emptyList(),
+            new Deck(new Random(seed2)),
+            0,
+            dateStarted2,
+            Game.GameState.ACTIVE,
+            false);
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
