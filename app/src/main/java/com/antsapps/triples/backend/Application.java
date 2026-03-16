@@ -388,9 +388,9 @@ public class Application extends OnStateChangedReporter {
   public boolean mergeClassicCurrent(ClassicGame cloudGame) {
     for (ClassicGame localCompleted : getCompletedClassicGames()) {
       if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
-        // Already completed locally, so cloud state is not newer. No change needed to local,
-        // and cloud is not stale (it matches a completion).
-        return false;
+        // Already completed locally, so cloud state is stale (it's still in the "Current" slot
+        // in the cloud).
+        return true;
       }
       if (localCompleted.getDateStarted().after(cloudGame.getDateStarted())) {
         return true;
@@ -430,9 +430,9 @@ public class Application extends OnStateChangedReporter {
   public boolean mergeArcadeCurrent(ArcadeGame cloudGame) {
     for (ArcadeGame localCompleted : getCompletedArcadeGames()) {
       if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
-        // Already completed locally, so cloud state is not newer. No change needed to local,
-        // and cloud is not stale (it matches a completion).
-        return false;
+        // Already completed locally, so cloud state is stale (it's still in the "Current" slot
+        // in the cloud).
+        return true;
       }
       if (localCompleted.getDateStarted().after(cloudGame.getDateStarted())) {
         return true;
