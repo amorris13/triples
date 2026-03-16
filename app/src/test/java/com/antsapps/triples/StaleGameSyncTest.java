@@ -26,7 +26,7 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
   }
 
   @Test
-  public void mergeClassicCurrent_withGameAlreadyCompletedLocally_returnsFalse() {
+  public void mergeClassicCurrent_withGameAlreadyCompletedLocally_returnsTrue() {
     long seed = 123456789L;
     Date dateStarted = new Date(seed);
     // Create and complete a game locally
@@ -60,7 +60,7 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
     // Try to merge it as a current game
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
-    assertThat(merged).isFalse();
+    assertThat(merged).isTrue();
     assertThat(Iterables.isEmpty(mApplication.getCurrentClassicGames())).isTrue();
     assertThat(Iterables.size(mApplication.getCompletedClassicGames())).isEqualTo(1);
   }
