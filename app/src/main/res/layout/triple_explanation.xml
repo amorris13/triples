@@ -37,11 +37,13 @@
                     android:id="@+id/card_2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
-                <!-- Conclusion (empty but needed for alignment) -->
-                <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible" />
+                <!-- Conclusion -->
+                <ImageView
+                    android:id="@+id/conclusion_image"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:padding="4dp" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

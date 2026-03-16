@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 public class TripleExplanationView extends FrameLayout {
 
+
   private static class PropertyRow {
     PropertyIllustrationView[] icons = new PropertyIllustrationView[3];
     TextView conclusion;
@@ -36,6 +38,7 @@ public class TripleExplanationView extends FrameLayout {
 
   private Set<Card> mCards = new LinkedHashSet<>();
   private SingleScaledCardView[] mCardViews = new SingleScaledCardView[3];
+  private final ImageView mConclusionTickCross;
   private PropertyRow[] mPropertyRows =
       new PropertyRow[] {
         new PropertyRow(Card.PropertyType.NUMBER),
@@ -56,6 +59,8 @@ public class TripleExplanationView extends FrameLayout {
     mCardViews[0] = findViewById(R.id.card_0);
     mCardViews[1] = findViewById(R.id.card_1);
     mCardViews[2] = findViewById(R.id.card_2);
+    
+    mConclusionTickCross = findViewById(R.id.conclusion_image);
 
     for (PropertyRow row : mPropertyRows) {
       table.addView(createRow(context, row));
@@ -171,27 +176,33 @@ public class TripleExplanationView extends FrameLayout {
         row.conclusion.setText("");
         row.tickCross.setImageDrawable(null);
       }
+      mConclusionTickCross.setImageDrawable(null);
       return;
     }
 
+    boolean valid = true;
     for (PropertyRow row : mPropertyRows) {
       int v0 = cards.get(0).getValue(row.type);
       int v1 = cards.get(1).getValue(row.type);
       int v2 = cards.get(2).getValue(row.type);
-      updateConclusion(row.conclusion, row.tickCross, v0, v1, v2);
+      valid &= updateConclusion(row.conclusion, row.tickCross, v0, v1, v2);
     }
+    mConclusionTickCross.setImageResource(valid ? R.drawable.ic_tick : R.drawable.ic_cross);
   }
 
-  private void updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {
+  private boolean updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {
     if (v0 == v1 && v1 == v2) {
       text.setText(R.string.same);
       icon.setImageResource(R.drawable.ic_tick);
+      return true;
     } else if (v0 != v1 && v1 != v2 && v0 != v2) {
       text.setText(R.string.diff);
       icon.setImageResource(R.drawable.ic_tick);
+      return true;
     } else {
       text.setText(R.string.two_and_one_short);
       icon.setImageResource(R.drawable.ic_cross);
+      return false;
     }
   }
 
