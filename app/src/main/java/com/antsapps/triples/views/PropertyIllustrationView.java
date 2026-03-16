@@ -48,8 +48,12 @@ public class PropertyIllustrationView extends View {
     invalidate();
   }
 
-  public void setProperty(Card.PropertyType type, int value) {
+  public void setPropertyType(Card.PropertyType type) {
     mPropertyType = type;
+    invalidate();
+  }
+
+  public void setPropertyValue(int value) {
     mValue = value;
     if (mPropertyType == Card.PropertyType.SHAPE) {
       mShapeDrawable.setShape(CardCustomizationUtils.getShapeForId(getContext(), mValue));

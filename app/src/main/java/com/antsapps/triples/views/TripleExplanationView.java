@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -96,6 +97,8 @@ public class TripleExplanationView extends FrameLayout {
       PropertyIllustrationView illustration = new PropertyIllustrationView(context);
       TableRow.LayoutParams lp = new TableRow.LayoutParams(0, dpToPx(32));
       illustration.setLayoutParams(lp);
+      illustration.setPropertyType(propertyRow.type);
+      illustration.setVisibility(INVISIBLE);
       propertyRow.icons[i] = illustration;
       row.addView(illustration);
     }
@@ -149,7 +152,7 @@ public class TripleExplanationView extends FrameLayout {
       for (PropertyRow row : mPropertyRows) {
         row.icons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
         if (hasCard) {
-            row.icons[i].setProperty(row.type, card.getValue(row.type));
+            row.icons[i].setPropertyValue(card.getValue(row.type));
         }
       }
     }

@@ -48,7 +48,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   private GameState mGameState;
 
   protected TripleExplanationView mExplanationView;
-  protected boolean mExplanationEnabled = false;
   private List<Card> mLastSelectedTriple = ImmutableList.of();
 
   private boolean shouldSubmitScoreOnSignIn = false;
@@ -139,7 +138,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     menu.findItem(R.id.shuffle).setVisible(mGameState == GameState.ACTIVE);
 
     MenuItem explanationItem = menu.findItem(R.id.explanation);
-    explanationItem.setChecked(mExplanationEnabled);
+    explanationItem.setChecked(mExplanationView.getVisibility() == View.VISIBLE);
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
@@ -482,22 +481,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected void updateExplanation(Set<Card> selectedCards) {
-    if (!mExplanationEnabled) {
-      mExplanationView.setVisibility(View.GONE);
-      return;
-    }
-    if (selectedCards.isEmpty()) {
-      mExplanationView.setCards(mLastSelectedTriple);
-      mExplanationView.setVisibility(mLastSelectedTriple.isEmpty() ? View.GONE : View.VISIBLE);
-    } else {
-      mExplanationView.setCards(ImmutableList.copyOf(selectedCards));
-      mExplanationView.setVisibility(View.VISIBLE);
-    }
+    mExplanationView.setCards(ImmutableList.copyOf(selectedCards));
   }
 
   private void toggleExplanation() {
-    mExplanationEnabled = !mExplanationEnabled;
-    updateExplanation(mCardsView.getSelectedCards());
+    mExplanationView.setVisibility(mExplanationView.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
     invalidateOptionsMenu();
   }
 }
