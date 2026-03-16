@@ -74,6 +74,7 @@ public class TripleExplanationView extends FrameLayout {
             TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     row.setPadding(0, dpToPx(4), 0, dpToPx(4));
     row.setClipChildren(false);
+    row.setClipToPadding(false);
     row.setGravity(Gravity.CENTER_VERTICAL);
 
     // Label

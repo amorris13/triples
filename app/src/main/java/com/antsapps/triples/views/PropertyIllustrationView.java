@@ -133,7 +133,7 @@ public class PropertyIllustrationView extends View {
   private void drawShape(Canvas canvas, int centerX, int centerY, int symbolSize) {
     mShapeDrawable.getPaint().setColor(mOnSurfaceColor);
     mShapeDrawable.getPaint().setStyle(Paint.Style.STROKE);
-    mShapeDrawable.getPaint().setStrokeWidth(dpToPx(SymbolDrawable.OUTLINE_WIDTH) / 2);
+    mShapeDrawable.getPaint().setStrokeWidth(dpToPx(SymbolDrawable.OUTLINE_WIDTH));
     int left = centerX - symbolSize / 2;
     int top = centerY - symbolSize / 2;
     mShapeDrawable.setBounds(new Rect(left, top, left + symbolSize, top + symbolSize));
