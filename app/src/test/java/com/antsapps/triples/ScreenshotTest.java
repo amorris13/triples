@@ -31,6 +31,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import android.os.SystemClock;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
@@ -71,6 +72,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
 
     Application.sSeed = 12345L;
     HelpActivity.sRandom = new Random(12345L);
+    // Jan 1, 2025 12:00:00 UTC
+    SystemClock.setCurrentTimeMillis(1735732800000L);
   }
 
   private void capture(String screenName) {
