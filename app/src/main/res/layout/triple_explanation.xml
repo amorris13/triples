@@ -22,8 +22,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="8dp"
-                    android:text="@string/colour"
+                    android:text="@string/number"
                     android:textSize="14sp"
                     android:visibility="invisible" />
                 <com.antsapps.triples.views.SingleScaledCardView

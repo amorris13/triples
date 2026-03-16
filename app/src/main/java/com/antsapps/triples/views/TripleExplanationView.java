@@ -2,6 +2,7 @@ package com.antsapps.triples.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.cardsview.CardDimensionsProvider;
 import com.antsapps.triples.cardsview.CardsView;
 import java.util.List;
 
@@ -39,8 +41,6 @@ public class TripleExplanationView extends FrameLayout {
         new PropertyRow(Card.PropertyType.COLOR)
       };
 
-  private CardsView mCardsView;
-
   public TripleExplanationView(@NonNull Context context) {
     this(context, null);
   }
@@ -60,11 +60,12 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   private TableRow createRow(Context context, PropertyRow propertyRow) {
-    float density = context.getResources().getDisplayMetrics().density;
     TableRow row = new TableRow(context);
     row.setLayoutParams(
         new TableLayout.LayoutParams(
-            TableLayout.LayoutParams.MATCH_PARENT, (int) (48 * density)));
+            TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+    row.setPadding(0, dpToPx(4), 0, dpToPx(4));
+    row.setClipChildren(false);
     row.setGravity(Gravity.CENTER_VERTICAL);
 
     // Label
@@ -93,7 +94,7 @@ public class TripleExplanationView extends FrameLayout {
     // Illustrations
     for (int i = 0; i < 3; i++) {
       PropertyIllustrationView illustration = new PropertyIllustrationView(context);
-      TableRow.LayoutParams lp = new TableRow.LayoutParams(0, (int) (40 * density));
+      TableRow.LayoutParams lp = new TableRow.LayoutParams(0, dpToPx(32));
       illustration.setLayoutParams(lp);
       propertyRow.icons[i] = illustration;
       row.addView(illustration);
@@ -102,7 +103,7 @@ public class TripleExplanationView extends FrameLayout {
     // Conclusion Container
     LinearLayout conclusionContainer = new LinearLayout(context);
     conclusionContainer.setLayoutParams(
-        new TableRow.LayoutParams((int) (60 * density), TableRow.LayoutParams.WRAP_CONTENT));
+        new TableRow.LayoutParams(dpToPx(60), TableRow.LayoutParams.WRAP_CONTENT));
     conclusionContainer.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
     conclusionContainer.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -111,12 +112,13 @@ public class TripleExplanationView extends FrameLayout {
         new LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
     propertyRow.conclusion.setGravity(Gravity.END);
-    propertyRow.conclusion.setTextSize(12);
+    propertyRow.conclusion.setTextSize(14);
     conclusionContainer.addView(propertyRow.conclusion);
 
     propertyRow.tickCross = new ImageView(context);
     propertyRow.tickCross.setLayoutParams(
-        new LinearLayout.LayoutParams((int) (20 * density), (int) (20 * density)));
+        new LinearLayout.LayoutParams(dpToPx(20), dpToPx(20)));
+    propertyRow.tickCross.setPadding(dpToPx(4), 0, 0, 0);
     propertyRow.tickCross.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     conclusionContainer.addView(propertyRow.tickCross);
 
@@ -125,13 +127,13 @@ public class TripleExplanationView extends FrameLayout {
     return row;
   }
 
-  public void setCardDimensions(int width, int height) {
+  public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
     for (SingleScaledCardView cardView : mCardViews) {
-      cardView.setCardDimensions(width, height);
+      cardView.setNaturalCardDimensionsProvider(cardDimensionsProvider);
     }
     for (PropertyRow row : mPropertyRows) {
       for (PropertyIllustrationView icon : row.icons) {
-        icon.setCardDimensions(width, height);
+        icon.setNaturalCardDimensionsProvider(cardDimensionsProvider);
       }
     }
   }
@@ -198,5 +200,13 @@ public class TripleExplanationView extends FrameLayout {
       text.setText(R.string.two_and_one_short);
       icon.setImageResource(R.drawable.ic_cross);
     }
+  }
+
+  private int dpToPx(float dp) {
+    return (int) TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            getContext().getResources().getDisplayMetrics()
+    );
   }
 }

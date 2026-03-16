@@ -7,15 +7,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.cardsview.CardDimensionsProvider;
 import com.antsapps.triples.cardsview.CardView;
-import com.antsapps.triples.cardsview.CardsView;
 
 public class SingleScaledCardView extends View {
 
   private Card mCard;
   private CardView mCardView;
-  private int mCardWidth;
-  private int mCardHeight;
+  private CardDimensionsProvider mNaturalCardDimensionsProvider;
 
   public SingleScaledCardView(Context context) {
     this(context, null);
@@ -25,9 +24,8 @@ public class SingleScaledCardView extends View {
     super(context, attrs);
   }
 
-  public void setCardDimensions(int width, int height) {
-    mCardWidth = width;
-    mCardHeight = height;
+  public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
+    mNaturalCardDimensionsProvider = cardDimensionsProvider;
     invalidate();
   }
 
@@ -55,7 +53,7 @@ public class SingleScaledCardView extends View {
       return;
     }
 
-    int cardWidth = mCardWidth;
+    int cardWidth = mNaturalCardDimensionsProvider.cardWidth();
     if (cardWidth == 0) {
       cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
     }

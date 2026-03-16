@@ -11,8 +11,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.CardCustomizationUtils;
 import com.antsapps.triples.backend.Card;
-import com.antsapps.triples.cardsview.CardView;
-import com.antsapps.triples.cardsview.CardsView;
+import com.antsapps.triples.cardsview.CardDimensionsProvider;
 import com.antsapps.triples.cardsview.SymbolDrawable;
 
 public class PropertyIllustrationView extends View {
@@ -21,9 +20,8 @@ public class PropertyIllustrationView extends View {
   private int mValue;
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final ShapeDrawable mShapeDrawable = new ShapeDrawable();
+  private CardDimensionsProvider mNaturalCardDimensionsProvider;
   private String mCachedPattern;
-  private int mCardWidth;
-  private int mCardHeight;
   private int mOnSurfaceColor;
 
   public PropertyIllustrationView(Context context) {
@@ -45,9 +43,8 @@ public class PropertyIllustrationView extends View {
     mOnSurfaceColor = typedValue.data;
   }
 
-  public void setCardDimensions(int width, int height) {
-    mCardWidth = width;
-    mCardHeight = height;
+  public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
+    mNaturalCardDimensionsProvider = cardDimensionsProvider;
     invalidate();
   }
 
@@ -61,41 +58,43 @@ public class PropertyIllustrationView extends View {
   }
 
   @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    setMeasuredDimension(width, width / 5);
+  }
+
+  @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    int cardWidth = mCardWidth;
-    if (cardWidth == 0) {
-      cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
+    int naturalWidth = mNaturalCardDimensionsProvider.cardWidth();
+    if (naturalWidth == 0) {
+      naturalWidth = dpToPx(120);
     }
-    int cardHeight = (int) (cardWidth * CardView.HEIGHT_OVER_WIDTH);
 
     int width = getWidth();
     int height = getHeight();
     if (width == 0 || height == 0) return;
 
-    float scaleX = (float) width / cardWidth;
-    float scaleY = (float) height / cardHeight;
-    float scale = Math.min(scaleX, scaleY);
+    float scale = (float) width / naturalWidth;
+    int naturalHeight = (int) (height / scale);
 
     canvas.save();
-    canvas.translate((width - cardWidth * scale) / 2, (height - cardHeight * scale) / 2);
     canvas.scale(scale, scale);
 
     // Matching CardView symbol sizing: cardWidth / 5 diameter (radius = cardWidth / 10)
-    int symbolSize = cardWidth / 5;
-    int centerX = cardWidth / 2;
-    int centerY = cardHeight / 2;
-    float density = getResources().getDisplayMetrics().density;
+    int symbolSize = naturalWidth / 5;
+    int centerX = naturalWidth / 2;
+    int centerY = naturalHeight / 2;
 
     switch (mPropertyType) {
       case NUMBER:
         drawNumber(canvas, mValue, centerX, centerY, symbolSize);
         break;
       case SHAPE:
-        drawShape(canvas, centerX, centerY, symbolSize, density);
+        drawShape(canvas, centerX, centerY, symbolSize);
         break;
       case PATTERN:
-        drawPattern(canvas, mValue, centerX, centerY, symbolSize, density);
+        drawPattern(canvas, mValue, centerX, centerY, symbolSize);
         break;
       case COLOR:
         drawColor(canvas, mValue, centerX, centerY, symbolSize);
@@ -127,10 +126,10 @@ public class PropertyIllustrationView extends View {
     }
   }
 
-  private void drawShape(Canvas canvas, int centerX, int centerY, int symbolSize, float density) {
+  private void drawShape(Canvas canvas, int centerX, int centerY, int symbolSize) {
     mShapeDrawable.getPaint().setColor(mOnSurfaceColor);
     mShapeDrawable.getPaint().setStyle(Paint.Style.STROKE);
-    mShapeDrawable.getPaint().setStrokeWidth(SymbolDrawable.OUTLINE_WIDTH * density / 2);
+    mShapeDrawable.getPaint().setStrokeWidth(dpToPx(SymbolDrawable.OUTLINE_WIDTH) / 2);
     int left = centerX - symbolSize / 2;
     int top = centerY - symbolSize / 2;
     mShapeDrawable.setBounds(new Rect(left, top, left + symbolSize, top + symbolSize));
@@ -138,7 +137,7 @@ public class PropertyIllustrationView extends View {
   }
 
   private void drawPattern(
-      Canvas canvas, int value, int centerX, int centerY, int symbolSize, float density) {
+      Canvas canvas, int value, int centerX, int centerY, int symbolSize) {
     int left = centerX - symbolSize / 2;
     int top = centerY - symbolSize / 2;
     int right = left + symbolSize;
@@ -167,5 +166,13 @@ public class PropertyIllustrationView extends View {
     int left = centerX - symbolSize / 2;
     int top = centerY - symbolSize / 2;
     canvas.drawRect(left, top, left + symbolSize, top + symbolSize, mPaint);
+  }
+
+  private int dpToPx(float dp) {
+    return (int) TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            getContext().getResources().getDisplayMetrics()
+    );
   }
 }

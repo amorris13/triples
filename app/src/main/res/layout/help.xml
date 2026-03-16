@@ -59,9 +59,14 @@
     <com.antsapps.triples.views.TripleExplanationView
       android:id="@+id/triple_explanation"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:paddingTop="8dp"
-      android:paddingBottom="8dp" />
+      android:layout_height="wrap_content" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/show_me_another"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:onClick="showAnother" />
 
     <TextView
       android:layout_width="wrap_content"

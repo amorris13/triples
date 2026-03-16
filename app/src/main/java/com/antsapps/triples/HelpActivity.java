@@ -4,7 +4,11 @@ import static com.antsapps.triples.backend.Card.MAX_VARIABLES;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.cardsview.CardDimensionsProvider;
+import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.antsapps.triples.views.TripleExplanationView;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +34,18 @@ public class HelpActivity extends BaseTriplesActivity {
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    mExplanationView = (TripleExplanationView) findViewById(R.id.triple_explanation);
+    mExplanationView = findViewById(R.id.triple_explanation);
+    mExplanationView.setNaturalCardDimensionsProvider(new CardDimensionsProvider() {
+      @Override
+      public int cardWidth() {
+        return mExplanationView.getWidth() / 3;
+      }
+
+      @Override
+      public int cardHeight() {
+        return (int) ((mExplanationView.getWidth() / 3) / CardView.HEIGHT_OVER_WIDTH);
+      }
+    });
 
     showAnotherTriple();
 
@@ -44,6 +59,10 @@ public class HelpActivity extends BaseTriplesActivity {
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.VIEW_HELP, null);
+  }
+
+  public void showAnother(View view) {
+    showAnotherTriple();
   }
 
   private void showAnotherTriple() {

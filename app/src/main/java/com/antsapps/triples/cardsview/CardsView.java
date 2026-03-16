@@ -20,7 +20,7 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
+public abstract class CardsView extends ViewGroup implements Game.GameRenderer, CardDimensionsProvider {
 
   private static final String TAG = "CardsView";
 
@@ -128,10 +128,6 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
     return cardView;
   }
 
-  public abstract int cardWidth();
-
-  public abstract int cardHeight();
-
   protected abstract void logValidTriple();
 
   public void updateBounds() {
@@ -141,7 +137,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   protected abstract void updateMeasuredDimensions(
       final int widthMeasureSpec, final int heightMeasureSpec);
 
-  public abstract Rect calcBounds(int i);
+  protected abstract Rect calcBounds(int i);
 
   @Override
   public void setAlpha(float opacity) {
