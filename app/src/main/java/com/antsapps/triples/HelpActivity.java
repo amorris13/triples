@@ -13,6 +13,8 @@ import java.util.Random;
 
 public class HelpActivity extends BaseTriplesActivity {
 
+  public static Random sRandom = new Random();
+
   private FirebaseAnalytics mFirebaseAnalytics;
 
   private TripleExplanationView mExplanationView;
@@ -50,7 +52,7 @@ public class HelpActivity extends BaseTriplesActivity {
   }
 
   public static ImmutableList<Card> createValidTriple() {
-    Random random = new Random();
+    Random random = sRandom;
     Card card0 = createRandomCard(random);
     Card card1 = createRandomCard(random);
     while (card1.equals(card0)) {

@@ -68,6 +68,9 @@ public class ScreenshotTest extends BaseRobolectricTest {
     } else {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
+
+    Application.sSeed = 12345L;
+    HelpActivity.sRandom = new Random(12345L);
   }
 
   private void capture(String screenName) {
