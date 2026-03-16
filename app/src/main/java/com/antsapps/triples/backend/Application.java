@@ -305,6 +305,13 @@ public class Application extends OnStateChangedReporter {
     return Iterables.find(mDailyGames, game -> game.getGameDay().equals(gameDay));
   }
 
+  /**
+   * Merges the completed Classic games from the cloud into the local list.
+   *
+   * @param cloudGames The list of completed Classic games from the cloud.
+   * @return true if the local list was modified or if the cloud data is stale and should be
+   *     overwritten/deleted.
+   */
   public boolean mergeClassicCompleted(List<ClassicGame> cloudGames) {
     boolean changed = false;
     Set<Long> localDates = new HashSet<>();
@@ -320,6 +327,13 @@ public class Application extends OnStateChangedReporter {
     return changed;
   }
 
+  /**
+   * Merges the completed Arcade games from the cloud into the local list.
+   *
+   * @param cloudGames The list of completed Arcade games from the cloud.
+   * @return true if the local list was modified or if the cloud data is stale and should be
+   *     overwritten/deleted.
+   */
   public boolean mergeArcadeCompleted(List<ArcadeGame> cloudGames) {
     boolean changed = false;
     Set<Long> localDates = new HashSet<>();
@@ -335,6 +349,13 @@ public class Application extends OnStateChangedReporter {
     return changed;
   }
 
+  /**
+   * Merges the completed Daily games from the cloud into the local list.
+   *
+   * @param cloudGames The list of completed Daily games from the cloud.
+   * @return true if the local list was modified or if the cloud data is stale and should be
+   *     overwritten/deleted.
+   */
   public boolean mergeDailyCompleted(List<DailyGame> cloudGames) {
     boolean changed = false;
     Set<Long> localSeeds = new HashSet<>();
@@ -357,9 +378,18 @@ public class Application extends OnStateChangedReporter {
     return changed;
   }
 
+  /**
+   * Merges the current Classic game from the cloud into the local state.
+   *
+   * @param cloudGame The current Classic game from the cloud.
+   * @return true if the local state was updated or if the cloud data is stale and should be
+   *     overwritten/deleted.
+   */
   public boolean mergeClassicCurrent(ClassicGame cloudGame) {
     for (ClassicGame localCompleted : getCompletedClassicGames()) {
       if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
+        // Already completed locally, so cloud state is not newer. No change needed to local,
+        // and cloud is not stale (it matches a completion).
         return false;
       }
       if (localCompleted.getDateStarted().after(cloudGame.getDateStarted())) {
@@ -390,9 +420,18 @@ public class Application extends OnStateChangedReporter {
     return false;
   }
 
+  /**
+   * Merges the current Arcade game from the cloud into the local state.
+   *
+   * @param cloudGame The current Arcade game from the cloud.
+   * @return true if the local state was updated or if the cloud data is stale and should be
+   *     overwritten/deleted.
+   */
   public boolean mergeArcadeCurrent(ArcadeGame cloudGame) {
     for (ArcadeGame localCompleted : getCompletedArcadeGames()) {
       if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
+        // Already completed locally, so cloud state is not newer. No change needed to local,
+        // and cloud is not stale (it matches a completion).
         return false;
       }
       if (localCompleted.getDateStarted().after(cloudGame.getDateStarted())) {
@@ -422,6 +461,13 @@ public class Application extends OnStateChangedReporter {
     return false;
   }
 
+  /**
+   * Merges the current Daily game from the cloud into the local state.
+   *
+   * @param cloudGame The current Daily game from the cloud.
+   * @return true if the local state was updated or if the cloud data is stale and should be
+   *     overwritten/deleted.
+   */
   public boolean mergeDailyCurrent(DailyGame cloudGame) {
     DailyGame local = getDailyGameByGameDay(cloudGame.getGameDay());
     if (local != null && local.getGameState() == GameState.COMPLETED) {
