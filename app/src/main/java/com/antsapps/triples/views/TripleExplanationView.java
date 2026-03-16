@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 public class TripleExplanationView extends FrameLayout {
-
 
   private static class PropertyRow {
     PropertyIllustrationView[] icons = new PropertyIllustrationView[3];
@@ -59,7 +57,7 @@ public class TripleExplanationView extends FrameLayout {
     mCardViews[0] = findViewById(R.id.card_0);
     mCardViews[1] = findViewById(R.id.card_1);
     mCardViews[2] = findViewById(R.id.card_2);
-    
+
     mConclusionTickCross = findViewById(R.id.conclusion_image);
 
     for (PropertyRow row : mPropertyRows) {
