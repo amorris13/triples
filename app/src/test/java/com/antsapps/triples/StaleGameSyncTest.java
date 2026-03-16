@@ -4,10 +4,13 @@ import static com.google.common.truth.Truth.assertThat;
 
 import androidx.test.core.app.ApplicationProvider;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Deck;
 import com.antsapps.triples.backend.Game;
 import com.google.common.collect.Iterables;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,15 +28,34 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
   @Test
   public void mergeClassicCurrent_withGameAlreadyCompletedLocally_returnsFalse() {
     long seed = 123456789L;
+    Date dateStarted = new Date(seed);
     // Create and complete a game locally
-    ClassicGame localGame = ClassicGame.createFromSeed(seed);
-    localGame.finish();
+    ClassicGame localGame = new ClassicGame(
+        -1,
+        seed,
+        Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(),
+        new Deck(new Random(seed)),
+        0,
+        dateStarted,
+        Game.GameState.COMPLETED,
+        false
+    );
     mApplication.addClassicGame(localGame);
     mApplication.saveClassicGame(localGame);
 
     // Create a "cloud" game with the same seed (start date) but it's still active
-    ClassicGame cloudGame = ClassicGame.createFromSeed(seed);
-    cloudGame.resume();
+    ClassicGame cloudGame = new ClassicGame(
+        -1,
+        seed,
+        Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(),
+        new Deck(new Random(seed)),
+        0,
+        dateStarted,
+        Game.GameState.ACTIVE,
+        false
+    );
 
     // Try to merge it as a current game
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
@@ -46,22 +68,33 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
   @Test
   public void mergeClassicCurrent_withNewerStateOfSameGame_returnsTrue() {
     long seed = 123456789L;
+    Date dateStarted = new Date(seed);
     // Create a game locally
-    ClassicGame localGame = ClassicGame.createFromSeed(seed);
+    ClassicGame localGame = new ClassicGame(
+        -1,
+        seed,
+        Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(),
+        new Deck(new Random(seed)),
+        0,
+        dateStarted,
+        Game.GameState.ACTIVE,
+        false
+    );
     mApplication.addClassicGame(localGame);
 
     // Create a cloud game with same seed but more progress (more time elapsed)
-    ClassicGame cloudGame =
-        new ClassicGame(
-            -1,
-            seed,
-            localGame.getCardsInPlay(),
-            localGame.getTripleFindTimes(),
-            new Deck(new Random(seed)),
-            10000, // more time elapsed
-            localGame.getDateStarted(),
-            Game.GameState.ACTIVE,
-            false);
+    ClassicGame cloudGame = new ClassicGame(
+        -1,
+        seed,
+        localGame.getCardsInPlay(),
+        localGame.getTripleFindTimes(),
+        new Deck(new Random(seed)),
+        10000, // more time elapsed
+        dateStarted,
+        Game.GameState.ACTIVE,
+        false
+    );
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
@@ -73,8 +106,19 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
   @Test
   public void mergeClassicCurrent_withDifferentGame_replacesLocalIfNoneCurrent() {
     long seed2 = 222L;
+    Date dateStarted2 = new Date(seed2);
 
-    ClassicGame cloudGame = ClassicGame.createFromSeed(seed2);
+    ClassicGame cloudGame = new ClassicGame(
+        -1,
+        seed2,
+        Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(),
+        new Deck(new Random(seed2)),
+        0,
+        dateStarted2,
+        Game.GameState.ACTIVE,
+        false
+    );
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
@@ -86,12 +130,34 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
   @Test
   public void mergeClassicCurrent_withDifferentGame_doesNotReplaceLocalIfOneCurrent() {
     long seed1 = 111L;
+    Date dateStarted1 = new Date(seed1);
     long seed2 = 222L;
+    Date dateStarted2 = new Date(seed2);
 
-    ClassicGame localGame = ClassicGame.createFromSeed(seed1);
+    ClassicGame localGame = new ClassicGame(
+        -1,
+        seed1,
+        Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(),
+        new Deck(new Random(seed1)),
+        0,
+        dateStarted1,
+        Game.GameState.ACTIVE,
+        false
+    );
     mApplication.addClassicGame(localGame);
 
-    ClassicGame cloudGame = ClassicGame.createFromSeed(seed2);
+    ClassicGame cloudGame = new ClassicGame(
+        -1,
+        seed2,
+        Collections.<Card>emptyList(),
+        Collections.<Long>emptyList(),
+        new Deck(new Random(seed2)),
+        0,
+        dateStarted2,
+        Game.GameState.ACTIVE,
+        false
+    );
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
