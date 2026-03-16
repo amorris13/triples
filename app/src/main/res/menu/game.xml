@@ -28,6 +28,11 @@
       app:showAsAction="ifRoom|withText"
       android:title="@string/help" />
   <item
+      android:id="@+id/explanation"
+      app:showAsAction="never"
+      android:checkable="true"
+      android:title="@string/explanation" />
+  <item
       android:id="@+id/settings"
       app:showAsAction="never"
       android:title="@string/settings" />

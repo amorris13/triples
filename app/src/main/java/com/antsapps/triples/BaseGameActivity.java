@@ -25,11 +25,13 @@ import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.stats.TimelineView;
 import com.antsapps.triples.util.AnalyticsUtil;
+import com.antsapps.triples.views.TripleExplanationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +48,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   protected CardsView mCardsView;
   private GameState mGameState;
 
+  protected TripleExplanationView mExplanationView;
+
   private boolean shouldSubmitScoreOnSignIn = false;
 
   /** Called when the activity is first created. */
@@ -54,12 +58,16 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.game);
 
+    mCardsView = (CardsView) findViewById(R.id.cards_view);
+    mViewAnimator = findViewById(R.id.view_switcher);
+    mExplanationView = findViewById(R.id.triple_explanation);
+    mExplanationView.setNaturalCardDimensionsProvider(mCardsView);
+
     init(savedInstanceState);
 
     getGame().addOnUpdateGameStateListener(this);
     GameState originalGameState = getGame().getGameState();
 
-    mCardsView = (CardsView) findViewById(R.id.cards_view);
     if (mCardsView.getOnValidTripleSelectedListener() == null) {
       mCardsView.setOnValidTripleSelectedListener(getGame());
     }
@@ -81,7 +89,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
               }
             });
 
-    mViewAnimator = findViewById(R.id.view_switcher);
+    mCardsView.setOnSelectionChangedListener(this::onSelectionChanged);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -129,6 +137,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     menu.findItem(R.id.play).setVisible(mGameState == GameState.PAUSED);
     menu.findItem(R.id.shuffle).setVisible(mGameState == GameState.ACTIVE);
 
+    MenuItem explanationItem = menu.findItem(R.id.explanation);
+    explanationItem.setChecked(mExplanationView.getVisibility() == View.VISIBLE);
+
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
     menu.findItem(R.id.hint).setVisible(!hideHint);
@@ -165,6 +176,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     } else if (itemId == R.id.help) {
       Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
       startActivity(helpIntent);
+      return true;
+    } else if (itemId == R.id.explanation) {
+      toggleExplanation();
       return true;
     } else if (itemId == R.id.settings) {
       Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
@@ -455,5 +469,19 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   private void logGameEvent(String event) {
     AnalyticsUtil.logGameEvent(mFirebaseAnalytics, event, getGame().getGameTypeForAnalytics());
+  }
+
+  protected void onSelectionChanged(Set<Card> selectedCards) {
+    updateExplanation(selectedCards);
+  }
+
+  protected void updateExplanation(Set<Card> selectedCards) {
+    mExplanationView.setCards(ImmutableSet.copyOf(selectedCards));
+  }
+
+  private void toggleExplanation() {
+    mExplanationView.setVisibility(
+        mExplanationView.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+    invalidateOptionsMenu();
   }
 }

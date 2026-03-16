@@ -136,12 +136,12 @@ public class VerticalCardsView extends CardsView {
   }
 
   @Override
-  protected int cardWidth() {
+  public int cardWidth() {
     return mWidthOfCard;
   }
 
   @Override
-  protected int cardHeight() {
+  public int cardHeight() {
     return mHeightOfCard;
   }
 }
