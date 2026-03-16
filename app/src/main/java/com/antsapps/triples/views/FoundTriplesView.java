@@ -102,9 +102,8 @@ public class FoundTriplesView extends View {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
-    Rect existingBounds = mCardsView.calcBounds(0);
-    int naturalWidth = existingBounds.width();
-    int naturalHeight = existingBounds.height();
+    int naturalWidth = mCardsView.cardWidth();
+    int naturalHeight = mCardsView.cardHeight();
     int naturalDisplacement = (int) (naturalHeight * STACK_DISPLACEMENT_PERCENT);
     float scale = (float) mCardWidth / naturalWidth;
     float centerX = naturalWidth / 2f;

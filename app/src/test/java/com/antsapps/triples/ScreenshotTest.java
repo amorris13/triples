@@ -173,6 +173,16 @@ public class ScreenshotTest extends BaseRobolectricTest {
     Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ZenGameActivity.class);
     intent.putExtra(ZenGameActivity.IS_BEGINNER, true);
     try (ActivityScenario<ZenGameActivity> scenario = ActivityScenario.launch(intent)) {
+      scenario.onActivity(
+          activity -> {
+            ZenGame game = (ZenGame) activity.getGame();
+            List<Card> cards = game.getCardsInPlay();
+            if (!cards.isEmpty()) {
+              activity.mCardsView.getChildAt(0).performClick();
+              activity.mCardsView.getChildAt(1).performClick();
+              activity.mCardsView.getChildAt(2).performClick();
+            }
+          });
       capture("beginner_mode");
     }
   }

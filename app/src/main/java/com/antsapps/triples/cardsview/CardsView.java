@@ -20,15 +20,21 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
+public abstract class CardsView extends ViewGroup
+    implements Game.GameRenderer, CardDimensionsProvider {
 
   private static final String TAG = "CardsView";
+
+  public interface OnSelectionChangedListener {
+    void onSelectionChanged(Set<Card> selectedCards);
+  }
 
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
   protected ImmutableList<Card> mCards = ImmutableList.of();
   protected final Map<Card, CardView> mCardViews = Maps.newHashMap();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
+  private OnSelectionChangedListener mOnSelectionChangedListener;
   protected Rect mOffScreenLocation = new Rect();
 
   /**
@@ -115,14 +121,13 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
         v -> {
           if (!isEnabled()) return;
           v.setSelected(!v.isSelected());
+          if (mOnSelectionChangedListener != null) {
+            mOnSelectionChangedListener.onSelectionChanged(getSelectedCards());
+          }
           checkSelectedCards();
         });
     return cardView;
   }
-
-  protected abstract int cardWidth();
-
-  protected abstract int cardHeight();
 
   protected abstract void logValidTriple();
 
@@ -133,7 +138,7 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
   protected abstract void updateMeasuredDimensions(
       final int widthMeasureSpec, final int heightMeasureSpec);
 
-  public abstract Rect calcBounds(int i);
+  protected abstract Rect calcBounds(int i);
 
   @Override
   public void setAlpha(float opacity) {
@@ -181,6 +186,10 @@ public abstract class CardsView extends ViewGroup implements Game.GameRenderer {
 
   public OnValidTripleSelectedListener getOnValidTripleSelectedListener() {
     return mOnValidTripleSelectedListener;
+  }
+
+  public void setOnSelectionChangedListener(OnSelectionChangedListener listener) {
+    mOnSelectionChangedListener = listener;
   }
 
   @Override

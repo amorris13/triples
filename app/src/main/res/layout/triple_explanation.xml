@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <TableLayout
+            android:id="@+id/table_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1,2,3">
+
+            <!-- Card row -->
+            <TableRow
+                android:id="@+id/card_row"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+                <!-- Label (empty but needed for alignment) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/number"
+                    android:textSize="14sp"
+                    android:visibility="invisible" />
+                <com.antsapps.triples.views.SingleScaledCardView
+                    android:id="@+id/card_0"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <com.antsapps.triples.views.SingleScaledCardView
+                    android:id="@+id/card_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <com.antsapps.triples.views.SingleScaledCardView
+                    android:id="@+id/card_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <!-- Conclusion -->
+                <ImageView
+                    android:id="@+id/conclusion_image"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:padding="4dp" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</merge>

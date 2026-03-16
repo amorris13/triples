@@ -6,7 +6,7 @@ Major Updates:
 - Daily Puzzle Mode: Keep the streak going!
 - Zen & Beginner Modes: Relaxed and educational game options.
 - Customization: Personalize card colors, shapes, and patterns.
-- Smart Help: Introducing Hints and Shuffle features.
+- Smart Help: Introducing Hints and Shuffle features. And an explanation view.
 - Performance Stats: Detailed gameplay timelines and round records.
 - Modern Cloud Sync: Games saved to the cloud and synced across devices.
 - Stability & Compatibility: Major SDK updates and optimizations.
