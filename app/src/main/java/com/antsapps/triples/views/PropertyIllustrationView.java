@@ -10,25 +10,20 @@ import android.util.TypedValue;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.CardCustomizationUtils;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.cardsview.SymbolDrawable;
 
 public class PropertyIllustrationView extends View {
 
-  public enum PropertyType {
-    NUMBER,
-    SHAPE,
-    PATTERN,
-    COLOR
-  }
-
-  private PropertyType mPropertyType = PropertyType.NUMBER;
+  private Card.PropertyType mPropertyType = Card.PropertyType.NUMBER;
   private int mValue;
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final ShapeDrawable mShapeDrawable = new ShapeDrawable();
   private String mCachedPattern;
-  private CardsView mCardsView;
+  private int mCardWidth;
+  private int mCardHeight;
   private int mOnSurfaceColor;
 
   public PropertyIllustrationView(Context context) {
@@ -50,15 +45,16 @@ public class PropertyIllustrationView extends View {
     mOnSurfaceColor = typedValue.data;
   }
 
-  public void setCardsView(CardsView cardsView) {
-    mCardsView = cardsView;
+  public void setCardDimensions(int width, int height) {
+    mCardWidth = width;
+    mCardHeight = height;
     invalidate();
   }
 
-  public void setProperty(PropertyType type, int value) {
+  public void setProperty(Card.PropertyType type, int value) {
     mPropertyType = type;
     mValue = value;
-    if (mPropertyType == PropertyType.SHAPE) {
+    if (mPropertyType == Card.PropertyType.SHAPE) {
       mShapeDrawable.setShape(CardCustomizationUtils.getShapeForId(getContext(), mValue));
     }
     invalidate();
@@ -67,7 +63,7 @@ public class PropertyIllustrationView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    int cardWidth = (mCardsView != null) ? mCardsView.cardWidth() : 0;
+    int cardWidth = mCardWidth;
     if (cardWidth == 0) {
       cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
     }
@@ -112,7 +108,7 @@ public class PropertyIllustrationView extends View {
     mPaint.setShader(null);
     mPaint.setColor(mOnSurfaceColor);
     mPaint.setStyle(Paint.Style.FILL);
-    int halfSideLength = symbolSize / 2;
+    int halfSideLength = symbolSize / 4;
     int gap = halfSideLength / 2;
 
     switch (value) {

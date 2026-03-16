@@ -7,6 +7,13 @@ import com.google.common.base.Preconditions;
 public final class Card implements Comparable<Card> {
   public static final int MAX_VARIABLES = 3;
 
+  public enum PropertyType {
+    NUMBER,
+    SHAPE,
+    PATTERN,
+    COLOR
+  }
+
   public final int mNumber;
   public final int mShape;
   public final int mPattern;
@@ -49,6 +56,21 @@ public final class Card implements Comparable<Card> {
         .add("mPattern", mPattern)
         .add("mColor", mColor)
         .toString();
+  }
+
+  public int getValue(PropertyType type) {
+    switch (type) {
+      case NUMBER:
+        return mNumber;
+      case SHAPE:
+        return mShape;
+      case PATTERN:
+        return mPattern;
+      case COLOR:
+        return mColor;
+      default:
+        throw new IllegalArgumentException();
+    }
   }
 
   @Override

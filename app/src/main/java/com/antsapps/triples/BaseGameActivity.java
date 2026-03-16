@@ -62,7 +62,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mCardsView = (CardsView) findViewById(R.id.cards_view);
     mViewAnimator = findViewById(R.id.view_switcher);
     mExplanationView = findViewById(R.id.triple_explanation);
-    mExplanationView.setCardsView(mCardsView);
 
     init(savedInstanceState);
 
@@ -85,6 +84,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
                 if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
                   mCardsView.refreshDrawables();
                   mCardsView.updateBounds();
+                  mExplanationView.setCardDimensions(
+                      mCardsView.cardWidth(), mCardsView.cardHeight());
                   mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
               }
@@ -495,7 +496,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     }
   }
 
-  protected void toggleExplanation() {
+  private void toggleExplanation() {
     mExplanationEnabled = !mExplanationEnabled;
     updateExplanation(mCardsView.getSelectedCards());
     invalidateOptionsMenu();

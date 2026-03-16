@@ -23,9 +23,9 @@ public class TripleExplanationView extends FrameLayout {
     PropertyIllustrationView[] icons = new PropertyIllustrationView[3];
     TextView conclusion;
     ImageView tickCross;
-    PropertyIllustrationView.PropertyType type;
+    Card.PropertyType type;
 
-    PropertyRow(PropertyIllustrationView.PropertyType type) {
+    PropertyRow(Card.PropertyType type) {
       this.type = type;
     }
   }
@@ -33,10 +33,10 @@ public class TripleExplanationView extends FrameLayout {
   private SingleScaledCardView[] mCardViews = new SingleScaledCardView[3];
   private PropertyRow[] mPropertyRows =
       new PropertyRow[] {
-        new PropertyRow(PropertyIllustrationView.PropertyType.NUMBER),
-        new PropertyRow(PropertyIllustrationView.PropertyType.SHAPE),
-        new PropertyRow(PropertyIllustrationView.PropertyType.PATTERN),
-        new PropertyRow(PropertyIllustrationView.PropertyType.COLOR)
+        new PropertyRow(Card.PropertyType.NUMBER),
+        new PropertyRow(Card.PropertyType.SHAPE),
+        new PropertyRow(Card.PropertyType.PATTERN),
+        new PropertyRow(Card.PropertyType.COLOR)
       };
 
   private CardsView mCardsView;
@@ -60,11 +60,11 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   private TableRow createRow(Context context, PropertyRow propertyRow) {
+    float density = context.getResources().getDisplayMetrics().density;
     TableRow row = new TableRow(context);
     row.setLayoutParams(
         new TableLayout.LayoutParams(
-            TableLayout.LayoutParams.MATCH_PARENT,
-            (int) (48 * context.getResources().getDisplayMetrics().density)));
+            TableLayout.LayoutParams.MATCH_PARENT, (int) (48 * density)));
     row.setGravity(Gravity.CENTER_VERTICAL);
 
     // Label
@@ -72,7 +72,7 @@ public class TripleExplanationView extends FrameLayout {
     label.setLayoutParams(
         new TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-    label.setPadding(0, 0, (int) (8 * context.getResources().getDisplayMetrics().density), 0);
+    label.setPadding(0, 0, 0, 0);
     label.setTextSize(14);
     switch (propertyRow.type) {
       case NUMBER:
@@ -93,9 +93,7 @@ public class TripleExplanationView extends FrameLayout {
     // Illustrations
     for (int i = 0; i < 3; i++) {
       PropertyIllustrationView illustration = new PropertyIllustrationView(context);
-      TableRow.LayoutParams lp =
-          new TableRow.LayoutParams(
-              0, (int) (40 * context.getResources().getDisplayMetrics().density));
+      TableRow.LayoutParams lp = new TableRow.LayoutParams(0, (int) (40 * density));
       illustration.setLayoutParams(lp);
       propertyRow.icons[i] = illustration;
       row.addView(illustration);
@@ -104,25 +102,21 @@ public class TripleExplanationView extends FrameLayout {
     // Conclusion Container
     LinearLayout conclusionContainer = new LinearLayout(context);
     conclusionContainer.setLayoutParams(
-        new TableRow.LayoutParams(
-            TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+        new TableRow.LayoutParams((int) (60 * density), TableRow.LayoutParams.WRAP_CONTENT));
     conclusionContainer.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
     conclusionContainer.setOrientation(LinearLayout.HORIZONTAL);
 
     propertyRow.conclusion = new TextView(context);
     propertyRow.conclusion.setLayoutParams(
         new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-    propertyRow.conclusion.setPadding(
-        (int) (4 * context.getResources().getDisplayMetrics().density), 0, 0, 0);
+            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+    propertyRow.conclusion.setGravity(Gravity.END);
     propertyRow.conclusion.setTextSize(12);
     conclusionContainer.addView(propertyRow.conclusion);
 
     propertyRow.tickCross = new ImageView(context);
     propertyRow.tickCross.setLayoutParams(
-        new LinearLayout.LayoutParams(
-            (int) (20 * context.getResources().getDisplayMetrics().density),
-            (int) (20 * context.getResources().getDisplayMetrics().density)));
+        new LinearLayout.LayoutParams((int) (20 * density), (int) (20 * density)));
     propertyRow.tickCross.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     conclusionContainer.addView(propertyRow.tickCross);
 
@@ -131,14 +125,13 @@ public class TripleExplanationView extends FrameLayout {
     return row;
   }
 
-  public void setCardsView(CardsView cardsView) {
-    mCardsView = cardsView;
+  public void setCardDimensions(int width, int height) {
     for (SingleScaledCardView cardView : mCardViews) {
-      cardView.setCardsView(cardsView);
+      cardView.setCardDimensions(width, height);
     }
     for (PropertyRow row : mPropertyRows) {
       for (PropertyIllustrationView icon : row.icons) {
-        icon.setCardsView(cardsView);
+        icon.setCardDimensions(width, height);
       }
     }
   }
@@ -187,29 +180,9 @@ public class TripleExplanationView extends FrameLayout {
     }
 
     for (PropertyRow row : mPropertyRows) {
-      int v0 = 0, v1 = 0, v2 = 0;
-      switch (row.type) {
-        case NUMBER:
-          v0 = cards.get(0).mNumber;
-          v1 = cards.get(1).mNumber;
-          v2 = cards.get(2).mNumber;
-          break;
-        case SHAPE:
-          v0 = cards.get(0).mShape;
-          v1 = cards.get(1).mShape;
-          v2 = cards.get(2).mShape;
-          break;
-        case PATTERN:
-          v0 = cards.get(0).mPattern;
-          v1 = cards.get(1).mPattern;
-          v2 = cards.get(2).mPattern;
-          break;
-        case COLOR:
-          v0 = cards.get(0).mColor;
-          v1 = cards.get(1).mColor;
-          v2 = cards.get(2).mColor;
-          break;
-      }
+      int v0 = cards.get(0).getValue(row.type);
+      int v1 = cards.get(1).getValue(row.type);
+      int v2 = cards.get(2).getValue(row.type);
       updateConclusion(row.conclusion, row.tickCross, v0, v1, v2);
     }
   }

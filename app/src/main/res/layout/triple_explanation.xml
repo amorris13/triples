@@ -40,11 +40,8 @@
                     android:layout_height="wrap_content" />
                 <!-- Conclusion (empty but needed for alignment) -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
-                    android:paddingStart="4dp"
-                    android:text="@string/all_different"
-                    android:textSize="12sp"
                     android:visibility="invisible" />
             </TableRow>
         </TableLayout>

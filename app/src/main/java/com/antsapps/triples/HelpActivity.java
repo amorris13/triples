@@ -29,7 +29,6 @@ public class HelpActivity extends BaseTriplesActivity {
     }
 
     mExplanationView = (TripleExplanationView) findViewById(R.id.triple_explanation);
-    mExplanationView.setCardsView(new VerticalCardsView(this));
 
     showAnotherTriple();
 

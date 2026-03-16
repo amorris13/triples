@@ -14,7 +14,8 @@ public class SingleScaledCardView extends View {
 
   private Card mCard;
   private CardView mCardView;
-  private CardsView mCardsView;
+  private int mCardWidth;
+  private int mCardHeight;
 
   public SingleScaledCardView(Context context) {
     this(context, null);
@@ -24,8 +25,9 @@ public class SingleScaledCardView extends View {
     super(context, attrs);
   }
 
-  public void setCardsView(CardsView cardsView) {
-    mCardsView = cardsView;
+  public void setCardDimensions(int width, int height) {
+    mCardWidth = width;
+    mCardHeight = height;
     invalidate();
   }
 
@@ -53,7 +55,7 @@ public class SingleScaledCardView extends View {
       return;
     }
 
-    int cardWidth = (mCardsView != null) ? mCardsView.cardWidth() : 0;
+    int cardWidth = mCardWidth;
     if (cardWidth == 0) {
       cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
     }
