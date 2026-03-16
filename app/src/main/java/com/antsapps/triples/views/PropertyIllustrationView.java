@@ -140,8 +140,7 @@ public class PropertyIllustrationView extends View {
     mShapeDrawable.draw(canvas);
   }
 
-  private void drawPattern(
-      Canvas canvas, int value, int centerX, int centerY, int symbolSize) {
+  private void drawPattern(Canvas canvas, int value, int centerX, int centerY, int symbolSize) {
     int left = centerX - symbolSize / 2;
     int top = centerY - symbolSize / 2;
     int right = left + symbolSize;
@@ -173,10 +172,8 @@ public class PropertyIllustrationView extends View {
   }
 
   private int dpToPx(float dp) {
-    return (int) TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            getContext().getResources().getDisplayMetrics()
-    );
+    return (int)
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
   }
 }

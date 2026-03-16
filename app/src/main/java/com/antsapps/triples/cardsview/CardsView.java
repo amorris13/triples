@@ -20,7 +20,8 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CardsView extends ViewGroup implements Game.GameRenderer, CardDimensionsProvider {
+public abstract class CardsView extends ViewGroup
+    implements Game.GameRenderer, CardDimensionsProvider {
 
   private static final String TAG = "CardsView";
 

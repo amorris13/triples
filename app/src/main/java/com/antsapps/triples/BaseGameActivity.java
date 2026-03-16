@@ -49,7 +49,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   private GameState mGameState;
 
   protected TripleExplanationView mExplanationView;
-  private List<Card> mLastSelectedTriple = ImmutableList.of();
 
   private boolean shouldSubmitScoreOnSignIn = false;
 
@@ -201,8 +200,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   @Override
   public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
-    mLastSelectedTriple = ImmutableList.copyOf(triple);
-    updateExplanation(mCardsView.getSelectedCards());
     mCardsView.animateTripleFoundToOffscreen(triple);
     logTripleFoundEvent(hintUsed);
   }
@@ -475,9 +472,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected void onSelectionChanged(Set<Card> selectedCards) {
-    if (selectedCards.size() == 3) {
-      mLastSelectedTriple = ImmutableList.copyOf(selectedCards);
-    }
     updateExplanation(selectedCards);
   }
 
@@ -486,7 +480,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   private void toggleExplanation() {
-    mExplanationView.setVisibility(mExplanationView.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+    mExplanationView.setVisibility(
+        mExplanationView.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
     invalidateOptionsMenu();
   }
 }

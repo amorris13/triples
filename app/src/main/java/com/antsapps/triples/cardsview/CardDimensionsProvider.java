@@ -1,7 +1,7 @@
 package com.antsapps.triples.cardsview;
 
 public interface CardDimensionsProvider {
-    int cardWidth();
+  int cardWidth();
 
-    int cardHeight();
+  int cardHeight();
 }

@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,10 +16,7 @@ import androidx.annotation.Nullable;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardDimensionsProvider;
-import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -118,15 +114,13 @@ public class TripleExplanationView extends FrameLayout {
 
     propertyRow.conclusion = new TextView(context);
     propertyRow.conclusion.setLayoutParams(
-        new LinearLayout.LayoutParams(
-            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
     propertyRow.conclusion.setGravity(Gravity.END);
     propertyRow.conclusion.setTextSize(14);
     conclusionContainer.addView(propertyRow.conclusion);
 
     propertyRow.tickCross = new ImageView(context);
-    propertyRow.tickCross.setLayoutParams(
-        new LinearLayout.LayoutParams(dpToPx(20), dpToPx(20)));
+    propertyRow.tickCross.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(20), dpToPx(20)));
     propertyRow.tickCross.setPadding(dpToPx(4), 0, 0, 0);
     propertyRow.tickCross.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     conclusionContainer.addView(propertyRow.tickCross);
@@ -163,7 +157,7 @@ public class TripleExplanationView extends FrameLayout {
       for (PropertyRow row : mPropertyRows) {
         row.icons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
         if (hasCard) {
-            row.icons[i].setPropertyValue(card.getValue(row.type));
+          row.icons[i].setPropertyValue(card.getValue(row.type));
         }
       }
     }
@@ -202,10 +196,8 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   private int dpToPx(float dp) {
-    return (int) TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            getContext().getResources().getDisplayMetrics()
-    );
+    return (int)
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
   }
 }
