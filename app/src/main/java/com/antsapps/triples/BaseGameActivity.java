@@ -477,8 +477,6 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   protected void onSelectionChanged(Set<Card> selectedCards) {
     if (selectedCards.size() == 3) {
       mLastSelectedTriple = ImmutableList.copyOf(selectedCards);
-    } else if (selectedCards.size() == 1) {
-      mLastSelectedTriple = ImmutableList.of();
     }
     updateExplanation(selectedCards);
   }
