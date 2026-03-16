@@ -18,7 +18,12 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardDimensionsProvider;
 import com.antsapps.triples.cardsview.CardsView;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TripleExplanationView extends FrameLayout {
 
@@ -33,6 +38,7 @@ public class TripleExplanationView extends FrameLayout {
     }
   }
 
+  private Set<Card> mCards = new LinkedHashSet<>();
   private SingleScaledCardView[] mCardViews = new SingleScaledCardView[3];
   private PropertyRow[] mPropertyRows =
       new PropertyRow[] {
@@ -141,10 +147,15 @@ public class TripleExplanationView extends FrameLayout {
     }
   }
 
-  public void setCards(List<Card> cards) {
+  public void setCards(Set<Card> cards) {
+    mCards.retainAll(cards);
+    mCards.addAll(cards);
+
+    List<Card> cardList = ImmutableList.copyOf(mCards);
+
     for (int i = 0; i < 3; i++) {
-      boolean hasCard = i < cards.size();
-      Card card = hasCard ? cards.get(i) : null;
+      boolean hasCard = i < cardList.size();
+      Card card = hasCard ? cardList.get(i) : null;
 
       mCardViews[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
       mCardViews[i].setCard(card);
@@ -157,7 +168,7 @@ public class TripleExplanationView extends FrameLayout {
       }
     }
 
-    updateConclusions(cards);
+    updateConclusions(cardList);
   }
 
   private void updateConclusions(List<Card> cards) {

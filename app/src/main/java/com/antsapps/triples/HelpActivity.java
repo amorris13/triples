@@ -12,6 +12,7 @@ import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.antsapps.triples.views.TripleExplanationView;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.Random;
 
@@ -66,11 +67,10 @@ public class HelpActivity extends BaseTriplesActivity {
   }
 
   private void showAnotherTriple() {
-    mCardsShown = createValidTriple();
-    mExplanationView.setCards(mCardsShown);
+    mExplanationView.setCards(createValidTriple());
   }
 
-  public static ImmutableList<Card> createValidTriple() {
+  public static ImmutableSet<Card> createValidTriple() {
     Random random = sRandom;
     Card card0 = createRandomCard(random);
     Card card1 = createRandomCard(random);
@@ -84,7 +84,7 @@ public class HelpActivity extends BaseTriplesActivity {
             getValidProperty(card0.mPattern, card1.mPattern),
             getValidProperty(card0.mColor, card1.mColor));
 
-    return ImmutableList.of(card0, card1, card2);
+    return ImmutableSet.of(card0, card1, card2);
   }
 
   private static Card createRandomCard(Random random) {

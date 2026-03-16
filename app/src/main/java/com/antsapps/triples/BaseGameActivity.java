@@ -31,6 +31,7 @@ import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
 import java.util.Set;
@@ -481,7 +482,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected void updateExplanation(Set<Card> selectedCards) {
-    mExplanationView.setCards(ImmutableList.copyOf(selectedCards));
+    mExplanationView.setCards(ImmutableSet.copyOf(selectedCards));
   }
 
   private void toggleExplanation() {
