@@ -5,6 +5,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.view.View;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.core.app.ActivityScenario;
@@ -31,7 +32,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import android.os.SystemClock;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
