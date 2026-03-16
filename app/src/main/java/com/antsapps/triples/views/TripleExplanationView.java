@@ -149,22 +149,7 @@ public class TripleExplanationView extends FrameLayout {
       for (PropertyRow row : mPropertyRows) {
         row.icons[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
         if (hasCard) {
-          int value = 0;
-          switch (row.type) {
-            case NUMBER:
-              value = card.mNumber;
-              break;
-            case SHAPE:
-              value = card.mShape;
-              break;
-            case PATTERN:
-              value = card.mPattern;
-              break;
-            case COLOR:
-              value = card.mColor;
-              break;
-          }
-          row.icons[i].setProperty(row.type, value);
+            row.icons[i].setProperty(row.type, card.getValue(row.type));
         }
       }
     }
