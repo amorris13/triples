@@ -362,6 +362,9 @@ public class Application extends OnStateChangedReporter {
       if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
         return false;
       }
+      if (localCompleted.getDateStarted().after(cloudGame.getDateStarted())) {
+        return true;
+      }
     }
 
     ClassicGame localCurrent = Iterables.getFirst(getCurrentClassicGames(), null);
@@ -370,11 +373,17 @@ public class Application extends OnStateChangedReporter {
       return true;
     }
 
-    if (localCurrent.getDateStarted().equals(cloudGame.getDateStarted())
-        && (cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed()
-            || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining())) {
-      deleteClassicGame(localCurrent);
-      addClassicGame(cloudGame);
+    if (localCurrent.getDateStarted().equals(cloudGame.getDateStarted())) {
+      if (cloudGame.getTimeElapsed() > localCurrent.getTimeElapsed()
+          || cloudGame.getCardsRemaining() < localCurrent.getCardsRemaining()) {
+        deleteClassicGame(localCurrent);
+        addClassicGame(cloudGame);
+        return true;
+      }
+      return false;
+    }
+
+    if (localCurrent.getDateStarted().after(cloudGame.getDateStarted())) {
       return true;
     }
 
@@ -386,6 +395,9 @@ public class Application extends OnStateChangedReporter {
       if (localCompleted.getDateStarted().equals(cloudGame.getDateStarted())) {
         return false;
       }
+      if (localCompleted.getDateStarted().after(cloudGame.getDateStarted())) {
+        return true;
+      }
     }
 
     ArcadeGame localCurrent = Iterables.getFirst(getCurrentArcadeGames(), null);
@@ -394,10 +406,16 @@ public class Application extends OnStateChangedReporter {
       return true;
     }
 
-    if (localCurrent.getDateStarted().equals(cloudGame.getDateStarted())
-        && cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
-      deleteArcadeGame(localCurrent);
-      addArcadeGame(cloudGame);
+    if (localCurrent.getDateStarted().equals(cloudGame.getDateStarted())) {
+      if (cloudGame.getNumTriplesFound() > localCurrent.getNumTriplesFound()) {
+        deleteArcadeGame(localCurrent);
+        addArcadeGame(cloudGame);
+        return true;
+      }
+      return false;
+    }
+
+    if (localCurrent.getDateStarted().after(cloudGame.getDateStarted())) {
       return true;
     }
 
@@ -406,9 +424,10 @@ public class Application extends OnStateChangedReporter {
 
   public boolean mergeDailyCurrent(DailyGame cloudGame) {
     DailyGame local = getDailyGameByGameDay(cloudGame.getGameDay());
-    if (local == null
-        || (local.getGameState() != GameState.COMPLETED
-            && cloudGame.getNumTriplesFound() > local.getNumTriplesFound())) {
+    if (local != null && local.getGameState() == GameState.COMPLETED) {
+      return true;
+    }
+    if (local == null || cloudGame.getNumTriplesFound() > local.getNumTriplesFound()) {
       if (local != null) {
         mDailyGames.remove(local);
         database.removeDailyGame(local);

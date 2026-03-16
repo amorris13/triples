@@ -1,12 +1,1 @@
-It’s been a while! We’ve completely rebuilt Triples to provide a modern, beautiful experience.
-
-Major Updates:
-- Material 3 Design: A fresh, modern look and feel.
-- Dark Mode Support: Play comfortably day or night.
-- Daily Puzzle Mode: Keep the streak going!
-- Zen & Beginner Modes: Relaxed and educational game options.
-- Customization: Personalize card colors, shapes, and patterns.
-- Smart Help: Introducing Hints and Shuffle features.
-- Performance Stats: Detailed gameplay timelines and round records.
-- Modern Cloud Sync: Games saved to the cloud and synced across devices.
-- Stability & Compatibility: Major SDK updates and optimizations.
+Fixed a bug where deleted or completed games could be incorrectly re-created during cloud synchronization.
