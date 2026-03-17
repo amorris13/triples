@@ -50,9 +50,7 @@ public class SnackbarScreenshotTest extends BaseRobolectricTest {
               @Override
               public void perform(androidx.test.espresso.UiController uiController, View view) {
                 com.github.takahirom.roborazzi.RoborazziKt.captureRoboImage(
-                    view,
-                    "src/test/screenshots/" + screenName + ".png",
-                    new RoborazziOptions());
+                    view, "src/test/screenshots/" + screenName + ".png", new RoborazziOptions());
               }
             });
   }
