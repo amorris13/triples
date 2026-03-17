@@ -4,7 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.content.Intent;
 import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
@@ -33,6 +33,9 @@ public class CompletedGameMenuVisibilityTest extends BaseRobolectricTest {
             Menu menu = toolbar.getMenu();
             assertThat(menu.findItem(R.id.hint).isVisible()).isTrue();
             assertThat(menu.findItem(R.id.explanation).isVisible()).isTrue();
+            assertThat(menu.findItem(R.id.help).isVisible()).isTrue();
+            assertThat(activity.findViewById(R.id.bottom_inset_container).getVisibility())
+                .isEqualTo(View.VISIBLE);
           });
 
       // Now complete the game
@@ -42,13 +45,16 @@ public class CompletedGameMenuVisibilityTest extends BaseRobolectricTest {
             activity.invalidateOptionsMenu();
           });
 
-      // Verify they are hidden (this should fail before the fix)
+      // Verify they are hidden
       scenario.onActivity(
           activity -> {
             Toolbar toolbar = activity.findViewById(R.id.toolbar);
             Menu menu = toolbar.getMenu();
             assertThat(menu.findItem(R.id.hint).isVisible()).isFalse();
             assertThat(menu.findItem(R.id.explanation).isVisible()).isFalse();
+            assertThat(menu.findItem(R.id.help).isVisible()).isFalse();
+            assertThat(activity.findViewById(R.id.bottom_inset_container).getVisibility())
+                .isEqualTo(View.GONE);
           });
     }
   }

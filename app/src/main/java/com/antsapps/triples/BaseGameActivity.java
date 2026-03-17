@@ -156,6 +156,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         hideHint ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
     hintItem.setVisible(mGameState != GameState.COMPLETED);
 
+    menu.findItem(R.id.help).setVisible(mGameState != GameState.COMPLETED);
+
     return true;
   }
 
@@ -338,7 +340,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     if (mGameState == GameState.COMPLETED) {
       mCardsView.setAlpha(0.5f);
+      mCardsView.setEnabled(false);
       mExplanationView.setVisibility(View.GONE);
+      findViewById(R.id.bottom_inset_container).setVisibility(View.GONE);
     }
 
     invalidateOptionsMenu();
