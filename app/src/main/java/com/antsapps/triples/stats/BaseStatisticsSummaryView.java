@@ -2,6 +2,7 @@ package com.antsapps.triples.stats;
 
 import android.content.Context;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
 import androidx.core.content.ContextCompat;
@@ -62,6 +63,13 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
     @Override
     public String getFormattedValue(float value) {
       return mFormat.format(new Date((long) value));
+    }
+  }
+
+  protected static class TimeValueFormatter extends ValueFormatter {
+    @Override
+    public String getFormattedValue(float value) {
+      return DateUtils.formatElapsedTime((long) value);
     }
   }
 

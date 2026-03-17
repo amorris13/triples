@@ -55,8 +55,6 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
   @Override
   protected void setAccentColor(int accentColor) {
     super.setAccentColor(accentColor);
-    ((TextView) findViewById(R.id.summary_title)).setTextColor(accentColor);
-    findViewById(R.id.summary_divider).setBackgroundColor(accentColor);
   }
 
   private static String convertTimeToString(long timeMS) {
@@ -96,8 +94,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
 
     BarDataSet barDataSet = new BarDataSet(histogramEntries, "Games");
     barDataSet.setColor(getAccentColor());
-    barDataSet.setValueTextColor(getOnSurfaceColor());
-    barDataSet.setValueFormatter(new IntegerValueFormatter());
+    barDataSet.setDrawValues(false);
     mHistogramChart.setData(new BarData(barDataSet));
     styleChart(mHistogramChart);
     mHistogramChart.getXAxis().setGranularity(1f);
@@ -109,9 +106,12 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     ScatterDataSet scatterDataSet = new ScatterDataSet(scatterEntries, "Performance");
     scatterDataSet.setColor(getAccentColor());
     scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+    scatterDataSet.setScatterShapeSize(10f);
+    scatterDataSet.setDrawValues(false);
     mScatterChart.setData(new ScatterData(scatterDataSet));
     styleChart(mScatterChart);
     mScatterChart.getXAxis().setValueFormatter(new DateValueFormatter(getContext()));
+    mScatterChart.getAxisLeft().setValueFormatter(new TimeValueFormatter());
     mScatterChart.invalidate();
 
     int numGames = classicStatistics.getNumGames();
