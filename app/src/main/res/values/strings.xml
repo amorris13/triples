@@ -100,6 +100,14 @@
     <string name="pref_hide_hint_title">Hide Hint Icon</string>
     <string name="pref_hide_hint_summary">Move the hint icon from the game action bar to the menu</string>
 
+    <string name="pref_hide_timer_title">Hide Timer</string>
+    <string name="pref_hide_timer_summary">Hide the timer on game screens</string>
+    <string name="pref_hide_timer">pref_hide_timer</string>
+
+    <string name="pref_hide_count_title">Hide Progress/Count</string>
+    <string name="pref_hide_count_summary">Hide the triples count or cards remaining on game screens</string>
+    <string name="pref_hide_count">pref_hide_count</string>
+
     <string name="hint_used_indicator">HINT USED</string>
 
     <string name="cards_remaining_format">Cards remaining: %1$d</string>
@@ -177,5 +185,6 @@
   <string name="pref_version_title">Version</string>
   <string name="version_format">%1$s (%2$d)</string>
   <string name="pref_feedback_title">Send Feedback</string>
+  <string name="no_email_clients">No email clients found.</string>
 
 </resources>
