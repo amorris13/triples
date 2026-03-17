@@ -9,3 +9,4 @@ Major Updates:
 - Smart Help: Introducing Hints and Shuffle features. And an explanation view.
 - Performance Stats: Detailed gameplay timelines and round records.
 - Modern Cloud Sync: Games saved to the cloud and synced across devices.
+- Settings: Added version information and feedback option.

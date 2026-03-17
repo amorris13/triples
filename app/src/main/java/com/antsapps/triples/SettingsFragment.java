@@ -2,6 +2,10 @@ package com.antsapps.triples;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Button;
@@ -62,12 +66,44 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
 
     updateAccountPreferences();
+    updateAboutPreferences();
   }
 
   private void updateAnimationDurationSummary(
       SeekBarPreference animationDurationPreference, int value) {
     animationDurationPreference.setSummary(
         getString(R.string.pref_animation_duration_summary, value * ANIMATION_DURATION_MULTIPLIER));
+  }
+
+  private void updateAboutPreferences() {
+    Preference versionPref = findPreference("pref_version");
+    if (versionPref != null) {
+      try {
+        PackageInfo pInfo =
+            getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+        String version = pInfo.versionName;
+        int versionCode =
+            (int) androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(pInfo);
+        versionPref.setSummary(getString(R.string.version_format, version, versionCode));
+      } catch (PackageManager.NameNotFoundException e) {
+        versionPref.setSummary("Unknown");
+      }
+    }
+
+    Preference feedbackPref = findPreference("pref_feedback");
+    if (feedbackPref != null) {
+      feedbackPref.setOnPreferenceClickListener(
+          preference -> {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse("mailto:"));
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"anthonymorris13+triples@gmail.com"});
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Triples Feedback");
+            if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+              startActivity(intent);
+            }
+            return true;
+          });
+    }
   }
 
   public void updateAccountPreferences() {
