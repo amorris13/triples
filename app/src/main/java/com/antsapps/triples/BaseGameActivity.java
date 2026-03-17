@@ -186,7 +186,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       startActivity(helpIntent);
       return true;
     } else if (itemId == R.id.explanation) {
-      toggleExplanation();
+      toggleExplanation(AnalyticsConstants.Param.TRIGGER_SOURCE_MENU);
       return true;
     } else if (itemId == R.id.settings) {
       Intent settingsIntent = new Intent(getBaseContext(), SettingsActivity.class);
@@ -488,10 +488,21 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mExplanationView.setCards(ImmutableSet.copyOf(selectedCards));
   }
 
-  private void toggleExplanation() {
-    mExplanationView.setVisibility(
-        mExplanationView.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+  protected void toggleExplanation(String source) {
+    if (mExplanationView.getVisibility() == View.GONE) {
+      logExplanationEvent(source);
+      mExplanationView.setVisibility(View.VISIBLE);
+    } else {
+      mExplanationView.setVisibility(View.GONE);
+    }
     invalidateOptionsMenu();
+  }
+
+  protected void logExplanationEvent(String source) {
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    bundle.putString(AnalyticsConstants.Param.TRIGGER_SOURCE, source);
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.SHOW_EXPLANATION, bundle);
   }
 
   @Override
@@ -510,7 +521,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
           R.string.incorrect_triples_snackbar_action,
           v -> {
             if (mExplanationView.getVisibility() == View.GONE) {
-              toggleExplanation();
+              toggleExplanation(AnalyticsConstants.Param.TRIGGER_SOURCE_SNACKBAR);
             }
           });
       snackbar.show();
