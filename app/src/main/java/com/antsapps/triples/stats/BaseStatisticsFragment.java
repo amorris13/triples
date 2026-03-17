@@ -58,7 +58,8 @@ public abstract class BaseStatisticsFragment extends Fragment
 
     initViewModel();
 
-    StatisticsGamesServicesView gameServicesView = view.findViewById(R.id.game_services_view_container);
+    StatisticsGamesServicesView gameServicesView =
+        view.findViewById(R.id.game_services_view_container);
     gameServicesView.setLeaderboardId(getLeaderboardId());
     gameServicesView.setActivity(mGameListActivity);
     mGameListActivity.setSignInListener(gameServicesView);

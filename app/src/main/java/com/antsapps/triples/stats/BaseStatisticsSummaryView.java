@@ -26,7 +26,9 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
 
   protected int getOnSurfaceColor() {
     TypedValue typedValue = new TypedValue();
-    getContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+    getContext()
+        .getTheme()
+        .resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
     return typedValue.data;
   }
 
