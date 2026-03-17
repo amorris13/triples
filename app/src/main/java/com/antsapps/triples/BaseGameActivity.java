@@ -150,7 +150,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
-    menu.findItem(R.id.hint).setVisible(!hideHint);
+    MenuItem hintItem = menu.findItem(R.id.hint);
+    hintItem.setShowAsAction(
+        hideHint ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
 
     return true;
   }
