@@ -23,10 +23,12 @@ import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.Game.OnUpdateCardsInPlayListener;
 import com.antsapps.triples.backend.Game.OnUpdateGameStateListener;
 import com.antsapps.triples.cardsview.CardsView;
+import com.antsapps.triples.cardsview.CardsView.OnIncorrectTripleSelectedListener;
 import com.antsapps.triples.stats.TimelineView;
 import com.antsapps.triples.util.AnalyticsUtil;
 import com.antsapps.triples.views.TripleExplanationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
@@ -38,7 +40,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public abstract class BaseGameActivity extends BaseTriplesActivity
-    implements OnUpdateGameStateListener, OnUpdateCardsInPlayListener {
+    implements OnUpdateGameStateListener,
+        OnUpdateCardsInPlayListener,
+        OnIncorrectTripleSelectedListener {
 
   public static final int VIEW_CARDS = 0;
   public static final int VIEW_PAUSED = 1;
@@ -51,6 +55,9 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   protected TripleExplanationView mExplanationView;
 
   private boolean shouldSubmitScoreOnSignIn = false;
+
+  private int mIncorrectConsecutiveCount = 0;
+  private boolean mHasShownExplanationSnackbar = false;
 
   /** Called when the activity is first created. */
   @Override
@@ -90,6 +97,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
             });
 
     mCardsView.setOnSelectionChangedListener(this::onSelectionChanged);
+    mCardsView.setOnIncorrectTripleSelectedListener(this);
 
     ActionBar actionBar = getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -200,6 +208,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
   @Override
   public void animateFoundTriple(Set<Card> triple, boolean hintUsed) {
+    mIncorrectConsecutiveCount = 0;
     mCardsView.animateTripleFoundToOffscreen(triple);
     logTripleFoundEvent(hintUsed);
   }
@@ -483,5 +492,28 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     mExplanationView.setVisibility(
         mExplanationView.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
     invalidateOptionsMenu();
+  }
+
+  @Override
+  public void onIncorrectTripleSelected() {
+    mIncorrectConsecutiveCount++;
+    if (mIncorrectConsecutiveCount >= 2
+        && !mHasShownExplanationSnackbar
+        && mExplanationView.getVisibility() == View.GONE) {
+      mHasShownExplanationSnackbar = true;
+      Snackbar snackbar =
+          Snackbar.make(
+              findViewById(R.id.view_switcher),
+              R.string.incorrect_triples_snackbar_message,
+              Snackbar.LENGTH_LONG);
+      snackbar.setAction(
+          R.string.incorrect_triples_snackbar_action,
+          v -> {
+            if (mExplanationView.getVisibility() == View.GONE) {
+              toggleExplanation();
+            }
+          });
+      snackbar.show();
+    }
   }
 }

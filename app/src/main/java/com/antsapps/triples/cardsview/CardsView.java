@@ -29,12 +29,17 @@ public abstract class CardsView extends ViewGroup
     void onSelectionChanged(Set<Card> selectedCards);
   }
 
+  public interface OnIncorrectTripleSelectedListener {
+    void onIncorrectTripleSelected();
+  }
+
   private static final Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
   protected ImmutableList<Card> mCards = ImmutableList.of();
   protected final Map<Card, CardView> mCardViews = Maps.newHashMap();
   private final Set<Card> mCurrentlyHinted = Sets.newHashSet();
   private OnValidTripleSelectedListener mOnValidTripleSelectedListener;
   private OnSelectionChangedListener mOnSelectionChangedListener;
+  private OnIncorrectTripleSelectedListener mOnIncorrectTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
 
   /**
@@ -159,6 +164,9 @@ public abstract class CardsView extends ViewGroup
             cardView.onIncorrectTriple();
           }
         }
+        if (mOnIncorrectTripleSelectedListener != null) {
+          mOnIncorrectTripleSelectedListener.onIncorrectTripleSelected();
+        }
       }
       clearSelectedCards();
     }
@@ -190,6 +198,10 @@ public abstract class CardsView extends ViewGroup
 
   public void setOnSelectionChangedListener(OnSelectionChangedListener listener) {
     mOnSelectionChangedListener = listener;
+  }
+
+  public void setOnIncorrectTripleSelectedListener(OnIncorrectTripleSelectedListener listener) {
+    mOnIncorrectTripleSelectedListener = listener;
   }
 
   @Override
