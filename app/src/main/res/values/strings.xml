@@ -170,4 +170,7 @@
   <string name="account_delete_data_dialog_message">This will permanently delete all your game statistics and progress from both this device and the cloud. This action cannot be undone. Confirm deletion</string>
   <string name="account_delete_button">Delete</string>
 
+  <string name="incorrect_triples_snackbar_message">Two incorrect triples in a row. Show explanation?</string>
+  <string name="incorrect_triples_snackbar_action">Show</string>
+
 </resources>

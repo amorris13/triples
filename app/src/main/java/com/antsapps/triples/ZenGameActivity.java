@@ -31,6 +31,7 @@ public class ZenGameActivity extends BaseGameActivity {
       stub.setLayoutResource(R.layout.beginner_statusbar);
       stub.inflate();
       mExplanationView.setVisibility(View.VISIBLE);
+      logExplanationEvent(AnalyticsConstants.Param.TRIGGER_SOURCE_AUTO);
       invalidateOptionsMenu();
     } else {
       stub.setVisibility(View.GONE);

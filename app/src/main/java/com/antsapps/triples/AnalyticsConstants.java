@@ -10,6 +10,10 @@ public class AnalyticsConstants {
     public static final String MODE = "mode";
     public static final String TAB_NAME = "tab_name";
     public static final String HINT_USED = "hint_used";
+    public static final String TRIGGER_SOURCE = "trigger_source";
+    public static final String TRIGGER_SOURCE_MENU = "menu";
+    public static final String TRIGGER_SOURCE_SNACKBAR = "snackbar";
+    public static final String TRIGGER_SOURCE_AUTO = "auto";
 
     private Param() {}
     ;
@@ -30,6 +34,7 @@ public class AnalyticsConstants {
     public static final String SWITCH_GAME_MODE = "switch_game_mode";
     public static final String SELECT_TAB = "select_tab";
     public static final String FIND_TRIPLE = "find_triple";
+    public static final String SHOW_EXPLANATION = "show_explanation";
 
     private Event() {}
     ;
