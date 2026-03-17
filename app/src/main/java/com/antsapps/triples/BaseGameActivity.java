@@ -147,12 +147,14 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     MenuItem explanationItem = menu.findItem(R.id.explanation);
     explanationItem.setChecked(mExplanationView.getVisibility() == View.VISIBLE);
+    explanationItem.setVisible(mGameState != GameState.COMPLETED);
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     boolean hideHint = sharedPref.getBoolean(getString(R.string.pref_hide_hint), false);
     MenuItem hintItem = menu.findItem(R.id.hint);
     hintItem.setShowAsAction(
         hideHint ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
+    hintItem.setVisible(mGameState != GameState.COMPLETED);
 
     return true;
   }
@@ -336,6 +338,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     if (mGameState == GameState.COMPLETED) {
       mCardsView.setAlpha(0.5f);
+      mExplanationView.setVisibility(View.GONE);
     }
 
     invalidateOptionsMenu();
