@@ -1,12 +1,1 @@
-It’s been a while! We’ve completely rebuilt Triples to provide a modern, beautiful experience.
-
-Major Updates:
-- Material 3 Design
-- Dark Mode Support
-- Daily Puzzle Mode
-- Zen & Beginner Modes
-- Customization: Personalize card colors, shapes, and patterns.
-- Smart Help: Introducing Hints and Shuffle features. And an explanation view.
-- Performance Stats: Detailed gameplay timelines and round records.
-- Modern Cloud Sync: Games saved to the cloud and synced across devices.
-- New Options: Hide the timer and triples count on game screens for a more focused experience.
+Detailed post-game analysis: See your property bias, how long each triple took to find, and view the board at each step to see missed alternatives.
