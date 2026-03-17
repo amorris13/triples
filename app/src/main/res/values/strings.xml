@@ -98,7 +98,7 @@
     <string name="dont_ask_again">Don\'t ask again</string>
 
     <string name="pref_hide_hint_title">Hide Hint Icon</string>
-    <string name="pref_hide_hint_summary">Hide the hint icon in the game action bar</string>
+    <string name="pref_hide_hint_summary">Move the hint icon from the game action bar to the menu</string>
 
     <string name="hint_used_indicator">HINT USED</string>
 
