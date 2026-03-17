@@ -27,16 +27,17 @@ public class ClassicGameTest {
       }
     }
     Deck deck = new Deck(cards);
-    ClassicGame game = new ClassicGame(
-        1,
-        0,
-        Collections.emptyList(),
-        Collections.emptyList(),
-        deck,
-        0,
-        new Date(),
-        Game.GameState.STARTING,
-        false);
+    ClassicGame game =
+        new ClassicGame(
+            1,
+            0,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            deck,
+            0,
+            new Date(),
+            Game.GameState.STARTING,
+            false);
     game.init();
     game.setGameRenderer(new FakeGameRenderer());
     game.begin();
@@ -105,16 +106,17 @@ public class ClassicGameTest {
     // Triple 1 is cards at 0, 1, 2.
 
     Deck deck = new Deck(cards);
-    ClassicGame game = new ClassicGame(
-        1,
-        0,
-        Collections.emptyList(),
-        Collections.emptyList(),
-        deck,
-        0,
-        new Date(),
-        Game.GameState.STARTING,
-        false);
+    ClassicGame game =
+        new ClassicGame(
+            1,
+            0,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            deck,
+            0,
+            new Date(),
+            Game.GameState.STARTING,
+            false);
     game.init();
     game.setGameRenderer(new FakeGameRenderer());
     game.begin();

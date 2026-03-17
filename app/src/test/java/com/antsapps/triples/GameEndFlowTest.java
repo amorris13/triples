@@ -16,8 +16,6 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.cardsview.VerticalCardsView;
 import com.google.common.collect.Lists;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowLooper;
