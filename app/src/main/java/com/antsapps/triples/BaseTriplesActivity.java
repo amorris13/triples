@@ -129,6 +129,11 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   private void signInSilently() {
+    if (PreferenceManager.getDefaultSharedPreferences(this)
+        .getBoolean(getString(R.string.pref_explicit_sign_out), false)) {
+      Log.d(TAG, "signInSilently: skipping because user explicitly signed out");
+      return;
+    }
     PlayGames.getGamesSignInClient(this)
         .isAuthenticated()
         .addOnCompleteListener(
@@ -249,6 +254,10 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   public void signIn() {
+    PreferenceManager.getDefaultSharedPreferences(this)
+        .edit()
+        .putBoolean(getString(R.string.pref_explicit_sign_out), false)
+        .apply();
     PlayGames.getGamesSignInClient(this)
         .signIn()
         .addOnCompleteListener(
@@ -268,6 +277,10 @@ public abstract class BaseTriplesActivity extends AppCompatActivity {
   }
 
   protected void signOut() {
+    PreferenceManager.getDefaultSharedPreferences(this)
+        .edit()
+        .putBoolean(getString(R.string.pref_explicit_sign_out), true)
+        .apply();
     // Note: PGS v2 does not support programmatic sign out.
     // We can sign out from Firebase.
     mFirebaseAuth.signOut();
