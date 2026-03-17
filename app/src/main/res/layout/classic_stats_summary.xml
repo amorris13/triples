@@ -23,19 +23,35 @@
     android:layout_height="1dp"
     android:background="@color/color_separator" />
 
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="DISTRIBUTION"
+    android:textStyle="bold"
+    android:textSize="16sp"
+    android:paddingTop="16dp" />
+
   <com.github.mikephil.charting.charts.BarChart
     android:id="@+id/histogram_chart"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:paddingTop="@dimen/stats_vert_padding"
-    android:paddingBottom="@dimen/stats_vert_padding" />
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="TIME SERIES"
+    android:textStyle="bold"
+    android:textSize="16sp"
+    android:paddingTop="16dp" />
 
   <com.github.mikephil.charting.charts.ScatterChart
     android:id="@+id/scatter_chart"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:paddingTop="@dimen/stats_vert_padding"
-    android:paddingBottom="@dimen/stats_vert_padding" />
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp" />
 
   <View
     android:layout_width="fill_parent"

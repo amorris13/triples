@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.DatePeriod;
@@ -28,12 +30,17 @@ class StatisticsSelectorView extends FrameLayout {
 
   private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
-  private static final Map<String, Period> PERIODS = Maps.newLinkedHashMap();
+  private final Map<String, Period> mPeriods = Maps.newLinkedHashMap();
   private ChipGroup mChipGroup;
-  private Period mCurrentPeriod;
+  private Period mCurrentPeriod = Period.ALL_TIME;
+  private boolean mIncludeHinted = false;
 
   private OnPeriodChangeListener mOnPeriodChangeListener;
   private OnIncludeHintedChangeListener mOnIncludeHintedChangeListener;
+
+  private LinearLayout mOptionsContainer;
+  private TextView mSummaryText;
+  private ImageView mExpandIcon;
 
   public StatisticsSelectorView(Context context) {
     this(context, null);
@@ -48,10 +55,24 @@ class StatisticsSelectorView extends FrameLayout {
 
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    View v = inflater.inflate(R.layout.stats_selector, this);
+    inflater.inflate(R.layout.stats_selector, this);
+
+    mOptionsContainer = findViewById(R.id.filter_options_container);
+    mSummaryText = findViewById(R.id.filter_summary);
+    mExpandIcon = findViewById(R.id.filter_expand_icon);
+
+    findViewById(R.id.filter_header)
+        .setOnClickListener(
+            v -> {
+              boolean isExpanded = mOptionsContainer.getVisibility() == View.VISIBLE;
+              mOptionsContainer.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
+              mExpandIcon.setImageResource(
+                  isExpanded ? R.drawable.ic_expand_more : R.drawable.ic_expand_less);
+            });
 
     initChips();
     initCheckbox();
+    updateSummary();
   }
 
   private void initCheckbox() {
@@ -59,6 +80,8 @@ class StatisticsSelectorView extends FrameLayout {
         findViewById(R.id.include_hinted_checkbox);
     includeHintedCheckbox.setOnCheckedChangeListener(
         (buttonView, isChecked) -> {
+          mIncludeHinted = isChecked;
+          updateSummary();
           if (mOnIncludeHintedChangeListener != null) {
             mOnIncludeHintedChangeListener.onIncludeHintedChange(isChecked);
           }
@@ -69,15 +92,14 @@ class StatisticsSelectorView extends FrameLayout {
     mChipGroup = findViewById(R.id.period_chip_group);
     initPeriodsMap();
     LayoutInflater inflater = LayoutInflater.from(getContext());
-    for (String key : PERIODS.keySet()) {
+    for (String key : mPeriods.keySet()) {
       Chip chip = (Chip) inflater.inflate(R.layout.stats_period_chip, mChipGroup, false);
       chip.setText(key);
       chip.setId(View.generateViewId());
-      chip.setTag(PERIODS.get(key));
+      chip.setTag(mPeriods.get(key));
       mChipGroup.addView(chip);
-      if (PERIODS.get(key) == Period.ALL_TIME) {
+      if (mPeriods.get(key) == Period.ALL_TIME) {
         mChipGroup.check(chip.getId());
-        mCurrentPeriod = Period.ALL_TIME;
       }
     }
 
@@ -86,6 +108,7 @@ class StatisticsSelectorView extends FrameLayout {
           if (!checkedIds.isEmpty()) {
             Chip chip = group.findViewById(checkedIds.get(0));
             mCurrentPeriod = (Period) chip.getTag();
+            updateSummary();
             if (mOnPeriodChangeListener != null) {
               mOnPeriodChangeListener.onPeriodChange(mCurrentPeriod);
             }
@@ -94,22 +117,35 @@ class StatisticsSelectorView extends FrameLayout {
   }
 
   private void initPeriodsMap() {
-    PERIODS.put(getContext().getString(R.string.all_time), Period.ALL_TIME);
-    PERIODS.put(
+    mPeriods.put(getContext().getString(R.string.all_time), Period.ALL_TIME);
+    mPeriods.put(
         getContext().getString(R.string.past_day), DatePeriod.fromTimePeriod(1 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_week), DatePeriod.fromTimePeriod(7 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_month), DatePeriod.fromTimePeriod(30 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_3_months), DatePeriod.fromTimePeriod(91 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_6_months),
         DatePeriod.fromTimePeriod(182 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_year), DatePeriod.fromTimePeriod(365 * MS_PER_DAY));
-    PERIODS.put(getContext().getString(R.string.past_10_games), new NumGamesPeriod(10));
-    PERIODS.put(getContext().getString(R.string.past_50_games), new NumGamesPeriod(50));
+    mPeriods.put(getContext().getString(R.string.past_10_games), new NumGamesPeriod(10));
+    mPeriods.put(getContext().getString(R.string.past_50_games), new NumGamesPeriod(50));
+  }
+
+  private void updateSummary() {
+    String periodText = "";
+    for (Map.Entry<String, Period> entry : mPeriods.entrySet()) {
+      if (entry.getValue().equals(mCurrentPeriod)) {
+        periodText = entry.getKey();
+        break;
+      }
+    }
+
+    String summary = periodText + (mIncludeHinted ? ", incl. hints" : ", no hints");
+    mSummaryText.setText(summary);
   }
 
   public void setOnPeriodChangeListener(OnPeriodChangeListener listener) {

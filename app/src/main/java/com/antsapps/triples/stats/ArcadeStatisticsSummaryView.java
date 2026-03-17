@@ -56,6 +56,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
 
   @Override
   protected void setAccentColor(int accentColor) {
+    super.setAccentColor(accentColor);
     ((TextView) findViewById(R.id.summary_title)).setTextColor(accentColor);
     findViewById(R.id.summary_divider).setBackgroundColor(accentColor);
   }
@@ -99,9 +100,13 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     BarDataSet barDataSet = new BarDataSet(histogramEntries, "Games");
     barDataSet.setColor(getAccentColor());
     barDataSet.setValueTextColor(getOnSurfaceColor());
+    barDataSet.setValueFormatter(new IntegerValueFormatter());
     mHistogramChart.setData(new BarData(barDataSet));
     styleChart(mHistogramChart);
     mHistogramChart.getXAxis().setGranularity(1f);
+    mHistogramChart.getAxisLeft().setGranularity(1f);
+    mHistogramChart.getAxisLeft().setAxisMinimum(0f);
+    mHistogramChart.getAxisLeft().setValueFormatter(new IntegerValueFormatter());
     mHistogramChart.invalidate();
 
     ScatterDataSet scatterDataSet = new ScatterDataSet(scatterEntries, "Performance");
@@ -109,6 +114,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
     mScatterChart.setData(new ScatterData(scatterDataSet));
     styleChart(mScatterChart);
+    mScatterChart.getXAxis().setValueFormatter(new DateValueFormatter(getContext()));
     mScatterChart.invalidate();
 
     int numGames = arcadeStatistics.getNumGames();

@@ -8,24 +8,50 @@
   android:orientation="vertical">
 
   <LinearLayout
+    android:id="@+id/filter_header"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
       android:id="@+id/selector_title"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:singleLine="true"
-      android:text="@string/statistics_for"
+      android:text="FILTERS"
       android:textColor="@color/color_separator"
       android:textStyle="bold" />
 
-    <View
+    <TextView
+      android:id="@+id/filter_summary"
       android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:layout_weight="1" />
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:singleLine="true"
+      android:ellipsize="end"
+      android:textSize="12sp"
+      android:text="All Time" />
+
+    <ImageView
+      android:id="@+id/filter_expand_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/ic_expand_more" />
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/filter_options_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
 
     <com.google.android.material.checkbox.MaterialCheckBox
       android:id="@+id/include_hinted_checkbox"
@@ -33,21 +59,21 @@
       android:layout_height="wrap_content"
       android:text="@string/include_hinted_games"
       android:textSize="12sp" />
-  </LinearLayout>
 
-  <HorizontalScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:scrollbars="none">
-
-    <com.google.android.material.chip.ChipGroup
-      android:id="@+id/period_chip_group"
-      android:layout_width="wrap_content"
+    <HorizontalScrollView
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:singleSelection="true"
-      app:selectionRequired="true"
-      android:paddingBottom="8dp">
-    </com.google.android.material.chip.ChipGroup>
-  </HorizontalScrollView>
+      android:scrollbars="none">
+
+      <com.google.android.material.chip.ChipGroup
+        android:id="@+id/period_chip_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:paddingBottom="8dp">
+      </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+  </LinearLayout>
 
 </LinearLayout>
