@@ -10,6 +10,4 @@ Major Updates:
 - Performance Stats: Detailed gameplay timelines and round records.
 - Modern Cloud Sync: Games saved to the cloud and synced across devices.
 - New Options: Hide the timer and triples count on game screens for a more focused experience.
-- Fixes:
-  - Resolved an issue where the Send Feedback button in settings was unresponsive.
-  - Fixed a bug where Sign Out in Settings did not work due to automatic re-authentication.
+- Fixes: Resolved an issue where the Send Feedback button in settings was unresponsive.
