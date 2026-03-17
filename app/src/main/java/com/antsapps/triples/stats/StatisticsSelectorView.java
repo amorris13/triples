@@ -4,16 +4,14 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.NumGamesPeriod;
 import com.antsapps.triples.backend.Period;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +29,7 @@ class StatisticsSelectorView extends FrameLayout {
   private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
   private static final Map<String, Period> PERIODS = Maps.newLinkedHashMap();
-  private Spinner mSpinner;
+  private ChipGroup mChipGroup;
   private Period mCurrentPeriod;
 
   private OnPeriodChangeListener mOnPeriodChangeListener;
@@ -52,12 +50,13 @@ class StatisticsSelectorView extends FrameLayout {
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.stats_selector, this);
 
-    initSpinner();
+    initChips();
     initCheckbox();
   }
 
   private void initCheckbox() {
-    android.widget.CheckBox includeHintedCheckbox = findViewById(R.id.include_hinted_checkbox);
+    com.google.android.material.checkbox.MaterialCheckBox includeHintedCheckbox =
+        findViewById(R.id.include_hinted_checkbox);
     includeHintedCheckbox.setOnCheckedChangeListener(
         (buttonView, isChecked) -> {
           if (mOnIncludeHintedChangeListener != null) {
@@ -66,33 +65,32 @@ class StatisticsSelectorView extends FrameLayout {
         });
   }
 
-  private void initSpinner() {
-    mSpinner = (Spinner) findViewById(R.id.period_spinner);
-
-    ArrayAdapter<CharSequence> adapter =
-        new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
-    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+  private void initChips() {
+    mChipGroup = findViewById(R.id.period_chip_group);
     initPeriodsMap();
+    LayoutInflater inflater = LayoutInflater.from(getContext());
     for (String key : PERIODS.keySet()) {
-      adapter.add(key);
+      Chip chip = (Chip) inflater.inflate(R.layout.stats_period_chip, mChipGroup, false);
+      chip.setText(key);
+      chip.setId(View.generateViewId());
+      chip.setTag(PERIODS.get(key));
+      mChipGroup.addView(chip);
+      if (PERIODS.get(key) == Period.ALL_TIME) {
+        mChipGroup.check(chip.getId());
+        mCurrentPeriod = Period.ALL_TIME;
+      }
     }
-    mSpinner.setAdapter(adapter);
 
-    mSpinner.setOnItemSelectedListener(
-        new OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            String string = (String) parent.getItemAtPosition(pos);
-            mCurrentPeriod = PERIODS.get(string);
+    mChipGroup.setOnCheckedStateChangeListener(
+        (group, checkedIds) -> {
+          if (!checkedIds.isEmpty()) {
+            Chip chip = group.findViewById(checkedIds.get(0));
+            mCurrentPeriod = (Period) chip.getTag();
             if (mOnPeriodChangeListener != null) {
               mOnPeriodChangeListener.onPeriodChange(mCurrentPeriod);
             }
           }
-
-          @Override
-          public void onNothingSelected(AdapterView<?> arg0) {}
         });
-    mCurrentPeriod = PERIODS.get(mSpinner.getSelectedItem().toString());
   }
 
   private void initPeriodsMap() {

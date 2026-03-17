@@ -19,6 +19,11 @@ public class ClassicStatisticsListHeaderView extends BaseStatisticsListHeaderVie
     TextView resultHeader = (TextView) v.findViewById(R.id.result_header);
     resultHeader.setText("TIME ELAPSED");
     initHeader(resultHeader, GameProperty.TIME_ELAPSED, LEFT);
+
+    TextView cardsHeader = (TextView) v.findViewById(R.id.cards_header);
+    cardsHeader.setVisibility(View.VISIBLE);
+    initHeader(cardsHeader, GameProperty.CARDS_REMAINING, LEFT);
+
     return resultHeader;
   }
 }

@@ -9,15 +9,30 @@ import com.antsapps.triples.R;
 import com.antsapps.triples.backend.ClassicStatistics;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Statistics;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.ScatterChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Created by anthony on 2/12/13. */
 public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
-  private final HistogramView mGraphView;
+  private final BarChart mHistogramChart;
+  private final ScatterChart mScatterChart;
   private final TextView mNumberOfGames;
   private final TextView mFastestTime;
   private final TextView mAverageTime;
+  private final TextView mP25;
+  private final TextView mP50;
+  private final TextView mP75;
+  private final TextView mP95;
 
   public ClassicStatisticsSummaryView(Context context) {
     super(context);
@@ -26,17 +41,21 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.classic_stats_summary, this);
 
-    mGraphView = (HistogramView) findViewById(R.id.graph);
+    mHistogramChart = findViewById(R.id.histogram_chart);
+    mScatterChart = findViewById(R.id.scatter_chart);
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
     mFastestTime = (TextView) findViewById(R.id.best);
     mAverageTime = (TextView) findViewById(R.id.average);
+    mP25 = findViewById(R.id.p25);
+    mP50 = findViewById(R.id.p50);
+    mP75 = findViewById(R.id.p75);
+    mP95 = findViewById(R.id.p95);
   }
 
   @Override
   protected void setAccentColor(int accentColor) {
     ((TextView) findViewById(R.id.summary_title)).setTextColor(accentColor);
     findViewById(R.id.summary_divider).setBackgroundColor(accentColor);
-    mGraphView.setAccentColor(accentColor);
   }
 
   private static String convertTimeToString(long timeMS) {
@@ -49,18 +68,45 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
+    if (!(statistics instanceof ClassicStatistics)) {
+      return;
+    }
     ClassicStatistics classicStatistics = (ClassicStatistics) statistics;
     int maxTime = 30;
     int[] bins = new int[maxTime + 1];
     Arrays.fill(bins, 0);
     int maxMinutes = 0;
+    List<Entry> scatterEntries = new ArrayList<>();
+
     for (Game game : classicStatistics.getData()) {
       int minutes = (int) Math.min(TimeUnit.MILLISECONDS.toMinutes(game.getTimeElapsed()), maxTime);
       maxMinutes = Math.max(maxMinutes, minutes);
       bins[minutes]++;
+
+      scatterEntries.add(
+          new Entry(
+              (float) game.getDateStarted().getTime(), (float) game.getTimeElapsed() / 1000.0f));
     }
 
-    mGraphView.setStatistics("Time (minutes)", Arrays.copyOfRange(bins, 0, maxMinutes + 1), false);
+    List<BarEntry> histogramEntries = new ArrayList<>();
+    for (int i = 0; i <= maxMinutes; i++) {
+      histogramEntries.add(new BarEntry((float) i, (float) bins[i]));
+    }
+
+    BarDataSet barDataSet = new BarDataSet(histogramEntries, "Games");
+    barDataSet.setColor(getAccentColor());
+    barDataSet.setValueTextColor(getOnSurfaceColor());
+    mHistogramChart.setData(new BarData(barDataSet));
+    styleChart(mHistogramChart);
+    mHistogramChart.getXAxis().setGranularity(1f);
+    mHistogramChart.invalidate();
+
+    ScatterDataSet scatterDataSet = new ScatterDataSet(scatterEntries, "Performance");
+    scatterDataSet.setColor(getAccentColor());
+    scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+    mScatterChart.setData(new ScatterData(scatterDataSet));
+    styleChart(mScatterChart);
+    mScatterChart.invalidate();
 
     int numGames = classicStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
@@ -73,5 +119,17 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
                 + ")");
     mAverageTime.setText(
         numGames != 0 ? convertTimeToString(classicStatistics.getAverageTime()) : "-");
+
+    if (numGames > 0) {
+      mP25.setText(convertTimeToString(classicStatistics.getP25()));
+      mP50.setText(convertTimeToString(classicStatistics.getP50()));
+      mP75.setText(convertTimeToString(classicStatistics.getP75()));
+      mP95.setText(convertTimeToString(classicStatistics.getP95()));
+    } else {
+      mP25.setText("-");
+      mP50.setText("-");
+      mP75.setText("-");
+      mP95.setText("-");
+    }
   }
 }

@@ -183,8 +183,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     if (internalRecyclerView instanceof RecyclerView rv) {
       for (int i = 0; i < rv.getChildCount(); i++) {
         View child = rv.getChildAt(i);
-        RecyclerView.ViewHolder holder = rv.getChildViewHolder(child);
-        if (holder instanceof MonthPagerAdapter.MonthViewHolder monthViewHolder) {
+        if (rv.getChildViewHolder(child) instanceof MonthPagerAdapter.MonthViewHolder monthViewHolder) {
           RecyclerView grid = monthViewHolder.grid;
           if (grid != null && grid.getAdapter() instanceof CalendarAdapter adapter) {
             adapter.updateData(mDailyGames);

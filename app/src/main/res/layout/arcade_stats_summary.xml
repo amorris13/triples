@@ -23,10 +23,17 @@
     android:layout_height="1dp"
     android:background="@color/color_separator" />
 
-  <com.antsapps.triples.stats.HistogramView
-    android:id="@+id/graph"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+  <com.github.mikephil.charting.charts.BarChart
+    android:id="@+id/histogram_chart"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:paddingTop="@dimen/stats_vert_padding"
+    android:paddingBottom="@dimen/stats_vert_padding" />
+
+  <com.github.mikephil.charting.charts.ScatterChart
+    android:id="@+id/scatter_chart"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
     android:paddingTop="@dimen/stats_vert_padding"
     android:paddingBottom="@dimen/stats_vert_padding" />
 
@@ -89,5 +96,29 @@
         android:layout_height="wrap_content" />
     </TableRow>
   </TableLayout>
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="PERCENTILES"
+    android:textStyle="bold"
+    android:paddingTop="8dp" />
+
+  <GridLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:columnCount="4"
+    android:paddingBottom="@dimen/stats_vert_padding">
+
+    <TextView android:text="25th" android:paddingEnd="8dp" />
+    <TextView android:text="50th" android:paddingEnd="8dp" />
+    <TextView android:text="75th" android:paddingEnd="8dp" />
+    <TextView android:text="95th" />
+
+    <TextView android:id="@+id/p25" android:paddingEnd="8dp" />
+    <TextView android:id="@+id/p50" android:paddingEnd="8dp" />
+    <TextView android:id="@+id/p75" android:paddingEnd="8dp" />
+    <TextView android:id="@+id/p95" />
+  </GridLayout>
 
 </LinearLayout>

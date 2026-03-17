@@ -57,7 +57,7 @@ public abstract class BaseGameListFragment extends ListFragment implements OnSta
 
   protected abstract ArrayAdapter<Game> createArrayAdapter();
 
-  private AlertDialog createDeleteAlertDialog(final Game game) {
+  protected AlertDialog createDeleteAlertDialog(final Game game) {
     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
     builder.setCancelable(true);
     builder.setTitle(R.string.delete);

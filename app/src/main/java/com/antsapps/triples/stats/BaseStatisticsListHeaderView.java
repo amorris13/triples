@@ -94,9 +94,13 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.stats_list_header, this);
 
-    TextView resultHeader = initHeaders(v);
+    initHeaders(v);
 
-    setComparator(mComparatorsMap.get(resultHeader));
+    // Default to sorting by DATE descending for statistics screens
+    setComparator(mComparatorsMap.get(findViewById(R.id.date_header)));
+    if (mCurrentComparator != null && mCurrentComparator.isAscending()) {
+      mCurrentComparator.reverse();
+    }
   }
 
   protected abstract TextView initHeaders(View container);
