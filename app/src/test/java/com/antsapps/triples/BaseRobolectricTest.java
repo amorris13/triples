@@ -3,7 +3,6 @@ package com.antsapps.triples;
 import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import com.antsapps.triples.backend.Application;
-import com.antsapps.triples.backend.SystemTimeProvider;
 import com.google.firebase.FirebaseApp;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ public abstract class BaseRobolectricTest {
     if (FirebaseApp.getApps(context).isEmpty()) {
       FirebaseApp.initializeApp(context);
     }
-    Application.setTimeProvider(new SystemTimeProvider());
     Application.getInstance(context).clearAllData();
   }
 }

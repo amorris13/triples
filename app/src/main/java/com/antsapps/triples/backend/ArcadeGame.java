@@ -19,7 +19,7 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
             Collections.<Long>emptyList(),
             new Deck(new Random(seed)),
             0,
-            Application.getTimeProvider().now(),
+            new Date(),
             GameState.STARTING,
             0,
             false);

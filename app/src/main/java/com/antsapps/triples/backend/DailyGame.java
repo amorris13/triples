@@ -51,7 +51,7 @@ public class DailyGame extends Game {
     }
 
     public static Day forToday() {
-      Calendar cal = Application.getTimeProvider().getCalendar();
+      Calendar cal = Calendar.getInstance();
       return forCalendar(cal);
     }
 
@@ -61,7 +61,7 @@ public class DailyGame extends Game {
     }
 
     public Calendar getCalendar() {
-      Calendar cal = Application.getTimeProvider().getCalendar();
+      Calendar cal = Calendar.getInstance();
       cal.set(mYear, mMonth - 1, mDay, 0, 0, 0);
       cal.set(Calendar.MILLISECOND, 0);
       return cal;
@@ -141,7 +141,7 @@ public class DailyGame extends Game {
             Collections.<Long>emptyList(),
             new Deck(Collections.<Card>emptyList()),
             0,
-            Application.getTimeProvider().now(),
+            new Date(),
             day,
             GameState.STARTING,
             false,
@@ -210,7 +210,7 @@ public class DailyGame extends Game {
   @Override
   protected void checkIfFinished() {
     if (mFoundTriples.size() == mAllTriples.size()) {
-      mDateCompleted = Application.getTimeProvider().now();
+      mDateCompleted = new Date();
       finish();
     }
   }

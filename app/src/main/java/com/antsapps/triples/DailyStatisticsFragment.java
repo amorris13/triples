@@ -209,7 +209,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     ((Button) mMonthSwitcher.getNextView()).setText(sdf.format(month.getTime()));
     mMonthSwitcher.showNext();
 
-    Calendar now = Application.getTimeProvider().getCalendar();
+    Calendar now = Calendar.getInstance();
     boolean isCurrentMonth =
         month.get(Calendar.YEAR) == now.get(Calendar.YEAR)
             && month.get(Calendar.MONTH) == now.get(Calendar.MONTH);
@@ -514,7 +514,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       Calendar day = mDays.get(position);
       return day.get(Calendar.YEAR) == mYear
           && day.get(Calendar.MONTH) == mMonth - 1
-          && day.getTimeInMillis() <= Application.getTimeProvider().currentTimeMillis();
+          && day.getTimeInMillis() <= System.currentTimeMillis();
     }
 
     private int updateAlpha(int color, int alpha) {
@@ -527,7 +527,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     private final int mCount;
 
     MonthPagerAdapter() {
-      Calendar earliest = Application.getTimeProvider().getCalendar();
+      Calendar earliest = Calendar.getInstance();
       earliest.set(1970, Calendar.JANUARY, 1);
       for (DailyGame game : mApplication.getDailyGames()) {
         if (game.getGameDay().getCalendar().before(earliest)) {
@@ -541,7 +541,7 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
       mStartMonth.set(Calendar.SECOND, 0);
       mStartMonth.set(Calendar.MILLISECOND, 0);
 
-      Calendar now = Application.getTimeProvider().getCalendar();
+      Calendar now = Calendar.getInstance();
       int yearDiff = now.get(Calendar.YEAR) - mStartMonth.get(Calendar.YEAR);
       int monthDiff = now.get(Calendar.MONTH) - mStartMonth.get(Calendar.MONTH);
       mCount = yearDiff * 12 + monthDiff + 1;

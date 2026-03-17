@@ -11,7 +11,6 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
-import com.antsapps.triples.backend.FakeTimeProvider;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
@@ -63,6 +62,9 @@ public class ScreenshotTest extends BaseRobolectricTest {
 
   @Before
   public void setUp() {
+    ShadowSystemClock.advanceBy(
+        java.time.Duration.ofMillis(1735732800000L - System.currentTimeMillis()));
+
     RuntimeEnvironment.setQualifiers(mQualifier);
     if (mMode.equals("dark")) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -72,7 +74,6 @@ public class ScreenshotTest extends BaseRobolectricTest {
 
     Application.sSeed = 12345L;
     HelpActivity.sRandom = new Random(12345L);
-    Application.setTimeProvider(new FakeTimeProvider(1735732800000L)); // Jan 1, 2025
   }
 
   private void capture(String screenName) {

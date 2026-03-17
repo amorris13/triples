@@ -80,7 +80,7 @@ public abstract class CardsView extends ViewGroup
   }
 
   public void updateCardsInPlay(ImmutableList<Card> newCards) {
-    long start = com.antsapps.triples.backend.Application.getTimeProvider().currentTimeMillis();
+    long start = System.currentTimeMillis();
     for (Card oldCard : mCards) {
       if (!newCards.contains(oldCard)) {
         if (mCardViews.containsKey(oldCard)) {
@@ -111,7 +111,7 @@ public abstract class CardsView extends ViewGroup
     }
     requestLayout();
     logValidTriple();
-    long end = com.antsapps.triples.backend.Application.getTimeProvider().currentTimeMillis();
+    long end = System.currentTimeMillis();
     Log.i(TAG, "updateCards took " + (end - start));
   }
 

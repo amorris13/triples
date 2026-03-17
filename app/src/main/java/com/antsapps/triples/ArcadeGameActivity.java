@@ -148,7 +148,7 @@ public class ArcadeGameActivity extends BaseGameActivity
 
   @Override
   protected Intent createNewGame() {
-    ArcadeGame game = ArcadeGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
+    ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());
     mApplication.addArcadeGame(game);
     Intent newGameIntent = new Intent(getBaseContext(), ArcadeGameActivity.class);
     newGameIntent.putExtra(Game.ID_TAG, game.getId());

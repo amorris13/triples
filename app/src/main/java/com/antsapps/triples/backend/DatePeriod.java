@@ -13,7 +13,7 @@ public final class DatePeriod<T extends Game> implements Period<T> {
   }
 
   public static DatePeriod fromTimePeriod(long millis) {
-    return new DatePeriod(new Date(Application.getTimeProvider().currentTimeMillis() - millis));
+    return new DatePeriod(new Date(System.currentTimeMillis() - millis));
   }
 
   private DatePeriod(Date since) {

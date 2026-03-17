@@ -22,7 +22,7 @@ public class ZenGame extends Game {
             Collections.<Long>emptyList(),
             deck,
             0,
-            Application.getTimeProvider().now(),
+            new Date(),
             GameState.STARTING,
             false,
             isBeginner);
