@@ -266,6 +266,7 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
     getGame().resumeFromLifecycle();
 
     updateHintUsedIndicator();
+    updateStatusBarVisibility();
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPref.getBoolean(getString(R.string.pref_screen_lock), true)) {
@@ -276,6 +277,27 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
       mCardsView.refreshDrawables();
     }
     updateViewSwitcher();
+  }
+
+  private void updateStatusBarVisibility() {
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    boolean hideTimer = sharedPref.getBoolean(getString(R.string.pref_hide_timer), false);
+    boolean hideCount = sharedPref.getBoolean(getString(R.string.pref_hide_count), false);
+
+    updateViewVisibility(R.id.timer_value_text, hideTimer);
+    updateViewVisibility(R.id.timer_key_text, hideTimer);
+
+    updateViewVisibility(R.id.cards_remaining_text, hideCount);
+    updateViewVisibility(R.id.progress_key_text, hideCount);
+    updateViewVisibility(R.id.triples_found_text, hideCount);
+    updateViewVisibility(R.id.triples_found_key_text, hideCount);
+  }
+
+  private void updateViewVisibility(int viewId, boolean hide) {
+    View view = findViewById(viewId);
+    if (view != null) {
+      view.setVisibility(hide ? View.GONE : View.VISIBLE);
+    }
   }
 
   @Override

@@ -15,6 +15,18 @@
       android:summary="@string/pref_hide_hint_summary"
       android:title="@string/pref_hide_hint_title" />
 
+  <androidx.preference.SwitchPreferenceCompat
+      android:defaultValue="false"
+      android:key="@string/pref_hide_timer"
+      android:summary="@string/pref_hide_timer_summary"
+      android:title="@string/pref_hide_timer_title" />
+
+  <androidx.preference.SwitchPreferenceCompat
+      android:defaultValue="false"
+      android:key="@string/pref_hide_count"
+      android:summary="@string/pref_hide_count_summary"
+      android:title="@string/pref_hide_count_title" />
+
 
   <androidx.preference.ListPreference
       android:defaultValue="system"
