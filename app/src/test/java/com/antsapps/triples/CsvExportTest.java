@@ -39,7 +39,8 @@ public class CsvExportTest extends BaseRobolectricTest {
             60000,
             date,
             Game.GameState.COMPLETED,
-            false);
+            false,
+            Lists.newArrayList());
     List<Game> games = Lists.newArrayList(game);
 
     String csv = CsvUtil.getClassicCsvContent(games);
@@ -62,7 +63,8 @@ public class CsvExportTest extends BaseRobolectricTest {
             date,
             Game.GameState.COMPLETED,
             15,
-            true);
+            true,
+            Lists.newArrayList());
     List<Game> games = Lists.newArrayList(game);
 
     String csv = CsvUtil.getArcadeCsvContent(games);

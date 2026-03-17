@@ -111,7 +111,8 @@ public class GameTest {
             0,
             new Date(),
             Game.GameState.ACTIVE,
-            false) {
+            false,
+            Collections.emptyList()) {
           @Override
           protected boolean isGameInValidState() {
             return true;

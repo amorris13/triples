@@ -33,7 +33,8 @@ public class CloudSaveManagerTest {
             0,
             new Date(1000),
             Game.GameState.COMPLETED,
-            false);
+            false,
+            Lists.newArrayList());
     when(application.getCompletedClassicGames()).thenReturn(Lists.newArrayList(localClassic));
 
     ArcadeGame localArcade =
@@ -47,7 +48,8 @@ public class CloudSaveManagerTest {
             new Date(2000),
             Game.GameState.COMPLETED,
             10,
-            false);
+            false,
+            Lists.newArrayList());
     when(application.getCompletedArcadeGames()).thenReturn(Lists.newArrayList(localArcade));
 
     // Setup cloud data
@@ -61,7 +63,8 @@ public class CloudSaveManagerTest {
             0,
             new Date(3000),
             Game.GameState.COMPLETED,
-            false);
+            false,
+            Lists.newArrayList());
     ClassicGame cloudClassicExisting =
         new ClassicGame(
             -1,
@@ -72,7 +75,8 @@ public class CloudSaveManagerTest {
             0,
             new Date(1000),
             Game.GameState.COMPLETED,
-            false);
+            false,
+            Lists.newArrayList());
 
     ArcadeGame cloudArcadeNew =
         new ArcadeGame(
@@ -85,7 +89,8 @@ public class CloudSaveManagerTest {
             new Date(4000),
             Game.GameState.COMPLETED,
             15,
-            false);
+            false,
+            Lists.newArrayList());
 
     when(application.mergeClassicCompleted(
             Lists.newArrayList(cloudClassicNew, cloudClassicExisting)))

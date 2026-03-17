@@ -26,7 +26,8 @@ public class CloudSaveSerializerTest {
             60000,
             new Date(1000000),
             Game.GameState.COMPLETED,
-            false));
+            false,
+            Collections.emptyList()));
     classicGames.add(
         new ClassicGame(
             2,
@@ -37,7 +38,8 @@ public class CloudSaveSerializerTest {
             120000,
             new Date(2000000),
             Game.GameState.COMPLETED,
-            true));
+            true,
+            Collections.emptyList()));
 
     byte[] serialized = CloudSaveSerializer.serializeClassicCompleted(classicGames);
     List<ClassicGame> deserialized = CloudSaveSerializer.deserializeClassicCompleted(serialized);
@@ -62,7 +64,8 @@ public class CloudSaveSerializerTest {
             new Date(3000000),
             Game.GameState.COMPLETED,
             15,
-            false));
+            false,
+            Collections.emptyList()));
 
     byte[] serialized = CloudSaveSerializer.serializeArcadeCompleted(arcadeGames);
     List<ArcadeGame> deserialized = CloudSaveSerializer.deserializeArcadeCompleted(serialized);
@@ -125,7 +128,8 @@ public class CloudSaveSerializerTest {
             5000L,
             new Date(1000000L),
             Game.GameState.ACTIVE,
-            true);
+            true,
+            Collections.emptyList());
 
     byte[] serialized = CloudSaveSerializer.serializeClassicGameState(game);
     ClassicGame deserialized = CloudSaveSerializer.deserializeClassicGameState(serialized);
@@ -152,7 +156,8 @@ public class CloudSaveSerializerTest {
             new Date(1000000L),
             Game.GameState.PAUSED,
             10,
-            false);
+            false,
+            Collections.emptyList());
 
     byte[] serialized = CloudSaveSerializer.serializeArcadeGameState(game);
     ArcadeGame deserialized = CloudSaveSerializer.deserializeArcadeGameState(serialized);

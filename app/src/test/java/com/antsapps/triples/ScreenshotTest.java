@@ -306,7 +306,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               time + 1000,
               new Date(),
               GameState.COMPLETED,
-              false);
+              false,
+              Lists.newArrayList());
       app.addClassicGame(game);
     } else {
       ClassicGame game = ClassicGame.createFromSeed(12345L);
@@ -340,7 +341,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               new Date(),
               GameState.COMPLETED,
               numFound,
-              false);
+              false,
+              Lists.newArrayList());
       app.addArcadeGame(game);
     } else {
       ArcadeGame game = ArcadeGame.createFromSeed(12345L);
@@ -437,7 +439,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               time + 1000,
               new Date(System.currentTimeMillis() - i * 86400000L),
               GameState.COMPLETED,
-              false);
+              false,
+              Lists.newArrayList());
       app.addClassicGame(game);
     }
 
@@ -461,7 +464,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               new Date(System.currentTimeMillis() - i * 86400000L),
               GameState.COMPLETED,
               numFound,
-              false);
+              false,
+              Lists.newArrayList());
       app.addArcadeGame(game);
     }
 

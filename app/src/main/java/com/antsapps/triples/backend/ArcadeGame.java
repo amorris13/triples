@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class ArcadeGame extends Game implements OnTimerTickListener {
 
@@ -22,7 +23,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
             new Date(),
             GameState.STARTING,
             0,
-            false);
+            false,
+            Collections.<Set<Card>>emptyList());
     game.init();
     return game;
   }
@@ -37,7 +39,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
       Date dateStarted,
       GameState gameState,
       int numTriplesFound,
-      boolean hintsUsed) {
+      boolean hintsUsed,
+      List<Set<Card>> foundTriples) {
     super(
         id,
         seed,
@@ -47,7 +50,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
         timeElapsed,
         dateStarted,
         gameState,
-        hintsUsed);
+        hintsUsed,
+        foundTriples);
     mNumTriplesFound = numTriplesFound;
     mTimer.addOnTimerTickListener(this);
   }

@@ -37,7 +37,8 @@ public class ClassicGameTest {
             0,
             new Date(),
             Game.GameState.STARTING,
-            false);
+            false,
+            Collections.emptyList());
     game.init();
     game.setGameRenderer(new FakeGameRenderer());
     game.begin();
@@ -116,7 +117,8 @@ public class ClassicGameTest {
             0,
             new Date(),
             Game.GameState.STARTING,
-            false);
+            false,
+            Collections.emptyList());
     game.init();
     game.setGameRenderer(new FakeGameRenderer());
     game.begin();

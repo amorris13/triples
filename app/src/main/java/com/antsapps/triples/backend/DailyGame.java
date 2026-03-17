@@ -102,7 +102,6 @@ public class DailyGame extends Game {
   public static final long STREAK_BUFFER_MILLIS = 48 * 60 * 60 * 1000L; // 48 hours
 
   private final List<Set<Card>> mAllTriples;
-  private final List<Set<Card>> mFoundTriples;
 
   private final Day mGameDay;
   private Date mDateCompleted;
@@ -133,21 +132,19 @@ public class DailyGame extends Game {
       }
     }
 
-    DailyGame game =
-        new DailyGame(
-            -1,
-            seed,
-            cardsInPlay,
-            Collections.<Long>emptyList(),
-            new Deck(Collections.<Card>emptyList()),
-            0,
-            new Date(),
-            day,
-            GameState.STARTING,
-            false,
-            Collections.<Set<Card>>emptyList(),
-            null);
-    return game;
+    return new DailyGame(
+        -1,
+        seed,
+        cardsInPlay,
+        Collections.<Long>emptyList(),
+        new Deck(Collections.<Card>emptyList()),
+        0,
+        new Date(),
+        day,
+        GameState.STARTING,
+        false,
+        Collections.<Set<Card>>emptyList(),
+        null);
   }
 
   public DailyGame(
@@ -172,9 +169,9 @@ public class DailyGame extends Game {
         timeElapsed,
         dateStarted,
         gameState,
-        hintsUsed);
+        hintsUsed,
+        foundTriples);
     mAllTriples = Game.getAllValidTriples(mCardsInPlay);
-    mFoundTriples = Lists.newArrayList(foundTriples);
     mNumTriplesFound = mFoundTriples.size();
     mGameDay = gameDay;
     mDateCompleted = dateCompleted;
@@ -197,9 +194,7 @@ public class DailyGame extends Game {
 
   @Override
   protected void recordFoundTriple(Card... cards) {
-    super.recordFoundTriple();
-    mFoundTriples.add(Sets.newHashSet(cards));
-    mNumTriplesFound = mFoundTriples.size();
+    super.recordFoundTriple(cards);
   }
 
   @Override

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class ClassicGame extends Game {
 
@@ -20,7 +21,8 @@ public class ClassicGame extends Game {
             0,
             new Date(),
             GameState.STARTING,
-            false);
+            false,
+            Collections.<Set<Card>>emptyList());
     game.init();
     return game;
   }
@@ -34,7 +36,8 @@ public class ClassicGame extends Game {
       long timeElapsed,
       Date dateStarted,
       GameState gameState,
-      boolean hintsUsed) {
+      boolean hintsUsed,
+      List<Set<Card>> foundTriples) {
     super(
         id,
         seed,
@@ -44,7 +47,8 @@ public class ClassicGame extends Game {
         timeElapsed,
         dateStarted,
         gameState,
-        hintsUsed);
+        hintsUsed,
+        foundTriples);
   }
 
   /**

@@ -7,6 +7,15 @@
         android:orientation="vertical"
         android:padding="4dp">
 
+        <TextView
+            android:id="@+id/explanation_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:textAppearance="?attr/textAppearanceSubtitle2"
+            android:textColor="?attr/colorPrimary"
+            android:visibility="gone" />
+
         <TableLayout
             android:id="@+id/table_layout"
             android:layout_width="match_parent"

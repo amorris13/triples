@@ -108,6 +108,8 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
         .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
     findViewById(R.id.new_game_button)
         .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
+    findViewById(R.id.analysis_button)
+        .setBackgroundTintList(ColorStateList.valueOf(getAccentColor()));
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -480,6 +482,13 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public void showStatistics(View view) {
     Intent intent = new Intent(this, StatisticsActivity.class);
     intent.putExtra(StatisticsActivity.GAME_TYPE, getGameType());
+    startActivity(intent);
+  }
+
+  public void showAnalysis(View view) {
+    Intent intent = new Intent(this, GameAnalysisActivity.class);
+    intent.putExtra(GameAnalysisActivity.GAME_ID, getGame().getId());
+    intent.putExtra(GameAnalysisActivity.GAME_TYPE, getGameType());
     startActivity(intent);
   }
 

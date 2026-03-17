@@ -75,7 +75,8 @@ public class Application extends OnStateChangedReporter {
                 new Date(
                     System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
                 GameState.COMPLETED,
-                false);
+                false,
+                Lists.<Set<Card>>newArrayList());
         addClassicGame(game);
       }
     }
@@ -94,7 +95,8 @@ public class Application extends OnStateChangedReporter {
                 new Date(System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000),
                 GameState.COMPLETED,
                 10 + random.nextInt(20), // 10 to 30 triples
-                false);
+                false,
+                Lists.<Set<Card>>newArrayList());
         addArcadeGame(game);
       }
     }
@@ -108,10 +110,22 @@ public class Application extends OnStateChangedReporter {
   }
 
   public void addClassicGame(ClassicGame game) {
+    if (game.getGameState() != GameState.COMPLETED) {
+      clearClassicDetails();
+    }
     game.setId(database.addClassicGame(game));
     mClassicGames.add(game);
     Log.i(TAG, "addGame. now mClassicGames = " + mClassicGames);
     notifyStateChanged();
+  }
+
+  private void clearClassicDetails() {
+    for (ClassicGame g : mClassicGames) {
+      if (!g.getFoundTriples().isEmpty()) {
+        g.mFoundTriples.clear();
+        database.updateClassicGame(g);
+      }
+    }
   }
 
   public void saveClassicGame(ClassicGame game) {
@@ -167,10 +181,22 @@ public class Application extends OnStateChangedReporter {
   }
 
   public void addArcadeGame(ArcadeGame game) {
+    if (game.getGameState() != GameState.COMPLETED) {
+      clearArcadeDetails();
+    }
     game.setId(database.addArcadeGame(game));
     mArcadeGames.add(game);
     Log.i(TAG, "addGame. now mArcadeGames = " + mArcadeGames);
     notifyStateChanged();
+  }
+
+  private void clearArcadeDetails() {
+    for (ArcadeGame g : mArcadeGames) {
+      if (!g.getFoundTriples().isEmpty()) {
+        g.mFoundTriples.clear();
+        database.updateArcadeGame(g);
+      }
+    }
   }
 
   public void saveArcadeGame(ArcadeGame game) {

@@ -72,6 +72,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected final List<Long> mTripleFindTimes;
 
+  protected final List<Set<Card>> mFoundTriples;
+
   protected final Set<Card> mHintedCards = Sets.newHashSet();
 
   protected boolean mHintsUsed;
@@ -99,11 +101,13 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       long timeElapsed,
       Date dateStarted,
       GameState gameState,
-      boolean hintsUsed) {
+      boolean hintsUsed,
+      List<Set<Card>> foundTriples) {
     this.id = id;
     mRandomSeed = seed;
     mCardsInPlay = Lists.newArrayList(cardsInPlay);
     mTripleFindTimes = Lists.newArrayList(tripleFindTimes);
+    mFoundTriples = Lists.newArrayList(foundTriples);
     mDeck = cardsInDeck;
     mTimer = new Timer(timeElapsed);
     mDateStarted = dateStarted;
@@ -253,6 +257,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   protected void recordFoundTriple(Card... cards) {
     mNumTriplesFound++;
     mTripleFindTimes.add(mTimer.getElapsed());
+    mFoundTriples.add(Sets.newHashSet(cards));
   }
 
   protected void updateDeckAfterValidTriple(Card... cards) {
@@ -454,6 +459,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   public List<Long> getTripleFindTimes() {
     return ImmutableList.copyOf(mTripleFindTimes);
+  }
+
+  public List<Set<Card>> getFoundTriples() {
+    return ImmutableList.copyOf(mFoundTriples);
   }
 
   public int getNumTriplesFound() {

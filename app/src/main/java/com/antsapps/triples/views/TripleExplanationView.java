@@ -37,6 +37,7 @@ public class TripleExplanationView extends FrameLayout {
   private Set<Card> mCards = new LinkedHashSet<>();
   private SingleScaledCardView[] mCardViews = new SingleScaledCardView[3];
   private final ImageView mConclusionTickCross;
+  private final TextView mTitleView;
   private PropertyRow[] mPropertyRows =
       new PropertyRow[] {
         new PropertyRow(Card.PropertyType.NUMBER),
@@ -59,6 +60,7 @@ public class TripleExplanationView extends FrameLayout {
     mCardViews[2] = findViewById(R.id.card_2);
 
     mConclusionTickCross = findViewById(R.id.conclusion_image);
+    mTitleView = findViewById(R.id.explanation_title);
 
     for (PropertyRow row : mPropertyRows) {
       table.addView(createRow(context, row));
@@ -187,6 +189,15 @@ public class TripleExplanationView extends FrameLayout {
       valid &= updateConclusion(row.conclusion, row.tickCross, v0, v1, v2);
     }
     mConclusionTickCross.setImageResource(valid ? R.drawable.ic_tick : R.drawable.ic_cross);
+  }
+
+  public void setTitle(String title) {
+    if (title == null || title.isEmpty()) {
+      mTitleView.setVisibility(GONE);
+    } else {
+      mTitleView.setText(title);
+      mTitleView.setVisibility(VISIBLE);
+    }
   }
 
   private boolean updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {
