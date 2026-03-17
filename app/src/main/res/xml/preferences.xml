@@ -63,4 +63,18 @@
 
   </androidx.preference.PreferenceCategory>
 
+  <androidx.preference.PreferenceCategory
+      android:title="@string/pref_about_title">
+
+    <androidx.preference.Preference
+        android:key="pref_version"
+        android:title="@string/pref_version_title"
+        android:selectable="false"/>
+
+    <androidx.preference.Preference
+        android:key="pref_feedback"
+        android:title="@string/pref_feedback_title" />
+
+  </androidx.preference.PreferenceCategory>
+
 </androidx.preference.PreferenceScreen>
