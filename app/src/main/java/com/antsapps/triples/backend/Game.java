@@ -366,11 +366,13 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       }
     }
 
+    Set<Card> localIncludingCards = Sets.newHashSet(includingCards);
+
     for (Card card : cardsInPlay) {
-      if (!includingCards.contains(card) && card != null) {
-        includingCards.add(card);
-        Set<Card> validTriple = getAValidTriple(cardsInPlay, includingCards);
-        includingCards.remove(card);
+      if (!localIncludingCards.contains(card) && card != null) {
+        localIncludingCards.add(card);
+        Set<Card> validTriple = getAValidTriple(cardsInPlay, localIncludingCards);
+        localIncludingCards.remove(card);
         if (validTriple != null) {
           return validTriple;
         }

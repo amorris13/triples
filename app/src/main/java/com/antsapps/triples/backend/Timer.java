@@ -46,14 +46,15 @@ class Timer {
 
   void resume() {
     if (!isActive()) {
-      mTimeOfLastResume = System.currentTimeMillis();
+      mTimeOfLastResume = Application.getTimeProvider().currentTimeMillis();
       update();
     }
   }
 
   void pause() {
     if (isActive()) {
-      mTimeElapsedWhenLastResumed += System.currentTimeMillis() - mTimeOfLastResume;
+      mTimeElapsedWhenLastResumed +=
+          Application.getTimeProvider().currentTimeMillis() - mTimeOfLastResume;
       mTimeOfLastResume = -1;
       update();
     }
@@ -61,7 +62,9 @@ class Timer {
 
   long getElapsed() {
     return mTimeElapsedWhenLastResumed
-        + (isActive() ? (System.currentTimeMillis() - mTimeOfLastResume) : 0);
+        + (isActive()
+            ? (Application.getTimeProvider().currentTimeMillis() - mTimeOfLastResume)
+            : 0);
   }
 
   private boolean isActive() {

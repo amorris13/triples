@@ -19,7 +19,7 @@ public class ClassicGame extends Game {
             Collections.<Long>emptyList(),
             new Deck(new Random(seed)),
             0,
-            new Date(),
+            Application.getTimeProvider().now(),
             GameState.STARTING,
             false,
             Collections.<Set<Card>>emptyList());

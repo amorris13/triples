@@ -15,6 +15,7 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Deck;
+import com.antsapps.triples.backend.FakeTimeProvider;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.ZenGame;
@@ -36,12 +37,14 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.GraphicsMode;
-import org.robolectric.shadows.ShadowSystemClock;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = 36)
 public class ScreenshotTest extends BaseRobolectricTest {
+
+  public static final long INITIAL_TIME_MILLIS = 1873794536000L; // 18 May 2029
+  private FakeTimeProvider mFakeTimeProvider;
 
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -71,6 +74,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
 
     Application.sSeed = 12345L;
     HelpActivity.sRandom = new Random(12345L);
+    mFakeTimeProvider = new FakeTimeProvider(INITIAL_TIME_MILLIS);
+    Application.setTimeProvider(mFakeTimeProvider);
   }
 
   private void capture(String screenName) {
@@ -128,10 +133,20 @@ public class ScreenshotTest extends BaseRobolectricTest {
     intent.putExtra(Game.ID_TAG, game.getId());
     try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
       capture("classic_game_completed");
-      scenario.onActivity(
-          activity -> {
-            activity.showAnalysis(null);
-          });
+    }
+  }
+
+  @Test
+  public void testClassicGame_Analysis() {
+    setupClassicGame(true);
+    Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
+    ClassicGame game = app.getCompletedClassicGames().iterator().next();
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), GameAnalysisActivity.class);
+    intent.putExtra(GameAnalysisActivity.GAME_ID, game.getId());
+    intent.putExtra(GameAnalysisActivity.GAME_TYPE, "Classic");
+    try (ActivityScenario<GameAnalysisActivity> scenario = ActivityScenario.launch(intent)) {
+      // Need to wait for any background work (like reconstruction) if applicable
       capture("classic_game_analysis");
     }
   }
@@ -309,7 +324,7 @@ public class ScreenshotTest extends BaseRobolectricTest {
               findTimes,
               new Deck(Lists.newArrayList()),
               time + 1000,
-              new Date(),
+              Application.getTimeProvider().now(),
               GameState.COMPLETED,
               false,
               Lists.newArrayList());
@@ -343,7 +358,7 @@ public class ScreenshotTest extends BaseRobolectricTest {
               findTimes,
               new Deck(new Random(12345L)),
               ArcadeGame.TIME_LIMIT_MS + 100,
-              new Date(),
+              Application.getTimeProvider().now(),
               GameState.COMPLETED,
               numFound,
               false,
@@ -396,7 +411,7 @@ public class ScreenshotTest extends BaseRobolectricTest {
       if (game.getGameState() == GameState.COMPLETED) break;
 
       // Advance time for realistic find times
-      ShadowSystemClock.advanceBy(java.time.Duration.ofMillis(3000 + random.nextInt(5000)));
+      mFakeTimeProvider.advanceTime(3000 + random.nextInt(5000));
 
       Set<Card> triple = null;
       if (game instanceof DailyGame) {
@@ -442,7 +457,7 @@ public class ScreenshotTest extends BaseRobolectricTest {
               findTimes,
               new Deck(Lists.newArrayList()),
               time + 1000,
-              new Date(System.currentTimeMillis() - i * 86400000L),
+              new Date(Application.getTimeProvider().currentTimeMillis() - i * 86400000L),
               GameState.COMPLETED,
               false,
               Lists.newArrayList());
@@ -466,7 +481,7 @@ public class ScreenshotTest extends BaseRobolectricTest {
               findTimes,
               new Deck(random),
               ArcadeGame.TIME_LIMIT_MS + 100,
-              new Date(System.currentTimeMillis() - i * 86400000L),
+              new Date(Application.getTimeProvider().currentTimeMillis() - i * 86400000L),
               GameState.COMPLETED,
               numFound,
               false,
