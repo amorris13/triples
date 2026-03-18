@@ -67,7 +67,7 @@ class StatisticsSelectorView extends FrameLayout {
             v -> {
               boolean isExpanded = mOptionsContainer.getVisibility() == View.VISIBLE;
               mOptionsContainer.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
-              mSummaryChipGroup.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+              mSummaryChipGroup.setVisibility(isExpanded ? View.VISIBLE : View.INVISIBLE);
               mExpandIcon.setImageResource(
                   isExpanded ? R.drawable.ic_expand_more : R.drawable.ic_expand_less);
             });
@@ -162,6 +162,7 @@ class StatisticsSelectorView extends FrameLayout {
     chip.setClickable(false);
     chip.setChipIconVisible(false);
     chip.setCheckedIconVisible(false);
+    chip.setSelected(true);
     mSummaryChipGroup.addView(chip);
   }
 
