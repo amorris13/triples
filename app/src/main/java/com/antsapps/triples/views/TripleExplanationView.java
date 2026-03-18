@@ -47,10 +47,14 @@ public class TripleExplanationView extends FrameLayout {
 
   public TripleExplanationView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
+    setClipChildren(false);
+    setClipToPadding(false);
     LayoutInflater.from(context).inflate(R.layout.triple_explanation, this, true);
 
     mTitleView = findViewById(R.id.explanation_title);
     LinearLayout table = findViewById(R.id.explanation_table);
+    table.setClipChildren(false);
+    table.setClipToPadding(false);
 
     // Header Row
     LinearLayout headerRow = createRow(context);
@@ -209,6 +213,8 @@ public class TripleExplanationView extends FrameLayout {
 
   private LinearLayout createRow(Context context) {
     LinearLayout row = new LinearLayout(context);
+    row.setClipChildren(false);
+    row.setClipToPadding(false);
     row.setOrientation(LinearLayout.HORIZONTAL);
     row.setLayoutParams(
         new LinearLayout.LayoutParams(
