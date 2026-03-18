@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/previous"
+        android:icon="@drawable/ic_expand_less"
+        android:title="Previous"
+        android:rotation="-90"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/next"
+        android:icon="@drawable/ic_expand_more"
+        android:title="Next"
+        android:rotation="-90"
+        app:showAsAction="always" />
+</menu>

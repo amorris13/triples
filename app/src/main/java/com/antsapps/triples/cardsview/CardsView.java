@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
@@ -255,6 +256,15 @@ public abstract class CardsView extends ViewGroup
     }
   }
 
+  public void pulseCards(Set<Card> cards) {
+    for (Card card : cards) {
+      CardView cardView = mCardViews.get(card);
+      if (cardView != null) {
+        cardView.pulse();
+      }
+    }
+  }
+
   public void onAlreadyFoundTriple(Set<Card> triple) {
     for (Card card : triple) {
       CardView cv = mCardViews.get(card);
@@ -265,8 +275,40 @@ public abstract class CardsView extends ViewGroup
   }
 
   public void animateTripleFoundToOffscreen(Set<Card> triple) {
+    animateTripleFoundToOffscreen(triple, null);
+  }
+
+  public void animateTripleFoundToOffscreen(Set<Card> triple, Runnable onFinished) {
     animateTripleFoundInternal(
-        Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), null);
+        Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), onFinished);
+  }
+
+  public void animateTripleBackFromOffscreen(Set<Card> triple, Runnable onFinished) {
+    updateMeasuredDimensions(0, 0);
+    int i = 0;
+    for (Card card : triple) {
+      CardView cv = mCardViews.get(card);
+      if (cv == null) {
+        cv = createCardView(card);
+        mCardViews.put(card, cv);
+        addView(cv);
+      }
+      cv.setAlpha(1);
+      cv.setScaleX(1);
+      cv.setScaleY(1);
+      cv.setX(mOffScreenLocation.left);
+      cv.setY(mOffScreenLocation.top);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        cv.setTranslationZ(100f);
+      } else {
+        cv.bringToFront();
+      }
+
+      final boolean isLast = (i == triple.size() - 1);
+      Rect target = calcBounds(mCards.indexOf(card));
+      cv.animateFoundCard(target, new DecelerateInterpolator(), isLast ? onFinished : null);
+      i++;
+    }
   }
 
   public void animateTripleFound(

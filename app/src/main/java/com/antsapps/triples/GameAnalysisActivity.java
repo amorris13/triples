@@ -153,8 +153,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.viewBoardButton.setOnClickListener(
           v -> {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-            BoardHistoryActivity.sAnalysis = analysis;
-            BoardHistoryActivity.sStep = position + 1;
+            BoardHistoryActivity.sAnalysisList = mData;
+            BoardHistoryActivity.sCurrentStepIndex = position;
             startActivity(intent);
           });
     }

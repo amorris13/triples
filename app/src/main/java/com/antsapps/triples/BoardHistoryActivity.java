@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -11,18 +12,19 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.TripleAnalysis;
 import com.antsapps.triples.cardsview.CardsView;
-import com.antsapps.triples.views.TripleExplanationView;
+import com.antsapps.triples.views.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import java.util.List;
 import java.util.Set;
 
 public class BoardHistoryActivity extends BaseTriplesActivity {
 
-  public static TripleAnalysis sAnalysis;
-  public static int sStep;
+  public static List<TripleAnalysis> sAnalysisList;
+  public static int sCurrentStepIndex;
 
   private CardsView mCardsView;
-  private TripleExplanationView mExplanationView;
+  private FoundTriplesView mFoundTriplesView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -34,25 +36,20 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setTitle(R.string.analysis_view_board);
     }
 
     mCardsView = findViewById(R.id.cards_view);
-    mExplanationView = findViewById(R.id.triple_explanation);
-    mExplanationView.setNaturalCardDimensionsProvider(mCardsView);
+    mCardsView.setEnabled(true);
+    mFoundTriplesView = findViewById(R.id.found_triples_view);
+    mFoundTriplesView.setCardsView(mCardsView);
+    mFoundTriplesView.setOnPlaceholderClickListener(this::onPlaceholderClick);
 
-    if (sAnalysis == null) {
+    if (sAnalysisList == null) {
       finish();
       return;
     }
 
-    mCardsView.updateCardsInPlay(ImmutableList.copyOf(sAnalysis.boardState));
-    mCardsView.setEnabled(true);
-
-    ((TextView) findViewById(R.id.step_label))
-        .setText(getString(R.string.analysis_step_format, sStep));
-    ((TextView) findViewById(R.id.alternatives_label))
-        .setText(getString(R.string.analysis_alternatives, sAnalysis.allAvailableTriples.size()));
+    updateUi(false, false);
 
     mCardsView
         .getViewTreeObserver()
@@ -63,44 +60,84 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
                 if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
                   mCardsView.refreshDrawables();
                   mCardsView.updateBounds();
-                  highlightFoundTriple();
                   mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
               }
             });
-
-    mCardsView.setOnSelectionChangedListener(this::updateExplanation);
   }
 
-  private void highlightFoundTriple() {
-    for (Card card : sAnalysis.foundTriple) {
-      mCardsView.setSelected(card, true);
-    }
-    updateExplanation(sAnalysis.foundTriple);
-    mExplanationView.setVisibility(View.VISIBLE);
-    mExplanationView.setTitle(getString(R.string.analysis_found_triple));
-  }
+  private void updateUi(boolean animateNext, boolean animatePrevious) {
+    TripleAnalysis analysis = sAnalysisList.get(sCurrentStepIndex);
+    setTitle(
+        getString(
+            R.string.analysis_step_of_total_format,
+            sCurrentStepIndex + 1,
+            sAnalysisList.size()));
 
-  private void updateExplanation(Set<Card> selectedCards) {
-    mExplanationView.setCards(ImmutableSet.copyOf(selectedCards));
-    if (selectedCards.size() == 3) {
-      if (selectedCards.equals(sAnalysis.foundTriple)) {
-        mExplanationView.setTitle(getString(R.string.analysis_found_triple));
-      } else if (Game.isValidTriple(selectedCards)) {
-        mExplanationView.setTitle(
-            getString(R.string.analysis_alternatives, sAnalysis.allAvailableTriples.size()));
-      } else {
-        mExplanationView.setTitle(null);
+    mCardsView.updateCardsInPlay(ImmutableList.copyOf(analysis.boardState));
+
+    List<Set<Card>> triples = Lists.newArrayList();
+    triples.add(analysis.foundTriple);
+    for (Set<Card> triple : analysis.allAvailableTriples) {
+      if (!triple.equals(analysis.foundTriple)) {
+        triples.add(triple);
       }
-    } else {
-      mExplanationView.setTitle(null);
     }
+    mFoundTriplesView.setFoundTriples(triples, triples.size());
+
+    if (animatePrevious) {
+      mCardsView.animateTripleBackFromOffscreen(analysis.foundTriple, null);
+    }
+    invalidateOptionsMenu();
+  }
+
+  private void onPlaceholderClick(int index) {
+    TripleAnalysis analysis = sAnalysisList.get(sCurrentStepIndex);
+    // Re-calculate the triples list to match what was set in updateUi
+    List<Set<Card>> triples = Lists.newArrayList();
+    triples.add(analysis.foundTriple);
+    for (Set<Card> t : analysis.allAvailableTriples) {
+      if (!t.equals(analysis.foundTriple)) {
+        triples.add(t);
+      }
+    }
+
+    Set<Card> triple = triples.get(index);
+    mFoundTriplesView.revealAlternative(index);
+    mCardsView.pulseCards(triple);
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.board_history, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.findItem(R.id.previous).setEnabled(sCurrentStepIndex > 0);
+    menu.findItem(R.id.next).setEnabled(sCurrentStepIndex < sAnalysisList.size() - 1);
+    return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     if (item.getItemId() == android.R.id.home) {
       finish();
+      return true;
+    }
+    if (item.getItemId() == R.id.next) {
+      mCardsView.animateTripleFoundToOffscreen(
+          sAnalysisList.get(sCurrentStepIndex).foundTriple,
+          () -> {
+            sCurrentStepIndex++;
+            updateUi(true, false);
+          });
+      return true;
+    }
+    if (item.getItemId() == R.id.previous) {
+      sCurrentStepIndex--;
+      updateUi(false, true);
       return true;
     }
     return super.onOptionsItemSelected(item);
@@ -110,6 +147,6 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   protected void onDestroy() {
     super.onDestroy();
     // Don't leak the static analysis object
-    sAnalysis = null;
+    sAnalysisList = null;
   }
 }

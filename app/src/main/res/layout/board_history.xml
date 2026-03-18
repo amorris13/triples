@@ -24,35 +24,15 @@
                 android:layout_height="1dp"
                 android:background="?android:attr/listDivider" />
 
-            <com.antsapps.triples.views.TripleExplanationView
-                android:id="@+id/triple_explanation"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/analysis_status_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/step_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/analysis_step_format"
-                    android:textAppearance="?attr/textAppearanceSubtitle1"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/alternatives_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/analysis_alternatives"
-                    android:textAppearance="?attr/textAppearanceBody2" />
-            </LinearLayout>
+                <com.antsapps.triples.views.FoundTriplesView
+                    android:id="@+id/found_triples_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </androidx.core.widget.NestedScrollView>
         </LinearLayout>
 
         <com.antsapps.triples.cardsview.VerticalCardsView

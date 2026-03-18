@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import com.antsapps.triples.R;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,11 +31,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class FoundTriplesView extends View {
 
+  public interface OnPlaceholderClickListener {
+    void onPlaceholderClick(int index);
+  }
+
   private static final float STACK_DISPLACEMENT_PERCENT = 0.65f;
   private static final int COLUMNS = 6;
 
   private List<Set<Card>> mFoundTriples = new ArrayList<>();
   private int mTotalTriples = 0;
+  private final Set<Integer> mRevealedIndices = new HashSet<>();
+  private OnPlaceholderClickListener mOnPlaceholderClickListener;
 
   private CardsView mCardsView;
 
@@ -70,7 +78,20 @@ public class FoundTriplesView extends View {
   public void setFoundTriples(List<Set<Card>> foundTriples, int totalTriples) {
     mFoundTriples = foundTriples;
     mTotalTriples = totalTriples;
+    mRevealedIndices.clear();
+    if (mTotalTriples > 0) {
+      mRevealedIndices.add(0);
+    }
     requestLayout();
+    invalidate();
+  }
+
+  public void setOnPlaceholderClickListener(OnPlaceholderClickListener listener) {
+    mOnPlaceholderClickListener = listener;
+  }
+
+  public void revealAlternative(int index) {
+    mRevealedIndices.add(index);
     invalidate();
   }
 
@@ -123,7 +144,7 @@ public class FoundTriplesView extends View {
         canvas.scale(mHighlightScale, mHighlightScale, centerX, centerY);
       }
 
-      if (mFoundTriples != null && i < mFoundTriples.size()) {
+      if (mFoundTriples != null && i < mFoundTriples.size() && mRevealedIndices.contains(i)) {
         drawTripleStack(
             canvas, mFoundTriples.get(i), naturalWidth, naturalHeight, naturalDisplacement);
       } else {
@@ -203,6 +224,23 @@ public class FoundTriplesView extends View {
               locationInWindow[1] + top + mCardHeight));
     }
     return cardBounds;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    if (event.getAction() == MotionEvent.ACTION_UP) {
+      int col = (int) (event.getX() / mSlotWidth);
+      int row = (int) (event.getY() / mSlotHeight);
+      int index = row * COLUMNS + col;
+      if (index >= 0
+          && index < mTotalTriples
+          && !mRevealedIndices.contains(index)
+          && mOnPlaceholderClickListener != null) {
+        mOnPlaceholderClickListener.onPlaceholderClick(index);
+        return true;
+      }
+    }
+    return super.onTouchEvent(event);
   }
 
   @NotNull

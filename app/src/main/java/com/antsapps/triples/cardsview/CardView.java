@@ -223,6 +223,15 @@ public class CardView extends View {
     onIncorrectTriple(false);
   }
 
+  public void pulse() {
+    animate()
+        .scaleX(1.2f)
+        .scaleY(1.2f)
+        .setDuration(SettingsFragment.getAnimationDuration(getContext()))
+        .setInterpolator(new CycleInterpolator(0.5f))
+        .start();
+  }
+
   public void onIncorrectTriple(boolean alreadyFound) {
     mSelected = false;
     mShakeAnimating = true;
