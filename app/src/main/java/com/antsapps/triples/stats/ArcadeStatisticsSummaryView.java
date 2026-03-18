@@ -115,9 +115,6 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     barDataSet.setDrawValues(false);
     mHistogramChart.setData(new BarData(barDataSet));
     styleChart(mHistogramChart);
-    mHistogramChart.getDescription().setEnabled(true);
-    mHistogramChart.getDescription().setText("No. Games");
-    mHistogramChart.getDescription().setXOffset(-10f);
     mHistogramChart.getXAxis().setGranularity(1f);
     mHistogramChart.getAxisLeft().setGranularity(1f);
     mHistogramChart.getAxisLeft().setAxisMinimum(0f);
@@ -132,9 +129,15 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     mScatterChart.setData(new ScatterData(scatterDataSet));
     styleChart(mScatterChart);
     mScatterChart.getXAxis().setValueFormatter(new DateValueFormatter(getContext()));
+    float xRange = scatterDataSet.getXMax() - scatterDataSet.getXMin();
+    mScatterChart.getXAxis().setSpaceMin(xRange / 40);
+    mScatterChart.getXAxis().setSpaceMax(xRange / 40);
+
     mScatterChart.getAxisLeft().setValueFormatter(new IntegerValueFormatter());
     mScatterChart.getAxisLeft().setGranularity(1f);
     mScatterChart.getAxisLeft().setAxisMinimum(0f);
+    mScatterChart.getAxisLeft().setSpaceMax(1);
+
     mScatterChart.invalidate();
 
     int numGames = arcadeStatistics.getNumGames();

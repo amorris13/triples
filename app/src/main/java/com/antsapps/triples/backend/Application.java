@@ -302,7 +302,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public DailyGame getDailyGameByGameDay(DailyGame.Day gameDay) {
-    return Iterables.find(mDailyGames, game -> game.getGameDay().equals(gameDay));
+    return Iterables.tryFind(mDailyGames, game -> game.getGameDay().equals(gameDay)).orNull();
   }
 
   /**

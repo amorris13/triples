@@ -52,19 +52,12 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
         .setGridColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
 
     chart.getAxisRight().setEnabled(false);
-
-    chart.setExtraOffsets(10f, 10f, 10f, 10f);
-  }
-
-  protected void setYAxisTitle(BarLineChartBase<?> chart, String title) {
-    chart.getAxisLeft().setDrawLabels(true);
-    chart.getAxisLeft().setCenterAxisLabels(false);
   }
 
   protected float calculateScatterPointSize(int count) {
-    if (count < 10) return 15f;
-    if (count < 50) return 10f;
-    return 5f;
+    if (count < 10) return dpToPx(6);
+    if (count < 50) return dpToPx(4);
+    return dpToPx(2);
   }
 
   protected static class DateValueFormatter extends ValueFormatter {
@@ -92,5 +85,11 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
     public String getFormattedValue(float value) {
       return String.valueOf((int) value);
     }
+  }
+
+  private int dpToPx(float dp) {
+    return (int)
+            TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
   }
 }

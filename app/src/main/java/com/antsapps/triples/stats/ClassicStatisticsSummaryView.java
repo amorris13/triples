@@ -112,9 +112,6 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     barDataSet.setDrawValues(false);
     mHistogramChart.setData(new BarData(barDataSet));
     styleChart(mHistogramChart);
-    mHistogramChart.getDescription().setEnabled(true);
-    mHistogramChart.getDescription().setText("No. Games");
-    mHistogramChart.getDescription().setXOffset(-10f);
     mHistogramChart.getXAxis().setGranularity(1f);
     mHistogramChart.getAxisLeft().setGranularity(1f);
     mHistogramChart.getAxisLeft().setAxisMinimum(0f);
@@ -129,8 +126,14 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     mScatterChart.setData(new ScatterData(scatterDataSet));
     styleChart(mScatterChart);
     mScatterChart.getXAxis().setValueFormatter(new DateValueFormatter(getContext()));
+    float xRange = scatterDataSet.getXMax() - scatterDataSet.getXMin();
+    mScatterChart.getXAxis().setSpaceMin(xRange / 40);
+    mScatterChart.getXAxis().setSpaceMax(xRange / 40);
+
     mScatterChart.getAxisLeft().setValueFormatter(new TimeValueFormatter());
     mScatterChart.getAxisLeft().setAxisMinimum(0f);
+    mScatterChart.getAxisLeft().setSpaceMax(20);
+
     mScatterChart.invalidate();
 
     int numGames = classicStatistics.getNumGames();
