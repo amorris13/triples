@@ -1,0 +1,1 @@
+Hide hint and explanation options once game is completed.
