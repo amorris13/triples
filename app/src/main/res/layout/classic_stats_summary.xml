@@ -108,26 +108,89 @@
                 android:stretchColumns="1">
 
                 <TableRow>
-                    <TextView android:text="25th" android:paddingRight="16dp" android:textSize="12sp" />
-                    <TextView android:id="@+id/p25" android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="16dp"
+                        android:text="25th"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/p25"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
                 </TableRow>
+
                 <TableRow>
-                    <TextView android:text="50th" android:paddingRight="16dp" android:textSize="12sp" />
-                    <TextView android:id="@+id/p50" android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="16dp"
+                        android:text="50th"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/p50"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
                 </TableRow>
+
                 <TableRow>
-                    <TextView android:text="75th" android:paddingRight="16dp" android:textSize="12sp" />
-                    <TextView android:id="@+id/p75" android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="16dp"
+                        android:text="75th"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/p75"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
                 </TableRow>
+
                 <TableRow>
-                    <TextView android:text="95th" android:paddingRight="16dp" android:textSize="12sp" />
-                    <TextView android:id="@+id/p95" android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="16dp"
+                        android:text="95th"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/p95"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
                 </TableRow>
+
                 <TableRow>
-                    <TextView android:text="Max" android:paddingRight="16dp" android:textSize="12sp" />
-                    <LinearLayout android:orientation="vertical">
-                        <TextView android:id="@+id/best" android:textStyle="bold" />
-                        <TextView android:id="@+id/best_date" android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="16dp"
+                        android:text="Max"
+                        android:textSize="12sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/best"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/best_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </TableRow>
             </TableLayout>
