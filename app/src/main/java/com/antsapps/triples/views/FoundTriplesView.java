@@ -4,16 +4,11 @@ import static com.antsapps.triples.cardsview.CardBackgroundDrawable.INSET_DP;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.CycleInterpolator;
-import com.antsapps.triples.R;
 import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
@@ -29,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
-public class FoundTriplesView extends View {
+public class FoundTriplesView extends ViewGroup {
 
   public interface OnPlaceholderClickListener {
     void onPlaceholderClick(int index);
@@ -44,9 +39,6 @@ public class FoundTriplesView extends View {
   private OnPlaceholderClickListener mOnPlaceholderClickListener;
 
   private CardsView mCardsView;
-
-  private final Paint mPlaceholderPaint;
-  private final Map<Card, CardView> mCardViewCache = new HashMap<>();
 
   private int mCardWidth;
   private int mCardHeight;
@@ -66,12 +58,6 @@ public class FoundTriplesView extends View {
   public FoundTriplesView(Context context, AttributeSet attrs) {
     super(context, attrs);
     float density = getResources().getDisplayMetrics().density;
-
-    mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    mPlaceholderPaint.setStyle(Paint.Style.STROKE);
-    mPlaceholderPaint.setColor(getResources().getColor(R.color.colorOutlineVariant));
-    mPlaceholderPaint.setStrokeWidth(3 * density);
-    mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[] {8 * density, 8 * density}, 0));
     mPadding = (int) (1 * density);
   }
 
@@ -82,8 +68,23 @@ public class FoundTriplesView extends View {
     if (mTotalTriples > 0) {
       mRevealedIndices.add(0);
     }
+    syncViews();
+  }
+
+  private void syncViews() {
+    removeAllViews();
+    for (int i = 0; i < mTotalTriples; i++) {
+      TripleStackView view = new TripleStackView(getContext());
+      final int index = i;
+      view.setOnClickListener(
+          v -> {
+            if (mOnPlaceholderClickListener != null && !mRevealedIndices.contains(index)) {
+              mOnPlaceholderClickListener.onPlaceholderClick(index);
+            }
+          });
+      addView(view);
+    }
     requestLayout();
-    invalidate();
   }
 
   public void setOnPlaceholderClickListener(OnPlaceholderClickListener listener) {
@@ -92,7 +93,18 @@ public class FoundTriplesView extends View {
 
   public void revealAlternative(int index) {
     mRevealedIndices.add(index);
-    invalidate();
+    updateTripleStackView(index);
+  }
+
+  private void updateTripleStackView(int index) {
+    if (index >= 0 && index < getChildCount()) {
+      TripleStackView view = (TripleStackView) getChildAt(index);
+      view.setTriple(
+          index < mFoundTriples.size() ? mFoundTriples.get(index) : null,
+          !mRevealedIndices.contains(index),
+          mCardsView.cardWidth(),
+          mCardsView.cardHeight());
+    }
   }
 
   public void setCardsView(CardsView cardsView) {
@@ -114,85 +126,50 @@ public class FoundTriplesView extends View {
     int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);
     int stackHeight = mCardHeight + 2 * mStackDisplacement;
     mSlotHeight = stackHeight + 2 * mPadding;
-    int height = rows * mSlotHeight;
 
-    setMeasuredDimension(width, height);
+    for (int i = 0; i < getChildCount(); i++) {
+      View child = getChildAt(i);
+      child.measure(
+          MeasureSpec.makeMeasureSpec(mCardWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(stackHeight, MeasureSpec.EXACTLY));
+      updateTripleStackView(i);
+    }
+
+    setMeasuredDimension(width, rows * mSlotHeight);
   }
 
   @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
-
-    int naturalWidth = mCardsView.cardWidth();
-    int naturalHeight = mCardsView.cardHeight();
-    int naturalDisplacement = (int) (naturalHeight * STACK_DISPLACEMENT_PERCENT);
-    float scale = (float) mCardWidth / naturalWidth;
-    float centerX = naturalWidth / 2f;
-    float centerY = (naturalHeight + 2 * naturalDisplacement) / 2f;
-
-    for (int i = 0; i < mTotalTriples; i++) {
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    for (int i = 0; i < getChildCount(); i++) {
       int row = i / COLUMNS;
       int col = i % COLUMNS;
 
-      float left = col * mSlotWidth + mPadding;
-      float top = row * mSlotHeight + mPadding;
+      int left = col * mSlotWidth + mPadding;
+      int top = row * mSlotHeight + mPadding;
 
-      canvas.save();
-      canvas.translate(left, top);
-      canvas.scale(scale, scale);
-      if (i == mHighlightIndex) {
-        canvas.scale(mHighlightScale, mHighlightScale, centerX, centerY);
-      }
-
-      if (mFoundTriples != null && i < mFoundTriples.size() && mRevealedIndices.contains(i)) {
-        drawTripleStack(
-            canvas, mFoundTriples.get(i), naturalWidth, naturalHeight, naturalDisplacement);
-      } else {
-        drawPlaceholder(canvas, naturalWidth, naturalHeight, naturalDisplacement);
-      }
-
-      canvas.restore();
+      View child = getChildAt(i);
+      child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
     }
-  }
-
-  private void drawTripleStack(
-      Canvas canvas, Set<Card> triple, int width, int height, int displacement) {
-    int i = 0;
-    Rect bounds = new Rect(0, 0, width, height);
-    for (Card card : getSortedTriples(triple)) {
-      CardView cardView = mCardViewCache.get(card);
-      if (cardView == null) {
-        cardView = new CardView(getContext(), card);
-        mCardViewCache.put(card, cardView);
-      }
-      canvas.save();
-      canvas.translate(0, i * displacement);
-      cardView.drawCardContent(canvas, bounds);
-      canvas.restore();
-      i++;
-    }
-  }
-
-  private void drawPlaceholder(Canvas canvas, int width, int height, int displacement) {
-    float inset = INSET_DP * getContext().getResources().getDisplayMetrics().density;
-    RectF rect = new RectF(inset, inset, width - inset, height + 2 * displacement - inset);
-    canvas.drawRoundRect(rect, 10, 10, mPlaceholderPaint);
   }
 
   public void highlightStack(int index) {
-    if (mHighlightAnimator != null) {
-      mHighlightAnimator.cancel();
+    if (index >= 0 && index < getChildCount()) {
+      View child = getChildAt(index);
+      if (mHighlightAnimator != null) {
+        mHighlightAnimator.cancel();
+      }
+      mHighlightIndex = index;
+      mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
+      mHighlightAnimator.setDuration(SettingsFragment.getAnimationDuration(getContext()));
+      mHighlightAnimator.setInterpolator(new CycleInterpolator(0.5f));
+      mHighlightAnimator.addUpdateListener(
+          animation -> {
+            float scale = (float) animation.getAnimatedValue();
+            child.setScaleX(scale);
+            child.setScaleY(scale);
+          });
+      mHighlightAnimator.start();
     }
-    mHighlightIndex = index;
-    mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
-    mHighlightAnimator.setDuration(SettingsFragment.getAnimationDuration(getContext()));
-    mHighlightAnimator.setInterpolator(new CycleInterpolator(0.5f));
-    mHighlightAnimator.addUpdateListener(
-        animation -> {
-          mHighlightScale = (float) animation.getAnimatedValue();
-          invalidate();
-        });
-    mHighlightAnimator.start();
   }
 
   public Map<Card, Rect> getCardBoundsInWindow(int index, Set<Card> triple) {
@@ -224,23 +201,6 @@ public class FoundTriplesView extends View {
               locationInWindow[1] + top + mCardHeight));
     }
     return cardBounds;
-  }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    if (event.getAction() == MotionEvent.ACTION_UP) {
-      int col = (int) (event.getX() / mSlotWidth);
-      int row = (int) (event.getY() / mSlotHeight);
-      int index = row * COLUMNS + col;
-      if (index >= 0
-          && index < mTotalTriples
-          && !mRevealedIndices.contains(index)
-          && mOnPlaceholderClickListener != null) {
-        mOnPlaceholderClickListener.onPlaceholderClick(index);
-        return true;
-      }
-    }
-    return super.onTouchEvent(event);
   }
 
   @NotNull

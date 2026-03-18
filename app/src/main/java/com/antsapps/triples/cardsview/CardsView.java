@@ -157,7 +157,9 @@ public abstract class CardsView extends ViewGroup
     Set<Card> selectedCards = getSelectedCards();
     if (selectedCards.size() == 3) {
       if (Game.isValidTriple(selectedCards)) {
-        mOnValidTripleSelectedListener.onValidTripleSelected(selectedCards);
+        if (mOnValidTripleSelectedListener != null) {
+          mOnValidTripleSelectedListener.onValidTripleSelected(selectedCards);
+        }
       } else {
         for (Card card : selectedCards) {
           CardView cardView = mCardViews.get(card);

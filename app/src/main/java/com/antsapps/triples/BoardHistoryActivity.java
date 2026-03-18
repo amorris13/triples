@@ -68,11 +68,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   private void updateUi(boolean animateNext, boolean animatePrevious) {
     TripleAnalysis analysis = sAnalysisList.get(sCurrentStepIndex);
-    setTitle(
-        getString(
-            R.string.analysis_step_of_total_format,
-            sCurrentStepIndex + 1,
-            sAnalysisList.size()));
+    setTitle(getString(R.string.analysis_review_step_format, sCurrentStepIndex + 1));
 
     mCardsView.updateCardsInPlay(ImmutableList.copyOf(analysis.boardState));
 
@@ -86,7 +82,9 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     mFoundTriplesView.setFoundTriples(triples, triples.size());
 
     if (animatePrevious) {
-      mCardsView.animateTripleBackFromOffscreen(analysis.foundTriple, null);
+      mCardsView.animateTripleBackFromOffscreen(analysis.foundTriple, () -> {
+          // After animation, we might want to highlight or do something
+      });
     }
     invalidateOptionsMenu();
   }

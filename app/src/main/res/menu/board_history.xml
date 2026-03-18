@@ -6,11 +6,13 @@
         android:icon="@drawable/ic_expand_less"
         android:title="Previous"
         android:rotation="-90"
+        android:enabled="false"
         app:showAsAction="always" />
     <item
         android:id="@+id/next"
         android:icon="@drawable/ic_expand_more"
         android:title="Next"
         android:rotation="-90"
+        android:enabled="false"
         app:showAsAction="always" />
 </menu>
