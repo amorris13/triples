@@ -1,5 +1,9 @@
 package com.antsapps.triples.backend;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /** Created by anthony on 2/12/13. */
 public class ClassicStatistics extends Statistics {
   private long mFastTime;
@@ -9,6 +13,10 @@ public class ClassicStatistics extends Statistics {
   private long mFinishDate;
   private long mFastDate;
   private long mSlowDate;
+  private long mP25;
+  private long mP50;
+  private long mP75;
+  private long mP95;
 
   ClassicStatistics(Iterable<? extends Game> iterable, Period period, boolean includeHinted) {
     super(iterable, period, includeHinted);
@@ -16,6 +24,9 @@ public class ClassicStatistics extends Statistics {
   }
 
   private void precalcStatistics() {
+    if (mGamesInPeriod.isEmpty()) {
+      return;
+    }
     long fastTime = Long.MAX_VALUE;
     long slowTime = 0;
     long sumTime = 0;
@@ -56,6 +67,16 @@ public class ClassicStatistics extends Statistics {
     mFinishDate = finishDate;
     mFastDate = fastDate;
     mSlowDate = slowDate;
+
+    List<Long> times = new ArrayList<>();
+    for (Game game : mGamesInPeriod) {
+      times.add(game.getTimeElapsed());
+    }
+    Collections.sort(times);
+    mP25 = times.get((int) (times.size() * 0.25));
+    mP50 = times.get((int) (times.size() * 0.50));
+    mP75 = times.get((int) (times.size() * 0.75));
+    mP95 = times.get((int) (times.size() * 0.95));
   }
 
   public long getFastestTime() {
@@ -84,5 +105,21 @@ public class ClassicStatistics extends Statistics {
 
   public long getSlowestDate() {
     return mSlowDate;
+  }
+
+  public long getP25() {
+    return mP25;
+  }
+
+  public long getP50() {
+    return mP50;
+  }
+
+  public long getP75() {
+    return mP75;
+  }
+
+  public long getP95() {
+    return mP95;
   }
 }

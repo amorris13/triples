@@ -4,16 +4,16 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.Spinner;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.DatePeriod;
 import com.antsapps.triples.backend.NumGamesPeriod;
 import com.antsapps.triples.backend.Period;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -30,12 +30,18 @@ class StatisticsSelectorView extends FrameLayout {
 
   private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
-  private static final Map<String, Period> PERIODS = Maps.newLinkedHashMap();
-  private Spinner mSpinner;
-  private Period mCurrentPeriod;
+  private final Map<String, Period> mPeriods = Maps.newLinkedHashMap();
+  private ChipGroup mPeriodChipGroup;
+  private ChipGroup mHintsChipGroup;
+  private ChipGroup mSummaryChipGroup;
+  private Period mCurrentPeriod = Period.ALL_TIME;
+  private boolean mIncludeHinted = false;
 
   private OnPeriodChangeListener mOnPeriodChangeListener;
   private OnIncludeHintedChangeListener mOnIncludeHintedChangeListener;
+
+  private LinearLayout mOptionsContainer;
+  private ImageView mExpandIcon;
 
   public StatisticsSelectorView(Context context) {
     this(context, null);
@@ -50,68 +56,114 @@ class StatisticsSelectorView extends FrameLayout {
 
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    View v = inflater.inflate(R.layout.stats_selector, this);
+    inflater.inflate(R.layout.stats_selector, this);
 
-    initSpinner();
-    initCheckbox();
+    mOptionsContainer = findViewById(R.id.filter_options_container);
+    mSummaryChipGroup = findViewById(R.id.filter_summary_chips);
+    mExpandIcon = findViewById(R.id.filter_expand_icon);
+
+    findViewById(R.id.filter_header)
+        .setOnClickListener(
+            v -> {
+              boolean isExpanded = mOptionsContainer.getVisibility() == View.VISIBLE;
+              mOptionsContainer.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
+              mSummaryChipGroup.setVisibility(isExpanded ? View.VISIBLE : View.INVISIBLE);
+              mExpandIcon.setImageResource(
+                  isExpanded ? R.drawable.ic_expand_more : R.drawable.ic_expand_less);
+            });
+
+    initChips();
+    updateSummary();
   }
 
-  private void initCheckbox() {
-    android.widget.CheckBox includeHintedCheckbox = findViewById(R.id.include_hinted_checkbox);
-    includeHintedCheckbox.setOnCheckedChangeListener(
-        (buttonView, isChecked) -> {
-          if (mOnIncludeHintedChangeListener != null) {
-            mOnIncludeHintedChangeListener.onIncludeHintedChange(isChecked);
-          }
-        });
-  }
-
-  private void initSpinner() {
-    mSpinner = (Spinner) findViewById(R.id.period_spinner);
-
-    ArrayAdapter<CharSequence> adapter =
-        new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
-    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+  private void initChips() {
+    mPeriodChipGroup = findViewById(R.id.period_chip_group);
     initPeriodsMap();
-    for (String key : PERIODS.keySet()) {
-      adapter.add(key);
+    LayoutInflater inflater = LayoutInflater.from(getContext());
+    for (String key : mPeriods.keySet()) {
+      Chip chip = (Chip) inflater.inflate(R.layout.stats_period_chip, mPeriodChipGroup, false);
+      chip.setText(key);
+      chip.setId(View.generateViewId());
+      chip.setTag(mPeriods.get(key));
+      mPeriodChipGroup.addView(chip);
+      if (mPeriods.get(key) == Period.ALL_TIME) {
+        mPeriodChipGroup.check(chip.getId());
+      }
     }
-    mSpinner.setAdapter(adapter);
 
-    mSpinner.setOnItemSelectedListener(
-        new OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            String string = (String) parent.getItemAtPosition(pos);
-            mCurrentPeriod = PERIODS.get(string);
+    mPeriodChipGroup.setOnCheckedStateChangeListener(
+        (group, checkedIds) -> {
+          if (!checkedIds.isEmpty()) {
+            Chip chip = group.findViewById(checkedIds.get(0));
+            mCurrentPeriod = (Period) chip.getTag();
+            updateSummary();
             if (mOnPeriodChangeListener != null) {
               mOnPeriodChangeListener.onPeriodChange(mCurrentPeriod);
             }
           }
-
-          @Override
-          public void onNothingSelected(AdapterView<?> arg0) {}
         });
-    mCurrentPeriod = PERIODS.get(mSpinner.getSelectedItem().toString());
+
+    mHintsChipGroup = findViewById(R.id.hints_chip_group);
+    mHintsChipGroup.check(R.id.chip_no_hints);
+    mHintsChipGroup.setOnCheckedStateChangeListener(
+        (group, checkedIds) -> {
+          mIncludeHinted = checkedIds.contains(R.id.chip_incl_hints);
+          updateSummary();
+          if (mOnIncludeHintedChangeListener != null) {
+            mOnIncludeHintedChangeListener.onIncludeHintedChange(mIncludeHinted);
+          }
+        });
   }
 
   private void initPeriodsMap() {
-    PERIODS.put(getContext().getString(R.string.all_time), Period.ALL_TIME);
-    PERIODS.put(
+    mPeriods.put(getContext().getString(R.string.all_time), Period.ALL_TIME);
+    mPeriods.put(
         getContext().getString(R.string.past_day), DatePeriod.fromTimePeriod(1 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_week), DatePeriod.fromTimePeriod(7 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_month), DatePeriod.fromTimePeriod(30 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_3_months), DatePeriod.fromTimePeriod(91 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_6_months),
         DatePeriod.fromTimePeriod(182 * MS_PER_DAY));
-    PERIODS.put(
+    mPeriods.put(
         getContext().getString(R.string.past_year), DatePeriod.fromTimePeriod(365 * MS_PER_DAY));
-    PERIODS.put(getContext().getString(R.string.past_10_games), new NumGamesPeriod(10));
-    PERIODS.put(getContext().getString(R.string.past_50_games), new NumGamesPeriod(50));
+    mPeriods.put(getContext().getString(R.string.past_10_games), new NumGamesPeriod(10));
+    mPeriods.put(getContext().getString(R.string.past_50_games), new NumGamesPeriod(50));
+  }
+
+  private void updateSummary() {
+    mSummaryChipGroup.removeAllViews();
+    LayoutInflater inflater = LayoutInflater.from(getContext());
+
+    // Period Chip
+    String periodText = getContext().getString(R.string.all_time);
+    for (Map.Entry<String, Period> entry : mPeriods.entrySet()) {
+      if (entry.getValue().equals(mCurrentPeriod)) {
+        periodText = entry.getKey();
+        break;
+      }
+    }
+    addSummaryChip(periodText);
+
+    // Hints Chip
+    addSummaryChip(mIncludeHinted ? "Incl. Hints" : "No Hints");
+  }
+
+  private void addSummaryChip(String text) {
+    Chip chip =
+        (Chip)
+            LayoutInflater.from(getContext())
+                .inflate(R.layout.stats_period_chip, mSummaryChipGroup, false);
+    chip.setText(text);
+    chip.setCheckable(false);
+    chip.setClickable(false);
+    chip.setChipIconVisible(false);
+    chip.setCheckedIconVisible(false);
+    chip.setSelected(true);
+    mSummaryChipGroup.addView(chip);
   }
 
   public void setOnPeriodChangeListener(OnPeriodChangeListener listener) {
