@@ -24,8 +24,7 @@ public class GameReconstructor {
 
     List<Card> cardsInPlay = Lists.newArrayList();
     // Replicate Game.init()
-    while (cardsInPlay.size() < Game.MIN_CARDS_IN_PLAY
-        || !checkIfAnyValidTriples(cardsInPlay)) {
+    while (cardsInPlay.size() < Game.MIN_CARDS_IN_PLAY || !checkIfAnyValidTriples(cardsInPlay)) {
       for (int i = 0; i < 3; i++) {
         cardsInPlay.add(deck.getNextCard());
       }
@@ -41,13 +40,9 @@ public class GameReconstructor {
       long duration = time - lastTime;
 
       List<Set<Card>> allAvailable = Game.getAllValidTriples(cardsInPlay);
-      analysisList.add(new TripleAnalysis(
-          foundTriple,
-          time,
-          duration,
-          allAvailable,
-          Lists.newArrayList(cardsInPlay)
-      ));
+      analysisList.add(
+          new TripleAnalysis(
+              foundTriple, time, duration, allAvailable, Lists.newArrayList(cardsInPlay)));
 
       // Replicate Game.updateDeckAfterValidTriple
       updateBoard(cardsInPlay, deck, foundTriple, game);
@@ -76,13 +71,7 @@ public class GameReconstructor {
       // Let's show all valid triples on the board.
       List<Set<Card>> allAvailable = Game.getAllValidTriples(cardsInPlay);
 
-      analysisList.add(new TripleAnalysis(
-          foundTriple,
-          time,
-          duration,
-          allAvailable,
-          cardsInPlay
-      ));
+      analysisList.add(new TripleAnalysis(foundTriple, time, duration, allAvailable, cardsInPlay));
       lastTime = time;
     }
     return analysisList;
@@ -134,7 +123,8 @@ public class GameReconstructor {
     removeTrailingNulls(cardsInPlay);
 
     // Extra cards if no triples
-    while (Game.getAValidTriple(cardsInPlay, Collections.<Card>emptySet()) == null && !deck.isEmpty()) {
+    while (Game.getAValidTriple(cardsInPlay, Collections.<Card>emptySet()) == null
+        && !deck.isEmpty()) {
       for (int i = 0; i < 3; i++) {
         cardsInPlay.add(deck.getNextCard());
       }

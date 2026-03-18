@@ -1,6 +1,5 @@
 package com.antsapps.triples;
 
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,20 +49,25 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     mCardsView.updateCardsInPlay(ImmutableList.copyOf(sAnalysis.boardState));
     mCardsView.setEnabled(true);
 
-    ((TextView) findViewById(R.id.step_label)).setText(getString(R.string.analysis_step_format, sStep));
-    ((TextView) findViewById(R.id.alternatives_label)).setText(getString(R.string.analysis_alternatives, sAnalysis.allAvailableTriples.size()));
+    ((TextView) findViewById(R.id.step_label))
+        .setText(getString(R.string.analysis_step_format, sStep));
+    ((TextView) findViewById(R.id.alternatives_label))
+        .setText(getString(R.string.analysis_alternatives, sAnalysis.allAvailableTriples.size()));
 
-    mCardsView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override
-      public void onGlobalLayout() {
-        if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
-          mCardsView.refreshDrawables();
-          mCardsView.updateBounds();
-          highlightFoundTriple();
-          mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        }
-      }
-    });
+    mCardsView
+        .getViewTreeObserver()
+        .addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override
+              public void onGlobalLayout() {
+                if (mCardsView.getWidth() > 0 && mCardsView.getHeight() > 0) {
+                  mCardsView.refreshDrawables();
+                  mCardsView.updateBounds();
+                  highlightFoundTriple();
+                  mCardsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+              }
+            });
 
     mCardsView.setOnSelectionChangedListener(this::updateExplanation);
   }
@@ -83,7 +87,8 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       if (selectedCards.equals(sAnalysis.foundTriple)) {
         mExplanationView.setTitle(getString(R.string.analysis_found_triple));
       } else if (Game.isValidTriple(selectedCards)) {
-        mExplanationView.setTitle(getString(R.string.analysis_alternatives, sAnalysis.allAvailableTriples.size()));
+        mExplanationView.setTitle(
+            getString(R.string.analysis_alternatives, sAnalysis.allAvailableTriples.size()));
       } else {
         mExplanationView.setTitle(null);
       }

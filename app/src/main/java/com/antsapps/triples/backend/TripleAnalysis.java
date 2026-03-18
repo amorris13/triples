@@ -40,7 +40,8 @@ public class TripleAnalysis {
 
   public boolean isPropertySame(Card.PropertyType type) {
     Card[] cards = foundTriple.toArray(new Card[0]);
-    return isPropertySame(cards[0].getValue(type), cards[1].getValue(type), cards[2].getValue(type));
+    return isPropertySame(
+        cards[0].getValue(type), cards[1].getValue(type), cards[2].getValue(type));
   }
 
   private static boolean isPropertySame(int v1, int v2, int v3) {

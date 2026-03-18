@@ -1,6 +1,5 @@
 package com.antsapps.triples;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -75,7 +74,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     for (TripleAnalysis analysis : mAnalysis) {
       int diffCount = analysis.getNumDifferentProperties();
       if (diffCount == 0 || diffCount == 4) {
-        if (diffCount == 4) allDiff++; else allSame++;
+        if (diffCount == 4) allDiff++;
+        else allSame++;
       } else {
         mixed++;
       }
@@ -84,10 +84,15 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
     int total = mAnalysis.size();
     if (total > 0) {
-      ((TextView) findViewById(R.id.bias_all_same)).setText(getString(R.string.analysis_all_same_bias, (allSame * 100) / total));
-      ((TextView) findViewById(R.id.bias_all_diff)).setText(getString(R.string.analysis_all_diff_bias, (allDiff * 100) / total));
-      ((TextView) findViewById(R.id.bias_mixed)).setText(getString(R.string.analysis_mixed_bias, (mixed * 100) / total));
-      ((TextView) findViewById(R.id.avg_alternatives)).setText(getString(R.string.analysis_avg_alternatives, (float) totalAlternatives / total));
+      ((TextView) findViewById(R.id.bias_all_same))
+          .setText(getString(R.string.analysis_all_same_bias, (allSame * 100) / total));
+      ((TextView) findViewById(R.id.bias_all_diff))
+          .setText(getString(R.string.analysis_all_diff_bias, (allDiff * 100) / total));
+      ((TextView) findViewById(R.id.bias_mixed))
+          .setText(getString(R.string.analysis_mixed_bias, (mixed * 100) / total));
+      ((TextView) findViewById(R.id.avg_alternatives))
+          .setText(
+              getString(R.string.analysis_avg_alternatives, (float) totalAlternatives / total));
 
       int sameNum = 0, sameShape = 0, samePattern = 0, sameColor = 0;
       for (TripleAnalysis analysis : mAnalysis) {
@@ -96,10 +101,14 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         if (analysis.isPropertySame(Card.PropertyType.PATTERN)) samePattern++;
         if (analysis.isPropertySame(Card.PropertyType.COLOR)) sameColor++;
       }
-      ((TextView) findViewById(R.id.bias_num)).setText(getString(R.string.number) + " " + (sameNum * 100 / total) + "% same");
-      ((TextView) findViewById(R.id.bias_shape)).setText(getString(R.string.shape) + " " + (sameShape * 100 / total) + "% same");
-      ((TextView) findViewById(R.id.bias_pattern)).setText(getString(R.string.pattern) + " " + (samePattern * 100 / total) + "% same");
-      ((TextView) findViewById(R.id.bias_color)).setText(getString(R.string.colour) + " " + (sameColor * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_num))
+          .setText(getString(R.string.number) + " " + (sameNum * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_shape))
+          .setText(getString(R.string.shape) + " " + (sameShape * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_pattern))
+          .setText(getString(R.string.pattern) + " " + (samePattern * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_color))
+          .setText(getString(R.string.colour) + " " + (sameColor * 100 / total) + "% same");
     }
   }
 
@@ -122,7 +131,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     @NonNull
     @Override
     public AnalysisViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.analysis_item, parent, false);
+      View v =
+          LayoutInflater.from(parent.getContext()).inflate(R.layout.analysis_item, parent, false);
       return new AnalysisViewHolder(v);
     }
 
@@ -130,17 +140,23 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     public void onBindViewHolder(@NonNull AnalysisViewHolder holder, int position) {
       TripleAnalysis analysis = mData.get(position);
       holder.stepText.setText(getString(R.string.analysis_step_format, position + 1));
-      holder.durationText.setText(getString(R.string.analysis_duration_format, analysis.duration / 1000f));
+      holder.durationText.setText(
+          getString(R.string.analysis_duration_format, analysis.duration / 1000f));
 
+      holder.explanationView.setShowTicks(false);
+      holder.explanationView.setShowOverallConclusion(false);
       holder.explanationView.setCards(analysis.foundTriple);
-      holder.alternativesText.setText(getString(R.string.analysis_alternatives, analysis.allAvailableTriples.size()));
+      holder.viewBoardButton.setText(
+          getString(
+              R.string.analysis_view_board_with_alternatives, analysis.allAvailableTriples.size()));
 
-      holder.viewBoardButton.setOnClickListener(v -> {
-        Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-        BoardHistoryActivity.sAnalysis = analysis;
-        BoardHistoryActivity.sStep = position + 1;
-        startActivity(intent);
-      });
+      holder.viewBoardButton.setOnClickListener(
+          v -> {
+            Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
+            BoardHistoryActivity.sAnalysis = analysis;
+            BoardHistoryActivity.sStep = position + 1;
+            startActivity(intent);
+          });
     }
 
     @Override
@@ -150,7 +166,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   }
 
   private static class AnalysisViewHolder extends RecyclerView.ViewHolder {
-    TextView stepText, durationText, alternativesText;
+    TextView stepText, durationText;
     com.antsapps.triples.views.TripleExplanationView explanationView;
     MaterialButton viewBoardButton;
 
@@ -159,7 +175,6 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       stepText = v.findViewById(R.id.step_text);
       durationText = v.findViewById(R.id.duration_text);
       explanationView = v.findViewById(R.id.triple_explanation);
-      alternativesText = v.findViewById(R.id.alternatives_text);
       viewBoardButton = v.findViewById(R.id.view_board_button);
     }
   }

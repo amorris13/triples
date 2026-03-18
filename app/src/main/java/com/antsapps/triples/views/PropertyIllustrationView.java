@@ -70,7 +70,8 @@ public class PropertyIllustrationView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    int naturalWidth = mNaturalCardDimensionsProvider != null ? mNaturalCardDimensionsProvider.cardWidth() : 0;
+    int naturalWidth =
+        mNaturalCardDimensionsProvider != null ? mNaturalCardDimensionsProvider.cardWidth() : 0;
     if (naturalWidth == 0) {
       naturalWidth = dpToPx(120);
     }

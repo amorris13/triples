@@ -183,8 +183,8 @@
   <string name="incorrect_triples_snackbar_message">Two incorrect triples in a row. Show explanation?</string>
   <string name="incorrect_triples_snackbar_action">Show</string>
 
-  <string name="detailed_analysis">Detailed Analysis</string>
-  <string name="analysis_title">Game Analysis</string>
+  <string name="detailed_analysis">Triple Bot</string>
+  <string name="analysis_title">Triple Bot</string>
   <string name="analysis_summary">Summary</string>
   <string name="analysis_triples_found">Triples Found</string>
   <string name="analysis_property_bias">Property Bias</string>
@@ -193,6 +193,7 @@
   <string name="analysis_mixed_bias">Mixed: %1$d%%</string>
   <string name="analysis_avg_alternatives">Avg Alternatives: %1$.1f</string>
   <string name="analysis_view_board">View Board</string>
+  <string name="analysis_view_board_with_alternatives">View Board (%1$d alternatives)</string>
   <string name="analysis_step_format">Step %1$d</string>
   <string name="analysis_found_triple">Found Triple</string>
   <string name="analysis_alternatives">Alternatives (%1$d)</string>

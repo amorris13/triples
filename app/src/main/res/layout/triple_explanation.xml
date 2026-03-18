@@ -43,7 +43,7 @@
             <View android:layout_width="24dp" android:layout_height="0dp"/>
         </TableRow>
 
-        <TableRow android:id="@+id/row_card_1" android:layout_marginTop="-25dp">
+        <TableRow android:id="@+id/row_card_1" android:layout_marginTop="-32dp">
             <com.antsapps.triples.views.SingleScaledCardView
                 android:id="@+id/card_1"
                 android:layout_width="60dp"
@@ -55,7 +55,7 @@
             <View android:layout_width="24dp" android:layout_height="0dp"/>
         </TableRow>
 
-        <TableRow android:id="@+id/row_card_2" android:layout_marginTop="-25dp">
+        <TableRow android:id="@+id/row_card_2" android:layout_marginTop="-32dp">
             <com.antsapps.triples.views.SingleScaledCardView
                 android:id="@+id/card_2"
                 android:layout_width="60dp"
@@ -64,30 +64,30 @@
             <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_1" android:layout_width="0dp" android:layout_height="24dp" />
             <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_2" android:layout_width="0dp" android:layout_height="24dp" />
             <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_3" android:layout_width="0dp" android:layout_height="24dp" />
-            <ImageView
-                android:id="@+id/conclusion_image"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="bottom"
-                android:padding="2dp" />
+            <View android:layout_width="24dp" android:layout_height="0dp"/>
         </TableRow>
 
         <!-- Conclusion Row -->
         <TableRow android:id="@+id/conclusion_row">
-            <View android:layout_width="60dp" android:layout_height="0dp"/>
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/conclusion_image"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:padding="2dp" />
+            <LinearLayout android:orientation="horizontal" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
                 <TextView android:id="@+id/conclusion_text_0" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 <ImageView android:id="@+id/conclusion_tick_0" android:layout_width="12dp" android:layout_height="12dp" />
             </LinearLayout>
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="horizontal" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
                 <TextView android:id="@+id/conclusion_text_1" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 <ImageView android:id="@+id/conclusion_tick_1" android:layout_width="12dp" android:layout_height="12dp" />
             </LinearLayout>
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="horizontal" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
                 <TextView android:id="@+id/conclusion_text_2" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 <ImageView android:id="@+id/conclusion_tick_2" android:layout_width="12dp" android:layout_height="12dp" />
             </LinearLayout>
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="horizontal" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
                 <TextView android:id="@+id/conclusion_text_3" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 <ImageView android:id="@+id/conclusion_tick_3" android:layout_width="12dp" android:layout_height="12dp" />
             </LinearLayout>

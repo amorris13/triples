@@ -3,7 +3,6 @@ package com.antsapps.triples.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +26,9 @@ public class TripleExplanationView extends FrameLayout {
   private ImageView mConclusionImage;
   private TextView mTitleView;
 
+  private boolean mShowTicks = true;
+  private boolean mShowOverallConclusion = true;
+
   private final Card.PropertyType[] mPropertyTypes =
       new Card.PropertyType[] {
         Card.PropertyType.NUMBER,
@@ -49,15 +51,18 @@ public class TripleExplanationView extends FrameLayout {
 
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 4; j++) {
-        int resId = getResources().getIdentifier("prop_" + i + "_" + j, "id", context.getPackageName());
+        int resId =
+            getResources().getIdentifier("prop_" + i + "_" + j, "id", context.getPackageName());
         mPropertyIcons[i][j] = findViewById(resId);
         mPropertyIcons[i][j].setPropertyType(mPropertyTypes[j]);
       }
     }
 
     for (int j = 0; j < 4; j++) {
-      int textId = getResources().getIdentifier("conclusion_text_" + j, "id", context.getPackageName());
-      int tickId = getResources().getIdentifier("conclusion_tick_" + j, "id", context.getPackageName());
+      int textId =
+          getResources().getIdentifier("conclusion_text_" + j, "id", context.getPackageName());
+      int tickId =
+          getResources().getIdentifier("conclusion_tick_" + j, "id", context.getPackageName());
       mConclusionTexts[j] = findViewById(textId);
       mConclusionTicks[j] = findViewById(tickId);
     }
@@ -75,6 +80,14 @@ public class TripleExplanationView extends FrameLayout {
         mPropertyIcons[i][j].setNaturalCardDimensionsProvider(cardDimensionsProvider);
       }
     }
+  }
+
+  public void setShowTicks(boolean showTicks) {
+    mShowTicks = showTicks;
+  }
+
+  public void setShowOverallConclusion(boolean showOverallConclusion) {
+    mShowOverallConclusion = showOverallConclusion;
   }
 
   public void setCards(Set<Card> cards) {
@@ -118,6 +131,7 @@ public class TripleExplanationView extends FrameLayout {
       int v2 = cards.get(2).getValue(mPropertyTypes[j]);
       valid &= updateConclusion(mConclusionTexts[j], mConclusionTicks[j], v0, v1, v2);
     }
+    mConclusionImage.setVisibility(mShowOverallConclusion ? VISIBLE : INVISIBLE);
     mConclusionImage.setImageResource(valid ? R.drawable.ic_tick : R.drawable.ic_cross);
   }
 
@@ -131,6 +145,7 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   private boolean updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {
+    icon.setVisibility(mShowTicks ? VISIBLE : GONE);
     if (v0 == v1 && v1 == v2) {
       text.setText(R.string.same);
       icon.setImageResource(R.drawable.ic_tick);
