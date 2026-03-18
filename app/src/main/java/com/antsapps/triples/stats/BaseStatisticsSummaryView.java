@@ -89,7 +89,7 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
 
   private int dpToPx(float dp) {
     return (int)
-            TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
   }
 }

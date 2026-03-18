@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
@@ -252,9 +251,9 @@ public class ScreenshotTest extends BaseRobolectricTest {
     try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       capture("statistics_classic");
       scenario.onActivity(
-              activity -> {
-                activity.<ViewPager2>findViewById(R.id.view_pager).setCurrentItem(2, false);
-              });
+          activity -> {
+            activity.<ViewPager2>findViewById(R.id.view_pager).setCurrentItem(2, false);
+          });
       capture("statistics_classic_list");
     }
   }
@@ -268,9 +267,9 @@ public class ScreenshotTest extends BaseRobolectricTest {
     try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       capture("statistics_arcade");
       scenario.onActivity(
-              activity -> {
-                  activity.<ViewPager2>findViewById(R.id.view_pager).setCurrentItem(2, false);
-              });
+          activity -> {
+            activity.<ViewPager2>findViewById(R.id.view_pager).setCurrentItem(2, false);
+          });
       capture("statistics_arcade_list");
     }
   }

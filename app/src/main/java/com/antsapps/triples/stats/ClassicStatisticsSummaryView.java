@@ -30,7 +30,6 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
   private final ScatterChart mScatterChart;
   private final TextView mNumberOfGames;
   private final TextView mFastestTime;
-  private final TextView mFastestDate;
   private final TextView mAverageTime;
   private final TextView mP25;
   private final TextView mP50;
@@ -48,7 +47,6 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     mScatterChart = findViewById(R.id.scatter_chart);
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
     mFastestTime = (TextView) findViewById(R.id.best);
-    mFastestDate = findViewById(R.id.best_date);
     mAverageTime = (TextView) findViewById(R.id.average);
     mP25 = findViewById(R.id.p25);
     mP50 = findViewById(R.id.p50);
@@ -135,16 +133,21 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
 
     mScatterChart.getAxisLeft().setValueFormatter(new TimeValueFormatter());
     mScatterChart.getAxisLeft().setAxisMinimum(0f);
-    mScatterChart.getAxisLeft().setSpaceMax((scatterDataSet.getYMax() - scatterDataSet.getYMin()) / 20);
+    mScatterChart
+        .getAxisLeft()
+        .setSpaceMax((scatterDataSet.getYMax() - scatterDataSet.getYMin()) / 20);
 
     mScatterChart.invalidate();
 
     int numGames = classicStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
     mFastestTime.setText(
-        numGames == 0 ? "-" : convertTimeToString(classicStatistics.getFastestTime()));
-    mFastestDate.setText(
-        numGames == 0 ? "" : convertDateToString(getContext(), classicStatistics.getFastestDate()));
+        numGames == 0
+            ? "-"
+            : convertTimeToString(classicStatistics.getFastestTime())
+                + " ("
+                + convertDateToString(getContext(), classicStatistics.getFastestDate())
+                + ")");
     mAverageTime.setText(
         numGames != 0 ? convertTimeToString(classicStatistics.getAverageTime()) : "-");
 
