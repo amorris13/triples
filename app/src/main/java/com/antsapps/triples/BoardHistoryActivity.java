@@ -44,6 +44,14 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     mFoundTriplesView.setCardsView(mCardsView);
     mFoundTriplesView.setOnPlaceholderClickListener(this::onPlaceholderClick);
 
+    mCardsView.setOnValidTripleSelectedListener(
+        triple -> {
+          mCardsView.animateTripleFound(
+              mFoundTriplesView.getCardBoundsInWindow(0, triple),
+              new android.view.animation.AccelerateDecelerateInterpolator(),
+              () -> mCardsView.animateTripleBackFromOffscreen(triple, null));
+        });
+
     if (sAnalysisList == null) {
       finish();
       return;
@@ -82,9 +90,8 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     mFoundTriplesView.setFoundTriples(triples, triples.size());
 
     if (animatePrevious) {
-      mCardsView.animateTripleBackFromOffscreen(analysis.foundTriple, () -> {
-          // After animation, we might want to highlight or do something
-      });
+      // Re-add cards if they were animated off in the previous step
+      mCardsView.animateTripleBackFromOffscreen(analysis.foundTriple, null);
     }
     invalidateOptionsMenu();
   }
