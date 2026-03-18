@@ -118,10 +118,7 @@ abstract class BaseStatisticsListHeaderView extends FrameLayout {
     mComparatorChangeListener.onComparatorChange(mCurrentComparator);
   }
 
-  protected void setAccentColor(int accentColor) {
-    ((TextView) findViewById(R.id.list_title)).setTextColor(accentColor);
-    findViewById(R.id.list_divider).setBackgroundColor(accentColor);
-  }
+  protected void setAccentColor(int accentColor) {}
 
   private void styleDrawable(ShapeDrawable dr) {
     dr.getPaint().setColor(getResources().getColor(android.R.color.darker_gray));

@@ -80,7 +80,7 @@ public abstract class BaseStatisticsFragment extends Fragment
             tabLayout,
             viewPager,
             (tab, position) -> {
-              tab.setText(position == 0 ? "Summary" : "Games");
+              tab.setText(position == 0 ? "Summary" : "List");
             })
         .attach();
 

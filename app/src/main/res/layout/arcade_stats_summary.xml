@@ -11,9 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
-        android:text="DISTRIBUTION"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:text="HOW YOU DID"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_secondary" />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/histogram_chart"
@@ -26,9 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
-        android:text="TIME SERIES"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:text="YOUR PERFORMANCE"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_secondary" />
 
     <com.github.mikephil.charting.charts.ScatterChart
         android:id="@+id/scatter_chart"
@@ -36,11 +38,6 @@
         android:layout_height="200dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp" />
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,13 +54,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SUMMARY"
+                android:text="OVERVIEW"
                 android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/color_text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="8dp"
                 android:text="Games"
                 android:textSize="12sp" />
 
@@ -71,7 +70,7 @@
                 android:id="@+id/number_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -85,14 +84,14 @@
                 android:id="@+id/average"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -100,21 +99,21 @@
                 android:layout_height="wrap_content"
                 android:text="PERCENTILES"
                 android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/color_text_secondary" />
 
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:stretchColumns="1">
 
-                <TableRow>
+                <TableRow android:paddingTop="4dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="16dp"
                         android:text="25th"
                         android:textSize="12sp" />
-
                     <TextView
                         android:id="@+id/p25"
                         android:layout_width="wrap_content"
@@ -122,14 +121,13 @@
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:paddingTop="4dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="16dp"
                         android:text="50th"
                         android:textSize="12sp" />
-
                     <TextView
                         android:id="@+id/p50"
                         android:layout_width="wrap_content"
@@ -137,14 +135,13 @@
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:paddingTop="4dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="16dp"
                         android:text="75th"
                         android:textSize="12sp" />
-
                     <TextView
                         android:id="@+id/p75"
                         android:layout_width="wrap_content"
@@ -152,14 +149,13 @@
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:paddingTop="4dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="16dp"
                         android:text="95th"
                         android:textSize="12sp" />
-
                     <TextView
                         android:id="@+id/p95"
                         android:layout_width="wrap_content"
@@ -167,30 +163,31 @@
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:paddingTop="8dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="16dp"
-                        android:text="Max"
-                        android:textSize="12sp" />
-
+                        android:text="Best"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
+                        android:orientation="horizontal"
+                        android:gravity="bottom">
                         <TextView
                             android:id="@+id/best"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold" />
-
                         <TextView
                             android:id="@+id/best_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="10sp" />
+                            android:paddingLeft="8dp"
+                            android:textSize="10sp"
+                            android:textColor="@color/color_text_secondary" />
                     </LinearLayout>
                 </TableRow>
             </TableLayout>

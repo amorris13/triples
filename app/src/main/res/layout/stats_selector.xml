@@ -1,79 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:paddingLeft="@dimen/stats_side_padding"
-  android:paddingRight="@dimen/stats_side_padding"
-  android:orientation="vertical">
-
-  <LinearLayout
-    android:id="@+id/filter_header"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
-
-    <TextView
-      android:id="@+id/selector_title"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:singleLine="true"
-      android:text="FILTERS"
-      android:textColor="@color/color_separator"
-      android:textStyle="bold" />
-
-    <TextView
-      android:id="@+id/filter_summary"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_weight="1"
-      android:layout_marginStart="8dp"
-      android:singleLine="true"
-      android:ellipsize="end"
-      android:textSize="12sp"
-      android:text="All Time" />
-
-    <ImageView
-      android:id="@+id/filter_expand_icon"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:src="@drawable/ic_expand_more" />
-  </LinearLayout>
-
-  <LinearLayout
-    android:id="@+id/filter_options_container"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/stats_selector_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:visibility="gone">
+    android:paddingLeft="@dimen/stats_side_padding"
+    android:paddingRight="@dimen/stats_side_padding">
 
-    <com.google.android.material.checkbox.MaterialCheckBox
-      android:id="@+id/include_hinted_checkbox"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/include_hinted_games"
-      android:textSize="12sp" />
-
-    <HorizontalScrollView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:scrollbars="none">
-
-      <com.google.android.material.chip.ChipGroup
-        android:id="@+id/period_chip_group"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/filter_header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:singleSelection="true"
-        app:selectionRequired="true"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
         android:paddingBottom="8dp">
-      </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
-  </LinearLayout>
+
+        <TextView
+            android:id="@+id/selector_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="FILTERS"
+            android:textColor="@color/color_separator"
+            android:textStyle="bold" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filter_summary_chips"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            app:chipSpacingHorizontal="4dp" />
+
+        <ImageView
+            android:id="@+id/filter_expand_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_expand_more" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/filter_options_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="TIME PERIOD"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_secondary" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/period_chip_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="HINTS"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_secondary" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/hints_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_no_hints"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Hints" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_incl_hints"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Include Hinted" />
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
 
 </LinearLayout>

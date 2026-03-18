@@ -1,9 +1,11 @@
 package com.antsapps.triples.stats;
 
 import android.content.Context;
+import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,7 +33,9 @@ class StatisticsSelectorView extends FrameLayout {
   private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
   private final Map<String, Period> mPeriods = Maps.newLinkedHashMap();
-  private ChipGroup mChipGroup;
+  private ChipGroup mPeriodChipGroup;
+  private ChipGroup mHintsChipGroup;
+  private ChipGroup mSummaryChipGroup;
   private Period mCurrentPeriod = Period.ALL_TIME;
   private boolean mIncludeHinted = false;
 
@@ -39,8 +43,8 @@ class StatisticsSelectorView extends FrameLayout {
   private OnIncludeHintedChangeListener mOnIncludeHintedChangeListener;
 
   private LinearLayout mOptionsContainer;
-  private TextView mSummaryText;
   private ImageView mExpandIcon;
+  private ViewGroup mRoot;
 
   public StatisticsSelectorView(Context context) {
     this(context, null);
@@ -57,53 +61,42 @@ class StatisticsSelectorView extends FrameLayout {
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.stats_selector, this);
 
+    mRoot = findViewById(R.id.stats_selector_root);
     mOptionsContainer = findViewById(R.id.filter_options_container);
-    mSummaryText = findViewById(R.id.filter_summary);
+    mSummaryChipGroup = findViewById(R.id.filter_summary_chips);
     mExpandIcon = findViewById(R.id.filter_expand_icon);
 
     findViewById(R.id.filter_header)
         .setOnClickListener(
             v -> {
+              TransitionManager.beginDelayedTransition(mRoot);
               boolean isExpanded = mOptionsContainer.getVisibility() == View.VISIBLE;
               mOptionsContainer.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
+              mSummaryChipGroup.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
               mExpandIcon.setImageResource(
                   isExpanded ? R.drawable.ic_expand_more : R.drawable.ic_expand_less);
             });
 
     initChips();
-    initCheckbox();
     updateSummary();
   }
 
-  private void initCheckbox() {
-    com.google.android.material.checkbox.MaterialCheckBox includeHintedCheckbox =
-        findViewById(R.id.include_hinted_checkbox);
-    includeHintedCheckbox.setOnCheckedChangeListener(
-        (buttonView, isChecked) -> {
-          mIncludeHinted = isChecked;
-          updateSummary();
-          if (mOnIncludeHintedChangeListener != null) {
-            mOnIncludeHintedChangeListener.onIncludeHintedChange(isChecked);
-          }
-        });
-  }
-
   private void initChips() {
-    mChipGroup = findViewById(R.id.period_chip_group);
+    mPeriodChipGroup = findViewById(R.id.period_chip_group);
     initPeriodsMap();
     LayoutInflater inflater = LayoutInflater.from(getContext());
     for (String key : mPeriods.keySet()) {
-      Chip chip = (Chip) inflater.inflate(R.layout.stats_period_chip, mChipGroup, false);
+      Chip chip = (Chip) inflater.inflate(R.layout.stats_period_chip, mPeriodChipGroup, false);
       chip.setText(key);
       chip.setId(View.generateViewId());
       chip.setTag(mPeriods.get(key));
-      mChipGroup.addView(chip);
+      mPeriodChipGroup.addView(chip);
       if (mPeriods.get(key) == Period.ALL_TIME) {
-        mChipGroup.check(chip.getId());
+        mPeriodChipGroup.check(chip.getId());
       }
     }
 
-    mChipGroup.setOnCheckedStateChangeListener(
+    mPeriodChipGroup.setOnCheckedStateChangeListener(
         (group, checkedIds) -> {
           if (!checkedIds.isEmpty()) {
             Chip chip = group.findViewById(checkedIds.get(0));
@@ -112,6 +105,17 @@ class StatisticsSelectorView extends FrameLayout {
             if (mOnPeriodChangeListener != null) {
               mOnPeriodChangeListener.onPeriodChange(mCurrentPeriod);
             }
+          }
+        });
+
+    mHintsChipGroup = findViewById(R.id.hints_chip_group);
+    mHintsChipGroup.check(R.id.chip_no_hints);
+    mHintsChipGroup.setOnCheckedStateChangeListener(
+        (group, checkedIds) -> {
+          mIncludeHinted = checkedIds.contains(R.id.chip_incl_hints);
+          updateSummary();
+          if (mOnIncludeHintedChangeListener != null) {
+            mOnIncludeHintedChangeListener.onIncludeHintedChange(mIncludeHinted);
           }
         });
   }
@@ -136,6 +140,9 @@ class StatisticsSelectorView extends FrameLayout {
   }
 
   private void updateSummary() {
+    mSummaryChipGroup.removeAllViews();
+
+    // Period Chip
     String periodText = getContext().getString(R.string.all_time);
     for (Map.Entry<String, Period> entry : mPeriods.entrySet()) {
       if (entry.getValue().equals(mCurrentPeriod)) {
@@ -143,9 +150,19 @@ class StatisticsSelectorView extends FrameLayout {
         break;
       }
     }
+    addSummaryChip(periodText);
 
-    String summary = periodText + (mIncludeHinted ? ", incl. hints" : ", no hints");
-    mSummaryText.setText(summary);
+    // Hints Chip
+    addSummaryChip(mIncludeHinted ? "Incl. Hints" : "No Hints");
+  }
+
+  private void addSummaryChip(String text) {
+    Chip chip = new Chip(getContext());
+    chip.setText(text);
+    chip.setCheckable(false);
+    chip.setClickable(false);
+    chip.setChipMinHeight(getResources().getDisplayMetrics().density * 24);
+    mSummaryChipGroup.addView(chip);
   }
 
   public void setOnPeriodChangeListener(OnPeriodChangeListener listener) {

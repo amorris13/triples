@@ -52,6 +52,8 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
         .setGridColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
 
     chart.getAxisRight().setEnabled(false);
+
+    chart.setExtraOffsets(10f, 10f, 10f, 10f);
   }
 
   protected float calculateScatterPointSize(int count) {
