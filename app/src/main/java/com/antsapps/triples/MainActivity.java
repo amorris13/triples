@@ -186,7 +186,8 @@ public class MainActivity extends BaseTriplesActivity {
     for (ClassicGame game : Lists.newArrayList(mApplication.getCurrentClassicGames())) {
       mApplication.deleteClassicGame(game);
     }
-    ClassicGame game = ClassicGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
+    ClassicGame game =
+        ClassicGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
     mApplication.addClassicGame(game);
     Intent intent = new Intent(this, ClassicGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());

@@ -3,8 +3,6 @@ package com.antsapps.triples;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -13,11 +11,11 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
-import com.antsapps.triples.backend.FakeTimeProvider;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.DailyGame;
 import com.antsapps.triples.backend.Deck;
+import com.antsapps.triples.backend.FakeTimeProvider;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.Game.GameState;
 import com.antsapps.triples.backend.ZenGame;
@@ -31,8 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,14 +37,13 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.GraphicsMode;
-import org.robolectric.shadows.ShadowSystemClock;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = 36)
 public class ScreenshotTest extends BaseRobolectricTest {
 
-  public static final long INITIAL_TIME_MILLIS = 1873794536000L;  // 18 May 2029
+  public static final long INITIAL_TIME_MILLIS = 1873794536000L; // 18 May 2029
   private FakeTimeProvider mFakeTimeProvider;
 
   @Parameters(name = "{0}")

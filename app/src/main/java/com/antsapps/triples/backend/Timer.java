@@ -62,7 +62,9 @@ class Timer {
 
   long getElapsed() {
     return mTimeElapsedWhenLastResumed
-        + (isActive() ? (Application.getTimeProvider().currentTimeMillis() - mTimeOfLastResume) : 0);
+        + (isActive()
+            ? (Application.getTimeProvider().currentTimeMillis() - mTimeOfLastResume)
+            : 0);
   }
 
   private boolean isActive() {

@@ -83,7 +83,8 @@ public class Application extends OnStateChangedReporter {
                 new Deck(Lists.<Card>newArrayList()),
                 (long) (120000 + random.nextInt(300000)), // 2 to 7 minutes
                 new Date(
-                    sTimeProvider.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
+                    sTimeProvider.currentTimeMillis()
+                        - (long) i * 24 * 60 * 60 * 1000), // one per day
                 GameState.COMPLETED,
                 false);
         addClassicGame(game);
