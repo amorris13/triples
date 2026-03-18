@@ -2,9 +2,13 @@ package com.antsapps.triples.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,30 +49,72 @@ public class TripleExplanationView extends FrameLayout {
     super(context, attrs);
     LayoutInflater.from(context).inflate(R.layout.triple_explanation, this, true);
 
-    mCardViews[0] = findViewById(R.id.card_0);
-    mCardViews[1] = findViewById(R.id.card_1);
-    mCardViews[2] = findViewById(R.id.card_2);
+    mTitleView = findViewById(R.id.explanation_title);
+    LinearLayout table = findViewById(R.id.explanation_table);
 
+    // Header Row
+    LinearLayout headerRow = createRow(context);
+    headerRow.addView(createEmptyView(context));
+    headerRow.addView(createHeaderTextView(context, R.string.number));
+    headerRow.addView(createHeaderTextView(context, R.string.shape));
+    headerRow.addView(createHeaderTextView(context, R.string.pattern));
+    headerRow.addView(createHeaderTextView(context, R.string.colour));
+    table.addView(headerRow);
+
+    // Card Rows
     for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 4; j++) {
-        int resId =
-            getResources().getIdentifier("prop_" + i + "_" + j, "id", context.getPackageName());
-        mPropertyIcons[i][j] = findViewById(resId);
-        mPropertyIcons[i][j].setPropertyType(mPropertyTypes[j]);
+      LinearLayout cardRow = createRow(context);
+      cardRow.setGravity(Gravity.CENTER_VERTICAL);
+      if (i > 0) {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) cardRow.getLayoutParams();
+        params.topMargin = dpToPx(-13);
       }
+
+      mCardViews[i] = new SingleScaledCardView(context);
+      mCardViews[i].setLayoutParams(
+          new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+      cardRow.addView(mCardViews[i]);
+
+      for (int j = 0; j < 4; j++) {
+        mPropertyIcons[i][j] = new PropertyIllustrationView(context);
+        mPropertyIcons[i][j].setLayoutParams(new LinearLayout.LayoutParams(0, dpToPx(24), 1f));
+        ((LinearLayout.LayoutParams) mPropertyIcons[i][j].getLayoutParams()).gravity =
+            Gravity.CENTER_VERTICAL;
+        mPropertyIcons[i][j].setPropertyType(mPropertyTypes[j]);
+        cardRow.addView(mPropertyIcons[i][j]);
+      }
+      table.addView(cardRow);
     }
+
+    // Conclusion Row
+    LinearLayout conclusionRow = createRow(context);
+    conclusionRow.setGravity(Gravity.CENTER_VERTICAL);
+
+    mConclusionImage = new ImageView(context);
+    mConclusionImage.setLayoutParams(new LinearLayout.LayoutParams(0, dpToPx(24), 1f));
+    mConclusionImage.setPadding(dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2));
+    ((LinearLayout.LayoutParams) mConclusionImage.getLayoutParams()).gravity = Gravity.CENTER;
+    conclusionRow.addView(mConclusionImage);
 
     for (int j = 0; j < 4; j++) {
-      int textId =
-          getResources().getIdentifier("conclusion_text_" + j, "id", context.getPackageName());
-      int tickId =
-          getResources().getIdentifier("conclusion_tick_" + j, "id", context.getPackageName());
-      mConclusionTexts[j] = findViewById(textId);
-      mConclusionTicks[j] = findViewById(tickId);
-    }
+      LinearLayout container = new LinearLayout(context);
+      container.setLayoutParams(
+          new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+      container.setOrientation(LinearLayout.HORIZONTAL);
+      container.setGravity(Gravity.CENTER);
 
-    mConclusionImage = findViewById(R.id.conclusion_image);
-    mTitleView = findViewById(R.id.explanation_title);
+      mConclusionTexts[j] = new TextView(context);
+      mConclusionTexts[j].setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+      mConclusionTexts[j].setGravity(Gravity.CENTER);
+      container.addView(mConclusionTexts[j]);
+
+      mConclusionTicks[j] = new ImageView(context);
+      mConclusionTicks[j].setLayoutParams(new LinearLayout.LayoutParams(dpToPx(12), dpToPx(12)));
+      container.addView(mConclusionTicks[j]);
+
+      conclusionRow.addView(container);
+    }
+    table.addView(conclusionRow);
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
@@ -159,5 +205,37 @@ public class TripleExplanationView extends FrameLayout {
       icon.setImageResource(R.drawable.ic_cross);
       return false;
     }
+  }
+
+  private LinearLayout createRow(Context context) {
+    LinearLayout row = new LinearLayout(context);
+    row.setOrientation(LinearLayout.HORIZONTAL);
+    row.setLayoutParams(
+        new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    return row;
+  }
+
+  private View createEmptyView(Context context) {
+    View view = new View(context);
+    view.setLayoutParams(new LinearLayout.LayoutParams(0, 0, 1f));
+    return view;
+  }
+
+  private TextView createHeaderTextView(Context context, int textResId) {
+    TextView tv = new TextView(context);
+    tv.setText(textResId);
+    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+    tv.setGravity(Gravity.CENTER);
+    tv.setPadding(dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2));
+    tv.setLayoutParams(
+        new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+    return tv;
+  }
+
+  private int dpToPx(float dp) {
+    return (int)
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
   }
 }
