@@ -35,11 +35,11 @@ public abstract class BaseStatisticsFragment extends Fragment
   private BaseTriplesActivity mGameListActivity;
   protected StatisticsSelectorView mSelectorView;
 
-  protected SummaryTabFragment mSummaryTabFragment;
-  protected ListTabFragment mListTabFragment;
+  private SummaryTabFragment mSummaryTabFragment;
+  private ListTabFragment mListTabFragment;
 
   @Override
-  public void onAttach(Context context) {
+  public void onAttach(@NonNull Context context) {
     super.onAttach(context);
     mGameListActivity = (BaseTriplesActivity) context;
     mApplication = Application.getInstance(context);
@@ -53,7 +53,9 @@ public abstract class BaseStatisticsFragment extends Fragment
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.stats_tabbed_fragment, container, false);
 
     initViewModel();
@@ -68,14 +70,6 @@ public abstract class BaseStatisticsFragment extends Fragment
     mSelectorView.setOnPeriodChangeListener(this);
     mSelectorView.setOnIncludeHintedChangeListener(this);
     mSelectorView.setAccentColor(getAccentColor());
-
-    mSummaryTabFragment = SummaryTabFragment.newInstance();
-    mSummaryTabFragment.setSummaryView(createStatisticsSummaryView());
-
-    mListTabFragment = ListTabFragment.newInstance();
-    mListTabFragment.setHeaderView(createStatisticsListHeaderView());
-    mListTabFragment.setAdapter(mAdapter);
-    mListTabFragment.setOnComparatorChangeListener(this);
 
     ViewPager2 viewPager = view.findViewById(R.id.view_pager);
     TabLayout tabLayout = view.findViewById(R.id.tabs);
@@ -121,8 +115,10 @@ public abstract class BaseStatisticsFragment extends Fragment
     @Override
     public Fragment createFragment(int position) {
       if (position == 0) {
+        mSummaryTabFragment = SummaryTabFragment.newInstance();
         return mSummaryTabFragment;
       } else {
+        mListTabFragment = ListTabFragment.newInstance();
         return mListTabFragment;
       }
     }

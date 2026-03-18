@@ -13,18 +13,10 @@ import com.antsapps.triples.backend.Statistics;
 
 public class SummaryTabFragment extends Fragment implements OnStatisticsChangeListener {
 
-  private BaseStatisticsSummaryView mSummaryView;
   private Statistics mCurrentStatistics;
 
   public static SummaryTabFragment newInstance() {
     return new SummaryTabFragment();
-  }
-
-  public void setSummaryView(BaseStatisticsSummaryView summaryView) {
-    mSummaryView = summaryView;
-    if (mCurrentStatistics != null && mSummaryView != null) {
-      mSummaryView.onStatisticsChange(mCurrentStatistics);
-    }
   }
 
   @Nullable
@@ -35,20 +27,31 @@ public class SummaryTabFragment extends Fragment implements OnStatisticsChangeLi
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.stats_summary_tab, container, false);
     LinearLayout summaryContainer = view.findViewById(R.id.summary_container);
-    if (mSummaryView != null) {
-      if (mSummaryView.getParent() != null) {
-        ((ViewGroup) mSummaryView.getParent()).removeView(mSummaryView);
+
+    if (getParentFragment() instanceof BaseStatisticsFragment parent) {
+      BaseStatisticsSummaryView summaryView = parent.createStatisticsSummaryView();
+      summaryView.setAccentColor(parent.getAccentColor());
+      summaryContainer.addView(summaryView);
+      if (mCurrentStatistics != null) {
+        summaryView.onStatisticsChange(mCurrentStatistics);
       }
-      summaryContainer.addView(mSummaryView);
     }
+
     return view;
   }
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
     mCurrentStatistics = statistics;
-    if (mSummaryView != null) {
-      mSummaryView.onStatisticsChange(statistics);
+    View view = getView();
+    if (view != null) {
+      LinearLayout summaryContainer = view.findViewById(R.id.summary_container);
+      if (summaryContainer != null && summaryContainer.getChildCount() > 0) {
+        View child = summaryContainer.getChildAt(0);
+        if (child instanceof BaseStatisticsSummaryView summaryView) {
+          summaryView.onStatisticsChange(statistics);
+        }
+      }
     }
   }
 }

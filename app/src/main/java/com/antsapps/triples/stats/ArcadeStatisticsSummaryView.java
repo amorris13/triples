@@ -90,6 +90,19 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
               (float) ((ArcadeGame) game).getNumTriplesFound()));
     }
 
+    if (arcadeStatistics.getData().isEmpty()) {
+      mHistogramChart.clear();
+      mScatterChart.clear();
+      mNumberOfGames.setText("0");
+      mBest.setText("-");
+      mAverage.setText("-");
+      mP25.setText("-");
+      mP50.setText("-");
+      mP75.setText("-");
+      mP95.setText("-");
+      return;
+    }
+
     List<BarEntry> histogramEntries = new ArrayList<>();
     for (int i = 0; i <= maxFound; i++) {
       histogramEntries.add(new BarEntry((float) i, (float) bins[i]));

@@ -136,7 +136,7 @@ class StatisticsSelectorView extends FrameLayout {
   }
 
   private void updateSummary() {
-    String periodText = "";
+    String periodText = getContext().getString(R.string.all_time);
     for (Map.Entry<String, Period> entry : mPeriods.entrySet()) {
       if (entry.getValue().equals(mCurrentPeriod)) {
         periodText = entry.getKey();

@@ -87,6 +87,19 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
               (float) game.getDateStarted().getTime(), (float) game.getTimeElapsed() / 1000.0f));
     }
 
+    if (classicStatistics.getData().isEmpty()) {
+      mHistogramChart.clear();
+      mScatterChart.clear();
+      mNumberOfGames.setText("0");
+      mFastestTime.setText("-");
+      mAverageTime.setText("-");
+      mP25.setText("-");
+      mP50.setText("-");
+      mP75.setText("-");
+      mP95.setText("-");
+      return;
+    }
+
     List<BarEntry> histogramEntries = new ArrayList<>();
     for (int i = 0; i <= maxMinutes; i++) {
       histogramEntries.add(new BarEntry((float) i, (float) bins[i]));
