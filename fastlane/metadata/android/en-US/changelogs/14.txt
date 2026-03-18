@@ -1,1 +1,1 @@
-Triple Bot improvements and analysis page redesign.
+Triple Bot performance detailed post-game analysis: See your property bias, how long each triple took to find, and view the board at each step to see missed alternatives.
