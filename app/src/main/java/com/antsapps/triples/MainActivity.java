@@ -186,7 +186,8 @@ public class MainActivity extends BaseTriplesActivity {
     for (ClassicGame game : Lists.newArrayList(mApplication.getCurrentClassicGames())) {
       mApplication.deleteClassicGame(game);
     }
-    ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
+    ClassicGame game =
+        ClassicGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
     mApplication.addClassicGame(game);
     Intent intent = new Intent(this, ClassicGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
@@ -211,7 +212,7 @@ public class MainActivity extends BaseTriplesActivity {
     for (ArcadeGame game : Lists.newArrayList(mApplication.getCurrentArcadeGames())) {
       mApplication.deleteArcadeGame(game);
     }
-    ArcadeGame game = ArcadeGame.createFromSeed(System.currentTimeMillis());
+    ArcadeGame game = ArcadeGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
     mApplication.addArcadeGame(game);
     Intent intent = new Intent(this, ArcadeGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
