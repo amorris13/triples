@@ -20,6 +20,8 @@ import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -91,6 +93,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
               (float) game.getDateStarted().getTime(),
               (float) ((ArcadeGame) game).getNumTriplesFound()));
     }
+    Collections.sort(scatterEntries, Comparator.comparing(Entry::getX));
 
     if (arcadeStatistics.getData().isEmpty()) {
       mHistogramChart.clear();

@@ -19,6 +19,8 @@ import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -88,6 +90,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
           new Entry(
               (float) game.getDateStarted().getTime(), (float) game.getTimeElapsed() / 1000.0f));
     }
+    Collections.sort(scatterEntries, Comparator.comparing(Entry::getX));
 
     if (classicStatistics.getData().isEmpty()) {
       mHistogramChart.clear();
@@ -132,7 +135,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
 
     mScatterChart.getAxisLeft().setValueFormatter(new TimeValueFormatter());
     mScatterChart.getAxisLeft().setAxisMinimum(0f);
-    mScatterChart.getAxisLeft().setSpaceMax(20);
+    mScatterChart.getAxisLeft().setSpaceMax((scatterDataSet.getYMax() - scatterDataSet.getYMin()) / 20);
 
     mScatterChart.invalidate();
 
