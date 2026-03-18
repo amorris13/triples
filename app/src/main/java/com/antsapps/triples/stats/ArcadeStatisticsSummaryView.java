@@ -29,6 +29,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
   private final ScatterChart mScatterChart;
   private final TextView mNumberOfGames;
   private final TextView mBest;
+  private final TextView mBestDate;
   private final TextView mAverage;
   private final TextView mP25;
   private final TextView mP50;
@@ -47,6 +48,7 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     mScatterChart = findViewById(R.id.scatter_chart);
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
     mBest = (TextView) findViewById(R.id.best);
+    mBestDate = findViewById(R.id.best_date);
     mAverage = (TextView) findViewById(R.id.average);
     mP25 = findViewById(R.id.p25);
     mP50 = findViewById(R.id.p50);
@@ -122,23 +124,23 @@ public class ArcadeStatisticsSummaryView extends BaseStatisticsSummaryView {
     ScatterDataSet scatterDataSet = new ScatterDataSet(scatterEntries, "Performance");
     scatterDataSet.setColor(getAccentColor());
     scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
-    scatterDataSet.setScatterShapeSize(10f);
+    scatterDataSet.setScatterShapeSize(calculateScatterPointSize(scatterEntries.size()));
     scatterDataSet.setDrawValues(false);
     mScatterChart.setData(new ScatterData(scatterDataSet));
     styleChart(mScatterChart);
     mScatterChart.getXAxis().setValueFormatter(new DateValueFormatter(getContext()));
     mScatterChart.getAxisLeft().setValueFormatter(new IntegerValueFormatter());
+    mScatterChart.getAxisLeft().setGranularity(1f);
+    mScatterChart.getAxisLeft().setAxisMinimum(0f);
     mScatterChart.invalidate();
 
     int numGames = arcadeStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
-    mBest.setText(
+    mBest.setText(numGames == 0 ? "-" : String.valueOf(arcadeStatistics.getMostFound()));
+    mBestDate.setText(
         numGames == 0
-            ? "-"
-            : arcadeStatistics.getMostFound()
-                + " ("
-                + convertDateToString(getContext(), arcadeStatistics.getMostFoundDate())
-                + ")");
+            ? ""
+            : convertDateToString(getContext(), arcadeStatistics.getMostFoundDate()));
     mAverage.setText(numGames != 0 ? String.valueOf(arcadeStatistics.getAverageFound()) : "-");
 
     if (numGames > 0) {

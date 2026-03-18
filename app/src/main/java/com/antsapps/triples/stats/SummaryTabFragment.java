@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Statistics;
@@ -34,8 +36,19 @@ public class SummaryTabFragment extends Fragment implements OnStatisticsChangeLi
       summaryContainer.addView(summaryView);
       if (mCurrentStatistics != null) {
         summaryView.onStatisticsChange(mCurrentStatistics);
+      } else if (parent.mLatestStatistics != null) {
+        summaryView.onStatisticsChange(parent.mLatestStatistics);
       }
     }
+
+    View root = view.findViewById(R.id.summary_tab_root);
+    ViewCompat.setOnApplyWindowInsetsListener(
+        root,
+        (v, insets) -> {
+          int bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+          v.setPadding(0, 0, 0, bottom);
+          return insets;
+        });
 
     return view;
   }

@@ -37,6 +37,7 @@ public abstract class BaseStatisticsFragment extends Fragment
 
   private SummaryTabFragment mSummaryTabFragment;
   private ListTabFragment mListTabFragment;
+  protected Statistics mLatestStatistics;
 
   @Override
   public void onAttach(@NonNull Context context) {
@@ -151,6 +152,7 @@ public abstract class BaseStatisticsFragment extends Fragment
 
   @Override
   public void onStatisticsChange(Statistics statistics) {
+    mLatestStatistics = statistics;
     if (mAdapter != null) {
       mAdapter.clear();
       for (Game game : statistics.getData()) {

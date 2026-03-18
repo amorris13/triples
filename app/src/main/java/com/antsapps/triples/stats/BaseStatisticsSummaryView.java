@@ -6,7 +6,6 @@ import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
 import androidx.core.content.ContextCompat;
-import com.antsapps.triples.R;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.formatter.ValueFormatter;
@@ -48,9 +47,17 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
 
     chart.getAxisLeft().setTextColor(onSurface);
     chart.getAxisLeft().setDrawGridLines(true);
-    chart.getAxisLeft().setGridColor(ContextCompat.getColor(getContext(), R.color.color_separator));
+    chart
+        .getAxisLeft()
+        .setGridColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
 
     chart.getAxisRight().setEnabled(false);
+  }
+
+  protected float calculateScatterPointSize(int count) {
+    if (count < 10) return 15f;
+    if (count < 50) return 10f;
+    return 5f;
   }
 
   protected static class DateValueFormatter extends ValueFormatter {

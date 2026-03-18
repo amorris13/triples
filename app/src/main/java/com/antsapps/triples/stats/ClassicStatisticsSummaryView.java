@@ -28,6 +28,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
   private final ScatterChart mScatterChart;
   private final TextView mNumberOfGames;
   private final TextView mFastestTime;
+  private final TextView mFastestDate;
   private final TextView mAverageTime;
   private final TextView mP25;
   private final TextView mP50;
@@ -45,6 +46,7 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     mScatterChart = findViewById(R.id.scatter_chart);
     mNumberOfGames = (TextView) findViewById(R.id.number_completed);
     mFastestTime = (TextView) findViewById(R.id.best);
+    mFastestDate = findViewById(R.id.best_date);
     mAverageTime = (TextView) findViewById(R.id.average);
     mP25 = findViewById(R.id.p25);
     mP50 = findViewById(R.id.p50);
@@ -119,23 +121,21 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     ScatterDataSet scatterDataSet = new ScatterDataSet(scatterEntries, "Performance");
     scatterDataSet.setColor(getAccentColor());
     scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
-    scatterDataSet.setScatterShapeSize(10f);
+    scatterDataSet.setScatterShapeSize(calculateScatterPointSize(scatterEntries.size()));
     scatterDataSet.setDrawValues(false);
     mScatterChart.setData(new ScatterData(scatterDataSet));
     styleChart(mScatterChart);
     mScatterChart.getXAxis().setValueFormatter(new DateValueFormatter(getContext()));
     mScatterChart.getAxisLeft().setValueFormatter(new TimeValueFormatter());
+    mScatterChart.getAxisLeft().setAxisMinimum(0f);
     mScatterChart.invalidate();
 
     int numGames = classicStatistics.getNumGames();
     mNumberOfGames.setText(String.valueOf(numGames));
     mFastestTime.setText(
-        numGames == 0
-            ? "-"
-            : convertTimeToString(classicStatistics.getFastestTime())
-                + " ("
-                + convertDateToString(getContext(), classicStatistics.getFastestDate())
-                + ")");
+        numGames == 0 ? "-" : convertTimeToString(classicStatistics.getFastestTime()));
+    mFastestDate.setText(
+        numGames == 0 ? "" : convertDateToString(getContext(), classicStatistics.getFastestDate()));
     mAverageTime.setText(
         numGames != 0 ? convertTimeToString(classicStatistics.getAverageTime()) : "-");
 
