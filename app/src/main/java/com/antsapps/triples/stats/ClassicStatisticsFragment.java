@@ -47,6 +47,10 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
         ((TextView) v.findViewById(R.id.result)).setText(result);
         ((TextView) v.findViewById(R.id.date_played))
             .setText(DateUtils.formatDateTime(getContext(), g.getDateStarted().getTime(), 0));
+
+        TextView cardsRemaining = v.findViewById(R.id.cards_remaining);
+        cardsRemaining.setVisibility(View.VISIBLE);
+        cardsRemaining.setText(String.valueOf(g.getCardsRemaining()));
       }
 
       return v;
@@ -71,6 +75,11 @@ public class ClassicStatisticsFragment extends BaseStatisticsFragment {
   @Override
   protected BaseStatisticsSummaryView createStatisticsSummaryView() {
     return new ClassicStatisticsSummaryView(getActivity());
+  }
+
+  @Override
+  protected int getAccentColor() {
+    return androidx.core.content.ContextCompat.getColor(getActivity(), R.color.classic_accent);
   }
 
   @Override

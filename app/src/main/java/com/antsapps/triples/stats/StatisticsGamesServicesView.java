@@ -1,6 +1,7 @@
 package com.antsapps.triples.stats;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +19,17 @@ class StatisticsGamesServicesView extends FrameLayout
   private View mGamesServicesBar;
   private String mLeaderboardId;
 
-  public StatisticsGamesServicesView(Context context, String leaderboardId) {
-    super(context);
+  public StatisticsGamesServicesView(Context context) {
+    this(context, null);
+  }
 
-    mLeaderboardId = leaderboardId;
+  public StatisticsGamesServicesView(Context context, AttributeSet attrs) {
+    this(context, attrs, 0);
+  }
+
+  public StatisticsGamesServicesView(Context context, AttributeSet attrs, int defStyle) {
+    super(context, attrs, defStyle);
+
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View v = inflater.inflate(R.layout.game_services_summary, this);
@@ -34,6 +42,10 @@ class StatisticsGamesServicesView extends FrameLayout
     v.findViewById(R.id.achievements).setOnClickListener(this);
 
     updateSignedInState();
+  }
+
+  public void setLeaderboardId(String leaderboardId) {
+    mLeaderboardId = leaderboardId;
   }
 
   public void setActivity(BaseTriplesActivity activity) {

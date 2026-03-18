@@ -72,6 +72,11 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   }
 
   @Override
+  protected int getAccentColor() {
+    return androidx.core.content.ContextCompat.getColor(getActivity(), R.color.arcade_accent);
+  }
+
+  @Override
   protected String getGameType() {
     return "Arcade";
   }
