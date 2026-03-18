@@ -145,7 +145,7 @@ public class ClassicGameActivity extends BaseGameActivity
 
   @Override
   protected Intent createNewGame() {
-    ClassicGame game = ClassicGame.createFromSeed(System.currentTimeMillis());
+    ClassicGame game = ClassicGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
     mApplication.addClassicGame(game);
     Intent newGameIntent = new Intent(getBaseContext(), ClassicGameActivity.class);
     newGameIntent.putExtra(Game.ID_TAG, game.getId());

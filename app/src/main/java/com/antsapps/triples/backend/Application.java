@@ -36,6 +36,16 @@ public class Application extends OnStateChangedReporter {
   private ZenGame mZenGame;
   private ZenGame mBeginnerGame;
 
+  private static TimeProvider sTimeProvider = new SystemTimeProvider();
+
+  public static void setTimeProvider(TimeProvider timeProvider) {
+    sTimeProvider = timeProvider;
+  }
+
+  public static TimeProvider getTimeProvider() {
+    return sTimeProvider;
+  }
+
   public static Long sSeed = null;
 
   public final DBAdapter database;
@@ -73,7 +83,7 @@ public class Application extends OnStateChangedReporter {
                 new Deck(Lists.<Card>newArrayList()),
                 (long) (120000 + random.nextInt(300000)), // 2 to 7 minutes
                 new Date(
-                    System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
+                    sTimeProvider.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000), // one per day
                 GameState.COMPLETED,
                 false);
         addClassicGame(game);
@@ -91,7 +101,7 @@ public class Application extends OnStateChangedReporter {
                 Lists.<Long>newArrayList(),
                 new Deck(new Random(seed)),
                 ArcadeGame.TIME_LIMIT_MS + 100,
-                new Date(System.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000),
+                new Date(sTimeProvider.currentTimeMillis() - (long) i * 24 * 60 * 60 * 1000),
                 GameState.COMPLETED,
                 10 + random.nextInt(20), // 10 to 30 triples
                 false);
@@ -222,7 +232,7 @@ public class Application extends OnStateChangedReporter {
   }
 
   public ZenGame getZenGame(boolean isBeginner) {
-    long seed = sSeed != null ? sSeed : System.currentTimeMillis();
+    long seed = sSeed != null ? sSeed : sTimeProvider.currentTimeMillis();
     if (isBeginner) {
       if (mBeginnerGame == null) {
         mBeginnerGame = ZenGame.createFromSeed(seed, true);
