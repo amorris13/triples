@@ -34,3 +34,6 @@ This project uses Roborazzi for screenshot testing.
   ./gradlew recordRoborazziDebug
   ```
   Note: This will overwrite the existing screenshots in `app/src/test/screenshots/`.
+
+### UI Quality
+Always record screenshots using `./gradlew recordRoborazziDebug` when making UI changes and reflect on them to ensure the design is of high quality.
