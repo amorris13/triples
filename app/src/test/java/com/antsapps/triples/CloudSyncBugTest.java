@@ -44,7 +44,8 @@ public class CloudSyncBugTest extends BaseRobolectricTest {
             0,
             new Date(timeNewer),
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Lists.newArrayList());
     mApplication.addClassicGame(newerGame);
 
     // Simulate cloud sync with the stale game
@@ -58,7 +59,8 @@ public class CloudSyncBugTest extends BaseRobolectricTest {
             0,
             new Date(timeStale),
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Lists.newArrayList());
 
     boolean changed = mApplication.mergeClassicCurrent(staleCloudGame);
 
@@ -90,7 +92,8 @@ public class CloudSyncBugTest extends BaseRobolectricTest {
             new Date(timeNewer),
             Game.GameState.ACTIVE,
             0,
-            false);
+            false,
+            Lists.newArrayList());
     mApplication.addArcadeGame(newerGame);
 
     // Simulate cloud sync with the stale game
@@ -105,7 +108,8 @@ public class CloudSyncBugTest extends BaseRobolectricTest {
             new Date(timeStale),
             Game.GameState.ACTIVE,
             0,
-            false);
+            false,
+            Lists.newArrayList());
 
     boolean changed = mApplication.mergeArcadeCurrent(staleCloudGame);
 
@@ -134,7 +138,8 @@ public class CloudSyncBugTest extends BaseRobolectricTest {
             10000,
             new Date(timeNewer),
             Game.GameState.COMPLETED,
-            false);
+            false,
+            Lists.newArrayList());
     mApplication.addClassicGame(completedGame);
 
     // Simulate cloud sync with the stale game (started at 1000L)
@@ -148,7 +153,8 @@ public class CloudSyncBugTest extends BaseRobolectricTest {
             0,
             new Date(timeStale),
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Lists.newArrayList());
 
     boolean changed = mApplication.mergeClassicCurrent(staleCloudGame);
 

@@ -45,7 +45,8 @@ public class DBAdapterTest extends BaseRobolectricTest {
             10000,
             new Date(),
             GameState.COMPLETED,
-            true);
+            true,
+            Collections.emptyList());
 
     long id = dbAdapter.addClassicGame(game);
     assertThat(id).isNotEqualTo(-1);
@@ -75,7 +76,8 @@ public class DBAdapterTest extends BaseRobolectricTest {
             20000,
             game.getDateStarted(),
             GameState.COMPLETED,
-            true);
+            true,
+            Collections.emptyList());
     dbAdapter.updateClassicGame(updatedGame);
 
     classicGames.clear();
@@ -105,7 +107,8 @@ public class DBAdapterTest extends BaseRobolectricTest {
             new Date(),
             GameState.COMPLETED,
             12,
-            false);
+            false,
+            Collections.emptyList());
 
     long id = dbAdapter.addArcadeGame(game);
     assertThat(id).isNotEqualTo(-1);
@@ -135,7 +138,8 @@ public class DBAdapterTest extends BaseRobolectricTest {
             game.getDateStarted(),
             GameState.COMPLETED,
             15,
-            false);
+            false,
+            Collections.emptyList());
     dbAdapter.updateArcadeGame(updatedGame);
 
     arcadeGames.clear();
@@ -310,10 +314,34 @@ public class DBAdapterTest extends BaseRobolectricTest {
           "CREATE TABLE arcade_games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER, num_triples_found INTEGER, triple_find_times BLOB, hints_used INTEGER)");
 
       // Trigger upgrade
-      dbAdapter.onUpgrade(db, 6, 7);
+      dbAdapter.onUpgrade(db, 6, 8);
 
       // Verify Daily games table exists
       assertTableExists(db, DBAdapter.TABLE_DAILY_GAMES);
+      assertColumnExists(db, DBAdapter.TABLE_CLASSIC_GAMES, DBAdapter.COLUMN_FOUND_TRIPLES);
+      assertColumnExists(db, DBAdapter.TABLE_ARCADE_GAMES, DBAdapter.COLUMN_FOUND_TRIPLES);
+    } finally {
+      db.close();
+    }
+  }
+
+  @Test
+  public void testUpgradeFromVersion7() {
+    SQLiteDatabase db = SQLiteDatabase.create(null);
+    try {
+      // Create version 7 schema
+      db.execSQL(
+          "CREATE TABLE games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER, triple_find_times BLOB, hints_used INTEGER)");
+      db.execSQL(
+          "CREATE TABLE arcade_games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, cards_in_deck BLOB, time_elapsed INTEGER, date INTEGER, num_triples_found INTEGER, triple_find_times BLOB, hints_used INTEGER)");
+      db.execSQL(
+          "CREATE TABLE daily_games(game_id INTEGER PRIMARY KEY AUTOINCREMENT, game_state TEXT, game_random INTEGER, cards_in_play BLOB, time_elapsed INTEGER, date INTEGER, daily_game_date TEXT, found_triples BLOB, triple_find_times BLOB, hints_used INTEGER, date_completed INTEGER)");
+
+      // Trigger upgrade
+      dbAdapter.onUpgrade(db, 7, 8);
+
+      assertColumnExists(db, DBAdapter.TABLE_CLASSIC_GAMES, DBAdapter.COLUMN_FOUND_TRIPLES);
+      assertColumnExists(db, DBAdapter.TABLE_ARCADE_GAMES, DBAdapter.COLUMN_FOUND_TRIPLES);
     } finally {
       db.close();
     }

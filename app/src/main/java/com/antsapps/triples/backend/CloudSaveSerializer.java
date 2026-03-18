@@ -40,7 +40,8 @@ public class CloudSaveSerializer {
               summary.getTimeElapsedMillis(),
               new Date(summary.getDateStartedMillis()),
               Game.GameState.COMPLETED,
-              summary.getHintsUsed()));
+              summary.getHintsUsed(),
+              Collections.<Set<Card>>emptyList()));
     }
     return games;
   }
@@ -74,7 +75,8 @@ public class CloudSaveSerializer {
               new Date(summary.getDateStartedMillis()),
               Game.GameState.COMPLETED,
               summary.getNumTriplesFound(),
-              summary.getHintsUsed()));
+              summary.getHintsUsed(),
+              Collections.<Set<Card>>emptyList()));
     }
     return games;
   }
@@ -131,6 +133,7 @@ public class CloudSaveSerializer {
         .setTimeElapsedMillis(game.getTimeElapsed())
         .setGameState(toGameStateProto(game.getGameState()))
         .setHintsUsed(game.areHintsUsed())
+        .setFoundTriples(ByteString.copyFrom(Utils.triplesListToByteArray(game.getFoundTriples())))
         .build()
         .toByteArray();
   }
@@ -146,7 +149,8 @@ public class CloudSaveSerializer {
         state.getTimeElapsedMillis(),
         new Date(state.getSeed()),
         fromGameStateProto(state.getGameState()),
-        state.getHintsUsed());
+        state.getHintsUsed(),
+        Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()));
   }
 
   public static byte[] serializeArcadeGameState(ArcadeGame game) {
@@ -160,6 +164,7 @@ public class CloudSaveSerializer {
         .setGameState(toGameStateProto(game.getGameState()))
         .setNumTriplesFound(game.getNumTriplesFound())
         .setHintsUsed(game.areHintsUsed())
+        .setFoundTriples(ByteString.copyFrom(Utils.triplesListToByteArray(game.getFoundTriples())))
         .build()
         .toByteArray();
   }
@@ -176,7 +181,8 @@ public class CloudSaveSerializer {
         new Date(state.getSeed()),
         fromGameStateProto(state.getGameState()),
         state.getNumTriplesFound(),
-        state.getHintsUsed());
+        state.getHintsUsed(),
+        Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()));
   }
 
   public static byte[] serializeDailyGameState(DailyGame game) {

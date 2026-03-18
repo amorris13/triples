@@ -9,7 +9,6 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.viewpager2.widget.ViewPager2;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.ArcadeGame;
 import com.antsapps.triples.backend.Card;
@@ -138,6 +137,38 @@ public class ScreenshotTest extends BaseRobolectricTest {
   }
 
   @Test
+  public void testClassicGame_Analysis() {
+    setupClassicGame(true);
+    Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
+    ClassicGame game = app.getCompletedClassicGames().iterator().next();
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), GameAnalysisActivity.class);
+    intent.putExtra(GameAnalysisActivity.GAME_ID, game.getId());
+    intent.putExtra(GameAnalysisActivity.GAME_TYPE, "Classic");
+    try (ActivityScenario<GameAnalysisActivity> scenario = ActivityScenario.launch(intent)) {
+      // Need to wait for any background work (like reconstruction) if applicable
+      capture("classic_game_analysis");
+    }
+  }
+
+  @Test
+  public void testViewBoard() {
+    setupClassicGame(true);
+    Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
+    ClassicGame game = app.getCompletedClassicGames().iterator().next();
+    com.antsapps.triples.backend.TripleAnalysis analysis =
+        com.antsapps.triples.backend.GameReconstructor.reconstruct(game).get(0);
+    BoardHistoryActivity.sAnalysis = analysis;
+    BoardHistoryActivity.sStep = 1;
+
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), BoardHistoryActivity.class);
+    try (ActivityScenario<BoardHistoryActivity> scenario = ActivityScenario.launch(intent)) {
+      capture("view_board");
+    }
+  }
+
+  @Test
   public void testArcadeGame() {
     setupArcadeGame(false);
     Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
@@ -250,11 +281,6 @@ public class ScreenshotTest extends BaseRobolectricTest {
     intent.putExtra(StatisticsActivity.GAME_TYPE, "Classic");
     try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       capture("statistics_classic");
-      scenario.onActivity(
-          activity -> {
-            activity.<ViewPager2>findViewById(R.id.view_pager).setCurrentItem(2, false);
-          });
-      capture("statistics_classic_list");
     }
   }
 
@@ -266,11 +292,6 @@ public class ScreenshotTest extends BaseRobolectricTest {
     intent.putExtra(StatisticsActivity.GAME_TYPE, "Arcade");
     try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       capture("statistics_arcade");
-      scenario.onActivity(
-          activity -> {
-            activity.<ViewPager2>findViewById(R.id.view_pager).setCurrentItem(2, false);
-          });
-      capture("statistics_arcade_list");
     }
   }
 
@@ -304,32 +325,14 @@ public class ScreenshotTest extends BaseRobolectricTest {
     Context context = ApplicationProvider.getApplicationContext();
     Application app = Application.getInstance(context);
     app.clearAllData();
-    Random random = new Random(12345L);
+    ClassicGame game = ClassicGame.createFromSeed(12345L);
+    game.begin();
     if (completed) {
-      List<Long> findTimes = Lists.newArrayList();
-      long time = 0;
-      for (int i = 0; i < 27; i++) {
-        time += 5000 + random.nextInt(10000);
-        findTimes.add(time);
-      }
-      ClassicGame game =
-          new ClassicGame(
-              -1,
-              12345L,
-              Lists.newArrayList(),
-              findTimes,
-              new Deck(Lists.newArrayList()),
-              time + 1000,
-              Application.getTimeProvider().now(),
-              GameState.COMPLETED,
-              false);
-      app.addClassicGame(game);
+      findAndCommitTriples(game, 27);
     } else {
-      ClassicGame game = ClassicGame.createFromSeed(12345L);
-      game.begin();
       findAndCommitTriples(game, 2);
-      app.addClassicGame(game);
     }
+    app.addClassicGame(game);
   }
 
   private void setupArcadeGame(boolean completed) {
@@ -356,7 +359,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               Application.getTimeProvider().now(),
               GameState.COMPLETED,
               numFound,
-              false);
+              false,
+              Lists.newArrayList());
       app.addArcadeGame(game);
     } else {
       ArcadeGame game = ArcadeGame.createFromSeed(12345L);
@@ -453,7 +457,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               time + 1000,
               new Date(Application.getTimeProvider().currentTimeMillis() - i * 86400000L),
               GameState.COMPLETED,
-              false);
+              false,
+              Lists.newArrayList());
       app.addClassicGame(game);
     }
 
@@ -477,7 +482,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               new Date(Application.getTimeProvider().currentTimeMillis() - i * 86400000L),
               GameState.COMPLETED,
               numFound,
-              false);
+              false,
+              Lists.newArrayList());
       app.addArcadeGame(game);
     }
 

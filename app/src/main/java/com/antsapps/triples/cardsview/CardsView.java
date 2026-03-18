@@ -248,6 +248,13 @@ public abstract class CardsView extends ViewGroup
     }
   }
 
+  public void setSelected(Card card, boolean selected) {
+    CardView cardView = mCardViews.get(card);
+    if (cardView != null) {
+      cardView.setSelected(selected);
+    }
+  }
+
   public void onAlreadyFoundTriple(Set<Card> triple) {
     for (Card card : triple) {
       CardView cv = mCardViews.get(card);

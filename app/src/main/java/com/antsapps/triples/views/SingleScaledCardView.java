@@ -53,7 +53,8 @@ public class SingleScaledCardView extends View {
       return;
     }
 
-    int cardWidth = mNaturalCardDimensionsProvider.cardWidth();
+    int cardWidth =
+        mNaturalCardDimensionsProvider != null ? mNaturalCardDimensionsProvider.cardWidth() : 0;
     if (cardWidth == 0) {
       cardWidth = (int) (120 * getResources().getDisplayMetrics().density);
     }

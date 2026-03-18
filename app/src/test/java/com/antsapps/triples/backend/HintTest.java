@@ -23,7 +23,8 @@ public class HintTest {
           0,
           new Date(),
           GameState.ACTIVE,
-          false);
+          false,
+          Lists.newArrayList());
     }
 
     @Override

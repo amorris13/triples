@@ -22,7 +22,8 @@ public class StatisticsTest {
         0,
         date,
         Game.GameState.ACTIVE,
-        false);
+        false,
+        ImmutableList.of());
   }
 
   @Test

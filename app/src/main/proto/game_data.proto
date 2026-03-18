@@ -52,6 +52,7 @@ message ClassicGameState {
   int64 time_elapsed_millis = 5;
   GameStateProto game_state = 6;
   bool hints_used = 7;
+  bytes found_triples = 8;
 }
 
 message ArcadeGameState {
@@ -63,6 +64,7 @@ message ArcadeGameState {
   GameStateProto game_state = 6;
   int32 num_triples_found = 7;
   bool hints_used = 8;
+  bytes found_triples = 9;
 }
 
 message DailyGameState {

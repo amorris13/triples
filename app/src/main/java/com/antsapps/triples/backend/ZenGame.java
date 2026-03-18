@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class ZenGame extends Game {
 
@@ -25,7 +26,8 @@ public class ZenGame extends Game {
             Application.getTimeProvider().now(),
             GameState.STARTING,
             false,
-            isBeginner);
+            isBeginner,
+            Collections.<Set<Card>>emptyList());
     game.init();
     return game;
   }
@@ -40,7 +42,8 @@ public class ZenGame extends Game {
       Date dateStarted,
       GameState gameState,
       boolean hintsUsed,
-      boolean isBeginner) {
+      boolean isBeginner,
+      List<Set<Card>> foundTriples) {
     super(
         id,
         seed,
@@ -50,7 +53,8 @@ public class ZenGame extends Game {
         timeElapsed,
         dateStarted,
         gameState,
-        hintsUsed);
+        hintsUsed,
+        foundTriples);
     mIsBeginner = isBeginner;
   }
 

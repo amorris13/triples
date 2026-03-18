@@ -40,7 +40,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             0,
             dateStarted,
             Game.GameState.COMPLETED,
-            false);
+            false,
+            Collections.emptyList());
     mApplication.addClassicGame(localGame);
     mApplication.saveClassicGame(localGame);
 
@@ -55,7 +56,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             0,
             dateStarted,
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Collections.emptyList());
 
     // Try to merge it as a current game
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
@@ -80,7 +82,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             0,
             dateStarted,
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Collections.emptyList());
     mApplication.addClassicGame(localGame);
 
     // Create a cloud game with same seed but more progress (more time elapsed)
@@ -94,7 +97,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             10000, // more time elapsed
             dateStarted,
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Collections.emptyList());
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
@@ -118,7 +122,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             0,
             dateStarted2,
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Collections.emptyList());
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
@@ -144,7 +149,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             0,
             dateStarted1,
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Collections.emptyList());
     mApplication.addClassicGame(localGame);
 
     ClassicGame cloudGame =
@@ -157,7 +163,8 @@ public class StaleGameSyncTest extends BaseRobolectricTest {
             0,
             dateStarted2,
             Game.GameState.ACTIVE,
-            false);
+            false,
+            Collections.emptyList());
 
     boolean merged = mApplication.mergeClassicCurrent(cloudGame);
 
