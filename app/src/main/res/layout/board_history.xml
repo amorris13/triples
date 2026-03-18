@@ -55,12 +55,14 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.antsapps.triples.cardsview.CardsView
+        <com.antsapps.triples.cardsview.VerticalCardsView
             android:id="@+id/cards_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/bottom_inset_container"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:clipChildren="false"
+            android:clipToPadding="false" />
 
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

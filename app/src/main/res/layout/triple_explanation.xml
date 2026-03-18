@@ -1,59 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="4dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/explanation_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="4dp">
+        android:paddingBottom="4dp"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="?attr/colorPrimary"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/explanation_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="4dp"
-            android:textAppearance="?attr/textAppearanceSubtitle2"
-            android:textColor="?attr/colorPrimary"
-            android:visibility="gone" />
+    <TableLayout
+        android:id="@+id/table_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1,2,3,4">
 
-        <TableLayout
-            android:id="@+id/table_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stretchColumns="1,2,3">
+        <!-- Header Row (Optional, could have labels) -->
+        <TableRow android:id="@+id/header_row">
+            <View android:layout_width="60dp" android:layout_height="0dp"/>
+            <TextView android:text="@string/number" android:textSize="10sp" android:gravity="center" android:padding="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="@string/shape" android:textSize="10sp" android:gravity="center" android:padding="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="@string/pattern" android:textSize="10sp" android:gravity="center" android:padding="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="@string/colour" android:textSize="10sp" android:gravity="center" android:padding="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <View android:layout_width="24dp" android:layout_height="0dp"/>
+        </TableRow>
 
-            <!-- Card row -->
-            <TableRow
-                android:id="@+id/card_row"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical">
-                <!-- Label (empty but needed for alignment) -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/number"
-                    android:textSize="14sp"
-                    android:visibility="invisible" />
-                <com.antsapps.triples.views.SingleScaledCardView
-                    android:id="@+id/card_0"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-                <com.antsapps.triples.views.SingleScaledCardView
-                    android:id="@+id/card_1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-                <com.antsapps.triples.views.SingleScaledCardView
-                    android:id="@+id/card_2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-                <!-- Conclusion -->
-                <ImageView
-                    android:id="@+id/conclusion_image"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:gravity="center"
-                    android:padding="4dp" />
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
-</merge>
+        <!-- Card Rows -->
+        <TableRow android:id="@+id/row_card_0">
+            <com.antsapps.triples.views.SingleScaledCardView
+                android:id="@+id/card_0"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_0_0" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_0_1" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_0_2" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_0_3" android:layout_width="0dp" android:layout_height="24dp" />
+            <View android:layout_width="24dp" android:layout_height="0dp"/>
+        </TableRow>
+
+        <TableRow android:id="@+id/row_card_1" android:layout_marginTop="-25dp">
+            <com.antsapps.triples.views.SingleScaledCardView
+                android:id="@+id/card_1"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_1_0" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_1_1" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_1_2" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_1_3" android:layout_width="0dp" android:layout_height="24dp" />
+            <View android:layout_width="24dp" android:layout_height="0dp"/>
+        </TableRow>
+
+        <TableRow android:id="@+id/row_card_2" android:layout_marginTop="-25dp">
+            <com.antsapps.triples.views.SingleScaledCardView
+                android:id="@+id/card_2"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_0" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_1" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_2" android:layout_width="0dp" android:layout_height="24dp" />
+            <com.antsapps.triples.views.PropertyIllustrationView android:id="@+id/prop_2_3" android:layout_width="0dp" android:layout_height="24dp" />
+            <ImageView
+                android:id="@+id/conclusion_image"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="bottom"
+                android:padding="2dp" />
+        </TableRow>
+
+        <!-- Conclusion Row -->
+        <TableRow android:id="@+id/conclusion_row">
+            <View android:layout_width="60dp" android:layout_height="0dp"/>
+            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextView android:id="@+id/conclusion_text_0" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <ImageView android:id="@+id/conclusion_tick_0" android:layout_width="12dp" android:layout_height="12dp" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextView android:id="@+id/conclusion_text_1" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <ImageView android:id="@+id/conclusion_tick_1" android:layout_width="12dp" android:layout_height="12dp" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextView android:id="@+id/conclusion_text_2" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <ImageView android:id="@+id/conclusion_tick_2" android:layout_width="12dp" android:layout_height="12dp" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextView android:id="@+id/conclusion_text_3" android:textSize="10sp" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <ImageView android:id="@+id/conclusion_tick_3" android:layout_width="12dp" android:layout_height="12dp" />
+            </LinearLayout>
+            <View android:layout_width="24dp" android:layout_height="0dp"/>
+        </TableRow>
+
+    </TableLayout>
+</LinearLayout>

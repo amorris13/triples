@@ -308,33 +308,14 @@ public class ScreenshotTest extends BaseRobolectricTest {
     Context context = ApplicationProvider.getApplicationContext();
     Application app = Application.getInstance(context);
     app.clearAllData();
-    Random random = new Random(12345L);
+    ClassicGame game = ClassicGame.createFromSeed(12345L);
+    game.begin();
     if (completed) {
-      List<Long> findTimes = Lists.newArrayList();
-      long time = 0;
-      for (int i = 0; i < 27; i++) {
-        time += 5000 + random.nextInt(10000);
-        findTimes.add(time);
-      }
-      ClassicGame game =
-          new ClassicGame(
-              -1,
-              12345L,
-              Lists.newArrayList(),
-              findTimes,
-              new Deck(Lists.newArrayList()),
-              time + 1000,
-              Application.getTimeProvider().now(),
-              GameState.COMPLETED,
-              false,
-              Lists.newArrayList());
-      app.addClassicGame(game);
+      findAndCommitTriples(game, 27);
     } else {
-      ClassicGame game = ClassicGame.createFromSeed(12345L);
-      game.begin();
       findAndCommitTriples(game, 2);
-      app.addClassicGame(game);
     }
+    app.addClassicGame(game);
   }
 
   private void setupArcadeGame(boolean completed) {

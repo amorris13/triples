@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.antsapps.triples.backend.Application;
+import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
@@ -87,6 +88,18 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       ((TextView) findViewById(R.id.bias_all_diff)).setText(getString(R.string.analysis_all_diff_bias, (allDiff * 100) / total));
       ((TextView) findViewById(R.id.bias_mixed)).setText(getString(R.string.analysis_mixed_bias, (mixed * 100) / total));
       ((TextView) findViewById(R.id.avg_alternatives)).setText(getString(R.string.analysis_avg_alternatives, (float) totalAlternatives / total));
+
+      int sameNum = 0, sameShape = 0, samePattern = 0, sameColor = 0;
+      for (TripleAnalysis analysis : mAnalysis) {
+        if (analysis.isPropertySame(Card.PropertyType.NUMBER)) sameNum++;
+        if (analysis.isPropertySame(Card.PropertyType.SHAPE)) sameShape++;
+        if (analysis.isPropertySame(Card.PropertyType.PATTERN)) samePattern++;
+        if (analysis.isPropertySame(Card.PropertyType.COLOR)) sameColor++;
+      }
+      ((TextView) findViewById(R.id.bias_num)).setText(getString(R.string.number) + " " + (sameNum * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_shape)).setText(getString(R.string.shape) + " " + (sameShape * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_pattern)).setText(getString(R.string.pattern) + " " + (samePattern * 100 / total) + "% same");
+      ((TextView) findViewById(R.id.bias_color)).setText(getString(R.string.colour) + " " + (sameColor * 100 / total) + "% same");
     }
   }
 
@@ -119,8 +132,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.stepText.setText(getString(R.string.analysis_step_format, position + 1));
       holder.durationText.setText(getString(R.string.analysis_duration_format, analysis.duration / 1000f));
 
-      int diff = analysis.getNumDifferentProperties();
-      holder.propertiesText.setText(getString(R.string.analysis_properties_format, 4 - diff, diff));
+      holder.explanationView.setCards(analysis.foundTriple);
       holder.alternativesText.setText(getString(R.string.analysis_alternatives, analysis.allAvailableTriples.size()));
 
       holder.viewBoardButton.setOnClickListener(v -> {
@@ -138,14 +150,15 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   }
 
   private static class AnalysisViewHolder extends RecyclerView.ViewHolder {
-    TextView stepText, durationText, propertiesText, alternativesText;
+    TextView stepText, durationText, alternativesText;
+    com.antsapps.triples.views.TripleExplanationView explanationView;
     MaterialButton viewBoardButton;
 
     AnalysisViewHolder(View v) {
       super(v);
       stepText = v.findViewById(R.id.step_text);
       durationText = v.findViewById(R.id.duration_text);
-      propertiesText = v.findViewById(R.id.properties_text);
+      explanationView = v.findViewById(R.id.triple_explanation);
       alternativesText = v.findViewById(R.id.alternatives_text);
       viewBoardButton = v.findViewById(R.id.view_board_button);
     }

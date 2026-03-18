@@ -28,13 +28,11 @@
             android:text="@string/analysis_duration_format"
             android:textAppearance="?attr/textAppearanceBody2" />
 
-        <TextView
-            android:id="@+id/properties_text"
-            android:layout_width="wrap_content"
+        <com.antsapps.triples.views.TripleExplanationView
+            android:id="@+id/triple_explanation"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/analysis_properties_format"
-            android:textAppearance="?attr/textAppearanceBody2" />
+            android:layout_marginTop="8dp" />
 
         <TextView
             android:id="@+id/alternatives_text"
