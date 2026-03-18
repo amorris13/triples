@@ -1,11 +1,9 @@
 package com.antsapps.triples.stats;
 
 import android.content.Context;
-import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,7 +42,6 @@ class StatisticsSelectorView extends FrameLayout {
 
   private LinearLayout mOptionsContainer;
   private ImageView mExpandIcon;
-  private ViewGroup mRoot;
 
   public StatisticsSelectorView(Context context) {
     this(context, null);
@@ -61,7 +58,6 @@ class StatisticsSelectorView extends FrameLayout {
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.stats_selector, this);
 
-    mRoot = findViewById(R.id.stats_selector_root);
     mOptionsContainer = findViewById(R.id.filter_options_container);
     mSummaryChipGroup = findViewById(R.id.filter_summary_chips);
     mExpandIcon = findViewById(R.id.filter_expand_icon);
@@ -69,10 +65,9 @@ class StatisticsSelectorView extends FrameLayout {
     findViewById(R.id.filter_header)
         .setOnClickListener(
             v -> {
-              TransitionManager.beginDelayedTransition(mRoot);
               boolean isExpanded = mOptionsContainer.getVisibility() == View.VISIBLE;
               mOptionsContainer.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
-              mSummaryChipGroup.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
+              mSummaryChipGroup.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
               mExpandIcon.setImageResource(
                   isExpanded ? R.drawable.ic_expand_more : R.drawable.ic_expand_less);
             });
@@ -141,6 +136,7 @@ class StatisticsSelectorView extends FrameLayout {
 
   private void updateSummary() {
     mSummaryChipGroup.removeAllViews();
+    LayoutInflater inflater = LayoutInflater.from(getContext());
 
     // Period Chip
     String periodText = getContext().getString(R.string.all_time);
@@ -157,11 +153,15 @@ class StatisticsSelectorView extends FrameLayout {
   }
 
   private void addSummaryChip(String text) {
-    Chip chip = new Chip(getContext());
+    Chip chip =
+        (Chip)
+            LayoutInflater.from(getContext())
+                .inflate(R.layout.stats_period_chip, mSummaryChipGroup, false);
     chip.setText(text);
     chip.setCheckable(false);
     chip.setClickable(false);
-    chip.setChipMinHeight(getResources().getDisplayMetrics().density * 24);
+    chip.setChipIconVisible(false);
+    chip.setCheckedIconVisible(false);
     mSummaryChipGroup.addView(chip);
   }
 

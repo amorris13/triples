@@ -112,6 +112,9 @@ public class ClassicStatisticsSummaryView extends BaseStatisticsSummaryView {
     barDataSet.setDrawValues(false);
     mHistogramChart.setData(new BarData(barDataSet));
     styleChart(mHistogramChart);
+    mHistogramChart.getDescription().setEnabled(true);
+    mHistogramChart.getDescription().setText("No. Games");
+    mHistogramChart.getDescription().setXOffset(-10f);
     mHistogramChart.getXAxis().setGranularity(1f);
     mHistogramChart.getAxisLeft().setGranularity(1f);
     mHistogramChart.getAxisLeft().setAxisMinimum(0f);

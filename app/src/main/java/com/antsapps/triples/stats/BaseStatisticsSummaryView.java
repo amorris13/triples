@@ -56,6 +56,11 @@ abstract class BaseStatisticsSummaryView extends FrameLayout implements OnStatis
     chart.setExtraOffsets(10f, 10f, 10f, 10f);
   }
 
+  protected void setYAxisTitle(BarLineChartBase<?> chart, String title) {
+    chart.getAxisLeft().setDrawLabels(true);
+    chart.getAxisLeft().setCenterAxisLabels(false);
+  }
+
   protected float calculateScatterPointSize(int count) {
     if (count < 10) return 15f;
     if (count < 50) return 10f;

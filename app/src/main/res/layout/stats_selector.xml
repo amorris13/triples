@@ -93,16 +93,18 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_no_hints"
-                style="@style/Widget.Material3.Chip.Filter"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="No Hints" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_incl_hints"
-                style="@style/Widget.Material3.Chip.Filter"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="Include Hinted" />
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
