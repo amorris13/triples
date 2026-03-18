@@ -3,6 +3,7 @@ package com.antsapps.triples.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ public class TripleExplanationView extends FrameLayout {
   private ImageView[] mConclusionTicks = new ImageView[4];
   private ImageView mConclusionImage;
   private TextView mTitleView;
+  private View mHeaderRow;
 
   private boolean mShowTicks = true;
   private boolean mShowOverallConclusion = true;
@@ -69,6 +71,7 @@ public class TripleExplanationView extends FrameLayout {
 
     mConclusionImage = findViewById(R.id.conclusion_image);
     mTitleView = findViewById(R.id.explanation_title);
+    mHeaderRow = findViewById(R.id.header_row);
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
@@ -88,6 +91,10 @@ public class TripleExplanationView extends FrameLayout {
 
   public void setShowOverallConclusion(boolean showOverallConclusion) {
     mShowOverallConclusion = showOverallConclusion;
+  }
+
+  public void setShowHeader(boolean show) {
+    mHeaderRow.setVisibility(show ? VISIBLE : GONE);
   }
 
   public void setCards(Set<Card> cards) {

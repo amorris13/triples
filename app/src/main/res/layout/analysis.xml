@@ -31,82 +31,94 @@
                 android:layout_marginBottom="16dp"
                 app:cardElevation="2dp">
 
-                <LinearLayout
+                <TableLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="8dp"
+                    android:stretchColumns="1,2,3">
 
-                    <TextView
-                        android:id="@+id/bias_all_same"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/analysis_all_same_bias" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="" />
+                        <TextView android:text="@string/analysis_header_player" android:textStyle="bold" android:gravity="center" />
+                        <TextView android:text="@string/analysis_header_available" android:textStyle="bold" android:gravity="center" />
+                        <TextView android:text="@string/analysis_header_avg_time" android:textStyle="bold" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/bias_all_diff"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/analysis_all_diff_bias" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/analysis_cat_1s3d" />
+                        <TextView android:id="@+id/type_1s3d_player" android:gravity="center" />
+                        <TextView android:id="@+id/type_1s3d_avail" android:gravity="center" />
+                        <TextView android:id="@+id/type_1s3d_time" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/bias_mixed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/analysis_mixed_bias" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/analysis_cat_2s2d" />
+                        <TextView android:id="@+id/type_2s2d_player" android:gravity="center" />
+                        <TextView android:id="@+id/type_2s2d_avail" android:gravity="center" />
+                        <TextView android:id="@+id/type_2s2d_time" android:gravity="center" />
+                    </TableRow>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="?android:attr/listDivider" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/analysis_cat_3s1d" />
+                        <TextView android:id="@+id/type_3s1d_player" android:gravity="center" />
+                        <TextView android:id="@+id/type_3s1d_avail" android:gravity="center" />
+                        <TextView android:id="@+id/type_3s1d_time" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/analysis_property_bias"
-                        android:textAppearance="?attr/textAppearanceSubtitle2" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/analysis_cat_all_diff" />
+                        <TextView android:id="@+id/type_all_diff_player" android:gravity="center" />
+                        <TextView android:id="@+id/type_all_diff_avail" android:gravity="center" />
+                        <TextView android:id="@+id/type_all_diff_time" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/bias_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+                    <View android:layout_height="1dp" android:background="?android:attr/listDivider" android:layout_marginTop="4dp" android:layout_marginBottom="4dp" />
 
-                    <TextView
-                        android:id="@+id/bias_shape"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/number" />
+                        <TextView android:id="@+id/bias_num_player" android:gravity="center" />
+                        <TextView android:id="@+id/bias_num_avail" android:gravity="center" />
+                        <TextView android:id="@+id/bias_num_time" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/bias_pattern"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/shape" />
+                        <TextView android:id="@+id/bias_shape_player" android:gravity="center" />
+                        <TextView android:id="@+id/bias_shape_avail" android:gravity="center" />
+                        <TextView android:id="@+id/bias_shape_time" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/bias_color"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/pattern" />
+                        <TextView android:id="@+id/bias_pattern_player" android:gravity="center" />
+                        <TextView android:id="@+id/bias_pattern_avail" android:gravity="center" />
+                        <TextView android:id="@+id/bias_pattern_time" android:gravity="center" />
+                    </TableRow>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="?android:attr/listDivider" />
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/colour" />
+                        <TextView android:id="@+id/bias_color_player" android:gravity="center" />
+                        <TextView android:id="@+id/bias_color_avail" android:gravity="center" />
+                        <TextView android:id="@+id/bias_color_time" android:gravity="center" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/avg_alternatives"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/analysis_avg_alternatives" />
-                </LinearLayout>
+                    <View android:layout_height="1dp" android:background="?android:attr/listDivider" android:layout_marginTop="4dp" android:layout_marginBottom="4dp" />
+
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="@string/analysis_label_averages" android:textStyle="bold" />
+                        <TextView android:id="@+id/avg_options" android:gravity="center" />
+                        <TextView android:text="" />
+                        <TextView android:id="@+id/avg_find_time" android:gravity="center" />
+                    </TableRow>
+
+                    <TableRow android:padding="4dp">
+                        <TextView android:text="" />
+                        <TextView android:text="@string/analysis_label_options" android:textSize="10sp" android:gravity="center" />
+                        <TextView android:text="" />
+                        <TextView android:text="@string/analysis_label_find_time" android:textSize="10sp" android:gravity="center" />
+                    </TableRow>
+
+                </TableLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView

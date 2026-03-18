@@ -44,7 +44,7 @@ public class TripleAnalysis {
         cards[0].getValue(type), cards[1].getValue(type), cards[2].getValue(type));
   }
 
-  private static boolean isPropertySame(int v1, int v2, int v3) {
+  public static boolean isPropertySame(int v1, int v2, int v3) {
     return v1 == v2 && v2 == v3;
   }
 }
