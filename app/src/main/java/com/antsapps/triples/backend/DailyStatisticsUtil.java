@@ -33,7 +33,7 @@ public class DailyStatisticsUtil {
     }
 
     int currentStreak = 0;
-    Calendar cal = Calendar.getInstance();
+    Calendar cal = Application.getTimeProvider().getCalendar();
     if (!completedOnDayDays.contains(DailyGame.Day.forCalendar(cal))) {
       cal.add(Calendar.DAY_OF_YEAR, -1);
     }
