@@ -59,6 +59,14 @@
       android:name=".SettingsActivity"
       android:label="@string/settings"
       android:screenOrientation="portrait" />
+    <activity
+      android:name=".GameAnalysisActivity"
+      android:label="@string/analysis_title"
+      android:screenOrientation="portrait" />
+    <activity
+      android:name=".BoardHistoryActivity"
+      android:label="@string/analysis_view_board"
+      android:screenOrientation="portrait" />
 
     <provider
         android:name="androidx.core.content.FileProvider"
