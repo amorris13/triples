@@ -59,9 +59,9 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
   private Game getGame(long id, String type) {
     Application app = Application.getInstance(this);
-    if ("classic".equals(type)) return app.getClassicGame(id);
-    if ("arcade".equals(type)) return app.getArcadeGame(id);
-    if ("daily".equals(type)) return app.getDailyGame(id);
+    if ("Classic".equalsIgnoreCase(type)) return app.getClassicGame(id);
+    if ("Arcade".equalsIgnoreCase(type)) return app.getArcadeGame(id);
+    if ("Daily".equalsIgnoreCase(type)) return app.getDailyGame(id);
     return null;
   }
 

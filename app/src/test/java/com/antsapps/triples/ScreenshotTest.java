@@ -128,6 +128,11 @@ public class ScreenshotTest extends BaseRobolectricTest {
     intent.putExtra(Game.ID_TAG, game.getId());
     try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
       capture("classic_game_completed");
+      scenario.onActivity(
+          activity -> {
+            activity.showAnalysis(null);
+          });
+      capture("classic_game_analysis");
     }
   }
 
