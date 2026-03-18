@@ -11,8 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.TripleAnalysis;
 import com.antsapps.triples.cardsview.CardDimensionsProvider;
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +29,7 @@ public class TripleExplanationView extends FrameLayout {
   private ImageView mConclusionImage;
   private TextView mTitleView;
   private View mHeaderRow;
+  private TextView mTripleTypeLabel;
 
   private boolean mShowTicks = true;
   private boolean mShowOverallConclusion = true;
@@ -56,7 +59,9 @@ public class TripleExplanationView extends FrameLayout {
         int resId =
             getResources().getIdentifier("prop_" + i + "_" + j, "id", context.getPackageName());
         mPropertyIcons[i][j] = findViewById(resId);
-        mPropertyIcons[i][j].setPropertyType(mPropertyTypes[j]);
+        if (mPropertyIcons[i][j] != null) {
+          mPropertyIcons[i][j].setPropertyType(mPropertyTypes[j]);
+        }
       }
     }
 
@@ -72,15 +77,20 @@ public class TripleExplanationView extends FrameLayout {
     mConclusionImage = findViewById(R.id.conclusion_image);
     mTitleView = findViewById(R.id.explanation_title);
     mHeaderRow = findViewById(R.id.header_row);
+    mTripleTypeLabel = findViewById(R.id.triple_type_label);
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
     for (SingleScaledCardView cardView : mCardViews) {
-      cardView.setNaturalCardDimensionsProvider(cardDimensionsProvider);
+      if (cardView != null) {
+        cardView.setNaturalCardDimensionsProvider(cardDimensionsProvider);
+      }
     }
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 4; j++) {
-        mPropertyIcons[i][j].setNaturalCardDimensionsProvider(cardDimensionsProvider);
+        if (mPropertyIcons[i][j] != null) {
+          mPropertyIcons[i][j].setNaturalCardDimensionsProvider(cardDimensionsProvider);
+        }
       }
     }
   }
@@ -101,19 +111,24 @@ public class TripleExplanationView extends FrameLayout {
     mCards.clear();
     mCards.addAll(cards);
 
-    List<Card> cardList = ImmutableList.copyOf(mCards);
+    List<Card> cardList = new ArrayList<>(mCards);
+    Collections.sort(cardList);
 
     for (int i = 0; i < 3; i++) {
       boolean hasCard = i < cardList.size();
       Card card = hasCard ? cardList.get(i) : null;
 
-      mCardViews[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
-      mCardViews[i].setCard(card);
+      if (mCardViews[i] != null) {
+        mCardViews[i].setVisibility(hasCard ? VISIBLE : INVISIBLE);
+        mCardViews[i].setCard(card);
+      }
 
       for (int j = 0; j < 4; j++) {
-        mPropertyIcons[i][j].setVisibility(hasCard ? VISIBLE : INVISIBLE);
-        if (hasCard) {
-          mPropertyIcons[i][j].setPropertyValue(card.getValue(mPropertyTypes[j]));
+        if (mPropertyIcons[i][j] != null) {
+          mPropertyIcons[i][j].setVisibility(hasCard ? VISIBLE : INVISIBLE);
+          if (hasCard) {
+            mPropertyIcons[i][j].setPropertyValue(card.getValue(mPropertyTypes[j]));
+          }
         }
       }
     }
@@ -124,10 +139,16 @@ public class TripleExplanationView extends FrameLayout {
   private void updateConclusions(List<Card> cards) {
     if (cards.size() < 3) {
       for (int j = 0; j < 4; j++) {
-        mConclusionTexts[j].setText("");
-        mConclusionTicks[j].setImageDrawable(null);
+        if (mConclusionTexts[j] != null) {
+          mConclusionTexts[j].setText("");
+        }
+        if (mConclusionTicks[j] != null) {
+          mConclusionTicks[j].setImageDrawable(null);
+        }
       }
-      mConclusionImage.setImageDrawable(null);
+      if (mConclusionImage != null) {
+        mConclusionImage.setImageDrawable(null);
+      }
       return;
     }
 
@@ -140,6 +161,15 @@ public class TripleExplanationView extends FrameLayout {
     }
     mConclusionImage.setVisibility(mShowOverallConclusion ? VISIBLE : INVISIBLE);
     mConclusionImage.setImageResource(valid ? R.drawable.ic_tick : R.drawable.ic_cross);
+
+    if (valid) {
+      int diffCount = TripleAnalysis.getNumDifferentProperties(new LinkedHashSet<>(cards));
+      mTripleTypeLabel.setText(
+          getContext().getString(R.string.analysis_triple_type_format, 4 - diffCount, diffCount));
+      mTripleTypeLabel.setVisibility(VISIBLE);
+    } else {
+      mTripleTypeLabel.setVisibility(GONE);
+    }
   }
 
   public void setTitle(String title) {
@@ -152,18 +182,20 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   private boolean updateConclusion(TextView text, ImageView icon, int v0, int v1, int v2) {
-    icon.setVisibility(mShowTicks ? VISIBLE : GONE);
+    if (icon != null) {
+      icon.setVisibility(mShowTicks ? VISIBLE : GONE);
+    }
     if (v0 == v1 && v1 == v2) {
-      text.setText(R.string.same);
-      icon.setImageResource(R.drawable.ic_tick);
+      if (text != null) text.setText(R.string.same);
+      if (icon != null) icon.setImageResource(R.drawable.ic_tick);
       return true;
     } else if (v0 != v1 && v1 != v2 && v0 != v2) {
-      text.setText(R.string.diff);
-      icon.setImageResource(R.drawable.ic_tick);
+      if (text != null) text.setText(R.string.diff);
+      if (icon != null) icon.setImageResource(R.drawable.ic_tick);
       return true;
     } else {
-      text.setText(R.string.two_and_one_short);
-      icon.setImageResource(R.drawable.ic_cross);
+      if (text != null) text.setText(R.string.two_and_one_short);
+      if (icon != null) icon.setImageResource(R.drawable.ic_cross);
       return false;
     }
   }

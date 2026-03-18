@@ -37,10 +37,13 @@ public class PropertyIllustrationView extends View {
             .getString("pref_shaded_pattern", "stripes");
 
     TypedValue typedValue = new TypedValue();
-    getContext()
+    if (getContext()
         .getTheme()
-        .resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
-    mOnSurfaceColor = typedValue.data;
+        .resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)) {
+      mOnSurfaceColor = typedValue.data;
+    } else {
+      mOnSurfaceColor = 0xFF000000; // Fallback to black
+    }
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
@@ -64,6 +67,9 @@ public class PropertyIllustrationView extends View {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
+    if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED) {
+      width = dpToPx(24);
+    }
     setMeasuredDimension(width, width / 5);
   }
 

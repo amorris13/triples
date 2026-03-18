@@ -2,12 +2,17 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +22,13 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class GameAnalysisActivity extends BaseTriplesActivity {
 
@@ -27,7 +38,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   private List<TripleAnalysis> mAnalysis;
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.analysis);
 
@@ -68,11 +79,17 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     int total = mAnalysis.size();
     if (total == 0) return;
 
-    // Triple Types: 0=all same, 1=1s3d, 2=2s2d, 3=3s1d, 4=all diff
+    // Available Valid Triples grouping
+    Map<Integer, Integer> optionsCount = new HashMap<>();
+    Map<Integer, Long> optionsDuration = new HashMap<>();
+    int totalOptionsAcrossSteps = 0;
+    long totalDurationAcrossSteps = 0;
+
+    // Triple Types: 0=all same, 1=3s1d, 2=2s2d, 3=1s3d, 4=all diff
     int[] playerTypeCounts = new int[5];
     int[] availTypeCounts = new int[5];
     long[] playerTypeDurations = new long[5];
-    int totalAvailable = 0;
+    int totalAvailableTriplesCount = 0;
 
     // Property Bias
     int[] playerPropSameCounts = new int[4];
@@ -82,7 +99,13 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     Card.PropertyType[] props = Card.PropertyType.values();
 
     for (TripleAnalysis analysis : mAnalysis) {
-      int playerDiffCount = analysis.getNumDifferentProperties();
+      int options = analysis.allAvailableTriples.size();
+      optionsCount.put(options, optionsCount.getOrDefault(options, 0) + 1);
+      optionsDuration.put(options, optionsDuration.getOrDefault(options, 0L) + analysis.duration);
+      totalOptionsAcrossSteps += options;
+      totalDurationAcrossSteps += analysis.duration;
+
+      int playerDiffCount = TripleAnalysis.getNumDifferentProperties(analysis.foundTriple);
       playerTypeCounts[playerDiffCount]++;
       playerTypeDurations[playerDiffCount] += analysis.duration;
 
@@ -94,7 +117,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       }
 
       for (java.util.Set<Card> available : analysis.allAvailableTriples) {
-        totalAvailable++;
+        totalAvailableTriplesCount++;
         int availDiffCount = TripleAnalysis.getNumDifferentProperties(available);
         availTypeCounts[availDiffCount]++;
 
@@ -110,8 +133,10 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       }
     }
 
-    // Populate Triple Types (User requested: 1s3d, 2s2d, 3s1d, all diff)
-    // Map: 1 diff = 3 same, 1 diff (3s1d); 2 diff = 2s2d; 3 diff = 1s3d; 4 diff = all diff
+    populateAvailTriplesTable(
+        optionsCount, optionsDuration, total, totalOptionsAcrossSteps, totalDurationAcrossSteps);
+
+    // Same/Diff Preference (requested order: 1s3d, 2s2d, 3s1d, all diff)
     updateSummaryRow(
         R.id.type_1s3d_player,
         R.id.type_1s3d_avail,
@@ -120,7 +145,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availTypeCounts[3],
         playerTypeDurations[3],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
     updateSummaryRow(
         R.id.type_2s2d_player,
         R.id.type_2s2d_avail,
@@ -129,7 +154,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availTypeCounts[2],
         playerTypeDurations[2],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
     updateSummaryRow(
         R.id.type_3s1d_player,
         R.id.type_3s1d_avail,
@@ -138,7 +163,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availTypeCounts[1],
         playerTypeDurations[1],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
     updateSummaryRow(
         R.id.type_all_diff_player,
         R.id.type_all_diff_avail,
@@ -147,7 +172,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availTypeCounts[4],
         playerTypeDurations[4],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
 
     // Property Bias
     updateSummaryRow(
@@ -158,7 +183,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availPropSameCounts[0],
         playerPropSameDurations[0],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
     updateSummaryRow(
         R.id.bias_shape_player,
         R.id.bias_shape_avail,
@@ -167,7 +192,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availPropSameCounts[1],
         playerPropSameDurations[1],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
     updateSummaryRow(
         R.id.bias_pattern_player,
         R.id.bias_pattern_avail,
@@ -176,7 +201,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availPropSameCounts[2],
         playerPropSameDurations[2],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
     updateSummaryRow(
         R.id.bias_color_player,
         R.id.bias_color_avail,
@@ -185,18 +210,67 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         availPropSameCounts[3],
         playerPropSameDurations[3],
         total,
-        totalAvailable);
+        totalAvailableTriplesCount);
+  }
 
-    // Overall Averages
-    long totalDuration = 0;
-    for (TripleAnalysis analysis : mAnalysis) {
-      totalDuration += analysis.duration;
+  private void populateAvailTriplesTable(
+      Map<Integer, Integer> counts,
+      Map<Integer, Long> durations,
+      int totalSteps,
+      int totalOptions,
+      long totalDuration) {
+    TableLayout table = findViewById(R.id.avail_triples_table);
+    List<Integer> sortedOptions = new ArrayList<>(counts.keySet());
+    Collections.sort(sortedOptions);
+
+    for (int options : sortedOptions) {
+      int steps = counts.get(options);
+      long duration = durations.get(options);
+      table.addView(
+          createAvailRow(
+              String.valueOf(options), String.valueOf(steps), duration / (float) steps / 1000f));
     }
-    ((TextView) findViewById(R.id.avg_find_time))
-        .setText(
-            getString(R.string.analysis_cell_time_format, totalDuration / (float) total / 1000f));
-    ((TextView) findViewById(R.id.avg_options))
-        .setText(getString(R.string.analysis_cell_options_format, totalAvailable / (float) total));
+
+    // Total row
+    View divider = new View(this);
+    divider.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, 2));
+    TypedValue outValue = new TypedValue();
+    if (getTheme()
+        .resolveAttribute(com.google.android.material.R.attr.colorOutline, outValue, true)) {
+      divider.setBackgroundColor(outValue.data);
+    } else {
+      divider.setBackgroundColor(0xFF888888);
+    }
+    table.addView(divider);
+
+    // Final Average Row (combining options count and find time)
+    TableRow finalAvgRow = new TableRow(this);
+    finalAvgRow.setPadding(4, 8, 4, 8);
+    finalAvgRow.addView(createCell(getString(R.string.analysis_label_averages)));
+    finalAvgRow.addView(
+        createCell(
+            getString(R.string.analysis_cell_options_format, (float) totalOptions / totalSteps)));
+    finalAvgRow.addView(
+        createCell(
+            getString(
+                R.string.analysis_cell_time_format, totalDuration / (float) totalSteps / 1000f)));
+    table.addView(finalAvgRow);
+  }
+
+  private TableRow createAvailRow(String opt, String steps, float avgTime) {
+    TableRow row = new TableRow(this);
+    row.setPadding(4, 4, 4, 4);
+    row.addView(createCell(opt));
+    row.addView(createCell(steps));
+    row.addView(createCell(getString(R.string.analysis_cell_time_format, avgTime)));
+    return row;
+  }
+
+  private TextView createCell(String text) {
+    TextView tv = new TextView(this);
+    tv.setText(text);
+    tv.setGravity(Gravity.CENTER);
+    return tv;
   }
 
   private void updateSummaryRow(
@@ -224,6 +298,17 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
             getString(
                 R.string.analysis_cell_time_format,
                 playerCount > 0 ? (totalDuration / (float) playerCount) / 1000f : 0f));
+  }
+
+  public static String formatDurationCompact(long elapsedMillis) {
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedMillis);
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) % 60;
+    long hundredths = (elapsedMillis % 1000) / 10;
+    if (minutes == 0) {
+      return String.format(Locale.US, "%d.%02d", seconds, hundredths);
+    } else {
+      return String.format(Locale.US, "%d:%02d.%02d", minutes, seconds, hundredths);
+    }
   }
 
   @Override
@@ -254,8 +339,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     public void onBindViewHolder(@NonNull AnalysisViewHolder holder, int position) {
       TripleAnalysis analysis = mData.get(position);
       holder.stepText.setText(getString(R.string.analysis_step_format, position + 1));
-      holder.durationText.setText(
-          getString(R.string.analysis_duration_format, analysis.duration / 1000f));
+      holder.durationText.setText(formatDurationCompact(analysis.duration));
       holder.optionsText.setText(
           getString(R.string.analysis_step_options_format, analysis.allAvailableTriples.size()));
 

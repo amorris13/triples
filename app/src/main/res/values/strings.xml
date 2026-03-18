@@ -188,14 +188,23 @@
   <string name="analysis_summary">Summary</string>
   <string name="analysis_triples_found">Triples Found</string>
   <string name="analysis_property_bias">Property Bias</string>
+  <string name="analysis_title_available_valid_triples">Available Valid Triples</string>
+  <string name="analysis_title_preference">Same/Diff Preference</string>
+  <string name="analysis_title_property_bias">Property Sameness Bias</string>
+  <string name="analysis_title_same_diff_preference">Same/Diff Preference</string>
+  <string name="analysis_title_property_sameness_bias">Property Sameness Bias</string>
   <string name="analysis_header_player">Player</string>
   <string name="analysis_header_available">Available</string>
   <string name="analysis_header_avg_time">Avg Time</string>
-  <string name="analysis_cat_1s3d">1 same, 3 diff</string>
-  <string name="analysis_cat_2s2d">2 same, 2 diff</string>
+  <string name="analysis_header_options">Options</string>
+  <string name="analysis_header_steps">Steps</string>
   <string name="analysis_cat_3s1d">3 same, 1 diff</string>
+  <string name="analysis_cat_2s2d">2 same, 2 diff</string>
+  <string name="analysis_cat_1s3d">1 same, 3 diff</string>
   <string name="analysis_cat_all_diff">all diff</string>
+  <string name="analysis_cat_all_same">all same</string>
   <string name="analysis_label_averages">Averages</string>
+  <string name="analysis_label_total">Total</string>
   <string name="analysis_label_find_time">Avg Find Time</string>
   <string name="analysis_label_options">Avg Options</string>
   <string name="analysis_cell_player_format">%1$d%% (%2$d)</string>
@@ -214,6 +223,7 @@
   <string name="analysis_alternatives">Alternatives (%1$d)</string>
   <string name="analysis_duration_format">%1$.2fs</string>
   <string name="analysis_properties_format">%1$d same, %2$d diff</string>
+  <string name="analysis_triple_type_format">%1$ds %2$dd</string>
 
   <string name="pref_about_title">About</string>
   <string name="pref_version_title">Version</string>

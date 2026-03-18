@@ -29,6 +29,9 @@ public class TripleAnalysis {
   }
 
   public static int getNumDifferentProperties(Set<Card> triple) {
+    if (triple == null || triple.size() < 3) {
+      return 0;
+    }
     int diffCount = 0;
     Card[] cards = triple.toArray(new Card[0]);
     if (!isPropertySame(cards[0].mNumber, cards[1].mNumber, cards[2].mNumber)) diffCount++;

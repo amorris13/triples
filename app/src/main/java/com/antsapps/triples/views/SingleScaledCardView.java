@@ -42,6 +42,9 @@ public class SingleScaledCardView extends View {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
+    if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED) {
+      width = (int) (120 * getResources().getDisplayMetrics().density);
+    }
     int height = (int) (width * CardView.HEIGHT_OVER_WIDTH);
     setMeasuredDimension(width, height);
   }
