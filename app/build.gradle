@@ -11,8 +11,8 @@ android {
         applicationId "com.antsapps.triples"
         minSdkVersion 23
         targetSdk 36
-        versionCode 13
-        versionName System.getenv("VERSION_NAME") ?: "2.0.2"
+        versionCode 14
+        versionName System.getenv("VERSION_NAME") ?: "2.0.3"
     }
 
     signingConfigs {

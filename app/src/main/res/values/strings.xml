@@ -98,7 +98,7 @@
     <string name="dont_ask_again">Don\'t ask again</string>
 
     <string name="pref_hide_hint_title">Hide Hint Icon</string>
-    <string name="pref_hide_hint_summary">Hide the hint icon in the game action bar</string>
+    <string name="pref_hide_hint_summary">Move the hint icon from the game action bar to the menu</string>
 
     <string name="pref_hide_timer_title">Hide Timer</string>
     <string name="pref_hide_timer_summary">Hide the timer on game screens</string>
@@ -177,6 +177,8 @@
   <string name="account_delete_data_dialog_title">Delete all data</string>
   <string name="account_delete_data_dialog_message">This will permanently delete all your game statistics and progress from both this device and the cloud. This action cannot be undone. Confirm deletion</string>
   <string name="account_delete_button">Delete</string>
+
+  <string name="pref_explicit_sign_out">pref_explicit_sign_out</string>
 
   <string name="incorrect_triples_snackbar_message">Two incorrect triples in a row. Show explanation?</string>
   <string name="incorrect_triples_snackbar_action">Show</string>
