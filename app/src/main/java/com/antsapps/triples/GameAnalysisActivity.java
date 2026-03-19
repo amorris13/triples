@@ -40,8 +40,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       actionBar.setTitle(R.string.analysis_title);
     }
 
-    long gameId = getIntent().getLongExtra(GAME_ID, -1);
-    String gameType = getIntent().getStringExtra(GAME_TYPE);
+    final long gameId = getIntent().getLongExtra(GAME_ID, -1);
+    final String gameType = getIntent().getStringExtra(GAME_TYPE);
 
     Game game = getGame(gameId, gameType);
     if (game == null) {
@@ -54,7 +54,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
     RecyclerView recyclerView = findViewById(R.id.triples_list);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    recyclerView.setAdapter(new AnalysisAdapter(mAnalysis));
+    recyclerView.setAdapter(new AnalysisAdapter(mAnalysis, gameId, gameType));
   }
 
   private Game getGame(long id, String type) {
@@ -123,9 +123,13 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
   private class AnalysisAdapter extends RecyclerView.Adapter<AnalysisViewHolder> {
     private final List<TripleAnalysis> mData;
+    private final long mGameId;
+    private final String mGameType;
 
-    AnalysisAdapter(List<TripleAnalysis> data) {
+    AnalysisAdapter(List<TripleAnalysis> data, long gameId, String gameType) {
       mData = data;
+      mGameId = gameId;
+      mGameType = gameType;
     }
 
     @NonNull
@@ -153,8 +157,9 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.viewBoardButton.setOnClickListener(
           v -> {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-            BoardHistoryActivity.sAnalysisList = mData;
-            BoardHistoryActivity.sCurrentStepIndex = position;
+            intent.putExtra(BoardHistoryActivity.GAME_ID, mGameId);
+            intent.putExtra(BoardHistoryActivity.GAME_TYPE, mGameType);
+            intent.putExtra(BoardHistoryActivity.STEP_INDEX, position);
             startActivity(intent);
           });
     }

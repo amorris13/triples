@@ -96,6 +96,15 @@ public class FoundTriplesView extends ViewGroup {
     updateTripleStackView(index);
   }
 
+  public int getNextPlaceholderIndex() {
+    for (int i = 0; i < mTotalTriples; i++) {
+      if (!mRevealedIndices.contains(i)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   private void updateTripleStackView(int index) {
     if (index >= 0 && index < getChildCount()) {
       TripleStackView view = (TripleStackView) getChildAt(index);

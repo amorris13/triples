@@ -20,8 +20,13 @@ import java.util.Set;
 
 public class BoardHistoryActivity extends BaseTriplesActivity {
 
-  public static List<TripleAnalysis> sAnalysisList;
-  public static int sCurrentStepIndex;
+  public static final String GAME_ID = "game_id";
+  public static final String GAME_TYPE = "game_type";
+  public static final String STEP_INDEX = "step_index";
+
+  private List<TripleAnalysis> mAnalysisList;
+  private int mCurrentStepIndex;
+  private List<Set<Card>> mTriples;
 
   private CardsView mCardsView;
   private FoundTriplesView mFoundTriplesView;
@@ -44,18 +49,19 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     mFoundTriplesView.setCardsView(mCardsView);
     mFoundTriplesView.setOnPlaceholderClickListener(this::onPlaceholderClick);
 
-    mCardsView.setOnValidTripleSelectedListener(
-        triple -> {
-          mCardsView.animateTripleFound(
-              mFoundTriplesView.getCardBoundsInWindow(0, triple),
-              new android.view.animation.AccelerateDecelerateInterpolator(),
-              () -> mCardsView.animateTripleBackFromOffscreen(triple, null));
-        });
+    mCardsView.setOnValidTripleSelectedListener(this::onValidTripleSelected);
 
-    if (sAnalysisList == null) {
+    long gameId = getIntent().getLongExtra(GAME_ID, -1);
+    String gameType = getIntent().getStringExtra(GAME_TYPE);
+    mCurrentStepIndex = getIntent().getIntExtra(STEP_INDEX, 0);
+
+    Game game = getGame(gameId, gameType);
+    if (game == null) {
       finish();
       return;
     }
+
+    mAnalysisList = com.antsapps.triples.backend.GameReconstructor.reconstruct(game);
 
     updateUi(false, false);
 
@@ -74,20 +80,38 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
             });
   }
 
+  private void onValidTripleSelected(Set<Card> triple) {
+    int index = -1;
+    for (int i = 0; i < mTriples.size(); i++) {
+      if (mTriples.get(i).equals(triple)) {
+        index = i;
+        break;
+      }
+    }
+
+    if (index != -1) {
+      final int revealIndex = index;
+      mCardsView.animateTripleFound(
+          mFoundTriplesView.getCardBoundsInWindow(index, triple),
+          new android.view.animation.AccelerateDecelerateInterpolator(),
+          () -> mFoundTriplesView.revealAlternative(revealIndex));
+    }
+  }
+
   private void updateUi(boolean animateNext, boolean animatePrevious) {
-    TripleAnalysis analysis = sAnalysisList.get(sCurrentStepIndex);
-    setTitle(getString(R.string.analysis_review_step_format, sCurrentStepIndex + 1));
+    TripleAnalysis analysis = mAnalysisList.get(mCurrentStepIndex);
+    setTitle(getString(R.string.analysis_review_step_format, mCurrentStepIndex + 1));
 
     mCardsView.updateCardsInPlay(ImmutableList.copyOf(analysis.boardState));
 
-    List<Set<Card>> triples = Lists.newArrayList();
-    triples.add(analysis.foundTriple);
+    mTriples = Lists.newArrayList();
+    mTriples.add(analysis.foundTriple);
     for (Set<Card> triple : analysis.allAvailableTriples) {
       if (!triple.equals(analysis.foundTriple)) {
-        triples.add(triple);
+        mTriples.add(triple);
       }
     }
-    mFoundTriplesView.setFoundTriples(triples, triples.size());
+    mFoundTriplesView.setFoundTriples(mTriples, mTriples.size());
 
     if (animatePrevious) {
       // Re-add cards if they were animated off in the previous step
@@ -97,17 +121,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   }
 
   private void onPlaceholderClick(int index) {
-    TripleAnalysis analysis = sAnalysisList.get(sCurrentStepIndex);
-    // Re-calculate the triples list to match what was set in updateUi
-    List<Set<Card>> triples = Lists.newArrayList();
-    triples.add(analysis.foundTriple);
-    for (Set<Card> t : analysis.allAvailableTriples) {
-      if (!t.equals(analysis.foundTriple)) {
-        triples.add(t);
-      }
-    }
-
-    Set<Card> triple = triples.get(index);
+    Set<Card> triple = mTriples.get(index);
     mFoundTriplesView.revealAlternative(index);
     mCardsView.pulseCards(triple);
   }
@@ -120,8 +134,8 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.previous).setEnabled(sCurrentStepIndex > 0);
-    menu.findItem(R.id.next).setEnabled(sCurrentStepIndex < sAnalysisList.size() - 1);
+    menu.findItem(R.id.previous).setEnabled(mCurrentStepIndex > 0);
+    menu.findItem(R.id.next).setEnabled(mCurrentStepIndex < mAnalysisList.size() - 1);
     return true;
   }
 
@@ -133,25 +147,31 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     }
     if (item.getItemId() == R.id.next) {
       mCardsView.animateTripleFoundToOffscreen(
-          sAnalysisList.get(sCurrentStepIndex).foundTriple,
+          mAnalysisList.get(mCurrentStepIndex).foundTriple,
           () -> {
-            sCurrentStepIndex++;
-            updateUi(true, false);
+            mCurrentStepIndex++;
+            moveStep(true);
           });
       return true;
     }
     if (item.getItemId() == R.id.previous) {
-      sCurrentStepIndex--;
-      updateUi(false, true);
+      mCurrentStepIndex--;
+      moveStep(false);
       return true;
     }
     return super.onOptionsItemSelected(item);
   }
 
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    // Don't leak the static analysis object
-    sAnalysisList = null;
+  private void moveStep(boolean forward) {
+    updateUi(!forward, forward);
+  }
+
+  private Game getGame(long id, String type) {
+    com.antsapps.triples.backend.Application app =
+        com.antsapps.triples.backend.Application.getInstance(this);
+    if ("Classic".equalsIgnoreCase(type)) return app.getClassicGame(id);
+    if ("Arcade".equalsIgnoreCase(type)) return app.getArcadeGame(id);
+    if ("Daily".equalsIgnoreCase(type)) return app.getDailyGame(id);
+    return null;
   }
 }
