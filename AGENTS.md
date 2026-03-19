@@ -22,6 +22,13 @@ Run the standard unit tests using:
 ./gradlew test
 ```
 
+In Claude Code on the web, Robolectric cannot download its runtime jars through the
+proxy. The session-start hook pre-downloads them to `/tmp/robolectric-deps`.
+Pass the directory to the test JVM:
+```bash
+./gradlew test -Drobolectric.dependency.dir=/tmp/robolectric-deps
+```
+
 ### Screenshot Tests (Roborazzi)
 This project uses Roborazzi for screenshot testing.
 
