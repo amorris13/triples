@@ -1,6 +1,7 @@
 package com.antsapps.triples;
 
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.views.FoundTriplesView;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +28,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   private List<TripleAnalysis> mAnalysisList;
   private int mCurrentStepIndex;
-  private List<Set<Card>> mTriples;
+  private final SparseArray<Set<Integer>> mRevealedTriplesPerStep = new SparseArray<>();
 
   private CardsView mCardsView;
   private FoundTriplesView mFoundTriplesView;
@@ -41,6 +43,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
+      actionBar.setTitle(R.string.analysis_view_board);
     }
 
     mCardsView = findViewById(R.id.cards_view);
@@ -80,38 +83,65 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
             });
   }
 
-  private void onValidTripleSelected(Set<Card> triple) {
-    int index = -1;
-    for (int i = 0; i < mTriples.size(); i++) {
-      if (mTriples.get(i).equals(triple)) {
-        index = i;
-        break;
+  private List<Set<Card>> getCurrentTriples() {
+    TripleAnalysis analysis = mAnalysisList.get(mCurrentStepIndex);
+    List<Set<Card>> triples = Lists.newArrayList();
+    triples.add(analysis.foundTriple);
+    for (Set<Card> triple : analysis.allAvailableTriples) {
+      if (!triple.equals(analysis.foundTriple)) {
+        triples.add(triple);
       }
     }
+    return triples;
+  }
+
+  private void onValidTripleSelected(Set<Card> triple) {
+    List<Set<Card>> triples = getCurrentTriples();
+    int index = triples.indexOf(triple);
 
     if (index != -1) {
-      final int revealIndex = index;
-      mCardsView.animateTripleFound(
-          mFoundTriplesView.getCardBoundsInWindow(index, triple),
-          new android.view.animation.AccelerateDecelerateInterpolator(),
-          () -> mFoundTriplesView.revealAlternative(revealIndex));
+      Set<Integer> revealed = mRevealedTriplesPerStep.get(mCurrentStepIndex);
+      if (revealed != null && revealed.contains(index)) {
+        mFoundTriplesView.highlightStack(index);
+        mCardsView.pulseCards(triple);
+      } else {
+        if (revealed == null) {
+          revealed = Sets.newHashSet();
+          mRevealedTriplesPerStep.put(mCurrentStepIndex, revealed);
+        }
+        revealed.add(index);
+        final int revealIndex = index;
+        mCardsView.animateTripleFound(
+            mFoundTriplesView.getCardBoundsInWindow(index, triple),
+            new android.view.animation.AccelerateDecelerateInterpolator(),
+            () -> {
+              mFoundTriplesView.revealAlternative(revealIndex);
+              mCardsView.updateCardsInPlay(
+                  ImmutableList.copyOf(mAnalysisList.get(mCurrentStepIndex).boardState));
+            });
+      }
     }
   }
 
   private void updateUi(boolean animateNext, boolean animatePrevious) {
     TripleAnalysis analysis = mAnalysisList.get(mCurrentStepIndex);
-    setTitle(getString(R.string.analysis_review_step_format, mCurrentStepIndex + 1));
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setSubtitle(
+          getString(
+              R.string.analysis_step_of_total_format,
+              mCurrentStepIndex + 1,
+              mAnalysisList.size()));
+    }
 
     mCardsView.updateCardsInPlay(ImmutableList.copyOf(analysis.boardState));
 
-    mTriples = Lists.newArrayList();
-    mTriples.add(analysis.foundTriple);
-    for (Set<Card> triple : analysis.allAvailableTriples) {
-      if (!triple.equals(analysis.foundTriple)) {
-        mTriples.add(triple);
-      }
+    List<Set<Card>> triples = getCurrentTriples();
+    Set<Integer> revealed = mRevealedTriplesPerStep.get(mCurrentStepIndex);
+    if (revealed == null) {
+      revealed = Sets.newHashSet();
     }
-    mFoundTriplesView.setFoundTriples(mTriples, mTriples.size());
+    mFoundTriplesView.setFoundTriples(triples, triples.size(), revealed);
 
     if (animatePrevious) {
       // Re-add cards if they were animated off in the previous step
@@ -121,11 +151,22 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   }
 
   private void onPlaceholderClick(int index) {
-    Set<Card> triple = mTriples.get(index);
+    Set<Card> triple = getCurrentTriples().get(index);
+    Set<Integer> revealed = mRevealedTriplesPerStep.get(mCurrentStepIndex);
+    if (revealed == null) {
+      revealed = Sets.newHashSet();
+      mRevealedTriplesPerStep.put(mCurrentStepIndex, revealed);
+    }
+    revealed.add(index);
+
     mCardsView.animateTripleFound(
         mFoundTriplesView.getCardBoundsInWindow(index, triple),
         new android.view.animation.AccelerateDecelerateInterpolator(),
-        () -> mFoundTriplesView.revealAlternative(index));
+        () -> {
+          mFoundTriplesView.revealAlternative(index);
+          mCardsView.updateCardsInPlay(
+              ImmutableList.copyOf(mAnalysisList.get(mCurrentStepIndex).boardState));
+        });
   }
 
   @Override
@@ -148,16 +189,10 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       return true;
     }
     if (item.getItemId() == R.id.next) {
-      mCardsView.animateTripleFoundToOffscreen(
-          mAnalysisList.get(mCurrentStepIndex).foundTriple,
-          () -> {
-            mCurrentStepIndex++;
-            moveStep(true);
-          });
+      moveStep(true);
       return true;
     }
     if (item.getItemId() == R.id.previous) {
-      mCurrentStepIndex--;
       moveStep(false);
       return true;
     }
@@ -165,7 +200,17 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   }
 
   private void moveStep(boolean forward) {
-    updateUi(!forward, forward);
+    if (forward) {
+      mCardsView.animateTripleFoundToOffscreen(
+          mAnalysisList.get(mCurrentStepIndex).foundTriple,
+          () -> {
+            mCurrentStepIndex++;
+            updateUi(true, false);
+          });
+    } else {
+      mCurrentStepIndex--;
+      updateUi(false, true);
+    }
   }
 
   private Game getGame(long id, String type) {

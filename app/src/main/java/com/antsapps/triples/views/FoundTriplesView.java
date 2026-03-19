@@ -15,6 +15,7 @@ import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,9 +60,19 @@ public class FoundTriplesView extends ViewGroup {
   }
 
   public void setFoundTriples(List<Set<Card>> foundTriples, int totalTriples) {
+    Set<Integer> allRevealed = Sets.newHashSet();
+    for (int i = 0; i < foundTriples.size(); i++) {
+      allRevealed.add(i);
+    }
+    setFoundTriples(foundTriples, totalTriples, allRevealed);
+  }
+
+  public void setFoundTriples(
+      List<Set<Card>> foundTriples, int totalTriples, Set<Integer> revealedIndices) {
     mFoundTriples = foundTriples;
     mTotalTriples = totalTriples;
     mRevealedIndices.clear();
+    mRevealedIndices.addAll(revealedIndices);
     if (mTotalTriples > 0) {
       mRevealedIndices.add(0);
     }
