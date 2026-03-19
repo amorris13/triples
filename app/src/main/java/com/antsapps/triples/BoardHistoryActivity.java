@@ -3,10 +3,8 @@ package com.antsapps.triples;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -33,6 +31,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   /** Set by the caller (GameAnalysisActivity) before starting this activity. */
   public static List<TripleAnalysis> sAnalysisList;
+
   /** 1-based step to open initially. */
   public static int sInitialStep;
 
@@ -41,6 +40,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   private HorizontalScrollView mAlternativesScroll;
 
   private List<TripleAnalysis> mAnalysisList;
+
   /** 0-based index into mAnalysisList. */
   private int mCurrentStep;
 
@@ -51,6 +51,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   private final Map<Integer, Set<Integer>> mRevealedAlternatives = new HashMap<>();
 
   private Menu mMenu;
+
   /** Width in pixels for each TripleStackView in the alternatives panel. */
   private int mStackSlotWidthPx;
 
@@ -160,7 +161,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   /**
    * Updates the board and alternatives panel to show the given step.
    *
-   * @param step  0-based step index
+   * @param step 0-based step index
    * @param animate whether to animate in (unused; animations are managed by caller)
    */
   private void showStep(int step, boolean animate) {
@@ -206,11 +207,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       durationStr = String.format("%d.%02ds", seconds, hundredths);
     }
     String subtitle =
-        getString(
-            R.string.board_history_subtitle,
-            step + 1,
-            mAnalysisList.size(),
-            durationStr);
+        getString(R.string.board_history_subtitle, step + 1, mAnalysisList.size(), durationStr);
     actionBar.setSubtitle(subtitle);
   }
 
@@ -224,7 +221,8 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     foundView.setTriple(analysis.foundTriple);
     foundView.setHighlighted(true);
     mAlternativesContainer.addView(
-        foundView, new LinearLayout.LayoutParams(mStackSlotWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
+        foundView,
+        new LinearLayout.LayoutParams(mStackSlotWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
 
     // Remaining slots: other available triples as placeholders (or revealed)
     List<Set<Card>> others = getOtherAlternatives(analysis);
@@ -238,10 +236,12 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
         stackView.setTriple(triple);
       } else {
         stackView.setTriple(null); // placeholder
-        stackView.setOnPlaceholderClickListener(() -> revealAlternative(step, idx, triple, stackView));
+        stackView.setOnPlaceholderClickListener(
+            () -> revealAlternative(step, idx, triple, stackView));
       }
       mAlternativesContainer.addView(
-          stackView, new LinearLayout.LayoutParams(mStackSlotWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
+          stackView,
+          new LinearLayout.LayoutParams(mStackSlotWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
     }
 
     // Update label
@@ -318,8 +318,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       CardView floatCard = new CardView(this, card);
       floatCard.setSelected(true);
       overlay.addView(
-          floatCard,
-          new FrameLayout.LayoutParams(gridBounds.width(), gridBounds.height()));
+          floatCard, new FrameLayout.LayoutParams(gridBounds.width(), gridBounds.height()));
       floatCard.setX(startX);
       floatCard.setY(startY);
 
@@ -330,9 +329,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
             if (doneCount.incrementAndGet() == totalToAnimate) {
               decorView.removeView(overlay);
               // Mark as revealed and fill the slot
-              mRevealedAlternatives
-                  .computeIfAbsent(step, k -> new HashSet<>())
-                  .add(alternativeIdx);
+              mRevealedAlternatives.computeIfAbsent(step, k -> new HashSet<>()).add(alternativeIdx);
               targetView.setTriple(triple);
             }
           });

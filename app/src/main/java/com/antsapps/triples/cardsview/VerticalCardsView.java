@@ -151,7 +151,7 @@ public class VerticalCardsView extends CardsView {
   }
 
   @Override
-  public Rect calcBounds(int i) {  // public for use in BoardHistoryActivity
+  public Rect calcBounds(int i) { // public for use in BoardHistoryActivity
     return new Rect(
         i % COLUMNS * mWidthOfCard,
         i / COLUMNS * mHeightOfCard,

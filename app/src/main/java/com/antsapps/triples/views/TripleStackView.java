@@ -10,8 +10,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.animation.CycleInterpolator;
 import android.view.View;
+import android.view.animation.CycleInterpolator;
 import com.antsapps.triples.R;
 import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A view that renders a single triple stack (3 stacked cards) or a placeholder dashed outline.
- * This is used both in FoundTriplesView (grid of found triples) and in the BoardHistoryActivity's
+ * A view that renders a single triple stack (3 stacked cards) or a placeholder dashed outline. This
+ * is used both in FoundTriplesView (grid of found triples) and in the BoardHistoryActivity's
  * alternatives panel.
  */
 public class TripleStackView extends View {
@@ -57,7 +57,7 @@ public class TripleStackView extends View {
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
     mPlaceholderPaint.setColor(getResources().getColor(R.color.colorOutlineVariant));
     mPlaceholderPaint.setStrokeWidth(3 * density);
-    mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[]{8 * density, 8 * density}, 0));
+    mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[] {8 * density, 8 * density}, 0));
 
     mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mHighlightPaint.setStyle(Paint.Style.STROKE);
@@ -68,11 +68,12 @@ public class TripleStackView extends View {
 
     mPadding = (int) (1 * density);
 
-    setOnClickListener(v -> {
-      if (mTriple == null && mOnPlaceholderClickListener != null) {
-        mOnPlaceholderClickListener.run();
-      }
-    });
+    setOnClickListener(
+        v -> {
+          if (mTriple == null && mOnPlaceholderClickListener != null) {
+            mOnPlaceholderClickListener.run();
+          }
+        });
   }
 
   public void setTriple(Set<Card> triple) {
@@ -144,22 +145,24 @@ public class TripleStackView extends View {
   private void drawHighlightBorder(Canvas canvas) {
     float inset = INSET_DP * getContext().getResources().getDisplayMetrics().density;
     int totalHeight = mCardHeight + 2 * mStackDisplacement;
-    RectF rect = new RectF(
-        mPadding + inset,
-        mPadding + inset,
-        mPadding + mCardWidth - inset,
-        mPadding + totalHeight - inset);
+    RectF rect =
+        new RectF(
+            mPadding + inset,
+            mPadding + inset,
+            mPadding + mCardWidth - inset,
+            mPadding + totalHeight - inset);
     canvas.drawRoundRect(rect, 10, 10, mHighlightPaint);
   }
 
   private void drawPlaceholder(Canvas canvas) {
     float inset = INSET_DP * getContext().getResources().getDisplayMetrics().density;
     int totalHeight = mCardHeight + 2 * mStackDisplacement;
-    RectF rect = new RectF(
-        mPadding + inset,
-        mPadding + inset,
-        mPadding + mCardWidth - inset,
-        mPadding + totalHeight - inset);
+    RectF rect =
+        new RectF(
+            mPadding + inset,
+            mPadding + inset,
+            mPadding + mCardWidth - inset,
+            mPadding + totalHeight - inset);
     canvas.drawRoundRect(rect, 10, 10, mPlaceholderPaint);
   }
 

@@ -44,8 +44,8 @@ public abstract class CardsView extends ViewGroup
   protected Rect mOffScreenLocation = new Rect();
 
   /**
-   * Cards in this set will animate in from the off-screen location rather than fading in when
-   * added via the next updateCardsInPlay call. Used for backward step navigation.
+   * Cards in this set will animate in from the off-screen location rather than fading in when added
+   * via the next updateCardsInPlay call. Used for backward step navigation.
    */
   protected final Set<Card> mCardsForReverseAnimation = new HashSet<>();
 

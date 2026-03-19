@@ -89,8 +89,8 @@ public class FoundTriplesView extends ViewGroup {
   }
 
   /**
-   * Returns window-absolute bounds for each card in the triple at the given slot index.
-   * Used as animation targets for flying cards into this view.
+   * Returns window-absolute bounds for each card in the triple at the given slot index. Used as
+   * animation targets for flying cards into this view.
    */
   public Map<Card, Rect> getCardBoundsInWindow(int index, Set<Card> triple) {
     Preconditions.checkArgument(triple.size() == 3);
@@ -140,9 +140,10 @@ public class FoundTriplesView extends ViewGroup {
     mSlotHeight = stackHeight + 2 * mPadding;
 
     for (int i = 0; i < getChildCount(); i++) {
-      getChildAt(i).measure(
-          MeasureSpec.makeMeasureSpec(mSlotWidth, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(mSlotHeight, MeasureSpec.EXACTLY));
+      getChildAt(i)
+          .measure(
+              MeasureSpec.makeMeasureSpec(mSlotWidth, MeasureSpec.EXACTLY),
+              MeasureSpec.makeMeasureSpec(mSlotHeight, MeasureSpec.EXACTLY));
     }
 
     int rows = (int) Math.ceil((double) Math.max(mTotalTriples, 1) / COLUMNS);
