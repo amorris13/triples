@@ -45,9 +45,6 @@ public class FoundTriplesView extends ViewGroup {
   private int mStackDisplacement;
   private int mPadding;
 
-  private int mHighlightIndex = -1;
-  private float mHighlightScale = 1.0f;
-  private ValueAnimator mHighlightAnimator;
   private int mSlotWidth;
   private int mSlotHeight;
 
@@ -164,20 +161,18 @@ public class FoundTriplesView extends ViewGroup {
   public void highlightStack(int index) {
     if (index >= 0 && index < getChildCount()) {
       View child = getChildAt(index);
-      if (mHighlightAnimator != null) {
-        mHighlightAnimator.cancel();
-      }
-      mHighlightIndex = index;
-      mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
-      mHighlightAnimator.setDuration(SettingsFragment.getAnimationDuration(getContext()));
-      mHighlightAnimator.setInterpolator(new CycleInterpolator(0.5f));
-      mHighlightAnimator.addUpdateListener(
-          animation -> {
-            float scale = (float) animation.getAnimatedValue();
-            child.setScaleX(scale);
-            child.setScaleY(scale);
-          });
-      mHighlightAnimator.start();
+      child
+          .animate()
+          .scaleX(1.2f)
+          .scaleY(1.2f)
+          .setDuration(SettingsFragment.getAnimationDuration(getContext()))
+          .setInterpolator(new CycleInterpolator(0.5f))
+          .withEndAction(
+              () -> {
+                child.setScaleX(1.0f);
+                child.setScaleY(1.0f);
+              })
+          .start();
     }
   }
 

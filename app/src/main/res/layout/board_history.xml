@@ -24,15 +24,10 @@
                 android:layout_height="1dp"
                 android:background="?android:attr/listDivider" />
 
-            <androidx.core.widget.NestedScrollView
+            <com.antsapps.triples.views.FoundTriplesView
+                android:id="@+id/found_triples_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.antsapps.triples.views.FoundTriplesView
-                    android:id="@+id/found_triples_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </androidx.core.widget.NestedScrollView>
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <com.antsapps.triples.cardsview.VerticalCardsView

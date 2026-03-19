@@ -122,8 +122,10 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   private void onPlaceholderClick(int index) {
     Set<Card> triple = mTriples.get(index);
-    mFoundTriplesView.revealAlternative(index);
-    mCardsView.pulseCards(triple);
+    mCardsView.animateTripleFound(
+        mFoundTriplesView.getCardBoundsInWindow(index, triple),
+        new android.view.animation.AccelerateDecelerateInterpolator(),
+        () -> mFoundTriplesView.revealAlternative(index));
   }
 
   @Override
