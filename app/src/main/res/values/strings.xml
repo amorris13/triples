@@ -183,15 +183,17 @@
   <string name="incorrect_triples_snackbar_message">Two incorrect triples in a row. Show explanation?</string>
   <string name="incorrect_triples_snackbar_action">Show</string>
 
-  <string name="detailed_analysis">Triple Bot</string>
-  <string name="analysis_title">Triple Bot</string>
-  <string name="analysis_summary">Summary</string>
+  <string name="detailed_analysis">Triples Analyser Bot</string>
+  <string name="analysis_title">Triples Analyser Bot</string>
+  <string name="analysis_available_triples">Available Valid Triples</string>
+  <string name="analysis_same_diff_preference">Same/Diff Preference</string>
+  <string name="analysis_property_sameness_bias">Property Sameness Bias</string>
   <string name="analysis_triples_found">Triples Found</string>
-  <string name="analysis_property_bias">Property Bias</string>
-  <string name="analysis_all_same_bias">All Same: %1$d%%</string>
-  <string name="analysis_all_diff_bias">All Different: %1$d%%</string>
-  <string name="analysis_mixed_bias">Mixed: %1$d%%</string>
-  <string name="analysis_avg_alternatives">Avg Alternatives: %1$.1f</string>
+  <string name="analysis_col_options">Options</string>
+  <string name="analysis_col_steps">Steps</string>
+  <string name="analysis_col_avg_time">Avg Time</string>
+  <string name="analysis_col_chosen">Chosen</string>
+  <string name="analysis_col_available">Available</string>
   <string name="analysis_view_board">View Board</string>
   <string name="analysis_view_board_with_alternatives">View Board (%1$d alternatives)</string>
   <string name="analysis_step_format">Step %1$d</string>
@@ -199,6 +201,7 @@
   <string name="analysis_alternatives">Alternatives (%1$d)</string>
   <string name="analysis_duration_format">%1$.2fs</string>
   <string name="analysis_properties_format">%1$d same, %2$d diff</string>
+  <string name="analysis_opts_format">%1$d opts</string>
 
   <string name="pref_about_title">About</string>
   <string name="pref_version_title">Version</string>

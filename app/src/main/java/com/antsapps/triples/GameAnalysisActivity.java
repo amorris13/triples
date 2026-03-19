@@ -2,10 +2,13 @@ package com.antsapps.triples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -17,8 +20,11 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
-import com.google.android.material.button.MaterialButton;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class GameAnalysisActivity extends BaseTriplesActivity {
 
@@ -66,50 +72,230 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   }
 
   private void updateSummary() {
-    int allSame = 0;
-    int allDiff = 0;
-    int mixed = 0;
-    int totalAlternatives = 0;
-
-    for (TripleAnalysis analysis : mAnalysis) {
-      int diffCount = analysis.getNumDifferentProperties();
-      if (diffCount == 0 || diffCount == 4) {
-        if (diffCount == 4) allDiff++;
-        else allSame++;
-      } else {
-        mixed++;
-      }
-      totalAlternatives += analysis.allAvailableTriples.size();
-    }
-
     int total = mAnalysis.size();
-    if (total > 0) {
-      ((TextView) findViewById(R.id.bias_all_same))
-          .setText(getString(R.string.analysis_all_same_bias, (allSame * 100) / total));
-      ((TextView) findViewById(R.id.bias_all_diff))
-          .setText(getString(R.string.analysis_all_diff_bias, (allDiff * 100) / total));
-      ((TextView) findViewById(R.id.bias_mixed))
-          .setText(getString(R.string.analysis_mixed_bias, (mixed * 100) / total));
-      ((TextView) findViewById(R.id.avg_alternatives))
-          .setText(
-              getString(R.string.analysis_avg_alternatives, (float) totalAlternatives / total));
+    if (total == 0) return;
 
-      int sameNum = 0, sameShape = 0, samePattern = 0, sameColor = 0;
-      for (TripleAnalysis analysis : mAnalysis) {
-        if (analysis.isPropertySame(Card.PropertyType.NUMBER)) sameNum++;
-        if (analysis.isPropertySame(Card.PropertyType.SHAPE)) sameShape++;
-        if (analysis.isPropertySame(Card.PropertyType.PATTERN)) samePattern++;
-        if (analysis.isPropertySame(Card.PropertyType.COLOR)) sameColor++;
-      }
-      ((TextView) findViewById(R.id.bias_num))
-          .setText(getString(R.string.number) + " " + (sameNum * 100 / total) + "% same");
-      ((TextView) findViewById(R.id.bias_shape))
-          .setText(getString(R.string.shape) + " " + (sameShape * 100 / total) + "% same");
-      ((TextView) findViewById(R.id.bias_pattern))
-          .setText(getString(R.string.pattern) + " " + (samePattern * 100 / total) + "% same");
-      ((TextView) findViewById(R.id.bias_color))
-          .setText(getString(R.string.colour) + " " + (sameColor * 100 / total) + "% same");
+    // === Available Valid Triples table ===
+    // Group steps by the number of available options at that step
+    TreeMap<Integer, List<TripleAnalysis>> byOptions = new TreeMap<>();
+    long totalDuration = 0;
+    long totalOptions = 0;
+    for (TripleAnalysis a : mAnalysis) {
+      int opts = a.allAvailableTriples.size();
+      byOptions.computeIfAbsent(opts, k -> new ArrayList<>()).add(a);
+      totalDuration += a.duration;
+      totalOptions += opts;
     }
+
+    LinearLayout availableContainer = findViewById(R.id.available_triples_container);
+    addTableHeader(
+        availableContainer,
+        getString(R.string.analysis_col_options),
+        getString(R.string.analysis_col_steps),
+        getString(R.string.analysis_col_avg_time));
+
+    for (TreeMap.Entry<Integer, List<TripleAnalysis>> entry : byOptions.entrySet()) {
+      int opts = entry.getKey();
+      List<TripleAnalysis> steps = entry.getValue();
+      long sumDuration = 0;
+      for (TripleAnalysis a : steps) sumDuration += a.duration;
+      long avgDur = sumDuration / steps.size();
+      addTableRow(
+          availableContainer,
+          String.valueOf(opts),
+          String.valueOf(steps.size()),
+          formatDuration(avgDur));
+    }
+
+    // Total row: avg options, total steps, overall avg time
+    addTableRowBold(
+        availableContainer,
+        String.format(Locale.getDefault(), "%.1f avg", (double) totalOptions / total),
+        total + " total",
+        formatDuration(totalDuration / total));
+
+    // === Same/Diff Preference table ===
+    // Categories: diffCount 1 (3s1d), 2 (2s2d), 3 (1s3d), 4 (all diff)
+    int[] foundByDiff = new int[5];
+    long[] timeByDiff = new long[5];
+    int[] availByDiff = new int[5];
+
+    for (TripleAnalysis a : mAnalysis) {
+      int diff = a.getNumDifferentProperties();
+      if (diff >= 1 && diff <= 4) {
+        foundByDiff[diff]++;
+        timeByDiff[diff] += a.duration;
+      }
+      for (Set<Card> triple : a.allAvailableTriples) {
+        int d = TripleAnalysis.getNumDifferentProperties(triple);
+        if (d >= 1 && d <= 4) availByDiff[d]++;
+      }
+    }
+
+    int totalAvail = 0;
+    for (int d = 1; d <= 4; d++) totalAvail += availByDiff[d];
+
+    LinearLayout sameDiffContainer = findViewById(R.id.same_diff_container);
+    addTableHeader(
+        sameDiffContainer,
+        "",
+        getString(R.string.analysis_col_chosen),
+        getString(R.string.analysis_col_available),
+        getString(R.string.analysis_col_avg_time));
+
+    String[] diffLabels = {"", "3s 1d", "2s 2d", "1s 3d", "All diff"};
+    for (int d = 1; d <= 4; d++) {
+      int found = foundByDiff[d];
+      int avail = availByDiff[d];
+      String chosenStr =
+          String.format(Locale.getDefault(), "%d%% (%d)", found * 100 / total, found);
+      String availStr =
+          totalAvail > 0
+              ? String.format(Locale.getDefault(), "%d%%", avail * 100 / totalAvail)
+              : "0%";
+      String timeStr = found > 0 ? formatDuration(timeByDiff[d] / found) : "-";
+      addTableRow(sameDiffContainer, diffLabels[d], chosenStr, availStr, timeStr);
+    }
+
+    // === Property Sameness Bias table ===
+    Card.PropertyType[] props = {
+      Card.PropertyType.NUMBER,
+      Card.PropertyType.SHAPE,
+      Card.PropertyType.PATTERN,
+      Card.PropertyType.COLOR
+    };
+    String[] propLabels = {
+      getString(R.string.number),
+      getString(R.string.shape),
+      getString(R.string.pattern),
+      getString(R.string.colour)
+    };
+
+    // Precompute total available triple-steps (same for all properties)
+    int totalAvailTriples = 0;
+    for (TripleAnalysis a : mAnalysis) totalAvailTriples += a.allAvailableTriples.size();
+
+    LinearLayout propertyBiasContainer = findViewById(R.id.property_bias_container);
+    addTableHeader(
+        propertyBiasContainer,
+        "",
+        getString(R.string.analysis_col_chosen),
+        getString(R.string.analysis_col_available),
+        getString(R.string.analysis_col_avg_time));
+
+    for (int p = 0; p < 4; p++) {
+      int foundSame = 0;
+      int availSame = 0;
+      long timeSame = 0;
+
+      for (TripleAnalysis a : mAnalysis) {
+        if (a.isPropertySame(props[p])) {
+          foundSame++;
+          timeSame += a.duration;
+        }
+        for (Set<Card> triple : a.allAvailableTriples) {
+          if (isPropertySameInTriple(triple, props[p])) availSame++;
+        }
+      }
+
+      String chosenStr =
+          String.format(Locale.getDefault(), "%d%% (%d)", foundSame * 100 / total, foundSame);
+      String availStr =
+          totalAvailTriples > 0
+              ? String.format(
+                  Locale.getDefault(), "%d%%", availSame * 100 / totalAvailTriples)
+              : "0%";
+      String timeStr = foundSame > 0 ? formatDuration(timeSame / foundSame) : "-";
+      addTableRow(propertyBiasContainer, propLabels[p], chosenStr, availStr, timeStr);
+    }
+  }
+
+  private static boolean isPropertySameInTriple(Set<Card> triple, Card.PropertyType type) {
+    Card[] cards = triple.toArray(new Card[0]);
+    return cards[0].getValue(type) == cards[1].getValue(type)
+        && cards[1].getValue(type) == cards[2].getValue(type);
+  }
+
+  /** Format duration in milliseconds as [m:]ss.ss */
+  private String formatDuration(long ms) {
+    long totalHundredths = ms / 10;
+    long minutes = totalHundredths / 6000;
+    long hundredths = totalHundredths % 6000;
+    if (minutes > 0) {
+      return String.format(Locale.getDefault(), "%d:%05.2f", minutes, hundredths / 100.0);
+    } else {
+      return String.format(Locale.getDefault(), "%.2f", hundredths / 100.0);
+    }
+  }
+
+  // --- Table building helpers ---
+
+  private void addTableHeader(LinearLayout container, String... cols) {
+    LinearLayout row = createTableRow(container.getContext());
+    for (String col : cols) {
+      TextView tv = createTableCell(container.getContext(), col, true);
+      row.addView(tv);
+    }
+    container.addView(row);
+
+    // Divider under header
+    View divider = new View(container.getContext());
+    divider.setLayoutParams(new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)));
+    TypedValue value = new TypedValue();
+    getTheme().resolveAttribute(android.R.attr.listDivider, value, true);
+    divider.setBackgroundResource(value.resourceId);
+    container.addView(divider);
+  }
+
+  private void addTableRow(LinearLayout container, String... cols) {
+    LinearLayout row = createTableRow(container.getContext());
+    for (String col : cols) {
+      row.addView(createTableCell(container.getContext(), col, false));
+    }
+    container.addView(row);
+  }
+
+  private void addTableRowBold(LinearLayout container, String... cols) {
+    // Divider above total row
+    View divider = new View(container.getContext());
+    divider.setLayoutParams(new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)));
+    TypedValue value = new TypedValue();
+    getTheme().resolveAttribute(android.R.attr.listDivider, value, true);
+    divider.setBackgroundResource(value.resourceId);
+    container.addView(divider);
+
+    LinearLayout row = createTableRow(container.getContext());
+    for (String col : cols) {
+      TextView tv = createTableCell(container.getContext(), col, true);
+      row.addView(tv);
+    }
+    container.addView(row);
+  }
+
+  private LinearLayout createTableRow(android.content.Context context) {
+    LinearLayout row = new LinearLayout(context);
+    row.setOrientation(LinearLayout.HORIZONTAL);
+    row.setLayoutParams(new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    return row;
+  }
+
+  private TextView createTableCell(android.content.Context context, String text, boolean bold) {
+    TextView tv = new TextView(context);
+    tv.setText(text);
+    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+    tv.setGravity(Gravity.CENTER);
+    tv.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
+    tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+    if (bold) tv.setTypeface(null, android.graphics.Typeface.BOLD);
+    return tv;
+  }
+
+  private int dpToPx(float dp) {
+    return (int) TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
   }
 
   @Override
@@ -139,18 +325,29 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     @Override
     public void onBindViewHolder(@NonNull AnalysisViewHolder holder, int position) {
       TripleAnalysis analysis = mData.get(position);
-      holder.stepText.setText(getString(R.string.analysis_step_format, position + 1));
-      holder.durationText.setText(
-          getString(R.string.analysis_duration_format, analysis.duration / 1000f));
 
+      holder.explanationView.setShowHeader(false);
       holder.explanationView.setShowTicks(false);
       holder.explanationView.setShowOverallConclusion(false);
       holder.explanationView.setCards(analysis.foundTriple);
-      holder.viewBoardButton.setText(
-          getString(
-              R.string.analysis_view_board_with_alternatives, analysis.allAvailableTriples.size()));
 
-      holder.viewBoardButton.setOnClickListener(
+      // Summary label: e.g. "3s 1d" or "4d"
+      int diff = analysis.getNumDifferentProperties();
+      int same = 4 - diff;
+      String summary;
+      if (same == 0) {
+        summary = "4d";
+      } else {
+        summary = same + "s " + diff + "d";
+      }
+      holder.typeSummary.setText(summary);
+
+      holder.stepText.setText(getString(R.string.analysis_step_format, position + 1));
+      holder.durationText.setText(formatDuration(analysis.duration));
+      holder.optionsText.setText(
+          getString(R.string.analysis_opts_format, analysis.allAvailableTriples.size()));
+
+      holder.itemView.setOnClickListener(
           v -> {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
             BoardHistoryActivity.sAnalysis = analysis;
@@ -166,16 +363,16 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   }
 
   private static class AnalysisViewHolder extends RecyclerView.ViewHolder {
-    TextView stepText, durationText;
+    TextView stepText, durationText, optionsText, typeSummary;
     com.antsapps.triples.views.TripleExplanationView explanationView;
-    MaterialButton viewBoardButton;
 
     AnalysisViewHolder(View v) {
       super(v);
       stepText = v.findViewById(R.id.step_text);
       durationText = v.findViewById(R.id.duration_text);
+      optionsText = v.findViewById(R.id.options_text);
+      typeSummary = v.findViewById(R.id.triple_type_summary);
       explanationView = v.findViewById(R.id.triple_explanation);
-      viewBoardButton = v.findViewById(R.id.view_board_button);
     }
   }
 }

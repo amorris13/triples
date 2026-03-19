@@ -32,6 +32,7 @@ public class TripleExplanationView extends FrameLayout {
 
   private boolean mShowTicks = true;
   private boolean mShowOverallConclusion = true;
+  private LinearLayout mHeaderRow;
 
   private final Card.PropertyType[] mPropertyTypes =
       new Card.PropertyType[] {
@@ -57,13 +58,13 @@ public class TripleExplanationView extends FrameLayout {
     table.setClipToPadding(false);
 
     // Header Row
-    LinearLayout headerRow = createRow(context);
-    headerRow.addView(createEmptyView(context));
-    headerRow.addView(createHeaderTextView(context, R.string.number));
-    headerRow.addView(createHeaderTextView(context, R.string.shape));
-    headerRow.addView(createHeaderTextView(context, R.string.pattern));
-    headerRow.addView(createHeaderTextView(context, R.string.colour));
-    table.addView(headerRow);
+    mHeaderRow = createRow(context);
+    mHeaderRow.addView(createEmptyView(context));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.number));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.shape));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.pattern));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.colour));
+    table.addView(mHeaderRow);
 
     // Card Rows
     for (int i = 0; i < 3; i++) {
@@ -130,6 +131,10 @@ public class TripleExplanationView extends FrameLayout {
         mPropertyIcons[i][j].setNaturalCardDimensionsProvider(cardDimensionsProvider);
       }
     }
+  }
+
+  public void setShowHeader(boolean showHeader) {
+    mHeaderRow.setVisibility(showHeader ? VISIBLE : GONE);
   }
 
   public void setShowTicks(boolean showTicks) {
