@@ -156,7 +156,8 @@ fi
 KEYSTORE="$CLAUDE_PROJECT_DIR/app/keystore.jks"
 if [ ! -f "$KEYSTORE" ]; then
     echo "Generating signing keystore..."
-    keytool -genkey -v \
+    # Clear JAVA_TOOL_OPTIONS — keytool is local-only and proxy settings cause it to fail
+    JAVA_TOOL_OPTIONS= keytool -genkey -v \
         -keystore "$KEYSTORE" \
         -alias key \
         -keyalg RSA -keysize 2048 -validity 10000 \
