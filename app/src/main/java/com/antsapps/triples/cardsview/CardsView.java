@@ -17,6 +17,7 @@ import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +42,12 @@ public abstract class CardsView extends ViewGroup
   private OnSelectionChangedListener mOnSelectionChangedListener;
   private OnIncorrectTripleSelectedListener mOnIncorrectTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
+
+  /**
+   * Cards in this set will animate in from the off-screen location rather than fading in when
+   * added via the next updateCardsInPlay call. Used for backward step navigation.
+   */
+  protected final Set<Card> mCardsForReverseAnimation = new HashSet<>();
 
   /**
    * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
@@ -143,7 +150,7 @@ public abstract class CardsView extends ViewGroup
   protected abstract void updateMeasuredDimensions(
       final int widthMeasureSpec, final int heightMeasureSpec);
 
-  protected abstract Rect calcBounds(int i);
+  public abstract Rect calcBounds(int i);
 
   @Override
   public void setAlpha(float opacity) {
@@ -267,6 +274,20 @@ public abstract class CardsView extends ViewGroup
   public void animateTripleFoundToOffscreen(Set<Card> triple) {
     animateTripleFoundInternal(
         Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), null);
+  }
+
+  public void animateTripleFoundToOffscreen(Set<Card> triple, Runnable onFinished) {
+    animateTripleFoundInternal(
+        Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), onFinished);
+  }
+
+  /**
+   * Marks the given cards to start their entry animation from the off-screen location (rather than
+   * fading in) when they are added in the next {@link #updateCardsInPlay} call. Used to animate
+   * found-triple cards flying back onto the board during backward step navigation.
+   */
+  public void markCardsForReverseAnimation(Set<Card> cards) {
+    mCardsForReverseAnimation.addAll(cards);
   }
 
   public void animateTripleFound(
