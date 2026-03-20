@@ -79,10 +79,10 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
-
-    mDeck.readdCards(cards);
+  protected void updateBoard(
+      List<Card> cardsInPlay, Deck deck, Set<Card> foundTriple, Random random) {
+    super.updateBoard(cardsInPlay, deck, foundTriple, random);
+    deck.readdCards(foundTriple.toArray(new Card[0]));
   }
 
   @Override
