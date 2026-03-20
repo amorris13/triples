@@ -367,7 +367,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
 
     // 4. Verify game1 STILL has its triples (this was the bug)
     ClassicGame retrievedGame1 = app.getClassicGame(game1.getId());
-    assert !retrievedGame1.getFoundTriples().isEmpty() : "Found triples were cleared when starting a new game!";
+    assert !retrievedGame1.getFoundTriples().isEmpty()
+        : "Found triples were cleared when starting a new game!";
   }
 
   private void setupClassicGame(boolean completed) {
