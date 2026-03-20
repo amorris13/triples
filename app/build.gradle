@@ -44,6 +44,10 @@ android {
             includeAndroidResources = true
             all {
                 systemProperty 'robolectric.graphicsMode', 'NATIVE'
+                systemProperty 'robolectric.offline', System.getProperty('robolectric.offline', 'false')
+                if (System.getProperty('robolectric.dependency.dir')) {
+                    systemProperty 'robolectric.dependency.dir', System.getProperty('robolectric.dependency.dir')
+                }
             }
         }
     }

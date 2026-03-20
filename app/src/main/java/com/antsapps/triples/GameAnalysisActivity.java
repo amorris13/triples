@@ -202,8 +202,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
           String.format(Locale.getDefault(), "%d%% (%d)", foundSame * 100 / total, foundSame);
       String availStr =
           totalAvailTriples > 0
-              ? String.format(
-                  Locale.getDefault(), "%d%%", availSame * 100 / totalAvailTriples)
+              ? String.format(Locale.getDefault(), "%d%%", availSame * 100 / totalAvailTriples)
               : "0%";
       String timeStr = foundSame > 0 ? formatDuration(timeSame / foundSame) : "-";
       addTableRow(propertyBiasContainer, propLabels[p], chosenStr, availStr, timeStr);
@@ -240,8 +239,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
     // Divider under header
     View divider = new View(container.getContext());
-    divider.setLayoutParams(new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)));
+    divider.setLayoutParams(
+        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)));
     TypedValue value = new TypedValue();
     getTheme().resolveAttribute(android.R.attr.listDivider, value, true);
     divider.setBackgroundResource(value.resourceId);
@@ -259,8 +258,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   private void addTableRowBold(LinearLayout container, String... cols) {
     // Divider above total row
     View divider = new View(container.getContext());
-    divider.setLayoutParams(new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)));
+    divider.setLayoutParams(
+        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)));
     TypedValue value = new TypedValue();
     getTheme().resolveAttribute(android.R.attr.listDivider, value, true);
     divider.setBackgroundResource(value.resourceId);
@@ -277,8 +276,9 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   private LinearLayout createTableRow(android.content.Context context) {
     LinearLayout row = new LinearLayout(context);
     row.setOrientation(LinearLayout.HORIZONTAL);
-    row.setLayoutParams(new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    row.setLayoutParams(
+        new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
     return row;
   }
 
@@ -288,14 +288,16 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
     tv.setGravity(Gravity.CENTER);
     tv.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
-    tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+    tv.setLayoutParams(
+        new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
     if (bold) tv.setTypeface(null, android.graphics.Typeface.BOLD);
     return tv;
   }
 
   private int dpToPx(float dp) {
-    return (int) TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+    return (int)
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
   }
 
   @Override
