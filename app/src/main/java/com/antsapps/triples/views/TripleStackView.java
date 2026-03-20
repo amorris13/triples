@@ -194,7 +194,7 @@ public class TripleStackView extends View {
         .start();
   }
 
-  static List<Card> getSortedTriple(Set<Card> triple) {
+  public static List<Card> getSortedTriple(Set<Card> triple) {
     List<Card> sorted = new ArrayList<>(triple);
     Collections.sort(sorted);
     return sorted;
