@@ -12,3 +12,17 @@ gradle/gradle-daemon-jvm.properties
 node_modules/
 output/
 app/keystore.jks
+
+# Flutter
+triples_flutter/build/
+triples_flutter/.dart_tool/
+triples_flutter/.flutter-plugins
+triples_flutter/.flutter-plugins-dependencies
+triples_flutter/.pub-cache/
+triples_flutter/.pub/
+triples_flutter/android/
+triples_flutter/ios/
+triples_flutter/linux/
+triples_flutter/macos/
+triples_flutter/windows/
+triples_flutter/web/
