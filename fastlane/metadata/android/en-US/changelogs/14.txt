@@ -1,1 +1,1 @@
-Triple Bot performance detailed post-game analysis: See your property bias, how long each triple took to find, and view the board at each step to see missed alternatives.
+Triples Analyser Bot: Redesigned post-game analysis with detailed tables for valid triples, same/diff preference breakdown, and property sameness bias per category.

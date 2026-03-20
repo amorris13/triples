@@ -28,10 +28,13 @@ public class TripleExplanationView extends FrameLayout {
   private TextView[] mConclusionTexts = new TextView[4];
   private ImageView[] mConclusionTicks = new ImageView[4];
   private ImageView mConclusionImage;
+  private TextView mTypeSummaryText;
   private TextView mTitleView;
 
   private boolean mShowTicks = true;
   private boolean mShowOverallConclusion = true;
+  private boolean mShowTypeSummary = false;
+  private LinearLayout mHeaderRow;
 
   private final Card.PropertyType[] mPropertyTypes =
       new Card.PropertyType[] {
@@ -57,13 +60,13 @@ public class TripleExplanationView extends FrameLayout {
     table.setClipToPadding(false);
 
     // Header Row
-    LinearLayout headerRow = createRow(context);
-    headerRow.addView(createEmptyView(context));
-    headerRow.addView(createHeaderTextView(context, R.string.number));
-    headerRow.addView(createHeaderTextView(context, R.string.shape));
-    headerRow.addView(createHeaderTextView(context, R.string.pattern));
-    headerRow.addView(createHeaderTextView(context, R.string.colour));
-    table.addView(headerRow);
+    mHeaderRow = createRow(context);
+    mHeaderRow.addView(createEmptyView(context));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.number));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.shape));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.pattern));
+    mHeaderRow.addView(createHeaderTextView(context, R.string.colour));
+    table.addView(mHeaderRow);
 
     // Card Rows
     for (int i = 0; i < 3; i++) {
@@ -94,11 +97,25 @@ public class TripleExplanationView extends FrameLayout {
     LinearLayout conclusionRow = createRow(context);
     conclusionRow.setGravity(Gravity.CENTER_VERTICAL);
 
+    // First cell: overall conclusion image + type summary text (one visible at a time)
+    LinearLayout firstCell = new LinearLayout(context);
+    firstCell.setLayoutParams(
+        new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+    firstCell.setGravity(Gravity.CENTER);
+
     mConclusionImage = new ImageView(context);
-    mConclusionImage.setLayoutParams(new LinearLayout.LayoutParams(0, dpToPx(24), 1f));
+    mConclusionImage.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24)));
     mConclusionImage.setPadding(dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2));
-    ((LinearLayout.LayoutParams) mConclusionImage.getLayoutParams()).gravity = Gravity.CENTER;
-    conclusionRow.addView(mConclusionImage);
+    firstCell.addView(mConclusionImage);
+
+    mTypeSummaryText = new TextView(context);
+    mTypeSummaryText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+    mTypeSummaryText.setGravity(Gravity.CENTER);
+    mTypeSummaryText.setTypeface(null, android.graphics.Typeface.BOLD);
+    mTypeSummaryText.setVisibility(GONE);
+    firstCell.addView(mTypeSummaryText);
+
+    conclusionRow.addView(firstCell);
 
     for (int j = 0; j < 4; j++) {
       LinearLayout container = new LinearLayout(context);
@@ -132,12 +149,20 @@ public class TripleExplanationView extends FrameLayout {
     }
   }
 
+  public void setShowHeader(boolean showHeader) {
+    mHeaderRow.setVisibility(showHeader ? VISIBLE : GONE);
+  }
+
   public void setShowTicks(boolean showTicks) {
     mShowTicks = showTicks;
   }
 
   public void setShowOverallConclusion(boolean showOverallConclusion) {
     mShowOverallConclusion = showOverallConclusion;
+  }
+
+  public void setShowTypeSummary(boolean showTypeSummary) {
+    mShowTypeSummary = showTypeSummary;
   }
 
   public void setCards(Set<Card> cards) {
@@ -171,18 +196,40 @@ public class TripleExplanationView extends FrameLayout {
         mConclusionTicks[j].setImageDrawable(null);
       }
       mConclusionImage.setImageDrawable(null);
+      mTypeSummaryText.setText("");
       return;
     }
 
     boolean valid = true;
+    int sameCount = 0;
+    int diffCount = 0;
     for (int j = 0; j < 4; j++) {
       int v0 = cards.get(0).getValue(mPropertyTypes[j]);
       int v1 = cards.get(1).getValue(mPropertyTypes[j]);
       int v2 = cards.get(2).getValue(mPropertyTypes[j]);
-      valid &= updateConclusion(mConclusionTexts[j], mConclusionTicks[j], v0, v1, v2);
+      boolean propValid = updateConclusion(mConclusionTexts[j], mConclusionTicks[j], v0, v1, v2);
+      valid &= propValid;
+      if (propValid) {
+        if (v0 == v1 && v1 == v2) sameCount++;
+        else diffCount++;
+      }
     }
-    mConclusionImage.setVisibility(mShowOverallConclusion ? VISIBLE : INVISIBLE);
-    mConclusionImage.setImageResource(valid ? R.drawable.ic_tick : R.drawable.ic_cross);
+
+    if (mShowTypeSummary) {
+      mConclusionImage.setVisibility(GONE);
+      mTypeSummaryText.setVisibility(VISIBLE);
+      String summary;
+      if (sameCount == 0) {
+        summary = "4d";
+      } else {
+        summary = sameCount + "s " + diffCount + "d";
+      }
+      mTypeSummaryText.setText(summary);
+    } else {
+      mTypeSummaryText.setVisibility(GONE);
+      mConclusionImage.setVisibility(mShowOverallConclusion ? VISIBLE : INVISIBLE);
+      mConclusionImage.setImageResource(valid ? R.drawable.ic_tick : R.drawable.ic_cross);
+    }
   }
 
   public void setTitle(String title) {

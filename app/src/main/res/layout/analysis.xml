@@ -17,98 +17,109 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/analysis_summary"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorPrimary" />
-
-            <com.google.android.material.card.MaterialCardView
+            <!-- Available Triples -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                app:cardElevation="2dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_weight="1"
+                    android:text="@string/analysis_available_triples"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorPrimary" />
 
-                    <TextView
-                        android:id="@+id/bias_all_same"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/analysis_all_same_bias" />
+                <ImageButton
+                    android:id="@+id/available_triples_info_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Info"
+                    android:padding="4dp" />
 
-                    <TextView
-                        android:id="@+id/bias_all_diff"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/analysis_all_diff_bias" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/bias_mixed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/analysis_mixed_bias" />
+            <LinearLayout
+                android:id="@+id/available_triples_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="?android:attr/listDivider" />
+            <!-- Same/Diff Preference -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/analysis_property_bias"
-                        android:textAppearance="?attr/textAppearanceSubtitle2" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/analysis_same_diff_preference"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorPrimary" />
 
-                    <TextView
-                        android:id="@+id/bias_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+                <ImageButton
+                    android:id="@+id/same_diff_info_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Info"
+                    android:padding="4dp" />
 
-                    <TextView
-                        android:id="@+id/bias_shape"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/bias_pattern"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+            <LinearLayout
+                android:id="@+id/same_diff_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical" />
 
-                    <TextView
-                        android:id="@+id/bias_color"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+            <!-- Property Sameness Bias -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="?android:attr/listDivider" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/analysis_property_sameness_bias"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorPrimary" />
 
-                    <TextView
-                        android:id="@+id/avg_alternatives"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/analysis_avg_alternatives" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                <ImageButton
+                    android:id="@+id/property_bias_info_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Info"
+                    android:padding="4dp" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/property_bias_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical" />
+
+            <!-- Step by Step Game Replay -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -116,11 +127,29 @@
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 android:textColor="?attr/colorPrimary" />
 
+            <TextView
+                android:id="@+id/replay_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/analysis_replay_subtitle"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/view_board_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/analysis_view_board"
+                android:visibility="gone" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/triples_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>

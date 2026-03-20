@@ -144,35 +144,44 @@
       <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:orientation="horizontal">
+          android:orientation="vertical"
+          android:gravity="center_horizontal">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/statistics_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/statistics"
-            android:textAllCaps="true"
-            android:onClick="showStatistics"
-            android:layout_marginRight="10dp"/>
+            android:orientation="horizontal">
+
+          <com.google.android.material.button.MaterialButton
+              android:id="@+id/statistics_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/statistics"
+              android:textAllCaps="true"
+              android:onClick="showStatistics"
+              android:layout_marginEnd="5dp"/>
+
+          <com.google.android.material.button.MaterialButton
+              android:id="@+id/new_game_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/new_game"
+              android:textAllCaps="true"
+              android:onClick="newGame"
+              android:layout_marginStart="5dp"/>
+
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/new_game_button"
+            android:id="@+id/analysis_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/new_game"
+            android:layout_marginTop="8dp"
+            android:text="@string/detailed_analysis"
             android:textAllCaps="true"
-            android:onClick="newGame"/>
+            android:onClick="showAnalysis"/>
 
       </LinearLayout>
-
-      <com.google.android.material.button.MaterialButton
-          android:id="@+id/analysis_button"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:text="@string/detailed_analysis"
-          android:textAllCaps="true"
-          android:onClick="showAnalysis"/>
 
     </LinearLayout>
   </ViewAnimator>
