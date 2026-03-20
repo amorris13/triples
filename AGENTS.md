@@ -22,6 +22,10 @@ Run the standard unit tests using:
 ./gradlew test
 ```
 
+In Claude Code on the web, the `env-setup.sh` script pre-downloads Robolectric
+jars and configures offline mode via `~/.gradle/gradle.properties`, so no extra
+flags are needed.
+
 ### Screenshot Tests (Roborazzi)
 This project uses Roborazzi for screenshot testing.
 
