@@ -22,7 +22,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -216,16 +215,7 @@ public class CardsView extends ViewGroup implements Game.GameRenderer, CardDimen
   }
 
   protected void logValidTriple() {
-    Log.v("ValidTriples", "valid positions:");
-    List<Integer> validPositions = Game.getValidTriplePositions(mCards);
-    for (int r = 0; r < mCards.size() / COLUMNS; r++) {
-      StringBuilder sb = new StringBuilder();
-      for (int c = 0; c < COLUMNS; c++) {
-        sb.append(validPositions.contains(r * COLUMNS + c) ? "X" : ".");
-        sb.append(" ");
-      }
-      Log.v("ValidTriples", sb.toString());
-    }
+    Log.v(TAG, "valid positions: " + Game.getValidTriplePositions(mCards));
   }
 
   public void updateBounds() {
