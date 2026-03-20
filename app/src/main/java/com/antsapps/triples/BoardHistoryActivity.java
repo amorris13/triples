@@ -17,7 +17,7 @@ import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
 import com.antsapps.triples.cardsview.CardView;
-import com.antsapps.triples.cardsview.VerticalCardsView;
+import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.views.FoundTriplesView;
 import com.antsapps.triples.views.TripleStackView;
 import com.google.common.collect.ImmutableList;
@@ -39,7 +39,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   private Game mGame;
   private List<Card> mFinalBoardState;
 
-  private VerticalCardsView mCardsView;
+  private CardsView mCardsView;
   private FoundTriplesView mFoundTriplesView;
 
   private List<TripleAnalysis> mAnalysisList;

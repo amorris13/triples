@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 import com.antsapps.triples.SettingsFragment;
@@ -25,8 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class CardsView extends ViewGroup
-    implements Game.GameRenderer, CardDimensionsProvider {
+public class CardsView extends ViewGroup implements Game.GameRenderer, CardDimensionsProvider {
 
   private static final String TAG = "CardsView";
 
@@ -59,6 +59,12 @@ public abstract class CardsView extends ViewGroup
    */
   private float mDimAlpha = 1;
 
+  public static final int COLUMNS = 3;
+
+  private int mWidthOfCard;
+
+  private int mHeightOfCard;
+
   public CardsView(Context context) {
     this(context, null);
   }
@@ -85,6 +91,69 @@ public abstract class CardsView extends ViewGroup
             MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
       }
     }
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    mWidthOfCard = (right - left) / COLUMNS;
+    mHeightOfCard = (int) (mWidthOfCard * CardView.HEIGHT_OVER_WIDTH);
+    mOffScreenLocation.set(right, bottom, right + mWidthOfCard, bottom + mHeightOfCard);
+
+    for (int i = 0; i < mCards.size(); i++) {
+      Card card = mCards.get(i);
+      CardView child = mCardViews.get(card);
+      if (child != null) {
+        int oldLeft = child.getLeft();
+        int oldTop = child.getTop();
+        boolean wasLaidOut = oldLeft != 0 || oldTop != 0 || child.getWidth() != 0;
+
+        Rect bounds = calcBounds(i);
+        child.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
+
+        if (!wasLaidOut && mCardsForReverseAnimation.contains(card)) {
+          // New card that should fly in from the off-screen location
+          mCardsForReverseAnimation.remove(card);
+          animateTranslation(
+              child, mOffScreenLocation.left - bounds.left, mOffScreenLocation.top - bounds.top);
+        } else if (wasLaidOut && (oldLeft != bounds.left || oldTop != bounds.top)) {
+          // Position changed, animate from delta back to 0
+          animateTranslation(child, oldLeft - bounds.left, oldTop - bounds.top);
+        }
+
+        if (child.getAlpha() == 0) {
+          child
+              .animate()
+              .alpha(1)
+              .setDuration(SettingsFragment.getAnimationDuration(getContext()))
+              .setInterpolator(new AccelerateDecelerateInterpolator())
+              .start();
+        }
+      }
+    }
+  }
+
+  private void animateTranslation(final CardView child, int deltaX, int deltaY) {
+    child.setTranslationX(deltaX);
+    child.setTranslationY(deltaY);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      child.setTranslationZ(50f);
+    }
+    child
+        .animate()
+        .translationX(0)
+        .translationY(0)
+        .setDuration(SettingsFragment.getAnimationDuration(getContext()))
+        .setInterpolator(new AccelerateDecelerateInterpolator())
+        .setListener(
+            new AnimatorListenerAdapter() {
+              @Override
+              public void onAnimationEnd(Animator animation) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                  child.setTranslationZ(0);
+                }
+              }
+            })
+        .start();
   }
 
   @Override
@@ -145,16 +214,47 @@ public abstract class CardsView extends ViewGroup
     return cardView;
   }
 
-  protected abstract void logValidTriple();
+  protected void logValidTriple() {
+    Log.v(TAG, "valid positions: " + Game.getValidTriplePositions(mCards));
+  }
 
   public void updateBounds() {
     requestLayout();
   }
 
-  protected abstract void updateMeasuredDimensions(
-      final int widthMeasureSpec, final int heightMeasureSpec);
+  protected void updateMeasuredDimensions(final int widthMeasureSpec, final int heightMeasureSpec) {
+    int widthOfCards = getDefaultSize(getMeasuredWidth(), widthMeasureSpec);
+    if (widthOfCards == 0) {
+      if (getWidth() > 0) {
+        widthOfCards = getWidth();
+      } else {
+        widthOfCards = getResources().getDisplayMetrics().widthPixels;
+      }
+    }
+    mWidthOfCard = widthOfCards / COLUMNS;
+    mHeightOfCard = (int) (mWidthOfCard * CardView.HEIGHT_OVER_WIDTH);
 
-  public abstract Rect calcBounds(int i);
+    int rows = (int) Math.ceil((double) mCards.size() / COLUMNS);
+    int heightOfCards = mHeightOfCard * rows;
+    if (mCards.isEmpty()) {
+      heightOfCards = 0;
+    }
+
+    if (widthOfCards > 0 && heightOfCards > 0) {
+      mOffScreenLocation.set(
+          widthOfCards, heightOfCards, widthOfCards + mWidthOfCard, heightOfCards + mHeightOfCard);
+    }
+
+    setMeasuredDimension(widthOfCards, heightOfCards);
+  }
+
+  public Rect calcBounds(int i) { // public for use in BoardHistoryActivity
+    return new Rect(
+        i % COLUMNS * mWidthOfCard,
+        i / COLUMNS * mHeightOfCard,
+        (i % COLUMNS + 1) * mWidthOfCard,
+        (i / COLUMNS + 1) * mHeightOfCard);
+  }
 
   @Override
   public void setAlpha(float opacity) {
@@ -397,5 +497,15 @@ public abstract class CardsView extends ViewGroup
               })
           .start();
     }
+  }
+
+  @Override
+  public int cardWidth() {
+    return mWidthOfCard;
+  }
+
+  @Override
+  public int cardHeight() {
+    return mHeightOfCard;
   }
 }

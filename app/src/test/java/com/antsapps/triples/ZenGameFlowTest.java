@@ -9,7 +9,7 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.ZenGame;
-import com.antsapps.triples.cardsview.VerticalCardsView;
+import com.antsapps.triples.cardsview.CardsView;
 import java.util.List;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowLooper;
@@ -27,7 +27,7 @@ public class ZenGameFlowTest extends BaseRobolectricTest {
     try (ActivityScenario<ZenGameActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
           activity -> {
-            VerticalCardsView cardsView = activity.findViewById(R.id.cards_view);
+            CardsView cardsView = activity.findViewById(R.id.cards_view);
             assertThat(cardsView).isNotNull();
 
             // Force layout so cards have bounds
