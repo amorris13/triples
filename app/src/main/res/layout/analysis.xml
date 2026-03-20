@@ -34,12 +34,30 @@
                 android:orientation="vertical" />
 
             <!-- Same/Diff Preference -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/analysis_same_diff_preference"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorPrimary" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/analysis_same_diff_preference"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/same_diff_info_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Info"
+                    android:padding="4dp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/same_diff_container"
@@ -50,12 +68,30 @@
                 android:orientation="vertical" />
 
             <!-- Property Sameness Bias -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/analysis_property_sameness_bias"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorPrimary" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/analysis_property_sameness_bias"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/property_bias_info_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Info"
+                    android:padding="4dp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/property_bias_container"
@@ -65,7 +101,7 @@
                 android:layout_marginBottom="16dp"
                 android:orientation="vertical" />
 
-            <!-- Triples Found -->
+            <!-- Step by Step Game Replay -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

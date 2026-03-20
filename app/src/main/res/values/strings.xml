@@ -188,12 +188,16 @@
   <string name="analysis_available_triples">Available Valid Triples</string>
   <string name="analysis_same_diff_preference">Same/Diff Preference</string>
   <string name="analysis_property_sameness_bias">Property Sameness Bias</string>
-  <string name="analysis_triples_found">Triples Found</string>
+  <string name="analysis_triples_found">Step by Step Game Replay</string>
   <string name="analysis_col_options">Options</string>
   <string name="analysis_col_steps">Steps</string>
   <string name="analysis_col_avg_time">Avg Time</string>
   <string name="analysis_col_chosen">Chosen</string>
   <string name="analysis_col_available">Available</string>
+  <string name="analysis_col_triple_type">Triple Type</string>
+  <string name="analysis_col_property">Property</string>
+  <string name="analysis_same_diff_tooltip">Shows how often you chose triples with different combinations of same and different properties. Compare \'Chosen\' against \'Available\' to see if you have a preference for certain triple types.</string>
+  <string name="analysis_property_bias_tooltip">Shows for each property how often you found triples where that property was the same across all three cards. Comparing \'Chosen\' against \'Available\' reveals any unconscious bias towards or away from specific properties.</string>
   <string name="analysis_view_board">View Board</string>
   <string name="analysis_view_board_with_alternatives">View Board (%1$d alternatives)</string>
   <string name="analysis_step_format">Step %1$d</string>

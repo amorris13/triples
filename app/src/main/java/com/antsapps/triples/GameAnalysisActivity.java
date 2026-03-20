@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,6 +63,21 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     RecyclerView recyclerView = findViewById(R.id.triples_list);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     recyclerView.setAdapter(new AnalysisAdapter(mAnalysis));
+
+    // Info button click handlers
+    ImageButton sameDiffInfo = findViewById(R.id.same_diff_info_button);
+    sameDiffInfo.setOnClickListener(v -> showInfoDialog(getString(R.string.analysis_same_diff_preference), getString(R.string.analysis_same_diff_tooltip)));
+
+    ImageButton propertyBiasInfo = findViewById(R.id.property_bias_info_button);
+    propertyBiasInfo.setOnClickListener(v -> showInfoDialog(getString(R.string.analysis_property_sameness_bias), getString(R.string.analysis_property_bias_tooltip)));
+  }
+
+  private void showInfoDialog(String title, String message) {
+    new AlertDialog.Builder(this)
+        .setTitle(title)
+        .setMessage(message)
+        .setPositiveButton(android.R.string.ok, null)
+        .show();
   }
 
   private Game getGame(long id, String type) {
@@ -115,7 +132,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         formatDuration(totalDuration / total));
 
     // === Same/Diff Preference table ===
-    // Categories: diffCount 1 (3s1d), 2 (2s2d), 3 (1s3d), 4 (all diff)
+    // Categories: diffCount 1 (3 same 1 diff), 2 (2 same 2 diff), 3 (1 same 3 diff), 4 (all diff)
     int[] foundByDiff = new int[5];
     long[] timeByDiff = new long[5];
     int[] availByDiff = new int[5];
@@ -138,12 +155,12 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     LinearLayout sameDiffContainer = findViewById(R.id.same_diff_container);
     addTableHeader(
         sameDiffContainer,
-        "",
+        getString(R.string.analysis_col_triple_type),
         getString(R.string.analysis_col_chosen),
         getString(R.string.analysis_col_available),
         getString(R.string.analysis_col_avg_time));
 
-    String[] diffLabels = {"", "3s 1d", "2s 2d", "1s 3d", "All diff"};
+    String[] diffLabels = {"", "3 same 1 diff", "2 same 2 diff", "1 same 3 diff", "All diff"};
     for (int d = 1; d <= 4; d++) {
       int found = foundByDiff[d];
       int avail = availByDiff[d];
@@ -178,7 +195,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     LinearLayout propertyBiasContainer = findViewById(R.id.property_bias_container);
     addTableHeader(
         propertyBiasContainer,
-        "",
+        getString(R.string.analysis_col_property),
         getString(R.string.analysis_col_chosen),
         getString(R.string.analysis_col_available),
         getString(R.string.analysis_col_avg_time));
@@ -215,7 +232,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         && cards[1].getValue(type) == cards[2].getValue(type);
   }
 
-  /** Format duration in milliseconds as [m:]ss.ss */
+  /** Format duration in milliseconds as [m:]ss.ss[s] */
   private String formatDuration(long ms) {
     long totalHundredths = ms / 10;
     long minutes = totalHundredths / 6000;
@@ -223,7 +240,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     if (minutes > 0) {
       return String.format(Locale.getDefault(), "%d:%05.2f", minutes, hundredths / 100.0);
     } else {
-      return String.format(Locale.getDefault(), "%.2f", hundredths / 100.0);
+      return String.format(Locale.getDefault(), "%.2fs", hundredths / 100.0);
     }
   }
 
@@ -331,18 +348,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.explanationView.setShowHeader(false);
       holder.explanationView.setShowTicks(false);
       holder.explanationView.setShowOverallConclusion(false);
+      holder.explanationView.setShowTypeSummary(true);
       holder.explanationView.setCards(analysis.foundTriple);
-
-      // Summary label: e.g. "3s 1d" or "4d"
-      int diff = analysis.getNumDifferentProperties();
-      int same = 4 - diff;
-      String summary;
-      if (same == 0) {
-        summary = "4d";
-      } else {
-        summary = same + "s " + diff + "d";
-      }
-      holder.typeSummary.setText(summary);
 
       holder.stepText.setText(getString(R.string.analysis_step_format, position + 1));
       holder.durationText.setText(formatDuration(analysis.duration));
@@ -365,7 +372,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   }
 
   private static class AnalysisViewHolder extends RecyclerView.ViewHolder {
-    TextView stepText, durationText, optionsText, typeSummary;
+    TextView stepText, durationText, optionsText;
     com.antsapps.triples.views.TripleExplanationView explanationView;
 
     AnalysisViewHolder(View v) {
@@ -373,7 +380,6 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       stepText = v.findViewById(R.id.step_text);
       durationText = v.findViewById(R.id.duration_text);
       optionsText = v.findViewById(R.id.options_text);
-      typeSummary = v.findViewById(R.id.triple_type_summary);
       explanationView = v.findViewById(R.id.triple_explanation);
     }
   }
