@@ -49,6 +49,8 @@ public class DailyGameActivity extends BaseGameActivity
     dateText.setText(
         DateFormat.getDateInstance().format(mGame.getGameDay().getCalendar().getTime()));
 
+    findViewById(R.id.analysis_button).setVisibility(View.GONE);
+
     mCardsView = findViewById(R.id.cards_view);
 
     mFoundTriplesView = findViewById(R.id.found_triples_view);

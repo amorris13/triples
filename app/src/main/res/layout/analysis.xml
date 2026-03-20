@@ -17,13 +17,31 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Available Valid Triples -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Available Triples -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/analysis_available_triples"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorPrimary" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/analysis_available_triples"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/available_triples_info_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Info"
+                    android:padding="4dp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/available_triples_container"
@@ -115,7 +133,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="@string/analysis_replay_subtitle"
-                android:textAppearance="?attr/textAppearanceBody2" />
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/view_board_button"

@@ -68,6 +68,13 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     recyclerView.setAdapter(new AnalysisAdapter(mAnalysis));
 
     // Info button click handlers
+    ImageButton availableTriplesInfo = findViewById(R.id.available_triples_info_button);
+    availableTriplesInfo.setOnClickListener(
+        v ->
+            showInfoDialog(
+                getString(R.string.analysis_available_triples),
+                getString(R.string.analysis_available_triples_tooltip)));
+
     ImageButton sameDiffInfo = findViewById(R.id.same_diff_info_button);
     sameDiffInfo.setOnClickListener(
         v ->

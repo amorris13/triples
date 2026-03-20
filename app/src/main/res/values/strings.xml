@@ -185,7 +185,8 @@
 
   <string name="detailed_analysis">Triples Analyser Bot</string>
   <string name="analysis_title">Triples Analyser Bot</string>
-  <string name="analysis_available_triples">Available Valid Triples</string>
+  <string name="analysis_available_triples">Available Triples</string>
+  <string name="analysis_available_triples_tooltip">Shows how many valid triples were available on the board at each step. Fewer options means the step was harder to spot.</string>
   <string name="analysis_same_diff_preference">Same/Diff Preference</string>
   <string name="analysis_property_sameness_bias">Property Sameness Bias</string>
   <string name="analysis_triples_found">Step by Step Game Replay</string>
