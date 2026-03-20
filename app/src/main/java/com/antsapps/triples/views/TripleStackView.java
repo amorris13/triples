@@ -126,8 +126,16 @@ public class TripleStackView extends View {
   }
 
   private void drawTripleStack(Canvas canvas) {
+    // Draw at a fixed reference size then scale down so that fixed-dp elements in
+    // CardBackgroundDrawable (insets, corner radii, stroke widths) shrink proportionally,
+    // matching the appearance of cards in the main grid.
+    float density = getResources().getDisplayMetrics().density;
+    int refWidth = (int) (200 * density);
+    int refHeight = (int) (refWidth * CardView.HEIGHT_OVER_WIDTH);
+    float scale = (float) mCardWidth / refWidth;
+
     List<Card> sorted = getSortedTriple(mTriple);
-    Rect bounds = new Rect(mPadding, mPadding, mPadding + mCardWidth, mPadding + mCardHeight);
+    Rect bounds = new Rect(0, 0, refWidth, refHeight);
     for (int i = 0; i < sorted.size(); i++) {
       Card card = sorted.get(i);
       CardView cardView = mCardViewCache.get(card);
@@ -136,7 +144,8 @@ public class TripleStackView extends View {
         mCardViewCache.put(card, cardView);
       }
       canvas.save();
-      canvas.translate(0, i * mStackDisplacement);
+      canvas.translate(mPadding, mPadding + i * mStackDisplacement);
+      canvas.scale(scale, scale);
       cardView.drawCardContent(canvas, bounds);
       canvas.restore();
     }
