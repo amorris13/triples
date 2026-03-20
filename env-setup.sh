@@ -57,41 +57,49 @@ fi
 # 5. Install SDK packages via sdkmanager
 #    Primary path: sdkmanager with fixed proxy settings.
 #    Fallback: direct curl downloads if sdkmanager networking still fails.
+#    Skip entirely if both packages are already installed — sdkmanager fetches
+#    remote repository metadata on every invocation (even for no-op installs),
+#    which causes a slow network round-trip that always times out in this
+#    proxied environment before falling back to the manual download path.
 # -----------------------------------------------------------------------------
-echo "Accepting licenses..."
-yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+if [ ! -d "$ANDROID_HOME/build-tools/36.0.0" ] || [ ! -d "$ANDROID_HOME/platforms/android-36" ]; then
+    echo "Accepting licenses..."
+    yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
 
-echo "Installing platforms;android-36 and build-tools;36.0.0..."
-"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
-    "platforms;android-36" \
-    "build-tools;36.0.0" || {
+    echo "Installing platforms;android-36 and build-tools;36.0.0..."
+    "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+        "platforms;android-36" \
+        "build-tools;36.0.0" || {
 
-    echo "sdkmanager failed — falling back to manual downloads..."
+        echo "sdkmanager failed — falling back to manual downloads..."
 
-    # Fallback: build-tools 36.0.0
-    if [ ! -d "$ANDROID_HOME/build-tools/36.0.0" ]; then
-        echo "Downloading build-tools 36.0.0..."
-        mkdir -p "$ANDROID_HOME/build-tools"
-        curl -fSL -o /tmp/build-tools.zip \
-          "https://dl.google.com/android/repository/build-tools_r36_linux.zip"
-        unzip -q /tmp/build-tools.zip -d /tmp/build-tools-extract
-        extracted=$(ls /tmp/build-tools-extract | head -1)
-        mv "/tmp/build-tools-extract/$extracted" "$ANDROID_HOME/build-tools/36.0.0"
-        rm -rf /tmp/build-tools.zip /tmp/build-tools-extract
-    fi
+        # Fallback: build-tools 36.0.0
+        if [ ! -d "$ANDROID_HOME/build-tools/36.0.0" ]; then
+            echo "Downloading build-tools 36.0.0..."
+            mkdir -p "$ANDROID_HOME/build-tools"
+            curl -fSL -o /tmp/build-tools.zip \
+              "https://dl.google.com/android/repository/build-tools_r36_linux.zip"
+            unzip -q /tmp/build-tools.zip -d /tmp/build-tools-extract
+            extracted=$(ls /tmp/build-tools-extract | head -1)
+            mv "/tmp/build-tools-extract/$extracted" "$ANDROID_HOME/build-tools/36.0.0"
+            rm -rf /tmp/build-tools.zip /tmp/build-tools-extract
+        fi
 
-    # Fallback: platform android-36
-    if [ ! -d "$ANDROID_HOME/platforms/android-36" ]; then
-        echo "Downloading platform android-36..."
-        mkdir -p "$ANDROID_HOME/platforms"
-        curl -fSL -o /tmp/platform.zip \
-          "https://dl.google.com/android/repository/platform-36_r01.zip"
-        unzip -q /tmp/platform.zip -d /tmp/platform-extract
-        extracted=$(ls /tmp/platform-extract | head -1)
-        mv "/tmp/platform-extract/$extracted" "$ANDROID_HOME/platforms/android-36"
-        rm -rf /tmp/platform.zip /tmp/platform-extract
-    fi
-}
+        # Fallback: platform android-36
+        if [ ! -d "$ANDROID_HOME/platforms/android-36" ]; then
+            echo "Downloading platform android-36..."
+            mkdir -p "$ANDROID_HOME/platforms"
+            curl -fSL -o /tmp/platform.zip \
+              "https://dl.google.com/android/repository/platform-36_r01.zip"
+            unzip -q /tmp/platform.zip -d /tmp/platform-extract
+            extracted=$(ls /tmp/platform-extract | head -1)
+            mv "/tmp/platform-extract/$extracted" "$ANDROID_HOME/platforms/android-36"
+            rm -rf /tmp/platform.zip /tmp/platform-extract
+        fi
+    }
+else
+    echo "SDK packages already installed, skipping sdkmanager."
+fi
 
 # -----------------------------------------------------------------------------
 # 6. Configure Gradle global proxy settings
@@ -191,11 +199,17 @@ echo "sdk.dir=$ANDROID_HOME" > local.properties
 # -----------------------------------------------------------------------------
 # 10. Warm Gradle caches
 #     Resolve all dependencies and compile ahead of time so subsequent
-#     builds are fast.
+#     builds are fast. Skip if the Gradle dependency cache already exists —
+#     assembleDebug takes several minutes on the first run but is instant
+#     once dependencies are cached.
 # -----------------------------------------------------------------------------
-echo "Warming Gradle caches (assembleDebug)..."
 cd "$CLAUDE_PROJECT_DIR"
-./gradlew :app:assembleDebug --quiet 2>/dev/null || true
+if [ ! -d "$HOME/.gradle/caches" ]; then
+    echo "Warming Gradle caches (assembleDebug)..."
+    ./gradlew :app:assembleDebug --quiet 2>/dev/null || true
+else
+    echo "Gradle caches already present, skipping assembleDebug warm-up."
+fi
 
 # -----------------------------------------------------------------------------
 # 11. Verify
