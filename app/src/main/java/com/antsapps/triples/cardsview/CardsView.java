@@ -343,6 +343,31 @@ public abstract class CardsView extends ViewGroup
   }
 
   /**
+   * Immediately removes the given cards from {@code mCardViews} (so they are no longer tracked) and
+   * starts a fade-out animation on their views, removing them from the view hierarchy when the
+   * animation ends. Returns without waiting — the caller can update board state immediately. Used
+   * to fade out replaced cards during backward step navigation.
+   */
+  public void fadeOutAndRemoveCards(Set<Card> cards) {
+    long dur = SettingsFragment.getAnimationDuration(getContext());
+    for (Card card : cards) {
+      CardView cv = mCardViews.remove(card);
+      if (cv == null) continue;
+      cv.animate()
+          .alpha(0)
+          .setDuration(dur)
+          .setListener(
+              new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                  removeView(cv);
+                }
+              })
+          .start();
+    }
+  }
+
+  /**
    * Animates the given cards to alpha 0, then calls {@code onFinished}. If none of the cards exist
    * in this view, {@code onFinished} is called immediately. Used to fade out cards before a
    * backward step navigation so they disappear gracefully before the board state changes.

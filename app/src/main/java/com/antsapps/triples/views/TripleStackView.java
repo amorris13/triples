@@ -158,8 +158,18 @@ public class TripleStackView extends View {
     }
   }
 
+  private float getScaleFactor() {
+    if (mNaturalCardDimensionsProvider != null
+        && mNaturalCardDimensionsProvider.cardWidth() > 0
+        && mCardWidth > 0) {
+      return (float) mCardWidth / mNaturalCardDimensionsProvider.cardWidth();
+    }
+    return 1f;
+  }
+
   private void drawHighlightBorder(Canvas canvas) {
-    float inset = INSET_DP * getContext().getResources().getDisplayMetrics().density;
+    float density = getContext().getResources().getDisplayMetrics().density;
+    float inset = INSET_DP * density * getScaleFactor();
     int totalHeight = mCardHeight + 2 * mStackDisplacement;
     RectF rect =
         new RectF(
@@ -171,7 +181,8 @@ public class TripleStackView extends View {
   }
 
   private void drawPlaceholder(Canvas canvas) {
-    float inset = INSET_DP * getContext().getResources().getDisplayMetrics().density;
+    float density = getContext().getResources().getDisplayMetrics().density;
+    float inset = INSET_DP * density * getScaleFactor();
     int totalHeight = mCardHeight + 2 * mStackDisplacement;
     RectF rect =
         new RectF(

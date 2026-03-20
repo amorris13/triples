@@ -8,6 +8,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import com.antsapps.triples.backend.Card;
@@ -39,7 +40,10 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   private List<TripleAnalysis> mAnalysisList;
 
-  /** 0-based index into mAnalysisList. */
+  /**
+   * 0-based index into mAnalysisList. Valid range: 0..mAnalysisList.size() where
+   * mAnalysisList.size() represents the "final board" (cards remaining after all triples found).
+   */
   private int mCurrentStep;
 
   /**
@@ -76,44 +80,49 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
     mFoundTriplesView.setCardsView(mCardsView);
 
-    // Allow card selection: finding a valid triple pulses the cards and reveals/pulses the slot.
+    // Selecting a valid triple from the grid:
+    // - unrevealed slot → fly cards to slot and reveal
+    // - already-revealed slot → pulse cards in grid and pulse slot
+    // - foundTriple (slot 0, always filled) → fly cards to slot 0 to confirm
     mCardsView.setOnValidTripleSelectedListener(
         selectedCards -> {
+          if (mCurrentStep >= mAnalysisList.size()) return;
           Set<Card> triple = new HashSet<>(selectedCards);
           TripleAnalysis analysis = mAnalysisList.get(mCurrentStep);
-          mCardsView.onAlreadyFoundTriple(triple);
+          final int capturedStep = mCurrentStep;
           if (triple.equals(analysis.foundTriple)) {
-            mFoundTriplesView.highlightStack(0);
+            animateCardsToSlot(capturedStep, triple, 0, () -> mFoundTriplesView.highlightStack(0));
           } else {
             List<Set<Card>> others = getOtherAlternatives(analysis);
             int othersIdx = others.indexOf(triple);
             if (othersIdx >= 0) {
               int slotIdx = othersIdx + 1;
               Set<Integer> revealed =
-                  mRevealedAlternatives.getOrDefault(mCurrentStep, new HashSet<>());
+                  mRevealedAlternatives.getOrDefault(capturedStep, new HashSet<>());
               if (revealed.contains(othersIdx)) {
+                mCardsView.onAlreadyFoundTriple(triple);
                 mFoundTriplesView.highlightStack(slotIdx);
               } else {
-                TripleStackView target = (TripleStackView) mFoundTriplesView.getChildAt(slotIdx);
-                revealAlternative(mCurrentStep, othersIdx, triple, target);
+                revealAlternative(capturedStep, othersIdx, triple);
               }
             }
           }
         });
 
-    // Tapping a filled slot pulses its cards in the grid; tapping a placeholder reveals it.
+    // Tapping a filled slot pulses its cards in the grid; tapping a placeholder pulses the
+    // placeholder and the corresponding cards in the grid.
     mFoundTriplesView.setOnSlotClickListener(
         (slotIndex, triple) -> {
+          if (mCurrentStep >= mAnalysisList.size()) return;
           if (triple != null) {
             mCardsView.onAlreadyFoundTriple(triple);
             mFoundTriplesView.highlightStack(slotIndex);
           } else {
+            mFoundTriplesView.highlightStack(slotIndex);
             List<Set<Card>> others = getOtherAlternatives(mAnalysisList.get(mCurrentStep));
-            int othersIdx = slotIndex - 1; // slot 0 is always foundTriple
+            int othersIdx = slotIndex - 1;
             if (othersIdx >= 0 && othersIdx < others.size()) {
-              Set<Card> tripleToReveal = others.get(othersIdx);
-              TripleStackView target = (TripleStackView) mFoundTriplesView.getChildAt(slotIndex);
-              revealAlternative(mCurrentStep, othersIdx, tripleToReveal, target);
+              mCardsView.onAlreadyFoundTriple(others.get(othersIdx));
             }
           }
         });
@@ -147,8 +156,16 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     if (mAnalysisList != null) {
       MenuItem prev = menu.findItem(R.id.prev_step);
       MenuItem next = menu.findItem(R.id.next_step);
-      if (prev != null) prev.setEnabled(mCurrentStep > 0);
-      if (next != null) next.setEnabled(mCurrentStep < mAnalysisList.size() - 1);
+      boolean prevEnabled = mCurrentStep > 0;
+      boolean nextEnabled = mCurrentStep < mAnalysisList.size();
+      if (prev != null) {
+        prev.setEnabled(prevEnabled);
+        if (prev.getIcon() != null) prev.getIcon().setAlpha(prevEnabled ? 255 : 96);
+      }
+      if (next != null) {
+        next.setEnabled(nextEnabled);
+        if (next.getIcon() != null) next.getIcon().setAlpha(nextEnabled ? 255 : 96);
+      }
     }
     return true;
   }
@@ -170,12 +187,25 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   }
 
   private void navigateToNextStep() {
-    if (mCurrentStep >= mAnalysisList.size() - 1) return;
-    Set<Card> foundTriple = mAnalysisList.get(mCurrentStep).foundTriple;
-    mCurrentStep++;
-    TripleAnalysis nextAnalysis = mAnalysisList.get(mCurrentStep);
+    if (mCurrentStep >= mAnalysisList.size()) return;
 
-    // Update subtitle and alternatives panel immediately.
+    TripleAnalysis currentAnalysis = mAnalysisList.get(mCurrentStep);
+    Set<Card> foundTriple = currentAnalysis.foundTriple;
+    mCurrentStep++;
+
+    if (mCurrentStep == mAnalysisList.size()) {
+      // Navigate to the final board (cards remaining after all triples found).
+      List<Card> finalBoard = new ArrayList<>(currentAnalysis.boardState);
+      finalBoard.removeAll(foundTriple);
+      updateSubtitle(mCurrentStep, null);
+      rebuildFoundTriplesPanel(mCurrentStep, null);
+      invalidateOptionsMenu();
+      mCardsView.animateTripleFoundToOffscreen(foundTriple);
+      mCardsView.updateCardsInPlay(ImmutableList.copyOf(finalBoard));
+      return;
+    }
+
+    TripleAnalysis nextAnalysis = mAnalysisList.get(mCurrentStep);
     updateSubtitle(mCurrentStep, nextAnalysis);
     rebuildFoundTriplesPanel(mCurrentStep, nextAnalysis);
     invalidateOptionsMenu();
@@ -199,19 +229,26 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     if (mCurrentStep <= 0) return;
     int prevStep = mCurrentStep - 1;
     TripleAnalysis prevAnalysis = mAnalysisList.get(prevStep);
+
+    if (mCurrentStep == mAnalysisList.size()) {
+      // Navigating back from the final board: fly the found-triple back onto the board.
+      mCardsView.markCardsForReverseAnimation(prevAnalysis.foundTriple);
+      mCurrentStep = prevStep;
+      showStep(mCurrentStep);
+      return;
+    }
+
     TripleAnalysis currentAnalysis = mAnalysisList.get(mCurrentStep);
 
-    // Fade out the replacement cards (in current board but not in prev board).
+    // Fade out cards that are in the current board but not in the previous board, then
+    // immediately update the board state so the fly-in starts without waiting for the fade.
     Set<Card> toFade = new HashSet<>(currentAnalysis.boardState);
     toFade.removeAll(prevAnalysis.boardState);
+    mCardsView.fadeOutAndRemoveCards(toFade);
 
-    mCardsView.fadeOutCardsAndThen(
-        toFade,
-        () -> {
-          mCardsView.markCardsForReverseAnimation(prevAnalysis.foundTriple);
-          mCurrentStep = prevStep;
-          showStep(mCurrentStep);
-        });
+    mCardsView.markCardsForReverseAnimation(prevAnalysis.foundTriple);
+    mCurrentStep = prevStep;
+    showStep(mCurrentStep);
   }
 
   /**
@@ -219,8 +256,19 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
    * the found triple after animations settle.
    */
   private void showStep(int step) {
-    TripleAnalysis analysis = mAnalysisList.get(step);
+    if (step == mAnalysisList.size()) {
+      // Final board.
+      TripleAnalysis lastAnalysis = mAnalysisList.get(step - 1);
+      List<Card> finalBoard = new ArrayList<>(lastAnalysis.boardState);
+      finalBoard.removeAll(lastAnalysis.foundTriple);
+      mCardsView.updateCardsInPlay(ImmutableList.copyOf(finalBoard));
+      updateSubtitle(step, null);
+      rebuildFoundTriplesPanel(step, null);
+      invalidateOptionsMenu();
+      return;
+    }
 
+    TripleAnalysis analysis = mAnalysisList.get(step);
     mCardsView.updateCardsInPlay(ImmutableList.copyOf(analysis.boardState));
     updateSubtitle(step, analysis);
     rebuildFoundTriplesPanel(step, analysis);
@@ -241,9 +289,13 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
     mFoundTriplesView.highlightStack(0);
   }
 
-  private void updateSubtitle(int step, TripleAnalysis analysis) {
+  private void updateSubtitle(int step, @Nullable TripleAnalysis analysis) {
     ActionBar actionBar = getSupportActionBar();
     if (actionBar == null) return;
+    if (analysis == null) {
+      actionBar.setSubtitle(getString(R.string.board_history_final_board));
+      return;
+    }
     long durationMs = analysis.duration;
     long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMs);
     long seconds = TimeUnit.MILLISECONDS.toSeconds(durationMs) % 60;
@@ -261,7 +313,14 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   // ---- Possible Triples panel ----
 
-  private void rebuildFoundTriplesPanel(int step, TripleAnalysis analysis) {
+  private void rebuildFoundTriplesPanel(int step, @Nullable TripleAnalysis analysis) {
+    if (analysis == null) {
+      mFoundTriplesView.setSlots(new ArrayList<>());
+      TextView label = findViewById(R.id.alternatives_label);
+      if (label != null) label.setText("");
+      return;
+    }
+
     List<Set<Card>> others = getOtherAlternatives(analysis);
     Set<Integer> revealed = mRevealedAlternatives.getOrDefault(step, new HashSet<>());
 
@@ -291,11 +350,16 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   }
 
   /**
-   * Animates the given alternative triple's cards flying from their positions in the grid to the
-   * placeholder slot, then fills the slot.
+   * Animates the cards of {@code triple} flying from their grid positions to the given slot in the
+   * FoundTriplesView. The slot is not modified — call {@code onComplete} to fill it if needed.
    */
-  private void revealAlternative(
-      int step, int alternativeIdx, Set<Card> triple, TripleStackView targetView) {
+  private void animateCardsToSlot(
+      int step, Set<Card> triple, int slotIndex, @Nullable Runnable onComplete) {
+    if (slotIndex < 0 || slotIndex >= mFoundTriplesView.getChildCount()) {
+      if (onComplete != null) onComplete.run();
+      return;
+    }
+    TripleStackView targetView = (TripleStackView) mFoundTriplesView.getChildAt(slotIndex);
     TripleAnalysis analysis = mAnalysisList.get(step);
 
     Map<Card, android.graphics.Rect> targetBounds = targetView.computeCardBoundsInWindow(triple);
@@ -321,8 +385,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
     if (animateCount == 0) {
       decorView.removeView(overlay);
-      mRevealedAlternatives.computeIfAbsent(step, k -> new HashSet<>()).add(alternativeIdx);
-      targetView.setTriple(triple);
+      if (onComplete != null) onComplete.run();
       return;
     }
 
@@ -353,11 +416,29 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
           () -> {
             if (doneCount.incrementAndGet() == totalToAnimate) {
               decorView.removeView(overlay);
-              mRevealedAlternatives.computeIfAbsent(step, k -> new HashSet<>()).add(alternativeIdx);
-              targetView.setTriple(triple);
+              if (onComplete != null) onComplete.run();
             }
           });
     }
+
+    mCardsView.clearSelectedCards();
+  }
+
+  /**
+   * Animates the given alternative triple's cards flying from their positions in the grid to the
+   * placeholder slot, then fills the slot.
+   */
+  private void revealAlternative(int step, int alternativeIdx, Set<Card> triple) {
+    int slotIndex = alternativeIdx + 1;
+    animateCardsToSlot(
+        step,
+        triple,
+        slotIndex,
+        () -> {
+          mRevealedAlternatives.computeIfAbsent(step, k -> new HashSet<>()).add(alternativeIdx);
+          TripleStackView target = (TripleStackView) mFoundTriplesView.getChildAt(slotIndex);
+          if (target != null) target.setTriple(triple);
+        });
   }
 
   @Override

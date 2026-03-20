@@ -192,8 +192,9 @@
   <string name="analysis_all_diff_bias">All Different: %1$d%%</string>
   <string name="analysis_mixed_bias">Mixed: %1$d%%</string>
   <string name="analysis_avg_alternatives">Avg Alternatives: %1$.1f</string>
-  <string name="analysis_view_board">View Board</string>
-  <string name="analysis_view_board_with_alternatives">View Board (%1$d alternatives)</string>
+  <string name="analysis_view_board">Game Replay</string>
+  <string name="analysis_view_board_with_alternatives">Game Replay (%1$d alternatives)</string>
+  <string name="board_history_final_board">Final Board</string>
   <string name="analysis_step_format">Step %1$d</string>
   <string name="board_history_subtitle">Step %1$d / %2$d · %3$s</string>
   <string name="board_history_prev_step">Previous Step</string>
