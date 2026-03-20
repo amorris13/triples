@@ -345,6 +345,31 @@ public class ScreenshotTest extends BaseRobolectricTest {
     }
   }
 
+  @Test
+  public void testAnalysisAggregateRetention() {
+    Context context = ApplicationProvider.getApplicationContext();
+    Application app = Application.getInstance(context);
+    app.clearAllData();
+
+    // 1. Complete one game
+    ClassicGame game1 = ClassicGame.createFromSeed(111L);
+    game1.begin();
+    findAndCommitTriples(game1, 27);
+    app.addClassicGame(game1);
+
+    // 2. Verify it has triples
+    assert !game1.getFoundTriples().isEmpty();
+
+    // 3. Start a new game
+    ClassicGame game2 = ClassicGame.createFromSeed(222L);
+    game2.begin();
+    app.addClassicGame(game2);
+
+    // 4. Verify game1 STILL has its triples (this was the bug)
+    ClassicGame retrievedGame1 = app.getClassicGame(game1.getId());
+    assert !retrievedGame1.getFoundTriples().isEmpty() : "Found triples were cleared when starting a new game!";
+  }
+
   private void setupClassicGame(boolean completed) {
     Context context = ApplicationProvider.getApplicationContext();
     Application app = Application.getInstance(context);
