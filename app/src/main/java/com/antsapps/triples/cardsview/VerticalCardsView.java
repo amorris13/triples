@@ -88,7 +88,31 @@ public class VerticalCardsView extends CardsView {
         Rect bounds = calcBounds(i);
         child.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
 
-        if (wasLaidOut && (oldLeft != bounds.left || oldTop != bounds.top)) {
+        if (!wasLaidOut && mCardsForReverseAnimation.contains(card)) {
+          // New card that should fly in from the off-screen location
+          mCardsForReverseAnimation.remove(card);
+          child.setTranslationX(mOffScreenLocation.left - bounds.left);
+          child.setTranslationY(mOffScreenLocation.top - bounds.top);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            child.setTranslationZ(50f);
+          }
+          child
+              .animate()
+              .translationX(0)
+              .translationY(0)
+              .setDuration(SettingsFragment.getAnimationDuration(getContext()))
+              .setInterpolator(new AccelerateDecelerateInterpolator())
+              .setListener(
+                  new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        child.setTranslationZ(0);
+                      }
+                    }
+                  })
+              .start();
+        } else if (wasLaidOut && (oldLeft != bounds.left || oldTop != bounds.top)) {
           // Position changed, animate from delta back to 0
           child.setTranslationX(oldLeft - bounds.left);
           child.setTranslationY(oldTop - bounds.top);
@@ -127,7 +151,7 @@ public class VerticalCardsView extends CardsView {
   }
 
   @Override
-  public Rect calcBounds(int i) {
+  public Rect calcBounds(int i) { // public for use in BoardHistoryActivity
     return new Rect(
         i % COLUMNS * mWidthOfCard,
         i / COLUMNS * mHeightOfCard,

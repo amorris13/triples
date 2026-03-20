@@ -1,55 +1,47 @@
 package com.antsapps.triples.views;
 
-import static com.antsapps.triples.cardsview.CardBackgroundDrawable.INSET_DP;
-
-import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.animation.CycleInterpolator;
-import com.antsapps.triples.R;
-import com.antsapps.triples.SettingsFragment;
+import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.jetbrains.annotations.NotNull;
 
-public class FoundTriplesView extends View {
+/**
+ * A grid of {@link TripleStackView}s showing triples (filled) and placeholder slots (null entries).
+ * Uses a fixed 6-column layout.
+ */
+public class FoundTriplesView extends ViewGroup {
 
-  private static final float STACK_DISPLACEMENT_PERCENT = 0.65f;
+  public interface OnSlotClickListener {
+    void onSlotClick(int slotIndex, @Nullable Set<Card> triple);
+  }
+
   private static final int COLUMNS = 6;
 
-  private List<Set<Card>> mFoundTriples = new ArrayList<>();
-  private int mTotalTriples = 0;
+  /** Each entry is a triple to show (non-null = filled stack, null = placeholder). */
+  private List<Set<Card>> mSlots = new ArrayList<>();
 
   private CardsView mCardsView;
+  private OnSlotClickListener mOnSlotClickListener;
+  private int mHighlightedSlot = -1;
 
-  private final Paint mPlaceholderPaint;
-  private final Map<Card, CardView> mCardViewCache = new HashMap<>();
-
+  // Geometry computed during onMeasure, stored for getCardBoundsInWindow
+  private int mSlotWidth;
+  private int mSlotHeight;
   private int mCardWidth;
   private int mCardHeight;
   private int mStackDisplacement;
-  private int mPadding;
-
-  private int mHighlightIndex = -1;
-  private float mHighlightScale = 1.0f;
-  private ValueAnimator mHighlightAnimator;
-  private int mSlotWidth;
-  private int mSlotHeight;
+  private boolean mPlaceholderClickable = true;
+  private final int mPadding;
 
   public FoundTriplesView(Context context) {
     this(context, null);
@@ -58,122 +50,114 @@ public class FoundTriplesView extends View {
   public FoundTriplesView(Context context, AttributeSet attrs) {
     super(context, attrs);
     float density = getResources().getDisplayMetrics().density;
-
-    mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    mPlaceholderPaint.setStyle(Paint.Style.STROKE);
-    mPlaceholderPaint.setColor(getResources().getColor(R.color.colorOutlineVariant));
-    mPlaceholderPaint.setStrokeWidth(3 * density);
-    mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[] {8 * density, 8 * density}, 0));
     mPadding = (int) (1 * density);
+    setClipChildren(false);
+    setClipToPadding(false);
   }
 
+  /**
+   * Sets the full list of slots. Null entries are rendered as placeholders; non-null as stacks.
+   * Replaces any previous data.
+   */
+  public void setSlots(List<Set<Card>> slots) {
+    mSlots = new ArrayList<>(slots);
+    rebuildChildren();
+  }
+
+  /**
+   * Backward-compatible helper for game activities: places found triples in the first N slots and
+   * fills the remaining (totalTriples - foundTriples.size()) slots with placeholders.
+   */
   public void setFoundTriples(List<Set<Card>> foundTriples, int totalTriples) {
-    mFoundTriples = foundTriples;
-    mTotalTriples = totalTriples;
-    requestLayout();
-    invalidate();
+    List<Set<Card>> slots = new ArrayList<>(foundTriples);
+    while (slots.size() < totalTriples) {
+      slots.add(null);
+    }
+    setSlots(slots);
   }
 
   public void setCardsView(CardsView cardsView) {
     mCardsView = cardsView;
-  }
-
-  @Override
-  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int width = MeasureSpec.getSize(widthMeasureSpec);
-    if (width <= 0) {
-      setMeasuredDimension(0, 0);
-      return;
+    for (int i = 0; i < getChildCount(); i++) {
+      ((TripleStackView) getChildAt(i)).setNaturalCardDimensionsProvider(cardsView);
     }
-    mSlotWidth = width / COLUMNS;
-    mCardWidth = mSlotWidth - 2 * mPadding;
-    mCardHeight = (int) (mCardWidth * CardView.HEIGHT_OVER_WIDTH);
-    mStackDisplacement = (int) (mCardHeight * STACK_DISPLACEMENT_PERCENT);
-
-    int rows = (int) Math.ceil((double) mTotalTriples / COLUMNS);
-    int stackHeight = mCardHeight + 2 * mStackDisplacement;
-    mSlotHeight = stackHeight + 2 * mPadding;
-    int height = rows * mSlotHeight;
-
-    setMeasuredDimension(width, height);
   }
 
-  @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
+  public void setOnSlotClickListener(OnSlotClickListener listener) {
+    mOnSlotClickListener = listener;
+  }
 
-    int naturalWidth = mCardsView.cardWidth();
-    int naturalHeight = mCardsView.cardHeight();
-    int naturalDisplacement = (int) (naturalHeight * STACK_DISPLACEMENT_PERCENT);
-    float scale = (float) mCardWidth / naturalWidth;
-    float centerX = naturalWidth / 2f;
-    float centerY = (naturalHeight + 2 * naturalDisplacement) / 2f;
-
-    for (int i = 0; i < mTotalTriples; i++) {
-      int row = i / COLUMNS;
-      int col = i % COLUMNS;
-
-      float left = col * mSlotWidth + mPadding;
-      float top = row * mSlotHeight + mPadding;
-
-      canvas.save();
-      canvas.translate(left, top);
-      canvas.scale(scale, scale);
-      if (i == mHighlightIndex) {
-        canvas.scale(mHighlightScale, mHighlightScale, centerX, centerY);
+  public void setPlaceholderClickable(boolean clickable) {
+    mPlaceholderClickable = clickable;
+    for (int i = 0; i < getChildCount(); i++) {
+      TripleStackView child = (TripleStackView) getChildAt(i);
+      if (child.getTriple() == null) {
+        child.setClickable(clickable);
+        child.setFocusable(clickable);
       }
+    }
+  }
 
-      if (mFoundTriples != null && i < mFoundTriples.size()) {
-        drawTripleStack(
-            canvas, mFoundTriples.get(i), naturalWidth, naturalHeight, naturalDisplacement);
+  /** Sets the slot at the given index as highlighted (drawn with a border), clears others. */
+  public void setHighlightedSlot(int index) {
+    if (mHighlightedSlot != index) {
+      int old = mHighlightedSlot;
+      mHighlightedSlot = index;
+      if (old >= 0 && old < getChildCount()) {
+        ((TripleStackView) getChildAt(old)).setHighlighted(false);
+      }
+      if (index >= 0 && index < getChildCount()) {
+        ((TripleStackView) getChildAt(index)).setHighlighted(true);
+      }
+    }
+  }
+
+  private void rebuildChildren() {
+    // Remove surplus children
+    while (getChildCount() > mSlots.size()) {
+      removeViewAt(getChildCount() - 1);
+    }
+    // Add or update children
+    for (int i = 0; i < mSlots.size(); i++) {
+      TripleStackView child;
+      if (i < getChildCount()) {
+        child = (TripleStackView) getChildAt(i);
       } else {
-        drawPlaceholder(canvas, naturalWidth, naturalHeight, naturalDisplacement);
+        child = new TripleStackView(getContext());
+        if (mCardsView != null) {
+          child.setNaturalCardDimensionsProvider(mCardsView);
+        }
+        addView(child);
       }
-
-      canvas.restore();
+      child.setTriple(mSlots.get(i));
+      child.setHighlighted(i == mHighlightedSlot);
+      final int slotIndex = i;
+      final TripleStackView c = child;
+      boolean slotClickable = mSlots.get(i) != null || mPlaceholderClickable;
+      child.setClickable(slotClickable);
+      child.setFocusable(slotClickable);
+      child.setOnClickListener(
+          v -> {
+            if (mOnSlotClickListener != null) {
+              mOnSlotClickListener.onSlotClick(slotIndex, c.getTriple());
+            }
+          });
     }
+    requestLayout();
+    invalidate();
   }
 
-  private void drawTripleStack(
-      Canvas canvas, Set<Card> triple, int width, int height, int displacement) {
-    int i = 0;
-    Rect bounds = new Rect(0, 0, width, height);
-    for (Card card : getSortedTriples(triple)) {
-      CardView cardView = mCardViewCache.get(card);
-      if (cardView == null) {
-        cardView = new CardView(getContext(), card);
-        mCardViewCache.put(card, cardView);
-      }
-      canvas.save();
-      canvas.translate(0, i * displacement);
-      cardView.drawCardContent(canvas, bounds);
-      canvas.restore();
-      i++;
-    }
-  }
-
-  private void drawPlaceholder(Canvas canvas, int width, int height, int displacement) {
-    float inset = INSET_DP * getContext().getResources().getDisplayMetrics().density;
-    RectF rect = new RectF(inset, inset, width - inset, height + 2 * displacement - inset);
-    canvas.drawRoundRect(rect, 10, 10, mPlaceholderPaint);
-  }
-
+  /** Pulses the stack at the given slot index to draw attention to it. */
   public void highlightStack(int index) {
-    if (mHighlightAnimator != null) {
-      mHighlightAnimator.cancel();
+    if (index >= 0 && index < getChildCount()) {
+      ((TripleStackView) getChildAt(index)).animateHighlight();
     }
-    mHighlightIndex = index;
-    mHighlightAnimator = ValueAnimator.ofFloat(1.0f, 1.2f);
-    mHighlightAnimator.setDuration(SettingsFragment.getAnimationDuration(getContext()));
-    mHighlightAnimator.setInterpolator(new CycleInterpolator(0.5f));
-    mHighlightAnimator.addUpdateListener(
-        animation -> {
-          mHighlightScale = (float) animation.getAnimatedValue();
-          invalidate();
-        });
-    mHighlightAnimator.start();
   }
 
+  /**
+   * Returns window-absolute bounds for each card in the triple at the given slot index. Used as
+   * animation targets for flying cards into this view.
+   */
   public Map<Card, Rect> getCardBoundsInWindow(int index, Set<Card> triple) {
     Preconditions.checkArgument(triple.size() == 3);
     Map<Card, Rect> cardBounds = new HashMap<>();
@@ -187,7 +171,7 @@ public class FoundTriplesView extends View {
     int slotLeft = col * mSlotWidth;
     int slotTop = row * mSlotHeight;
 
-    List<Card> sortedTriples = getSortedTriples(triple);
+    List<Card> sortedTriples = TripleStackView.getSortedTriple(triple);
 
     for (int i = 0; i < 3; i++) {
       Card card = sortedTriples.get(i);
@@ -205,10 +189,41 @@ public class FoundTriplesView extends View {
     return cardBounds;
   }
 
-  @NotNull
-  private static List<Card> getSortedTriples(Set<Card> triple) {
-    List<Card> sortedTriples = Lists.newArrayList(triple);
-    Collections.sort(sortedTriples);
-    return sortedTriples;
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    if (width <= 0) {
+      setMeasuredDimension(0, 0);
+      return;
+    }
+
+    mSlotWidth = width / COLUMNS;
+    mCardWidth = mSlotWidth - 2 * mPadding;
+    mCardHeight = (int) (mCardWidth * CardView.HEIGHT_OVER_WIDTH);
+    mStackDisplacement = (int) (mCardHeight * TripleStackView.STACK_DISPLACEMENT_PERCENT);
+
+    int stackHeight = mCardHeight + 2 * mStackDisplacement;
+    mSlotHeight = stackHeight + 2 * mPadding;
+
+    for (int i = 0; i < getChildCount(); i++) {
+      getChildAt(i)
+          .measure(
+              MeasureSpec.makeMeasureSpec(mSlotWidth, MeasureSpec.EXACTLY),
+              MeasureSpec.makeMeasureSpec(mSlotHeight, MeasureSpec.EXACTLY));
+    }
+
+    int rows = (int) Math.ceil((double) Math.max(mSlots.size(), 1) / COLUMNS);
+    setMeasuredDimension(width, rows * mSlotHeight);
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    for (int i = 0; i < getChildCount(); i++) {
+      int col = i % COLUMNS;
+      int row = i / COLUMNS;
+      int left = col * mSlotWidth;
+      int top = row * mSlotHeight;
+      getChildAt(i).layout(left, top, left + mSlotWidth, top + mSlotHeight);
+    }
   }
 }

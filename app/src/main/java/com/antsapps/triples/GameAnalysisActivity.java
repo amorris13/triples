@@ -26,6 +26,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   public static final String GAME_TYPE = "game_type";
 
   private List<TripleAnalysis> mAnalysis;
+  private long mGameId;
+  private String mGameType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +42,10 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       actionBar.setTitle(R.string.analysis_title);
     }
 
-    long gameId = getIntent().getLongExtra(GAME_ID, -1);
-    String gameType = getIntent().getStringExtra(GAME_TYPE);
+    mGameId = getIntent().getLongExtra(GAME_ID, -1);
+    mGameType = getIntent().getStringExtra(GAME_TYPE);
 
-    Game game = getGame(gameId, gameType);
+    Game game = getGame(mGameId, mGameType);
     if (game == null) {
       finish();
       return;
@@ -153,8 +155,9 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.viewBoardButton.setOnClickListener(
           v -> {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-            BoardHistoryActivity.sAnalysis = analysis;
-            BoardHistoryActivity.sStep = position + 1;
+            intent.putExtra(BoardHistoryActivity.EXTRA_GAME_ID, mGameId);
+            intent.putExtra(BoardHistoryActivity.EXTRA_GAME_TYPE, mGameType);
+            intent.putExtra(BoardHistoryActivity.EXTRA_INITIAL_STEP, position + 1);
             startActivity(intent);
           });
     }

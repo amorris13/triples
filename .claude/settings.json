@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+      "Bash(gradle:*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
