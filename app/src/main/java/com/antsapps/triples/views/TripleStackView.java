@@ -73,15 +73,23 @@ public class TripleStackView extends View {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
       TypedValue outValue = new TypedValue();
       context.getTheme().resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
-      float[] outerR = new float[8];
-      java.util.Arrays.fill(outerR, 4 * density);
-      android.graphics.drawable.ShapeDrawable mask =
-          new android.graphics.drawable.ShapeDrawable(
-              new android.graphics.drawable.shapes.RoundRectShape(outerR, null, null));
       android.graphics.drawable.RippleDrawable ripple =
           new android.graphics.drawable.RippleDrawable(
-              android.content.res.ColorStateList.valueOf(outValue.data), null, mask);
+              android.content.res.ColorStateList.valueOf(outValue.data), null, null);
       setForeground(ripple);
+      setOutlineProvider(
+          new android.view.ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, android.graphics.Outline outline) {
+              if (mCardWidth <= 0 || mCardHeight <= 0) return;
+              float d = view.getResources().getDisplayMetrics().density;
+              float cornerRadius = 4 * d * getScaleFactor();
+              int totalHeight = mCardHeight + 2 * mStackDisplacement;
+              outline.setRoundRect(
+                  mPadding, mPadding, mPadding + mCardWidth, mPadding + totalHeight, cornerRadius);
+            }
+          });
+      setClipToOutline(true);
     } else {
       TypedValue rippleValue = new TypedValue();
       context
@@ -109,6 +117,9 @@ public class TripleStackView extends View {
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider provider) {
     mNaturalCardDimensionsProvider = provider;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      invalidateOutline();
+    }
     invalidate();
   }
 
@@ -120,6 +131,9 @@ public class TripleStackView extends View {
       return;
     }
     updateDimensions(width);
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      invalidateOutline();
+    }
     int height = mCardHeight + 2 * mStackDisplacement + 2 * mPadding;
     setMeasuredDimension(width, height);
   }

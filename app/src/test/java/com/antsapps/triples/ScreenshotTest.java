@@ -156,12 +156,12 @@ public class ScreenshotTest extends BaseRobolectricTest {
     setupClassicGame(true);
     Application app = Application.getInstance(ApplicationProvider.getApplicationContext());
     ClassicGame game = app.getCompletedClassicGames().iterator().next();
-    BoardHistoryActivity.sAnalysisList =
-        com.antsapps.triples.backend.GameReconstructor.reconstruct(game);
-    BoardHistoryActivity.sInitialStep = 1;
 
     Intent intent =
         new Intent(ApplicationProvider.getApplicationContext(), BoardHistoryActivity.class);
+    intent.putExtra(BoardHistoryActivity.EXTRA_GAME_ID, game.getId());
+    intent.putExtra(BoardHistoryActivity.EXTRA_GAME_TYPE, "Classic");
+    intent.putExtra(BoardHistoryActivity.EXTRA_INITIAL_STEP, 1);
     try (ActivityScenario<BoardHistoryActivity> scenario = ActivityScenario.launch(intent)) {
       capture("view_board");
     }

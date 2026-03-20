@@ -26,7 +26,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   public static final String GAME_TYPE = "game_type";
 
   private List<TripleAnalysis> mAnalysis;
-  private List<Card> mFinalBoardState;
+  private long mGameId;
+  private String mGameType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +42,16 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       actionBar.setTitle(R.string.analysis_title);
     }
 
-    long gameId = getIntent().getLongExtra(GAME_ID, -1);
-    String gameType = getIntent().getStringExtra(GAME_TYPE);
+    mGameId = getIntent().getLongExtra(GAME_ID, -1);
+    mGameType = getIntent().getStringExtra(GAME_TYPE);
 
-    Game game = getGame(gameId, gameType);
+    Game game = getGame(mGameId, mGameType);
     if (game == null) {
       finish();
       return;
     }
 
     mAnalysis = GameReconstructor.reconstruct(game);
-    mFinalBoardState = GameReconstructor.getFinalBoardState(game);
     updateSummary();
 
     RecyclerView recyclerView = findViewById(R.id.triples_list);
@@ -155,9 +155,9 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.viewBoardButton.setOnClickListener(
           v -> {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-            BoardHistoryActivity.sAnalysisList = mAnalysis;
-            BoardHistoryActivity.sInitialStep = position + 1;
-            BoardHistoryActivity.sFinalBoardState = mFinalBoardState;
+            intent.putExtra(BoardHistoryActivity.EXTRA_GAME_ID, mGameId);
+            intent.putExtra(BoardHistoryActivity.EXTRA_GAME_TYPE, mGameType);
+            intent.putExtra(BoardHistoryActivity.EXTRA_INITIAL_STEP, position + 1);
             startActivity(intent);
           });
     }
