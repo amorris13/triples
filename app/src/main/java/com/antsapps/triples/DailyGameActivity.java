@@ -54,6 +54,13 @@ public class DailyGameActivity extends BaseGameActivity
     mFoundTriplesView = findViewById(R.id.found_triples_view);
     mFoundTriplesView.setFoundTriples(mGame.getFoundTriples(), mGame.getTotalTriplesCount());
     mFoundTriplesView.setCardsView(mCardsView);
+    mFoundTriplesView.setOnSlotClickListener(
+        (index, triple) -> {
+          if (triple != null) {
+            mCardsView.onAlreadyFoundTriple(triple);
+            mFoundTriplesView.highlightStack(index);
+          }
+        });
 
     mCardsView.setOnValidTripleSelectedListener(
         tripleCollection -> {

@@ -199,7 +199,7 @@
   <string name="board_history_prev_step">Previous Step</string>
   <string name="board_history_next_step">Next Step</string>
   <string name="analysis_found_triple">Found Triple</string>
-  <string name="analysis_alternatives">Alternatives (%1$d)</string>
+  <string name="analysis_alternatives">Possible Triples (%1$d)</string>
   <string name="analysis_duration_format">%1$.2fs</string>
   <string name="analysis_properties_format">%1$d same, %2$d diff</string>
 

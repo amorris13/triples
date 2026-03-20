@@ -35,7 +35,6 @@ public class TripleStackView extends View {
 
   private Set<Card> mTriple = null;
   private boolean mHighlighted = false;
-  private Runnable mOnPlaceholderClickListener;
 
   private final Paint mPlaceholderPaint;
   private final Paint mHighlightPaint;
@@ -59,24 +58,23 @@ public class TripleStackView extends View {
     mPlaceholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPlaceholderPaint.setStyle(Paint.Style.STROKE);
     mPlaceholderPaint.setColor(getResources().getColor(R.color.colorOutlineVariant));
-    mPlaceholderPaint.setStrokeWidth(3 * density);
+    mPlaceholderPaint.setStrokeWidth(1.5f * density);
     mPlaceholderPaint.setPathEffect(new DashPathEffect(new float[] {8 * density, 8 * density}, 0));
 
     mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mHighlightPaint.setStyle(Paint.Style.STROKE);
-    mHighlightPaint.setStrokeWidth(4 * density);
+    mHighlightPaint.setStrokeWidth(2 * density);
     TypedValue typedValue = new TypedValue();
     context.getTheme().resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
     mHighlightPaint.setColor(typedValue.data);
 
     mPadding = (int) (1 * density);
 
-    setOnClickListener(
-        v -> {
-          if (mTriple == null && mOnPlaceholderClickListener != null) {
-            mOnPlaceholderClickListener.run();
-          }
-        });
+    TypedValue rippleValue = new TypedValue();
+    context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, rippleValue, true);
+    setForeground(context.getDrawable(rippleValue.resourceId));
+    setClickable(true);
+    setFocusable(true);
   }
 
   public void setTriple(Set<Card> triple) {
@@ -91,10 +89,6 @@ public class TripleStackView extends View {
   public void setHighlighted(boolean highlighted) {
     mHighlighted = highlighted;
     invalidate();
-  }
-
-  public void setOnPlaceholderClickListener(Runnable listener) {
-    mOnPlaceholderClickListener = listener;
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider provider) {

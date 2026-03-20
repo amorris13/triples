@@ -32,20 +32,10 @@
                 android:layout_marginTop="4dp"
                 android:textAppearance="?attr/textAppearanceBody2" />
 
-            <HorizontalScrollView
-                android:id="@+id/alternatives_scroll"
+            <com.antsapps.triples.views.FoundTriplesView
+                android:id="@+id/found_triples_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/alternatives_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="4dp" />
-
-            </HorizontalScrollView>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

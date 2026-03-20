@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.CardsView;
@@ -15,17 +16,23 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A grid of {@link TripleStackView}s showing found triples and placeholder slots for unfound ones.
+ * A grid of {@link TripleStackView}s showing triples (filled) and placeholder slots (null entries).
  * Uses a fixed 6-column layout.
  */
 public class FoundTriplesView extends ViewGroup {
 
+  public interface OnSlotClickListener {
+    void onSlotClick(int slotIndex, @Nullable Set<Card> triple);
+  }
+
   private static final int COLUMNS = 6;
 
-  private List<Set<Card>> mFoundTriples = new ArrayList<>();
-  private int mTotalTriples = 0;
+  /** Each entry is a triple to show (non-null = filled stack, null = placeholder). */
+  private List<Set<Card>> mSlots = new ArrayList<>();
 
   private CardsView mCardsView;
+  private OnSlotClickListener mOnSlotClickListener;
+  private int mHighlightedSlot = -1;
 
   // Geometry computed during onMeasure, stored for getCardBoundsInWindow
   private int mSlotWidth;
@@ -45,10 +52,25 @@ public class FoundTriplesView extends ViewGroup {
     mPadding = (int) (1 * density);
   }
 
-  public void setFoundTriples(List<Set<Card>> foundTriples, int totalTriples) {
-    mFoundTriples = foundTriples;
-    mTotalTriples = totalTriples;
+  /**
+   * Sets the full list of slots. Null entries are rendered as placeholders; non-null as stacks.
+   * Replaces any previous data.
+   */
+  public void setSlots(List<Set<Card>> slots) {
+    mSlots = new ArrayList<>(slots);
     rebuildChildren();
+  }
+
+  /**
+   * Backward-compatible helper for game activities: places found triples in the first N slots and
+   * fills the remaining (totalTriples - foundTriples.size()) slots with placeholders.
+   */
+  public void setFoundTriples(List<Set<Card>> foundTriples, int totalTriples) {
+    List<Set<Card>> slots = new ArrayList<>(foundTriples);
+    while (slots.size() < totalTriples) {
+      slots.add(null);
+    }
+    setSlots(slots);
   }
 
   public void setCardsView(CardsView cardsView) {
@@ -58,13 +80,31 @@ public class FoundTriplesView extends ViewGroup {
     }
   }
 
+  public void setOnSlotClickListener(OnSlotClickListener listener) {
+    mOnSlotClickListener = listener;
+  }
+
+  /** Sets the slot at the given index as highlighted (drawn with a border), clears others. */
+  public void setHighlightedSlot(int index) {
+    if (mHighlightedSlot != index) {
+      int old = mHighlightedSlot;
+      mHighlightedSlot = index;
+      if (old >= 0 && old < getChildCount()) {
+        ((TripleStackView) getChildAt(old)).setHighlighted(false);
+      }
+      if (index >= 0 && index < getChildCount()) {
+        ((TripleStackView) getChildAt(index)).setHighlighted(true);
+      }
+    }
+  }
+
   private void rebuildChildren() {
     // Remove surplus children
-    while (getChildCount() > mTotalTriples) {
+    while (getChildCount() > mSlots.size()) {
       removeViewAt(getChildCount() - 1);
     }
     // Add or update children
-    for (int i = 0; i < mTotalTriples; i++) {
+    for (int i = 0; i < mSlots.size(); i++) {
       TripleStackView child;
       if (i < getChildCount()) {
         child = (TripleStackView) getChildAt(i);
@@ -75,17 +115,22 @@ public class FoundTriplesView extends ViewGroup {
         }
         addView(child);
       }
-      if (i < mFoundTriples.size()) {
-        child.setTriple(mFoundTriples.get(i));
-      } else {
-        child.setTriple(null);
-      }
+      child.setTriple(mSlots.get(i));
+      child.setHighlighted(i == mHighlightedSlot);
+      final int slotIndex = i;
+      final TripleStackView c = child;
+      child.setOnClickListener(
+          v -> {
+            if (mOnSlotClickListener != null) {
+              mOnSlotClickListener.onSlotClick(slotIndex, c.getTriple());
+            }
+          });
     }
     requestLayout();
     invalidate();
   }
 
-  /** Pulses the stack at the given index to draw attention to it. */
+  /** Pulses the stack at the given slot index to draw attention to it. */
   public void highlightStack(int index) {
     if (index >= 0 && index < getChildCount()) {
       ((TripleStackView) getChildAt(index)).animateHighlight();
@@ -150,7 +195,7 @@ public class FoundTriplesView extends ViewGroup {
               MeasureSpec.makeMeasureSpec(mSlotHeight, MeasureSpec.EXACTLY));
     }
 
-    int rows = (int) Math.ceil((double) Math.max(mTotalTriples, 1) / COLUMNS);
+    int rows = (int) Math.ceil((double) Math.max(mSlots.size(), 1) / COLUMNS);
     setMeasuredDimension(width, rows * mSlotHeight);
   }
 

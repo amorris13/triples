@@ -1,5 +1,7 @@
 package com.antsapps.triples.cardsview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
+import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
@@ -20,6 +23,7 @@ import com.google.common.collect.Sets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class CardsView extends ViewGroup
     implements Game.GameRenderer, CardDimensionsProvider {
@@ -336,5 +340,37 @@ public abstract class CardsView extends ViewGroup
     }
 
     clearSelectedCards();
+  }
+
+  /**
+   * Animates the given cards to alpha 0, then calls {@code onFinished}. If none of the cards exist
+   * in this view, {@code onFinished} is called immediately. Used to fade out cards before a
+   * backward step navigation so they disappear gracefully before the board state changes.
+   */
+  public void fadeOutCardsAndThen(Set<Card> cards, Runnable onFinished) {
+    if (cards.isEmpty()) {
+      onFinished.run();
+      return;
+    }
+    long dur = SettingsFragment.getAnimationDuration(getContext());
+    AtomicInteger pending = new AtomicInteger(cards.size());
+    for (Card card : cards) {
+      CardView cv = mCardViews.get(card);
+      if (cv == null) {
+        if (pending.decrementAndGet() == 0) onFinished.run();
+        continue;
+      }
+      cv.animate()
+          .alpha(0)
+          .setDuration(dur)
+          .setListener(
+              new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                  if (pending.decrementAndGet() == 0) onFinished.run();
+                }
+              })
+          .start();
+    }
   }
 }
