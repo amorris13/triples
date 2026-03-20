@@ -105,7 +105,7 @@ public class TripleExplanationView extends FrameLayout {
 
     mConclusionImage = new ImageView(context);
     mConclusionImage.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24)));
-    mConclusionImage.setPadding(dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2));
+    mConclusionImage.setPadding(dpToPx(4), 0, dpToPx(4), 0);
     firstCell.addView(mConclusionImage);
 
     mTypeSummaryText = new TextView(context);
@@ -131,6 +131,7 @@ public class TripleExplanationView extends FrameLayout {
 
       mConclusionTicks[j] = new ImageView(context);
       mConclusionTicks[j].setLayoutParams(new LinearLayout.LayoutParams(dpToPx(12), dpToPx(12)));
+      mConclusionTicks[j].setPadding(dpToPx(4), 0, dpToPx(4), 0);
       container.addView(mConclusionTicks[j]);
 
       conclusionRow.addView(container);
