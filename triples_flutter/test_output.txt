@@ -1,0 +1,131 @@
+00:00 +0: loading /app/triples_flutter/test/engine/game_test.dart
+lib/engine/deck.dart:2:8: Error: Error when reading 'lib/engine/card.dart': No such file or directory
+import 'card.dart';
+       ^
+lib/engine/deck.dart:5:14: Error: Type 'Card' not found.
+  final List<Card> _cards = [];
+             ^^^^
+lib/engine/deck.dart:20:23: Error: Type 'Card' not found.
+  Deck.fromCards(List<Card> cards) {
+                      ^^^^
+lib/engine/deck.dart:28:3: Error: Type 'Card' not found.
+  Card getNextCard() {
+  ^^^^
+lib/engine/deck.dart:33:28: Error: Type 'Card' not found.
+  void readdCards(Iterable<Card> cards) {
+                           ^^^^
+lib/engine/deck.dart:41:8: Error: Type 'Card' not found.
+  List<Card> get cards => List.unmodifiable(_cards);
+       ^^^^
+lib/engine/game.dart:86:22: Error: The method 'containsAll' isn't defined for the type 'List<Card?>'.
+ - 'List' is from 'dart:core'.
+ - 'Card' is from 'package:triples_flutter/models/card.dart' ('lib/models/card.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'containsAll'.
+    if (!cardsInPlay.containsAll(triple)) return;
+                     ^^^^^^^^^^^
+lib/engine/deck.dart:5:14: Error: 'Card' isn't a type.
+  final List<Card> _cards = [];
+             ^^^^
+lib/engine/deck.dart:8:25: Error: The getter 'Card' isn't defined for the type 'Deck'.
+ - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+    for (int n = 0; n < Card.maxVariables; n++) {
+                        ^^^^
+lib/engine/deck.dart:9:27: Error: The getter 'Card' isn't defined for the type 'Deck'.
+ - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+      for (int s = 0; s < Card.maxVariables; s++) {
+                          ^^^^
+lib/engine/deck.dart:10:29: Error: The getter 'Card' isn't defined for the type 'Deck'.
+ - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+        for (int p = 0; p < Card.maxVariables; p++) {
+                            ^^^^
+lib/engine/deck.dart:11:31: Error: The getter 'Card' isn't defined for the type 'Deck'.
+ - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+          for (int c = 0; c < Card.maxVariables; c++) {
+                              ^^^^
+lib/engine/deck.dart:12:24: Error: The method 'Card' isn't defined for the type 'Deck'.
+ - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Card'.
+            _cards.add(Card(number: n, shape: s, pattern: p, color: c));
+                       ^^^^
+lib/engine/deck.dart:20:23: Error: 'Card' isn't a type.
+  Deck.fromCards(List<Card> cards) {
+                      ^^^^
+lib/engine/deck.dart:29:32: Error: The method 'Card' isn't defined for the type 'Deck'.
+ - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Card'.
+    if (_cards.isEmpty) return Card(number: 0, shape: 0, pattern: 0, color: 0); // Should not happen if checked
+                               ^^^^
+lib/engine/deck.dart:33:28: Error: 'Card' isn't a type.
+  void readdCards(Iterable<Card> cards) {
+                           ^^^^
+00:00 +0 -1: loading /app/triples_flutter/test/engine/game_test.dart [E]
+  Failed to load "/app/triples_flutter/test/engine/game_test.dart":
+  Compilation failed for testPath=/app/triples_flutter/test/engine/game_test.dart: lib/engine/deck.dart:2:8: Error: Error when reading 'lib/engine/card.dart': No such file or directory
+  import 'card.dart';
+         ^
+  lib/engine/deck.dart:5:14: Error: Type 'Card' not found.
+    final List<Card> _cards = [];
+               ^^^^
+  lib/engine/deck.dart:20:23: Error: Type 'Card' not found.
+    Deck.fromCards(List<Card> cards) {
+                        ^^^^
+  lib/engine/deck.dart:28:3: Error: Type 'Card' not found.
+    Card getNextCard() {
+    ^^^^
+  lib/engine/deck.dart:33:28: Error: Type 'Card' not found.
+    void readdCards(Iterable<Card> cards) {
+                             ^^^^
+  lib/engine/deck.dart:41:8: Error: Type 'Card' not found.
+    List<Card> get cards => List.unmodifiable(_cards);
+         ^^^^
+  lib/engine/game.dart:86:22: Error: The method 'containsAll' isn't defined for the type 'List<Card?>'.
+   - 'List' is from 'dart:core'.
+   - 'Card' is from 'package:triples_flutter/models/card.dart' ('lib/models/card.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'containsAll'.
+      if (!cardsInPlay.containsAll(triple)) return;
+                       ^^^^^^^^^^^
+  lib/engine/deck.dart:5:14: Error: 'Card' isn't a type.
+    final List<Card> _cards = [];
+               ^^^^
+  lib/engine/deck.dart:8:25: Error: The getter 'Card' isn't defined for the type 'Deck'.
+   - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+      for (int n = 0; n < Card.maxVariables; n++) {
+                          ^^^^
+  lib/engine/deck.dart:9:27: Error: The getter 'Card' isn't defined for the type 'Deck'.
+   - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+        for (int s = 0; s < Card.maxVariables; s++) {
+                            ^^^^
+  lib/engine/deck.dart:10:29: Error: The getter 'Card' isn't defined for the type 'Deck'.
+   - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+          for (int p = 0; p < Card.maxVariables; p++) {
+                              ^^^^
+  lib/engine/deck.dart:11:31: Error: The getter 'Card' isn't defined for the type 'Deck'.
+   - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'Card'.
+            for (int c = 0; c < Card.maxVariables; c++) {
+                                ^^^^
+  lib/engine/deck.dart:12:24: Error: The method 'Card' isn't defined for the type 'Deck'.
+   - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'Card'.
+              _cards.add(Card(number: n, shape: s, pattern: p, color: c));
+                         ^^^^
+  lib/engine/deck.dart:20:23: Error: 'Card' isn't a type.
+    Deck.fromCards(List<Card> cards) {
+                        ^^^^
+  lib/engine/deck.dart:29:32: Error: The method 'Card' isn't defined for the type 'Deck'.
+   - 'Deck' is from 'package:triples_flutter/engine/deck.dart' ('lib/engine/deck.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'Card'.
+      if (_cards.isEmpty) return Card(number: 0, shape: 0, pattern: 0, color: 0); // Should not happen if checked
+                                 ^^^^
+  lib/engine/deck.dart:33:28: Error: 'Card' isn't a type.
+    void readdCards(Iterable<Card> cards) {
+                             ^^^^
+  .
+00:00 +0 -1: Some tests failed.

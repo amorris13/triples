@@ -1,3 +1,4 @@
-- Triples Analyser Bot: Redesigned post-game analysis with detailed tables for valid triples, same/diff preference breakdown, and property sameness bias per category.
-- Statistics Revamp: A new three-tab layout (Summary, List, Analysis) featuring aggregate trends, chip-based filters, and a dedicated Analysis tab for historical game trends.
-- Customization Enhancements: New options to hide the timer, triples count, and hint icon for a cleaner, more focused game board.
+Initial port of the Triples app to Flutter.
+Added support for all game modes: Classic, Arcade, Zen, and Daily.
+Implemented statistics, game reconstruction, and Google Play Games Services integration.
+Added comprehensive unit and widget tests for the new Flutter codebase.
