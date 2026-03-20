@@ -136,6 +136,8 @@ public class TripleExplanationView extends FrameLayout {
       conclusionRow.addView(container);
     }
     table.addView(conclusionRow);
+
+    setCards(new java.util.LinkedHashSet<>());
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
