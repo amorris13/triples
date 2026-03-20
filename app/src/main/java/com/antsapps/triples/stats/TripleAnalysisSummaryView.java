@@ -6,7 +6,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -44,26 +43,26 @@ public class TripleAnalysisSummaryView extends LinearLayout {
     mSameDiffContainer = findViewById(R.id.same_diff_container);
     mPropertyBiasContainer = findViewById(R.id.property_bias_container);
 
-    ImageButton availableTriplesInfo = findViewById(R.id.available_triples_info_button);
-    availableTriplesInfo.setOnClickListener(
-        v ->
-            showInfoDialog(
-                getContext().getString(R.string.analysis_available_triples),
-                getContext().getString(R.string.analysis_available_triples_tooltip)));
+    setupInfoButton(
+        R.id.available_triples_info_button,
+        R.string.analysis_available_triples,
+        R.string.analysis_available_triples_tooltip);
+    setupInfoButton(
+        R.id.same_diff_info_button,
+        R.string.analysis_same_diff_preference,
+        R.string.analysis_same_diff_tooltip);
+    setupInfoButton(
+        R.id.property_bias_info_button,
+        R.string.analysis_property_sameness_bias,
+        R.string.analysis_property_bias_tooltip);
+  }
 
-    ImageButton sameDiffInfo = findViewById(R.id.same_diff_info_button);
-    sameDiffInfo.setOnClickListener(
-        v ->
-            showInfoDialog(
-                getContext().getString(R.string.analysis_same_diff_preference),
-                getContext().getString(R.string.analysis_same_diff_tooltip)));
-
-    ImageButton propertyBiasInfo = findViewById(R.id.property_bias_info_button);
-    propertyBiasInfo.setOnClickListener(
-        v ->
-            showInfoDialog(
-                getContext().getString(R.string.analysis_property_sameness_bias),
-                getContext().getString(R.string.analysis_property_bias_tooltip)));
+  private void setupInfoButton(int buttonId, int titleResId, int messageResId) {
+    findViewById(buttonId)
+        .setOnClickListener(
+            v ->
+                showInfoDialog(
+                    getContext().getString(titleResId), getContext().getString(messageResId)));
   }
 
   private void showInfoDialog(String title, String message) {

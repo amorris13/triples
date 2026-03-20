@@ -82,9 +82,9 @@ public abstract class BaseStatisticsFragment extends Fragment
             viewPager,
             (tab, position) -> {
               switch (position) {
-                case 0 -> tab.setText("Summary");
-                case 1 -> tab.setText("List");
-                case 2 -> tab.setText("Analysis");
+                case 0 -> tab.setText(R.string.stats_tab_summary);
+                case 1 -> tab.setText(R.string.stats_tab_list);
+                case 2 -> tab.setText(R.string.stats_tab_analysis);
               }
             })
         .attach();
@@ -121,18 +121,9 @@ public abstract class BaseStatisticsFragment extends Fragment
     @Override
     public Fragment createFragment(int position) {
       return switch (position) {
-        case 0 -> {
-          mSummaryTabFragment = SummaryTabFragment.newInstance();
-          yield mSummaryTabFragment;
-        }
-        case 1 -> {
-          mListTabFragment = ListTabFragment.newInstance();
-          yield mListTabFragment;
-        }
-        case 2 -> {
-          mAnalysisTabFragment = AnalysisTabFragment.newInstance();
-          yield mAnalysisTabFragment;
-        }
+        case 0 -> mSummaryTabFragment = SummaryTabFragment.newInstance();
+        case 1 -> mListTabFragment = ListTabFragment.newInstance();
+        case 2 -> mAnalysisTabFragment = AnalysisTabFragment.newInstance();
         default -> throw new IllegalArgumentException("Invalid position: " + position);
       };
     }

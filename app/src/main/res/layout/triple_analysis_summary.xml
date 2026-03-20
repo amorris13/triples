@@ -22,7 +22,7 @@
             android:layout_height="32dp"
             android:src="@drawable/ic_info"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Info"
+            android:contentDescription="@string/analysis_info_content_description"
             android:padding="4dp" />
 
     </LinearLayout>
@@ -56,7 +56,7 @@
             android:layout_height="32dp"
             android:src="@drawable/ic_info"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Info"
+            android:contentDescription="@string/analysis_info_content_description"
             android:padding="4dp" />
 
     </LinearLayout>
@@ -90,7 +90,7 @@
             android:layout_height="32dp"
             android:src="@drawable/ic_info"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Info"
+            android:contentDescription="@string/analysis_info_content_description"
             android:padding="4dp" />
 
     </LinearLayout>
