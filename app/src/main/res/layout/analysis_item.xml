@@ -13,17 +13,39 @@
         android:focusable="true"
         android:background="?attr/selectableItemBackground">
 
-        <!-- Left: step number -->
-        <TextView
-            android:id="@+id/step_text"
+        <!-- Left: step number, duration, options -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_gravity="center_vertical"
-            android:minWidth="44dp"
+            android:minWidth="56dp"
             android:gravity="center"
-            android:textAppearance="?attr/textAppearanceSubtitle2"
-            android:textStyle="bold"
-            android:paddingEnd="4dp" />
+            android:paddingEnd="4dp">
+
+            <TextView
+                android:id="@+id/step_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/duration_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceCaption" />
+
+            <TextView
+                android:id="@+id/options_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceCaption" />
+
+        </LinearLayout>
 
         <!-- Middle: explanation view (with inline type summary in conclusion row) -->
         <com.antsapps.triples.views.TripleExplanationView
@@ -31,30 +53,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-
-        <!-- Right: duration + options -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end"
-            android:padding="4dp"
-            android:minWidth="60dp"
-            android:layout_gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/duration_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody2" />
-
-            <TextView
-                android:id="@+id/options_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody2" />
-
-        </LinearLayout>
 
     </LinearLayout>
 

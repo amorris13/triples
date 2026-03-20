@@ -109,6 +109,23 @@
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 android:textColor="?attr/colorPrimary" />
 
+            <TextView
+                android:id="@+id/replay_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/analysis_replay_subtitle"
+                android:textAppearance="?attr/textAppearanceBody2" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/view_board_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/analysis_view_board"
+                android:visibility="gone" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/triples_list"
                 android:layout_width="match_parent"

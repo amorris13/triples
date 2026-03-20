@@ -22,6 +22,7 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
+import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +35,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   public static final String GAME_TYPE = "game_type";
 
   private List<TripleAnalysis> mAnalysis;
+  private boolean mIsDailyGame;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
     long gameId = getIntent().getLongExtra(GAME_ID, -1);
     String gameType = getIntent().getStringExtra(GAME_TYPE);
+    mIsDailyGame = "Daily".equalsIgnoreCase(gameType);
 
     Game game = getGame(gameId, gameType);
     if (game == null) {
@@ -66,10 +69,34 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
     // Info button click handlers
     ImageButton sameDiffInfo = findViewById(R.id.same_diff_info_button);
-    sameDiffInfo.setOnClickListener(v -> showInfoDialog(getString(R.string.analysis_same_diff_preference), getString(R.string.analysis_same_diff_tooltip)));
+    sameDiffInfo.setOnClickListener(
+        v ->
+            showInfoDialog(
+                getString(R.string.analysis_same_diff_preference),
+                getString(R.string.analysis_same_diff_tooltip)));
 
     ImageButton propertyBiasInfo = findViewById(R.id.property_bias_info_button);
-    propertyBiasInfo.setOnClickListener(v -> showInfoDialog(getString(R.string.analysis_property_sameness_bias), getString(R.string.analysis_property_bias_tooltip)));
+    propertyBiasInfo.setOnClickListener(
+        v ->
+            showInfoDialog(
+                getString(R.string.analysis_property_sameness_bias),
+                getString(R.string.analysis_property_bias_tooltip)));
+
+    // For daily games, show a single "View Board" button instead of per-row links
+    View replaySubtitle = findViewById(R.id.replay_subtitle);
+    MaterialButton viewBoardButton = findViewById(R.id.view_board_button);
+    if (mIsDailyGame && !mAnalysis.isEmpty()) {
+      replaySubtitle.setVisibility(View.GONE);
+      viewBoardButton.setVisibility(View.VISIBLE);
+      TripleAnalysis firstStep = mAnalysis.get(0);
+      viewBoardButton.setOnClickListener(
+          v -> {
+            Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
+            BoardHistoryActivity.sAnalysis = firstStep;
+            BoardHistoryActivity.sStep = 1;
+            startActivity(intent);
+          });
+    }
   }
 
   private void showInfoDialog(String title, String message) {
@@ -356,13 +383,17 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       holder.optionsText.setText(
           getString(R.string.analysis_opts_format, analysis.allAvailableTriples.size()));
 
-      holder.itemView.setOnClickListener(
-          v -> {
-            Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-            BoardHistoryActivity.sAnalysis = analysis;
-            BoardHistoryActivity.sStep = position + 1;
-            startActivity(intent);
-          });
+      if (!mIsDailyGame) {
+        holder.itemView.setOnClickListener(
+            v -> {
+              Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
+              BoardHistoryActivity.sAnalysis = analysis;
+              BoardHistoryActivity.sStep = position + 1;
+              startActivity(intent);
+            });
+      } else {
+        holder.itemView.setClickable(false);
+      }
     }
 
     @Override

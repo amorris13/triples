@@ -189,6 +189,7 @@
   <string name="analysis_same_diff_preference">Same/Diff Preference</string>
   <string name="analysis_property_sameness_bias">Property Sameness Bias</string>
   <string name="analysis_triples_found">Step by Step Game Replay</string>
+  <string name="analysis_replay_subtitle">Tap each row to see the board at that step.</string>
   <string name="analysis_col_options">Options</string>
   <string name="analysis_col_steps">Steps</string>
   <string name="analysis_col_avg_time">Avg Time</string>

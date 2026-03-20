@@ -99,7 +99,8 @@ public class TripleExplanationView extends FrameLayout {
 
     // First cell: overall conclusion image + type summary text (one visible at a time)
     LinearLayout firstCell = new LinearLayout(context);
-    firstCell.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+    firstCell.setLayoutParams(
+        new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
     firstCell.setGravity(Gravity.CENTER);
 
     mConclusionImage = new ImageView(context);
