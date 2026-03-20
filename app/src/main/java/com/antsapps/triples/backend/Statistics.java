@@ -37,7 +37,7 @@ public class Statistics {
     if (mAnalysis == null) {
       mAnalysis = new ArrayList<>();
       for (Game game : mGamesInPeriod) {
-        mAnalysis.addAll(GameReconstructor.reconstruct(game));
+        mAnalysis.addAll(game.reconstruct());
       }
     }
     return mAnalysis;
