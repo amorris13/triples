@@ -11,3 +11,4 @@
 gradle/gradle-daemon-jvm.properties
 node_modules/
 output/
+app/keystore.jks
