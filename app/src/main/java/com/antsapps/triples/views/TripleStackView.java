@@ -248,6 +248,14 @@ public class TripleStackView extends View {
         .scaleY(1.2f)
         .setDuration(SettingsFragment.getAnimationDuration(getContext()))
         .setInterpolator(new CycleInterpolator(0.5f))
+        .setListener(
+            new android.animation.AnimatorListenerAdapter() {
+              @Override
+              public void onAnimationEnd(android.animation.Animator animation) {
+                setScaleX(1f);
+                setScaleY(1f);
+              }
+            })
         .start();
   }
 
