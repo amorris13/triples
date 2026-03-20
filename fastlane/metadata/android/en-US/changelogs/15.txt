@@ -1,6 +1,3 @@
 - Triples Analyser Bot: Redesigned post-game analysis with detailed tables for valid triples, same/diff preference breakdown, and property sameness bias per category.
 - Statistics Revamp: A new three-tab layout (Summary, List, Analysis) featuring aggregate trends, chip-based filters, and a dedicated Analysis tab for historical game trends.
-- Board History Navigation: Added support for multi-step navigation through game history with new "flying off" and "flying back" animations.
-- Animation Polish: Smoother transitions for card movement and state-consistent selection outlines during animations.
 - Customization Enhancements: New options to hide the timer, triples count, and hint icon for a cleaner, more focused game board.
-- Game Reconstruction: Improved logic for replaying game states from initial seeds, enabling accurate historical board viewing and alternative analysis.
