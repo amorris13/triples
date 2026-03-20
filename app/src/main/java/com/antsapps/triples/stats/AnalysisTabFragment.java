@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -61,6 +62,19 @@ public class AnalysisTabFragment extends Fragment implements OnStatisticsChangeL
     TripleAnalysisSummaryView summaryView = view.findViewById(R.id.analysis_summary);
     if (summaryView != null) {
       summaryView.setAnalysis(statistics.getAnalysis());
+    }
+
+    TextView warningView = view.findViewById(R.id.analysis_warning);
+    if (warningView != null) {
+      int numGames = statistics.getNumGames();
+      int numWithAnalysis = statistics.getNumGamesWithAnalysis();
+      if (numGames > 0 && numWithAnalysis < numGames) {
+        warningView.setVisibility(View.VISIBLE);
+        warningView.setText(
+            getString(R.string.analysis_partial_data_warning, numWithAnalysis, numGames));
+      } else {
+        warningView.setVisibility(View.GONE);
+      }
     }
   }
 }

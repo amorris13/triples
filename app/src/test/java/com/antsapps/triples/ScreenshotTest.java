@@ -105,6 +105,43 @@ public class ScreenshotTest extends BaseRobolectricTest {
   }
 
   @Test
+  public void testClassicStatistics_PartialAnalysis() {
+    Context context = ApplicationProvider.getApplicationContext();
+    Application app = Application.getInstance(context);
+    app.clearAllData();
+
+    // 1 game with analysis
+    ClassicGame game1 = ClassicGame.createFromSeed(111L);
+    game1.begin();
+    findAndCommitTriples(game1, 27);
+    app.addClassicGame(game1);
+
+    // 1 game without analysis (e.g. from an older version where we didn't save found triples)
+    // We can simulate this by creating a completed game with empty foundTriples
+    ClassicGame game2 =
+        new ClassicGame(
+            -1,
+            222L,
+            Lists.newArrayList(),
+            Lists.newArrayList(),
+            new Deck(new Random(222L)),
+            123456L,
+            Application.getTimeProvider().now(),
+            GameState.COMPLETED,
+                false,
+                Lists.newArrayList());
+    app.addClassicGame(game2);
+
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), StatisticsActivity.class);
+    intent.putExtra(StatisticsActivity.GAME_TYPE, "Classic");
+    try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
+      onView(withText("Analysis")).perform(click());
+      capture("statistics_classic_partial_analysis");
+    }
+  }
+
+  @Test
   public void testMain() {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       capture("main");

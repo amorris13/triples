@@ -19,6 +19,16 @@ public class Statistics {
     return mGamesInPeriod.size();
   }
 
+  public int getNumGamesWithAnalysis() {
+    int count = 0;
+    for (Game game : mGamesInPeriod) {
+      if (!game.getFoundTriples().isEmpty()) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   public List<Game> getData() {
     return Lists.newArrayList(mGamesInPeriod);
   }
