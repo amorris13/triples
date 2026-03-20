@@ -74,16 +74,16 @@ public class ZenGame extends Game {
   }
 
   @Override
-  public void commitTriple(Card... cards) {
-    super.commitTriple(cards);
+  protected Deck createDeck(Random random) {
+    return mIsBeginner ? Deck.createBeginnerDeck(random) : new Deck(random);
+  }
 
-    // Zen mode: unlimited play by recycling cards
-    mDeck.readdCards(cards);
-    mDeck.shuffle(new Random());
-
-    // In Zen mode, we always ensure there are cards in play and valid triples.
-    // The super.commitTriple already handles adding cards from deck if needed.
-    // Since we re-add cards to the deck, the deck will never be empty.
+  @Override
+  protected void updateBoard(
+      List<Card> cardsInPlay, Deck deck, Set<Card> foundTriple, Random random) {
+    super.updateBoard(cardsInPlay, deck, foundTriple, random);
+    deck.readdCards(foundTriple.toArray(new Card[0]));
+    deck.shuffle(random);
   }
 
   public boolean isBeginner() {
