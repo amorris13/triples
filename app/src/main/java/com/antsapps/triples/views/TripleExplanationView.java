@@ -105,7 +105,7 @@ public class TripleExplanationView extends FrameLayout {
 
     mConclusionImage = new ImageView(context);
     mConclusionImage.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24)));
-    mConclusionImage.setPadding(dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2));
+    mConclusionImage.setPadding(dpToPx(4), 0, dpToPx(4), 0);
     firstCell.addView(mConclusionImage);
 
     mTypeSummaryText = new TextView(context);
@@ -130,12 +130,16 @@ public class TripleExplanationView extends FrameLayout {
       container.addView(mConclusionTexts[j]);
 
       mConclusionTicks[j] = new ImageView(context);
-      mConclusionTicks[j].setLayoutParams(new LinearLayout.LayoutParams(dpToPx(12), dpToPx(12)));
+      MarginLayoutParams marginLayoutParams = new MarginLayoutParams(dpToPx(12), dpToPx(12));
+      marginLayoutParams.setMargins(dpToPx(4), 0, 0, 0);
+      mConclusionTicks[j].setLayoutParams(marginLayoutParams);
       container.addView(mConclusionTicks[j]);
 
       conclusionRow.addView(container);
     }
     table.addView(conclusionRow);
+
+    setCards(new java.util.LinkedHashSet<>());
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
@@ -166,7 +170,7 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   public void setCards(Set<Card> cards) {
-    mCards.clear();
+    mCards.retainAll(cards);
     mCards.addAll(cards);
 
     List<Card> cardList = ImmutableList.copyOf(mCards);
