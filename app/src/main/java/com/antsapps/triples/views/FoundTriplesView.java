@@ -40,6 +40,7 @@ public class FoundTriplesView extends ViewGroup {
   private int mCardWidth;
   private int mCardHeight;
   private int mStackDisplacement;
+  private boolean mPlaceholderClickable = true;
   private final int mPadding;
 
   public FoundTriplesView(Context context) {
@@ -50,6 +51,8 @@ public class FoundTriplesView extends ViewGroup {
     super(context, attrs);
     float density = getResources().getDisplayMetrics().density;
     mPadding = (int) (1 * density);
+    setClipChildren(false);
+    setClipToPadding(false);
   }
 
   /**
@@ -82,6 +85,17 @@ public class FoundTriplesView extends ViewGroup {
 
   public void setOnSlotClickListener(OnSlotClickListener listener) {
     mOnSlotClickListener = listener;
+  }
+
+  public void setPlaceholderClickable(boolean clickable) {
+    mPlaceholderClickable = clickable;
+    for (int i = 0; i < getChildCount(); i++) {
+      TripleStackView child = (TripleStackView) getChildAt(i);
+      if (child.getTriple() == null) {
+        child.setClickable(clickable);
+        child.setFocusable(clickable);
+      }
+    }
   }
 
   /** Sets the slot at the given index as highlighted (drawn with a border), clears others. */
@@ -119,6 +133,9 @@ public class FoundTriplesView extends ViewGroup {
       child.setHighlighted(i == mHighlightedSlot);
       final int slotIndex = i;
       final TripleStackView c = child;
+      boolean slotClickable = mSlots.get(i) != null || mPlaceholderClickable;
+      child.setClickable(slotClickable);
+      child.setFocusable(slotClickable);
       child.setOnClickListener(
           v -> {
             if (mOnSlotClickListener != null) {

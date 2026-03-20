@@ -26,6 +26,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
   public static final String GAME_TYPE = "game_type";
 
   private List<TripleAnalysis> mAnalysis;
+  private List<Card> mFinalBoardState;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     }
 
     mAnalysis = GameReconstructor.reconstruct(game);
+    mFinalBoardState = GameReconstructor.getFinalBoardState(game);
     updateSummary();
 
     RecyclerView recyclerView = findViewById(R.id.triples_list);
@@ -155,6 +157,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
             BoardHistoryActivity.sAnalysisList = mAnalysis;
             BoardHistoryActivity.sInitialStep = position + 1;
+            BoardHistoryActivity.sFinalBoardState = mFinalBoardState;
             startActivity(intent);
           });
     }

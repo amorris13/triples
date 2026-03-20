@@ -53,6 +53,37 @@ public class GameReconstructor {
     return analysisList;
   }
 
+  /**
+   * Returns the board state remaining after all found triples have been processed (i.e., the final
+   * board at the end of the game). Returns null for DailyGame since its board is fixed.
+   */
+  public static List<Card> getFinalBoardState(Game game) {
+    if (game instanceof DailyGame) {
+      return null;
+    }
+
+    Random random = new Random(game.getRandomSeed());
+    Deck deck;
+    if (game instanceof ZenGame && ((ZenGame) game).isBeginner()) {
+      deck = Deck.createBeginnerDeck(random);
+    } else {
+      deck = new Deck(random);
+    }
+
+    List<Card> cardsInPlay = Lists.newArrayList();
+    while (cardsInPlay.size() < Game.MIN_CARDS_IN_PLAY || !checkIfAnyValidTriples(cardsInPlay)) {
+      for (int i = 0; i < 3; i++) {
+        cardsInPlay.add(deck.getNextCard());
+      }
+    }
+
+    for (Set<Card> foundTriple : game.getFoundTriples()) {
+      updateBoard(cardsInPlay, deck, foundTriple, game);
+    }
+
+    return Lists.newArrayList(cardsInPlay);
+  }
+
   private static List<TripleAnalysis> reconstructDaily(DailyGame game) {
     List<TripleAnalysis> analysisList = Lists.newArrayList();
     List<Card> cardsInPlay = game.getCardsInPlay();

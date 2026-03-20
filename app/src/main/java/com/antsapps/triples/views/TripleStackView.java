@@ -70,9 +70,25 @@ public class TripleStackView extends View {
 
     mPadding = (int) (1 * density);
 
-    TypedValue rippleValue = new TypedValue();
-    context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, rippleValue, true);
-    setForeground(context.getDrawable(rippleValue.resourceId));
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      TypedValue outValue = new TypedValue();
+      context.getTheme().resolveAttribute(android.R.attr.colorControlHighlight, outValue, true);
+      float[] outerR = new float[8];
+      java.util.Arrays.fill(outerR, 4 * density);
+      android.graphics.drawable.ShapeDrawable mask =
+          new android.graphics.drawable.ShapeDrawable(
+              new android.graphics.drawable.shapes.RoundRectShape(outerR, null, null));
+      android.graphics.drawable.RippleDrawable ripple =
+          new android.graphics.drawable.RippleDrawable(
+              android.content.res.ColorStateList.valueOf(outValue.data), null, mask);
+      setForeground(ripple);
+    } else {
+      TypedValue rippleValue = new TypedValue();
+      context
+          .getTheme()
+          .resolveAttribute(android.R.attr.selectableItemBackground, rippleValue, true);
+      setForeground(context.getDrawable(rippleValue.resourceId));
+    }
     setClickable(true);
     setFocusable(true);
   }

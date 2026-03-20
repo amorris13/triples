@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.TripleAnalysis;
 import com.antsapps.triples.cardsview.CardView;
 import com.antsapps.triples.cardsview.VerticalCardsView;
@@ -35,6 +36,12 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   /** 1-based step to open initially. */
   public static int sInitialStep;
 
+  /**
+   * Final board state (cards remaining after all triples found). Set by the caller alongside
+   * sAnalysisList. May be null if not available (e.g. DailyGame or old call sites).
+   */
+  public static List<Card> sFinalBoardState;
+
   private VerticalCardsView mCardsView;
   private FoundTriplesView mFoundTriplesView;
 
@@ -51,6 +58,9 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
    * been revealed by the user.
    */
   private final Map<Integer, Set<Integer>> mRevealedAlternatives = new HashMap<>();
+
+  /** Available triples on the final board, populated when the final board step is shown. */
+  private List<Set<Card>> mCurrentFinalBoardTriples;
 
   private Menu mMenu;
 
@@ -109,20 +119,29 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
           }
         });
 
-    // Tapping a filled slot pulses its cards in the grid; tapping a placeholder pulses the
-    // placeholder and the corresponding cards in the grid.
+    // Tapping a filled slot pulses its cards in the grid and pulses the slot.
+    // Tapping a placeholder reveals it (flies cards from grid to slot).
+    // On the final board, tapping a placeholder pulses its cards in the grid.
     mFoundTriplesView.setOnSlotClickListener(
         (slotIndex, triple) -> {
-          if (mCurrentStep >= mAnalysisList.size()) return;
+          if (mCurrentStep >= mAnalysisList.size()) {
+            // Final board: pulse the cards in the grid that form this triple.
+            if (triple == null
+                && mCurrentFinalBoardTriples != null
+                && slotIndex < mCurrentFinalBoardTriples.size()) {
+              mCardsView.onAlreadyFoundTriple(mCurrentFinalBoardTriples.get(slotIndex));
+              mFoundTriplesView.highlightStack(slotIndex);
+            }
+            return;
+          }
           if (triple != null) {
             mCardsView.onAlreadyFoundTriple(triple);
             mFoundTriplesView.highlightStack(slotIndex);
           } else {
-            mFoundTriplesView.highlightStack(slotIndex);
             List<Set<Card>> others = getOtherAlternatives(mAnalysisList.get(mCurrentStep));
             int othersIdx = slotIndex - 1;
             if (othersIdx >= 0 && othersIdx < others.size()) {
-              mCardsView.onAlreadyFoundTriple(others.get(othersIdx));
+              revealAlternative(mCurrentStep, othersIdx, others.get(othersIdx));
             }
           }
         });
@@ -160,11 +179,11 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       boolean nextEnabled = mCurrentStep < mAnalysisList.size();
       if (prev != null) {
         prev.setEnabled(prevEnabled);
-        if (prev.getIcon() != null) prev.getIcon().setAlpha(prevEnabled ? 255 : 96);
+        if (prev.getIcon() != null) prev.getIcon().mutate().setAlpha(prevEnabled ? 255 : 96);
       }
       if (next != null) {
         next.setEnabled(nextEnabled);
-        if (next.getIcon() != null) next.getIcon().setAlpha(nextEnabled ? 255 : 96);
+        if (next.getIcon() != null) next.getIcon().mutate().setAlpha(nextEnabled ? 255 : 96);
       }
     }
     return true;
@@ -195,13 +214,11 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
     if (mCurrentStep == mAnalysisList.size()) {
       // Navigate to the final board (cards remaining after all triples found).
-      List<Card> finalBoard = new ArrayList<>(currentAnalysis.boardState);
-      finalBoard.removeAll(foundTriple);
       updateSubtitle(mCurrentStep, null);
       rebuildFoundTriplesPanel(mCurrentStep, null);
       invalidateOptionsMenu();
       mCardsView.animateTripleFoundToOffscreen(foundTriple);
-      mCardsView.updateCardsInPlay(ImmutableList.copyOf(finalBoard));
+      mCardsView.updateCardsInPlay(ImmutableList.copyOf(getFinalBoardCards()));
       return;
     }
 
@@ -258,10 +275,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   private void showStep(int step) {
     if (step == mAnalysisList.size()) {
       // Final board.
-      TripleAnalysis lastAnalysis = mAnalysisList.get(step - 1);
-      List<Card> finalBoard = new ArrayList<>(lastAnalysis.boardState);
-      finalBoard.removeAll(lastAnalysis.foundTriple);
-      mCardsView.updateCardsInPlay(ImmutableList.copyOf(finalBoard));
+      mCardsView.updateCardsInPlay(ImmutableList.copyOf(getFinalBoardCards()));
       updateSubtitle(step, null);
       rebuildFoundTriplesPanel(step, null);
       invalidateOptionsMenu();
@@ -315,9 +329,18 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
   private void rebuildFoundTriplesPanel(int step, @Nullable TripleAnalysis analysis) {
     if (analysis == null) {
-      mFoundTriplesView.setSlots(new ArrayList<>());
+      // Final board: show available triples as placeholders.
+      List<Card> finalBoard = getFinalBoardCards();
+      mCurrentFinalBoardTriples = Game.getAllValidTriples(finalBoard);
+      List<Set<Card>> slots = new ArrayList<>();
+      for (int i = 0; i < mCurrentFinalBoardTriples.size(); i++) {
+        slots.add(null); // all placeholders (none revealed by default)
+      }
+      mFoundTriplesView.setSlots(slots);
       TextView label = findViewById(R.id.alternatives_label);
-      if (label != null) label.setText("");
+      if (label != null) {
+        label.setText(getString(R.string.analysis_alternatives, mCurrentFinalBoardTriples.size()));
+      }
       return;
     }
 
@@ -347,6 +370,15 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       }
     }
     return others;
+  }
+
+  /** Returns the final board state, using sFinalBoardState if set or computing from last step. */
+  private List<Card> getFinalBoardCards() {
+    if (sFinalBoardState != null) return sFinalBoardState;
+    TripleAnalysis last = mAnalysisList.get(mAnalysisList.size() - 1);
+    List<Card> fallback = new ArrayList<>(last.boardState);
+    fallback.removeAll(last.foundTriple);
+    return fallback;
   }
 
   /**
@@ -407,6 +439,8 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       floatCard.setSelected(true);
       overlay.addView(
           floatCard, new FrameLayout.LayoutParams(gridBounds.width(), gridBounds.height()));
+      // Force layout so getWidth()/getHeight() are valid before starting the animation.
+      floatCard.layout(0, 0, gridBounds.width(), gridBounds.height());
       floatCard.setX(startX);
       floatCard.setY(startY);
 
@@ -445,5 +479,6 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   protected void onDestroy() {
     super.onDestroy();
     sAnalysisList = null;
+    sFinalBoardState = null;
   }
 }
