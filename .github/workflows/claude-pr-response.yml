@@ -33,15 +33,15 @@ jobs:
           echo "author=$AUTHOR" >> $GITHUB_OUTPUT
 
       - name: Respond to comment with Claude
-        # Only respond if the PR was authored by Claude, and the commenter is not a bot
+        # Only respond if the PR was authored by Claude, and the commenter is not Claude itself
         # (to prevent infinite loops where Claude responds to its own comments)
         if: |
           contains(steps.pr-author.outputs.author, 'claude') &&
-          github.event.comment.user.type != 'Bot'
+          !contains(github.event.comment.user.login, 'claude')
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           # Empty trigger_phrase means respond to all comments (no @claude mention needed)
           trigger_phrase: ""
-          # Exclude bot comments to prevent infinite response loops
-          exclude_comments_by_actor: "*[bot]"
+          # Only exclude Claude's own comments to prevent infinite response loops
+          exclude_comments_by_actor: "*claude*"
