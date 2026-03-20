@@ -1,5 +1,7 @@
 package com.antsapps.triples.cardsview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,14 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
+import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
 import com.antsapps.triples.backend.OnValidTripleSelectedListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class CardsView extends ViewGroup
     implements Game.GameRenderer, CardDimensionsProvider {
@@ -41,6 +46,12 @@ public abstract class CardsView extends ViewGroup
   private OnSelectionChangedListener mOnSelectionChangedListener;
   private OnIncorrectTripleSelectedListener mOnIncorrectTripleSelectedListener;
   protected Rect mOffScreenLocation = new Rect();
+
+  /**
+   * Cards in this set will animate in from the off-screen location rather than fading in when added
+   * via the next updateCardsInPlay call. Used for backward step navigation.
+   */
+  protected final Set<Card> mCardsForReverseAnimation = new HashSet<>();
 
   /**
    * This is a value from 0 to 1, where 0 means the view is completely transparent and 1 means the
@@ -143,7 +154,7 @@ public abstract class CardsView extends ViewGroup
   protected abstract void updateMeasuredDimensions(
       final int widthMeasureSpec, final int heightMeasureSpec);
 
-  protected abstract Rect calcBounds(int i);
+  public abstract Rect calcBounds(int i);
 
   @Override
   public void setAlpha(float opacity) {
@@ -269,6 +280,20 @@ public abstract class CardsView extends ViewGroup
         Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), null);
   }
 
+  public void animateTripleFoundToOffscreen(Set<Card> triple, Runnable onFinished) {
+    animateTripleFoundInternal(
+        Maps.toMap(triple, card -> mOffScreenLocation), new AccelerateInterpolator(), onFinished);
+  }
+
+  /**
+   * Marks the given cards to start their entry animation from the off-screen location (rather than
+   * fading in) when they are added in the next {@link #updateCardsInPlay} call. Used to animate
+   * found-triple cards flying back onto the board during backward step navigation.
+   */
+  public void markCardsForReverseAnimation(Set<Card> cards) {
+    mCardsForReverseAnimation.addAll(cards);
+  }
+
   public void animateTripleFound(
       final Map<Card, Rect> triple, Interpolator interpolator, final Runnable onAnimationFinished) {
     // Translate window coordinates to CardsView coordinates
@@ -315,5 +340,62 @@ public abstract class CardsView extends ViewGroup
     }
 
     clearSelectedCards();
+  }
+
+  /**
+   * Immediately removes the given cards from {@code mCardViews} (so they are no longer tracked) and
+   * starts a fade-out animation on their views, removing them from the view hierarchy when the
+   * animation ends. Returns without waiting — the caller can update board state immediately. Used
+   * to fade out replaced cards during backward step navigation.
+   */
+  public void fadeOutAndRemoveCards(Set<Card> cards) {
+    long dur = SettingsFragment.getAnimationDuration(getContext());
+    for (Card card : cards) {
+      CardView cv = mCardViews.remove(card);
+      if (cv == null) continue;
+      cv.animate()
+          .alpha(0)
+          .setDuration(dur)
+          .setListener(
+              new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                  removeView(cv);
+                }
+              })
+          .start();
+    }
+  }
+
+  /**
+   * Animates the given cards to alpha 0, then calls {@code onFinished}. If none of the cards exist
+   * in this view, {@code onFinished} is called immediately. Used to fade out cards before a
+   * backward step navigation so they disappear gracefully before the board state changes.
+   */
+  public void fadeOutCardsAndThen(Set<Card> cards, Runnable onFinished) {
+    if (cards.isEmpty()) {
+      onFinished.run();
+      return;
+    }
+    long dur = SettingsFragment.getAnimationDuration(getContext());
+    AtomicInteger pending = new AtomicInteger(cards.size());
+    for (Card card : cards) {
+      CardView cv = mCardViews.get(card);
+      if (cv == null) {
+        if (pending.decrementAndGet() == 0) onFinished.run();
+        continue;
+      }
+      cv.animate()
+          .alpha(0)
+          .setDuration(dur)
+          .setListener(
+              new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                  if (pending.decrementAndGet() == 0) onFinished.run();
+                }
+              })
+          .start();
+    }
   }
 }

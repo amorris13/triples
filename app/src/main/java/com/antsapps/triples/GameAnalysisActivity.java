@@ -36,6 +36,8 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
 
   private List<TripleAnalysis> mAnalysis;
   private boolean mIsDailyGame;
+  private long mGameId;
+  private String mGameType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +52,11 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       actionBar.setTitle(R.string.analysis_title);
     }
 
-    long gameId = getIntent().getLongExtra(GAME_ID, -1);
-    String gameType = getIntent().getStringExtra(GAME_TYPE);
-    mIsDailyGame = "Daily".equalsIgnoreCase(gameType);
+    mGameId = getIntent().getLongExtra(GAME_ID, -1);
+    mGameType = getIntent().getStringExtra(GAME_TYPE);
+    mIsDailyGame = "Daily".equalsIgnoreCase(mGameType);
 
-    Game game = getGame(gameId, gameType);
+    Game game = getGame(mGameId, mGameType);
     if (game == null) {
       finish();
       return;
@@ -95,12 +97,12 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
     if (mIsDailyGame && !mAnalysis.isEmpty()) {
       replaySubtitle.setVisibility(View.GONE);
       viewBoardButton.setVisibility(View.VISIBLE);
-      TripleAnalysis firstStep = mAnalysis.get(0);
       viewBoardButton.setOnClickListener(
           v -> {
             Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-            BoardHistoryActivity.sAnalysis = firstStep;
-            BoardHistoryActivity.sStep = 1;
+            intent.putExtra(BoardHistoryActivity.EXTRA_GAME_ID, mGameId);
+            intent.putExtra(BoardHistoryActivity.EXTRA_GAME_TYPE, mGameType);
+            intent.putExtra(BoardHistoryActivity.EXTRA_INITIAL_STEP, 1);
             startActivity(intent);
           });
     }
@@ -394,8 +396,9 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
         holder.itemView.setOnClickListener(
             v -> {
               Intent intent = new Intent(GameAnalysisActivity.this, BoardHistoryActivity.class);
-              BoardHistoryActivity.sAnalysis = analysis;
-              BoardHistoryActivity.sStep = position + 1;
+              intent.putExtra(BoardHistoryActivity.EXTRA_GAME_ID, mGameId);
+              intent.putExtra(BoardHistoryActivity.EXTRA_GAME_TYPE, mGameType);
+              intent.putExtra(BoardHistoryActivity.EXTRA_INITIAL_STEP, position + 1);
               startActivity(intent);
             });
       } else {
