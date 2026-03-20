@@ -77,7 +77,7 @@ public class ClassicGame extends Game {
 
   @Override
   protected void checkIfFinished() {
-    if (!checkIfAnyValidTriples()) {
+    if (!checkIfAnyValidTriples() && mDeck.isEmpty()) {
       finish();
     }
   }

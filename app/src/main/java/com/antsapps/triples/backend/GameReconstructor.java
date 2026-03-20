@@ -117,7 +117,10 @@ public class GameReconstructor {
     Card[] tripleArr = foundTriple.toArray(new Card[0]);
     if (game instanceof ArcadeGame || game instanceof ZenGame) {
       for (Card card : tripleArr) {
-        cardsInPlay.set(cardsInPlay.indexOf(card), null);
+        int index = cardsInPlay.indexOf(card);
+        if (index != -1) {
+          cardsInPlay.set(index, null);
+        }
       }
       deck.readdCards(tripleArr);
       if (game instanceof ZenGame) {
@@ -128,7 +131,10 @@ public class GameReconstructor {
     } else {
       // ClassicGame logic
       for (Card card : tripleArr) {
-        cardsInPlay.set(cardsInPlay.indexOf(card), null);
+        int index = cardsInPlay.indexOf(card);
+        if (index != -1) {
+          cardsInPlay.set(index, null);
+        }
       }
     }
 

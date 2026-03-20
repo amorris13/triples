@@ -2,11 +2,13 @@ package com.antsapps.triples.backend;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Statistics {
 
   protected final List<Game> mGamesInPeriod;
+  private List<TripleAnalysis> mAnalysis;
 
   Statistics(Iterable<? extends Game> iterable, Period period, boolean includeHinted) {
     mGamesInPeriod =
@@ -19,5 +21,15 @@ public class Statistics {
 
   public List<Game> getData() {
     return Lists.newArrayList(mGamesInPeriod);
+  }
+
+  public List<TripleAnalysis> getAnalysis() {
+    if (mAnalysis == null) {
+      mAnalysis = new ArrayList<>();
+      for (Game game : mGamesInPeriod) {
+        mAnalysis.addAll(GameReconstructor.reconstruct(game));
+      }
+    }
+    return mAnalysis;
   }
 }
