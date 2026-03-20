@@ -25,8 +25,6 @@ public class FoundTriplesView extends ViewGroup {
   private List<Set<Card>> mFoundTriples = new ArrayList<>();
   private int mTotalTriples = 0;
 
-  /** Kept for API compatibility; no longer used for drawing since children handle their own. */
-  @SuppressWarnings("unused")
   private CardsView mCardsView;
 
   // Geometry computed during onMeasure, stored for getCardBoundsInWindow
@@ -55,6 +53,9 @@ public class FoundTriplesView extends ViewGroup {
 
   public void setCardsView(CardsView cardsView) {
     mCardsView = cardsView;
+    for (int i = 0; i < getChildCount(); i++) {
+      ((TripleStackView) getChildAt(i)).setNaturalCardDimensionsProvider(cardsView);
+    }
   }
 
   private void rebuildChildren() {
@@ -69,6 +70,9 @@ public class FoundTriplesView extends ViewGroup {
         child = (TripleStackView) getChildAt(i);
       } else {
         child = new TripleStackView(getContext());
+        if (mCardsView != null) {
+          child.setNaturalCardDimensionsProvider(mCardsView);
+        }
         addView(child);
       }
       if (i < mFoundTriples.size()) {

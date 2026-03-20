@@ -218,6 +218,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
 
     // Slot 0: the found triple (highlighted, always filled)
     TripleStackView foundView = new TripleStackView(this);
+    foundView.setNaturalCardDimensionsProvider(mCardsView);
     foundView.setTriple(analysis.foundTriple);
     foundView.setHighlighted(true);
     mAlternativesContainer.addView(
@@ -232,6 +233,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       final int idx = i;
       final Set<Card> triple = others.get(i);
       TripleStackView stackView = new TripleStackView(this);
+      stackView.setNaturalCardDimensionsProvider(mCardsView);
       if (revealed.contains(i)) {
         stackView.setTriple(triple);
       } else {

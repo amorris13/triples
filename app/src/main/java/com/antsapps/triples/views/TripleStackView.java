@@ -15,6 +15,7 @@ import android.view.animation.CycleInterpolator;
 import com.antsapps.triples.R;
 import com.antsapps.triples.SettingsFragment;
 import com.antsapps.triples.backend.Card;
+import com.antsapps.triples.cardsview.CardDimensionsProvider;
 import com.antsapps.triples.cardsview.CardView;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,8 @@ public class TripleStackView extends View {
   private final Paint mPlaceholderPaint;
   private final Paint mHighlightPaint;
   private final Map<Card, CardView> mCardViewCache = new HashMap<>();
+
+  private CardDimensionsProvider mNaturalCardDimensionsProvider;
 
   private int mCardWidth;
   private int mCardHeight;
@@ -94,6 +97,11 @@ public class TripleStackView extends View {
     mOnPlaceholderClickListener = listener;
   }
 
+  public void setNaturalCardDimensionsProvider(CardDimensionsProvider provider) {
+    mNaturalCardDimensionsProvider = provider;
+    invalidate();
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
@@ -126,12 +134,17 @@ public class TripleStackView extends View {
   }
 
   private void drawTripleStack(Canvas canvas) {
-    // Draw at a fixed reference size then scale down so that fixed-dp elements in
+    // Draw at the natural grid card size then scale down so that fixed-dp elements in
     // CardBackgroundDrawable (insets, corner radii, stroke widths) shrink proportionally,
     // matching the appearance of cards in the main grid.
-    float density = getResources().getDisplayMetrics().density;
-    int refWidth = (int) (200 * density);
-    int refHeight = (int) (refWidth * CardView.HEIGHT_OVER_WIDTH);
+    int refWidth =
+        mNaturalCardDimensionsProvider != null
+            ? mNaturalCardDimensionsProvider.cardWidth()
+            : mCardWidth;
+    int refHeight =
+        mNaturalCardDimensionsProvider != null
+            ? mNaturalCardDimensionsProvider.cardHeight()
+            : mCardHeight;
     float scale = (float) mCardWidth / refWidth;
 
     List<Card> sorted = getSortedTriple(mTriple);
