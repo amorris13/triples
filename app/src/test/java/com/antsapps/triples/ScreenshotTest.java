@@ -128,8 +128,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
             123456L,
             Application.getTimeProvider().now(),
             GameState.COMPLETED,
-                false,
-                Lists.newArrayList());
+            false,
+            Lists.newArrayList());
     app.addClassicGame(game2);
 
     Intent intent =

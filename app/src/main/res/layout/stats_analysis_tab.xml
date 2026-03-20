@@ -5,6 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.antsapps.triples.stats.TripleAnalysisSummaryView
+            android:id="@+id/analysis_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp" />
+
+    </androidx.core.widget.NestedScrollView>
+
     <TextView
         android:id="@+id/analysis_warning"
         android:layout_width="match_parent"
@@ -14,16 +27,4 @@
         android:textColor="#827717"
         android:textSize="12sp"
         android:visibility="gone" />
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.antsapps.triples.stats.TripleAnalysisSummaryView
-            android:id="@+id/analysis_summary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp" />
-
-    </androidx.core.widget.NestedScrollView>
 </LinearLayout>
