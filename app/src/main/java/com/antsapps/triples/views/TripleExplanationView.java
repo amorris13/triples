@@ -168,7 +168,7 @@ public class TripleExplanationView extends FrameLayout {
   }
 
   public void setCards(Set<Card> cards) {
-    mCards.clear();
+    mCards.retainAll(cards);
     mCards.addAll(cards);
 
     List<Card> cardList = ImmutableList.copyOf(mCards);

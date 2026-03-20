@@ -357,9 +357,6 @@ public class CardsView extends ViewGroup implements Game.GameRenderer, CardDimen
     for (CardView cardView : mCardViews.values()) {
       cardView.setSelected(false);
     }
-    if (mOnSelectionChangedListener != null) {
-      mOnSelectionChangedListener.onSelectionChanged(getSelectedCards());
-    }
   }
 
   public void setSelected(Card card, boolean selected) {
