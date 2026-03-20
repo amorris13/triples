@@ -43,7 +43,7 @@
         </LinearLayout>
 
         <!-- Board: fills the rest of the space above the bottom panel -->
-        <com.antsapps.triples.cardsview.VerticalCardsView
+        <com.antsapps.triples.cardsview.CardsView
             android:id="@+id/cards_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
