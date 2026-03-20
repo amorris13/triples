@@ -27,6 +27,7 @@ public class CardView extends View {
   private boolean mSelected = false;
   private boolean mHinted = false;
   private boolean mShakeAnimating = false;
+  private boolean mForceSelected = false;
   private Bitmap mCachedBitmap;
   private CardBackgroundDrawable mCardBackground;
   private SymbolDrawable mSymbol;
@@ -121,7 +122,7 @@ public class CardView extends View {
   /** Draws the card content directly into the provided canvas within the given bounds. */
   public void drawCardContent(Canvas canvas, Rect bounds) {
     mCardBackground.setBounds(bounds);
-    mCardBackground.setSelected(mSelected || mShakeAnimating);
+    mCardBackground.setSelected(mSelected || mShakeAnimating || mForceSelected);
     mCardBackground.setHinted(mHinted);
     mCardBackground.draw(canvas);
 
@@ -214,6 +215,14 @@ public class CardView extends View {
             .scaleY(1.15f)
             .setDuration(SettingsFragment.getAnimationDuration(getContext()))
             .setInterpolator(new CycleInterpolator(0.5f))
+            .setListener(
+                new AnimatorListenerAdapter() {
+                  @Override
+                  public void onAnimationEnd(Animator animation) {
+                    setScaleX(1f);
+                    setScaleY(1f);
+                  }
+                })
             .start();
       }
     }
@@ -239,6 +248,9 @@ public class CardView extends View {
               new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                  setScaleX(1f);
+                  setScaleY(1f);
+                  setRotation(0f);
                   mShakeAnimating = false;
                   regenerateCache();
                   invalidate();
@@ -254,6 +266,9 @@ public class CardView extends View {
               new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                  setScaleX(1f);
+                  setScaleY(1f);
+                  setRotation(0f);
                   mShakeAnimating = false;
                   regenerateCache();
                   invalidate();
@@ -264,6 +279,9 @@ public class CardView extends View {
   }
 
   public void animateFoundCard(Rect target, Interpolator interpolator, Runnable onFinished) {
+    mForceSelected = true;
+    regenerateCache();
+    invalidate();
     setPivotX(0);
     setPivotY(0);
     animate()
@@ -277,6 +295,9 @@ public class CardView extends View {
             new AnimatorListenerAdapter() {
               @Override
               public void onAnimationEnd(Animator animation) {
+                mForceSelected = false;
+                regenerateCache();
+                invalidate();
                 if (onFinished != null) {
                   onFinished.run();
                 }

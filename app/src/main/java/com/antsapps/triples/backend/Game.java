@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public abstract class Game implements Comparable<Game>, OnValidTripleSelectedListener {
@@ -82,6 +83,8 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   private final long mRandomSeed;
 
+  protected final Random mRandom;
+
   private long id;
 
   private final Date mDateStarted;
@@ -105,6 +108,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
       List<Set<Card>> foundTriples) {
     this.id = id;
     mRandomSeed = seed;
+    mRandom = new Random(seed);
     mCardsInPlay = Lists.newArrayList(cardsInPlay);
     mTripleFindTimes = Lists.newArrayList(tripleFindTimes);
     mFoundTriples = Lists.newArrayList(foundTriples);
@@ -145,12 +149,7 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
 
   protected void init() {
     Preconditions.checkState(mCardsInPlay.isEmpty());
-    // Add cards so there is at least one valid triple.
-    while (mCardsInPlay.size() < MIN_CARDS_IN_PLAY || !checkIfAnyValidTriples()) {
-      for (int i = 0; i < 3; i++) {
-        mCardsInPlay.add(mDeck.getNextCard());
-      }
-    }
+    initCardsInPlay(mCardsInPlay, mDeck);
   }
 
   public void begin() {
@@ -261,32 +260,94 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   }
 
   protected void updateDeckAfterValidTriple(Card... cards) {
-    for (int i = 0; i < 3; i++) {
-      mCardsInPlay.set(mCardsInPlay.indexOf(cards[i]), null);
+    updateBoard(mCardsInPlay, mDeck, Sets.newHashSet(cards), mRandom);
+  }
+
+  public List<TripleAnalysis> reconstruct() {
+    List<TripleAnalysis> analysisList = Lists.newArrayList();
+    Deck deck = createDeck(new Random(getRandomSeed()));
+    Random random = new Random(getRandomSeed());
+
+    List<Card> cardsInPlay = Lists.newArrayList();
+    initCardsInPlay(cardsInPlay, deck);
+
+    long lastTime = 0;
+    for (int i = 0; i < mFoundTriples.size(); i++) {
+      Set<Card> foundTriple = mFoundTriples.get(i);
+      long time = mTripleFindTimes.get(i);
+      long duration = time - lastTime;
+
+      List<Set<Card>> allAvailable = getAllValidTriples(cardsInPlay);
+      analysisList.add(
+          new TripleAnalysis(
+              foundTriple, time, duration, allAvailable, Lists.newArrayList(cardsInPlay)));
+
+      updateBoard(cardsInPlay, deck, foundTriple, random);
+
+      lastTime = time;
     }
 
-    // Add more cards up to the minimum.
-    while (numNotNull(mCardsInPlay) < MIN_CARDS_IN_PLAY && !mDeck.isEmpty()) {
+    return analysisList;
+  }
+
+  public List<Card> getFinalBoardState() {
+    Deck deck = createDeck(new Random(getRandomSeed()));
+    Random random = new Random(getRandomSeed());
+
+    List<Card> cardsInPlay = Lists.newArrayList();
+    initCardsInPlay(cardsInPlay, deck);
+
+    for (Set<Card> foundTriple : mFoundTriples) {
+      updateBoard(cardsInPlay, deck, foundTriple, random);
+    }
+
+    return Lists.newArrayList(cardsInPlay);
+  }
+
+  protected Deck createDeck(Random random) {
+    return new Deck(random);
+  }
+
+  protected void initCardsInPlay(List<Card> cardsInPlay, Deck deck) {
+    while (cardsInPlay.size() < MIN_CARDS_IN_PLAY
+        || getAValidTriple(cardsInPlay, Collections.<Card>emptySet()) == null) {
       for (int i = 0; i < 3; i++) {
-        mCardsInPlay.set(mCardsInPlay.indexOf(null), mDeck.getNextCard());
+        cardsInPlay.add(deck.getNextCard());
+      }
+    }
+  }
+
+  protected void updateBoard(
+      List<Card> cardsInPlay, Deck deck, Set<Card> foundTriple, Random random) {
+    for (Card card : foundTriple) {
+      cardsInPlay.set(cardsInPlay.indexOf(card), null);
+    }
+
+    // Common replenishment logic
+    while (numNotNull(cardsInPlay) < MIN_CARDS_IN_PLAY && !deck.isEmpty()) {
+      for (int i = 0; i < 3; i++) {
+        int nullIdx = cardsInPlay.indexOf(null);
+        if (nullIdx != -1) {
+          cardsInPlay.set(nullIdx, deck.getNextCard());
+        }
       }
     }
 
-    // Remove any null cards by replacing them with the last cards.
-    int numNotNull = numNotNull(mCardsInPlay);
+    // Compacting
+    int numNotNull = numNotNull(cardsInPlay);
     for (int i = 0; i < numNotNull; i++) {
-      if (mCardsInPlay.get(i) == null) {
-        removeTrailingNulls(mCardsInPlay);
-        if (i == mCardsInPlay.size() - 1) break;
-        mCardsInPlay.set(i, mCardsInPlay.remove(mCardsInPlay.size() - 1));
+      if (cardsInPlay.get(i) == null) {
+        removeTrailingNulls(cardsInPlay);
+        if (i >= cardsInPlay.size()) break;
+        cardsInPlay.set(i, cardsInPlay.remove(cardsInPlay.size() - 1));
       }
     }
-    removeTrailingNulls(mCardsInPlay);
+    removeTrailingNulls(cardsInPlay);
 
-    // Add more cards until there is a valid triple.
-    while (!checkIfAnyValidTriples() && !mDeck.isEmpty()) {
+    // Extra cards if no triples
+    while (getAValidTriple(cardsInPlay, Collections.<Card>emptySet()) == null && !deck.isEmpty()) {
       for (int i = 0; i < 3; i++) {
-        mCardsInPlay.add(mDeck.getNextCard());
+        cardsInPlay.add(deck.getNextCard());
       }
     }
   }
