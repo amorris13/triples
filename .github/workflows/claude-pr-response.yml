@@ -1,0 +1,47 @@
+name: Claude PR Auto-Response
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  respond-to-comment:
+    # Only run on PRs (not plain issues), and only when the PR was created by Claude
+    if: |
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request != null) ||
+      github.event_name == 'pull_request_review_comment'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Get PR author
+        id: pr-author
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            PR_NUMBER="${{ github.event.issue.number }}"
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+          fi
+          AUTHOR=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '.user.login')
+          echo "author=$AUTHOR" >> $GITHUB_OUTPUT
+
+      - name: Respond to comment with Claude
+        # Only respond if the PR was authored by Claude, and the commenter is not Claude itself
+        # (to prevent infinite loops where Claude responds to its own comments)
+        if: |
+          contains(steps.pr-author.outputs.author, 'claude') &&
+          !contains(github.event.comment.user.login, 'claude')
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Empty trigger_phrase means respond to all comments (no @claude mention needed)
+          trigger_phrase: ""
+          # Only exclude Claude's own comments to prevent infinite response loops
+          exclude_comments_by_actor: "*claude*"
