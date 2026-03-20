@@ -13,7 +13,7 @@ import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Deck;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.cardsview.VerticalCardsView;
+import com.antsapps.triples.cardsview.CardsView;
 import com.google.common.collect.Lists;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
@@ -63,7 +63,7 @@ public class GameEndFlowTest extends BaseRobolectricTest {
       scenario.onActivity(
           activity -> {
             activity.mFirebaseAnalytics = mockFirebaseAnalytics;
-            VerticalCardsView cardsView = activity.findViewById(R.id.cards_view);
+            CardsView cardsView = activity.findViewById(R.id.cards_view);
 
             // Force layout
             cardsView.measure(1080, 1920);

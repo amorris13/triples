@@ -15,7 +15,7 @@ import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.ClassicGame;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.cardsview.VerticalCardsView;
+import com.antsapps.triples.cardsview.CardsView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class GameFlowTest extends BaseRobolectricTest {
     try (ActivityScenario<ClassicGameActivity> scenario = ActivityScenario.launch(intent)) {
       scenario.onActivity(
           activity -> {
-            VerticalCardsView cardsView = activity.findViewById(R.id.cards_view);
+            CardsView cardsView = activity.findViewById(R.id.cards_view);
             assertThat(cardsView).isNotNull();
 
             // Force layout so cards have bounds
@@ -80,7 +80,7 @@ public class GameFlowTest extends BaseRobolectricTest {
     }
   }
 
-  private void clickCardAtPosition(VerticalCardsView cardsView, int index) {
+  private void clickCardAtPosition(CardsView cardsView, int index) {
     TestUtils.clickCardAtPosition(cardsView, index);
   }
 }

@@ -218,6 +218,28 @@ public class DailyGame extends Game {
     return Collections.unmodifiableList(mFoundTriples);
   }
 
+  @Override
+  public List<TripleAnalysis> reconstruct() {
+    List<TripleAnalysis> analysisList = Lists.newArrayList();
+    long lastTime = 0;
+    for (int i = 0; i < mFoundTriples.size(); i++) {
+      Set<Card> foundTriple = mFoundTriples.get(i);
+      long time = mTripleFindTimes.get(i);
+      long duration = time - lastTime;
+
+      List<Set<Card>> allAvailable = Game.getAllValidTriples(mCardsInPlay);
+
+      analysisList.add(new TripleAnalysis(foundTriple, time, duration, allAvailable, mCardsInPlay));
+      lastTime = time;
+    }
+    return analysisList;
+  }
+
+  @Override
+  public List<Card> getFinalBoardState() {
+    return null;
+  }
+
   public DailyGame.Day getGameDay() {
     return mGameDay;
   }

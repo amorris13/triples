@@ -14,10 +14,9 @@ import androidx.appcompat.widget.Toolbar;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
 import com.antsapps.triples.cardsview.CardView;
-import com.antsapps.triples.cardsview.VerticalCardsView;
+import com.antsapps.triples.cardsview.CardsView;
 import com.antsapps.triples.views.FoundTriplesView;
 import com.antsapps.triples.views.TripleStackView;
 import com.google.common.collect.ImmutableList;
@@ -39,7 +38,7 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
   private Game mGame;
   private List<Card> mFinalBoardState;
 
-  private VerticalCardsView mCardsView;
+  private CardsView mCardsView;
   private FoundTriplesView mFoundTriplesView;
 
   private List<TripleAnalysis> mAnalysisList;
@@ -90,8 +89,8 @@ public class BoardHistoryActivity extends BaseTriplesActivity {
       return;
     }
 
-    mAnalysisList = GameReconstructor.reconstruct(mGame);
-    mFinalBoardState = GameReconstructor.getFinalBoardState(mGame);
+    mAnalysisList = mGame.reconstruct();
+    mFinalBoardState = mGame.getFinalBoardState();
 
     if (mAnalysisList == null || mAnalysisList.isEmpty()) {
       finish();

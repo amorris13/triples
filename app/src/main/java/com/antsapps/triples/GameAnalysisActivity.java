@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.antsapps.triples.backend.Application;
 import com.antsapps.triples.backend.Game;
-import com.antsapps.triples.backend.GameReconstructor;
 import com.antsapps.triples.backend.TripleAnalysis;
 import com.antsapps.triples.stats.TripleAnalysisSummaryView;
 import com.google.android.material.button.MaterialButton;
@@ -53,7 +52,7 @@ public class GameAnalysisActivity extends BaseTriplesActivity {
       return;
     }
 
-    mAnalysis = GameReconstructor.reconstruct(game);
+    mAnalysis = game.reconstruct();
     TripleAnalysisSummaryView summaryView = findViewById(R.id.analysis_summary);
     summaryView.setAnalysis(mAnalysis);
 
