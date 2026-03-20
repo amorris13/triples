@@ -1,7 +1,9 @@
 package com.antsapps.triples;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +27,6 @@ import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -101,6 +102,43 @@ public class ScreenshotTest extends BaseRobolectricTest {
                     new RoborazziOptions());
               }
             });
+  }
+
+  @Test
+  public void testClassicStatistics_PartialAnalysis() {
+    Context context = ApplicationProvider.getApplicationContext();
+    Application app = Application.getInstance(context);
+    app.clearAllData();
+
+    // 1 game with analysis
+    ClassicGame game1 = ClassicGame.createFromSeed(111L);
+    game1.begin();
+    findAndCommitTriples(game1, 27);
+    app.addClassicGame(game1);
+
+    // 1 game without analysis (e.g. from an older version where we didn't save found triples)
+    // We can simulate this by creating a completed game with empty foundTriples
+    ClassicGame game2 =
+        new ClassicGame(
+            -1,
+            222L,
+            Lists.newArrayList(),
+            Lists.newArrayList(),
+            new Deck(new Random(222L)),
+            123456L,
+            Application.getTimeProvider().now(),
+            GameState.COMPLETED,
+            false,
+            Lists.newArrayList());
+    app.addClassicGame(game2);
+
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), StatisticsActivity.class);
+    intent.putExtra(StatisticsActivity.GAME_TYPE, "Classic");
+    try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
+      onView(withText("Analysis")).perform(click());
+      capture("statistics_classic_partial_analysis");
+    }
   }
 
   @Test
@@ -284,6 +322,18 @@ public class ScreenshotTest extends BaseRobolectricTest {
   }
 
   @Test
+  public void testClassicStatistics_Analysis() {
+    setupCompletedGames();
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), StatisticsActivity.class);
+    intent.putExtra(StatisticsActivity.GAME_TYPE, "Classic");
+    try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
+      onView(withText("Analysis")).perform(click());
+      capture("statistics_classic_analysis");
+    }
+  }
+
+  @Test
   public void testArcadeStatistics() {
     setupCompletedGames();
     Intent intent =
@@ -291,6 +341,18 @@ public class ScreenshotTest extends BaseRobolectricTest {
     intent.putExtra(StatisticsActivity.GAME_TYPE, "Arcade");
     try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
       capture("statistics_arcade");
+    }
+  }
+
+  @Test
+  public void testArcadeStatistics_Analysis() {
+    setupCompletedGames();
+    Intent intent =
+        new Intent(ApplicationProvider.getApplicationContext(), StatisticsActivity.class);
+    intent.putExtra(StatisticsActivity.GAME_TYPE, "Arcade");
+    try (ActivityScenario<StatisticsActivity> scenario = ActivityScenario.launch(intent)) {
+      onView(withText("Analysis")).perform(click());
+      capture("statistics_arcade_analysis");
     }
   }
 
@@ -318,6 +380,32 @@ public class ScreenshotTest extends BaseRobolectricTest {
     try (ActivityScenario<HelpActivity> scenario = ActivityScenario.launch(HelpActivity.class)) {
       capture("help");
     }
+  }
+
+  @Test
+  public void testAnalysisAggregateRetention() {
+    Context context = ApplicationProvider.getApplicationContext();
+    Application app = Application.getInstance(context);
+    app.clearAllData();
+
+    // 1. Complete one game
+    ClassicGame game1 = ClassicGame.createFromSeed(111L);
+    game1.begin();
+    findAndCommitTriples(game1, 27);
+    app.addClassicGame(game1);
+
+    // 2. Verify it has triples
+    assert !game1.getFoundTriples().isEmpty();
+
+    // 3. Start a new game
+    ClassicGame game2 = ClassicGame.createFromSeed(222L);
+    game2.begin();
+    app.addClassicGame(game2);
+
+    // 4. Verify game1 STILL has its triples (this was the bug)
+    ClassicGame retrievedGame1 = app.getClassicGame(game1.getId());
+    assert !retrievedGame1.getFoundTriples().isEmpty()
+        : "Found triples were cleared when starting a new game!";
   }
 
   private void setupClassicGame(boolean completed) {
@@ -383,6 +471,16 @@ public class ScreenshotTest extends BaseRobolectricTest {
     return game;
   }
 
+  private void forceCompleted(Game game) {
+    try {
+      java.lang.reflect.Field field = Game.class.getDeclaredField("mGameState");
+      field.setAccessible(true);
+      field.set(game, GameState.COMPLETED);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private void findAndCommitTriples(Game game, int count) {
     game.setGameRenderer(
         new Game.GameRenderer() {
@@ -440,49 +538,18 @@ public class ScreenshotTest extends BaseRobolectricTest {
 
     // Classic games
     for (int i = 0; i < 5; i++) {
-      List<Long> findTimes = Lists.newArrayList();
-      long time = 0;
-      for (int j = 0; j < 27; j++) {
-        time += 5000 + random.nextInt(10000);
-        findTimes.add(time);
-      }
-      ClassicGame game =
-          new ClassicGame(
-              -1,
-              random.nextLong(),
-              Lists.newArrayList(),
-              findTimes,
-              new Deck(Lists.newArrayList()),
-              time + 1000,
-              new Date(Application.getTimeProvider().currentTimeMillis() - i * 86400000L),
-              GameState.COMPLETED,
-              false,
-              Lists.newArrayList());
+      ClassicGame game = ClassicGame.createFromSeed(random.nextLong());
+      game.begin();
+      findAndCommitTriples(game, 27);
       app.addClassicGame(game);
     }
 
     // Arcade games
     for (int i = 0; i < 5; i++) {
-      int numFound = 10 + random.nextInt(10);
-      List<Long> findTimes = Lists.newArrayList();
-      long time = 0;
-      for (int j = 0; j < numFound; j++) {
-        time += 3000 + random.nextInt(5000);
-        findTimes.add(time);
-      }
-      ArcadeGame game =
-          new ArcadeGame(
-              -1,
-              random.nextLong(),
-              Lists.newArrayList(),
-              findTimes,
-              new Deck(random),
-              ArcadeGame.TIME_LIMIT_MS + 100,
-              new Date(Application.getTimeProvider().currentTimeMillis() - i * 86400000L),
-              GameState.COMPLETED,
-              numFound,
-              false,
-              Lists.newArrayList());
+      ArcadeGame game = ArcadeGame.createFromSeed(random.nextLong());
+      game.begin();
+      findAndCommitTriples(game, 10);
+      forceCompleted(game);
       app.addArcadeGame(game);
     }
 

@@ -37,6 +37,7 @@ public abstract class BaseStatisticsFragment extends Fragment
 
   private SummaryTabFragment mSummaryTabFragment;
   private ListTabFragment mListTabFragment;
+  private AnalysisTabFragment mAnalysisTabFragment;
   protected Statistics mLatestStatistics;
 
   @Override
@@ -80,7 +81,11 @@ public abstract class BaseStatisticsFragment extends Fragment
             tabLayout,
             viewPager,
             (tab, position) -> {
-              tab.setText(position == 0 ? "Summary" : "List");
+              switch (position) {
+                case 0 -> tab.setText(R.string.stats_tab_summary);
+                case 1 -> tab.setText(R.string.stats_tab_analysis);
+                case 2 -> tab.setText(R.string.stats_tab_list);
+              }
             })
         .attach();
 
@@ -115,18 +120,17 @@ public abstract class BaseStatisticsFragment extends Fragment
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-      if (position == 0) {
-        mSummaryTabFragment = SummaryTabFragment.newInstance();
-        return mSummaryTabFragment;
-      } else {
-        mListTabFragment = ListTabFragment.newInstance();
-        return mListTabFragment;
-      }
+      return switch (position) {
+        case 0 -> mSummaryTabFragment = SummaryTabFragment.newInstance();
+        case 1 -> mAnalysisTabFragment = AnalysisTabFragment.newInstance();
+        case 2 -> mListTabFragment = ListTabFragment.newInstance();
+        default -> throw new IllegalArgumentException("Invalid position: " + position);
+      };
     }
 
     @Override
     public int getItemCount() {
-      return 2;
+      return 3;
     }
   }
 
@@ -162,6 +166,9 @@ public abstract class BaseStatisticsFragment extends Fragment
     }
     if (mSummaryTabFragment != null) {
       mSummaryTabFragment.onStatisticsChange(statistics);
+    }
+    if (mAnalysisTabFragment != null) {
+      mAnalysisTabFragment.onStatisticsChange(statistics);
     }
   }
 

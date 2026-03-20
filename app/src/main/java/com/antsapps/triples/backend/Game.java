@@ -320,7 +320,10 @@ public abstract class Game implements Comparable<Game>, OnValidTripleSelectedLis
   protected void updateBoard(
       List<Card> cardsInPlay, Deck deck, Set<Card> foundTriple, Random random) {
     for (Card card : foundTriple) {
-      cardsInPlay.set(cardsInPlay.indexOf(card), null);
+      int index = cardsInPlay.indexOf(card);
+      if (index != -1) {
+        cardsInPlay.set(index, null);
+      }
     }
 
     // Common replenishment logic
