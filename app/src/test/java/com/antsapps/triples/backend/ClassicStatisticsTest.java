@@ -39,17 +39,16 @@ public class ClassicStatisticsTest {
 
     ClassicStatistics stats = new ClassicStatistics(games, Period.ALL_TIME, true);
 
-    // After fix:
-    // sorted ascending: 1000, 2000, ..., 100000
+    // List sorted descending: 100000, 99000, ..., 1000
     // size = 100
-    // p95 = index (100 * 0.05) = index 5 = 6000
-    // p75 = index (100 * 0.25) = index 25 = 26000
-    // p50 = index (100 * 0.50) = index 50 = 51000
-    // p25 = index (100 * 0.75) = index 75 = 76000
+    // p95 = index (100 * 0.95) = index 95 = 5000
+    // p75 = index (100 * 0.75) = index 75 = 25000
+    // p50 = index (100 * 0.50) = index 50 = 50000
+    // p25 = index (100 * 0.25) = index 25 = 75000
 
-    assertThat(stats.getP95()).isEqualTo(6000L);
-    assertThat(stats.getP75()).isEqualTo(26000L);
-    assertThat(stats.getP50()).isEqualTo(51000L);
-    assertThat(stats.getP25()).isEqualTo(76000L);
+    assertThat(stats.getP95()).isEqualTo(5000L);
+    assertThat(stats.getP75()).isEqualTo(25000L);
+    assertThat(stats.getP50()).isEqualTo(50000L);
+    assertThat(stats.getP25()).isEqualTo(75000L);
   }
 }

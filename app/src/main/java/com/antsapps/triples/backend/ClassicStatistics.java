@@ -72,11 +72,11 @@ public class ClassicStatistics extends Statistics {
     for (Game game : mGamesInPeriod) {
       times.add(game.getTimeElapsed());
     }
-    Collections.sort(times);
-    mP25 = times.get((int) (times.size() * 0.75));
+    Collections.sort(times, Collections.reverseOrder());
+    mP25 = times.get((int) (times.size() * 0.25));
     mP50 = times.get((int) (times.size() * 0.50));
-    mP75 = times.get((int) (times.size() * 0.25));
-    mP95 = times.get((int) (times.size() * 0.05));
+    mP75 = times.get((int) (times.size() * 0.75));
+    mP95 = times.get((int) (times.size() * 0.95));
   }
 
   public long getFastestTime() {
