@@ -78,8 +78,15 @@ public class TripleExplanationView extends FrameLayout {
       }
 
       mCardViews[i] = new SingleScaledCardView(context);
-      mCardViews[i].setLayoutParams(
-          new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+      LinearLayout.LayoutParams cardParams =
+          new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+      // To mimic the TripleStackView, we add a horizontal offset (about 10% of card width).
+      // Since the card cell takes 1/5th of the row width, a 10% shift of the card is
+      // effectively a shift of 0.1 * (1/5) = 2% of the total row width.
+      // We apply this using margins to avoid drawing outside the cell bounds.
+      cardParams.leftMargin = dpToPx(i * 3);
+      cardParams.rightMargin = dpToPx((2 - i) * 3);
+      mCardViews[i].setLayoutParams(cardParams);
       cardRow.addView(mCardViews[i]);
 
       for (int j = 0; j < 4; j++) {

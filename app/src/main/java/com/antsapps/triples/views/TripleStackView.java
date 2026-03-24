@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class TripleStackView extends View {
 
-  static final float STACK_DISPLACEMENT_PERCENT = 0.55f;
+  static final float STACK_DISPLACEMENT_PERCENT = 0.65f;
   static final float STACK_HORIZ_DISPLACEMENT_PERCENT = 0.10f;
 
   private Set<Card> mTriple = null;
