@@ -40,6 +40,7 @@ public class FoundTriplesView extends ViewGroup {
   private int mCardWidth;
   private int mCardHeight;
   private int mStackDisplacement;
+  private int mStackHorizDisplacement;
   private boolean mPlaceholderClickable = true;
   private final int mPadding;
 
@@ -175,7 +176,7 @@ public class FoundTriplesView extends ViewGroup {
 
     for (int i = 0; i < 3; i++) {
       Card card = sortedTriples.get(i);
-      int left = slotLeft + mPadding;
+      int left = slotLeft + mPadding + i * mStackHorizDisplacement;
       int top = slotTop + mPadding + i * mStackDisplacement;
 
       cardBounds.put(
@@ -198,9 +199,13 @@ public class FoundTriplesView extends ViewGroup {
     }
 
     mSlotWidth = width / COLUMNS;
-    mCardWidth = mSlotWidth - 2 * mPadding;
+    mCardWidth =
+        (int)
+            ((mSlotWidth - 2 * mPadding)
+                / (1 + 2 * TripleStackView.STACK_HORIZ_DISPLACEMENT_PERCENT));
     mCardHeight = (int) (mCardWidth * CardView.HEIGHT_OVER_WIDTH);
     mStackDisplacement = (int) (mCardHeight * TripleStackView.STACK_DISPLACEMENT_PERCENT);
+    mStackHorizDisplacement = (int) (mCardWidth * TripleStackView.STACK_HORIZ_DISPLACEMENT_PERCENT);
 
     int stackHeight = mCardHeight + 2 * mStackDisplacement;
     mSlotHeight = stackHeight + 2 * mPadding;

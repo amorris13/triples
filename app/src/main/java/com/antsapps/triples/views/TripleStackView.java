@@ -32,6 +32,7 @@ import java.util.Set;
 public class TripleStackView extends View {
 
   static final float STACK_DISPLACEMENT_PERCENT = 0.65f;
+  static final float STACK_HORIZ_DISPLACEMENT_PERCENT = 0.10f;
 
   private Set<Card> mTriple = null;
   private boolean mHighlighted = false;
@@ -45,6 +46,7 @@ public class TripleStackView extends View {
   private int mCardWidth;
   private int mCardHeight;
   private int mStackDisplacement;
+  private int mStackHorizDisplacement;
   private int mPadding;
 
   public TripleStackView(Context context) {
@@ -85,8 +87,9 @@ public class TripleStackView extends View {
               float d = view.getResources().getDisplayMetrics().density;
               float cornerRadius = 4 * d * getScaleFactor();
               int totalHeight = mCardHeight + 2 * mStackDisplacement;
+              int totalWidth = mCardWidth + 2 * mStackHorizDisplacement;
               outline.setRoundRect(
-                  mPadding, mPadding, mPadding + mCardWidth, mPadding + totalHeight, cornerRadius);
+                  mPadding, mPadding, mPadding + totalWidth, mPadding + totalHeight, cornerRadius);
             }
           });
       setClipToOutline(true);
@@ -139,9 +142,10 @@ public class TripleStackView extends View {
   }
 
   private void updateDimensions(int width) {
-    mCardWidth = width - 2 * mPadding;
+    mCardWidth = (int) ((width - 2 * mPadding) / (1 + 2 * STACK_HORIZ_DISPLACEMENT_PERCENT));
     mCardHeight = (int) (mCardWidth * CardView.HEIGHT_OVER_WIDTH);
     mStackDisplacement = (int) (mCardHeight * STACK_DISPLACEMENT_PERCENT);
+    mStackHorizDisplacement = (int) (mCardWidth * STACK_HORIZ_DISPLACEMENT_PERCENT);
   }
 
   @Override
@@ -181,7 +185,7 @@ public class TripleStackView extends View {
         mCardViewCache.put(card, cardView);
       }
       canvas.save();
-      canvas.translate(mPadding, mPadding + i * mStackDisplacement);
+      canvas.translate(mPadding + i * mStackHorizDisplacement, mPadding + i * mStackDisplacement);
       canvas.scale(scale, scale);
       cardView.drawCardContent(canvas, bounds);
       canvas.restore();
@@ -201,11 +205,12 @@ public class TripleStackView extends View {
     float density = getContext().getResources().getDisplayMetrics().density;
     float inset = INSET_DP * density * getScaleFactor();
     int totalHeight = mCardHeight + 2 * mStackDisplacement;
+    int totalWidth = mCardWidth + 2 * mStackHorizDisplacement;
     RectF rect =
         new RectF(
             mPadding + inset,
             mPadding + inset,
-            mPadding + mCardWidth - inset,
+            mPadding + totalWidth - inset,
             mPadding + totalHeight - inset);
     canvas.drawRoundRect(rect, 10, 10, mHighlightPaint);
   }
@@ -214,11 +219,12 @@ public class TripleStackView extends View {
     float density = getContext().getResources().getDisplayMetrics().density;
     float inset = INSET_DP * density * getScaleFactor();
     int totalHeight = mCardHeight + 2 * mStackDisplacement;
+    int totalWidth = mCardWidth + 2 * mStackHorizDisplacement;
     RectF rect =
         new RectF(
             mPadding + inset,
             mPadding + inset,
-            mPadding + mCardWidth - inset,
+            mPadding + totalWidth - inset,
             mPadding + totalHeight - inset);
     canvas.drawRoundRect(rect, 10, 10, mPlaceholderPaint);
   }
@@ -234,7 +240,7 @@ public class TripleStackView extends View {
     List<Card> sorted = getSortedTriple(triple);
     for (int i = 0; i < sorted.size(); i++) {
       Card card = sorted.get(i);
-      int left = loc[0] + mPadding;
+      int left = loc[0] + mPadding + i * mStackHorizDisplacement;
       int top = loc[1] + mPadding + i * mStackDisplacement;
       cardBounds.put(card, new Rect(left, top, left + mCardWidth, top + mCardHeight));
     }

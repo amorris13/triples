@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.antsapps.triples.R;
 import com.antsapps.triples.backend.Card;
 import com.antsapps.triples.cardsview.CardDimensionsProvider;
+import com.antsapps.triples.cardsview.CardView;
 import com.google.common.collect.ImmutableList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ public class TripleExplanationView extends FrameLayout {
 
   private Set<Card> mCards = new LinkedHashSet<>();
   private SingleScaledCardView[] mCardViews = new SingleScaledCardView[3];
+  private LinearLayout[] mCardRows = new LinearLayout[3];
   private PropertyIllustrationView[][] mPropertyIcons = new PropertyIllustrationView[3][4];
   private TextView[] mConclusionTexts = new TextView[4];
   private ImageView[] mConclusionTicks = new ImageView[4];
@@ -70,17 +72,13 @@ public class TripleExplanationView extends FrameLayout {
 
     // Card Rows
     for (int i = 0; i < 3; i++) {
-      LinearLayout cardRow = createRow(context);
-      cardRow.setGravity(Gravity.CENTER_VERTICAL);
-      if (i > 0) {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) cardRow.getLayoutParams();
-        params.topMargin = dpToPx(-13);
-      }
+      mCardRows[i] = createRow(context);
+      mCardRows[i].setGravity(Gravity.CENTER_VERTICAL);
 
       mCardViews[i] = new SingleScaledCardView(context);
       mCardViews[i].setLayoutParams(
           new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-      cardRow.addView(mCardViews[i]);
+      mCardRows[i].addView(mCardViews[i]);
 
       for (int j = 0; j < 4; j++) {
         mPropertyIcons[i][j] = new PropertyIllustrationView(context);
@@ -88,9 +86,9 @@ public class TripleExplanationView extends FrameLayout {
         ((LinearLayout.LayoutParams) mPropertyIcons[i][j].getLayoutParams()).gravity =
             Gravity.CENTER_VERTICAL;
         mPropertyIcons[i][j].setPropertyType(mPropertyTypes[j]);
-        cardRow.addView(mPropertyIcons[i][j]);
+        mCardRows[i].addView(mPropertyIcons[i][j]);
       }
-      table.addView(cardRow);
+      table.addView(mCardRows[i]);
     }
 
     // Conclusion Row
@@ -140,6 +138,49 @@ public class TripleExplanationView extends FrameLayout {
     table.addView(conclusionRow);
 
     setCards(new java.util.LinkedHashSet<>());
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    if (width > 0) {
+      updateMargins(width);
+    }
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+  }
+
+  private void updateMargins(int totalWidth) {
+    // totalWidth includes padding. The table itself is match_parent inside the layout,
+    // which has 4dp padding on all sides.
+    int padding = dpToPx(4);
+    int tableWidth = totalWidth - 2 * padding;
+
+    // There are 5 columns in each row (1 for card, 4 for properties).
+    int cellWidth = tableWidth / 5;
+    // SingleScaledCardView matches its cell width.
+    int cardWidth = cellWidth;
+    int cardHeight = (int) (cardWidth * CardView.HEIGHT_OVER_WIDTH);
+
+    // Horizontal displacement: 10% of card width, same as TripleStackView
+    int horizDisplacement = (int) (cardWidth * TripleStackView.STACK_HORIZ_DISPLACEMENT_PERCENT);
+    // Vertical displacement: 65% of card height, same as TripleStackView
+    int verticalDisplacement = (int) (cardHeight * TripleStackView.STACK_DISPLACEMENT_PERCENT);
+    int verticalOverlap = cardHeight - verticalDisplacement;
+
+    for (int i = 0; i < 3; i++) {
+      LinearLayout.LayoutParams cardParams =
+          (LinearLayout.LayoutParams) mCardViews[i].getLayoutParams();
+      cardParams.leftMargin = i * horizDisplacement;
+      cardParams.rightMargin = (2 - i) * horizDisplacement;
+      mCardViews[i].setLayoutParams(cardParams);
+
+      if (i > 0) {
+        LinearLayout.LayoutParams rowParams =
+            (LinearLayout.LayoutParams) mCardRows[i].getLayoutParams();
+        rowParams.topMargin = -verticalOverlap;
+        mCardRows[i].setLayoutParams(rowParams);
+      }
+    }
   }
 
   public void setNaturalCardDimensionsProvider(CardDimensionsProvider cardDimensionsProvider) {
