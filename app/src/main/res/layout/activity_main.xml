@@ -36,33 +36,50 @@
                     android:text="@string/classic_label"
                     android:textColor="@color/classic_accent" />
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/classic_resume_button"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:text="@string/resume_game"
-                        android:theme="@style/ClassicButtonTheme"
-                        android:visibility="gone" />
+                    android:layout_marginTop="16dp">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/classic_new_game_button"
                         style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
                         android:text="@string/new_game"
                         android:theme="@style/ClassicButtonTheme" />
-                </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/classic_split_button_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/classic_resume_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/resume_game"
+                            android:theme="@style/ClassicButtonTheme" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/classic_dropdown_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="48dp"
+                            android:layout_height="wrap_content"
+                            android:insetLeft="0dp"
+                            android:insetRight="0dp"
+                            android:padding="0dp"
+                            android:theme="@style/ClassicButtonTheme"
+                            app:icon="@drawable/ic_expand_more"
+                            app:iconGravity="textStart"
+                            app:iconPadding="0dp" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </FrameLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/classic_statistics_button"
@@ -94,33 +111,50 @@
                     android:text="@string/arcade_label"
                     android:textColor="@color/arcade_accent" />
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/arcade_resume_button"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:text="@string/resume_game"
-                        android:theme="@style/ArcadeButtonTheme"
-                        android:visibility="gone" />
+                    android:layout_marginTop="16dp">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/arcade_new_game_button"
                         style="@style/Widget.Material3.Button"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
                         android:text="@string/new_game"
                         android:theme="@style/ArcadeButtonTheme" />
-                </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/arcade_split_button_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/arcade_resume_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/resume_game"
+                            android:theme="@style/ArcadeButtonTheme" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/arcade_dropdown_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="48dp"
+                            android:layout_height="wrap_content"
+                            android:insetLeft="0dp"
+                            android:insetRight="0dp"
+                            android:padding="0dp"
+                            android:theme="@style/ArcadeButtonTheme"
+                            app:icon="@drawable/ic_expand_more"
+                            app:iconGravity="textStart"
+                            app:iconPadding="0dp" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </FrameLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/arcade_statistics_button"
