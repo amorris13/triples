@@ -244,8 +244,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     if (oldVersion < 9) {
       db.beginTransaction();
       try {
-        addColumnIfMissing(
-            db, TABLE_ARCADE_GAMES, COLUMN_ARCADE_STYLE, "TEXT DEFAULT 'FIXED'");
+        addColumnIfMissing(db, TABLE_ARCADE_GAMES, COLUMN_ARCADE_STYLE, "TEXT DEFAULT 'FIXED'");
         db.setTransactionSuccessful();
       } catch (SQLException e) {
         Log.e("DBAdapter-Upgrade", e.toString());

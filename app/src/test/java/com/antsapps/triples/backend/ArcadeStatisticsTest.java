@@ -38,11 +38,13 @@ public class ArcadeStatisticsTest {
     games.add(createGame(20, ArcadeGame.ArcadeStyle.BONUS));
     games.add(createGame(15, ArcadeGame.ArcadeStyle.FIXED));
 
-    ArcadeStatistics fixedStats = new ArcadeStatistics(games, Period.ALL_TIME, true, ArcadeGame.ArcadeStyle.FIXED);
+    ArcadeStatistics fixedStats =
+        new ArcadeStatistics(games, Period.ALL_TIME, true, ArcadeGame.ArcadeStyle.FIXED);
     System.out.println("Fixed stats num games: " + fixedStats.getNumGames());
     assertThat(fixedStats.getNumGames()).isEqualTo(2);
 
-    ArcadeStatistics bonusStats = new ArcadeStatistics(games, Period.ALL_TIME, true, ArcadeGame.ArcadeStyle.BONUS);
+    ArcadeStatistics bonusStats =
+        new ArcadeStatistics(games, Period.ALL_TIME, true, ArcadeGame.ArcadeStyle.BONUS);
     System.out.println("Bonus stats num games: " + bonusStats.getNumGames());
     assertThat(bonusStats.getNumGames()).isEqualTo(1);
   }

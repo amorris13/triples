@@ -100,7 +100,8 @@ public class MainViewModel extends ViewModel {
                   null);
           if (arcadeGame != null && !arcadeGame.getTripleFindTimes().isEmpty()) {
             mArcadeResumeState.setValue(
-                new ArcadeResumeState(true, arcadeGame.getNumTriplesFound(), arcadeGame.getStyle()));
+                new ArcadeResumeState(
+                    true, arcadeGame.getNumTriplesFound(), arcadeGame.getStyle()));
           } else {
             mArcadeResumeState.setValue(new ArcadeResumeState(false, 0, null));
           }

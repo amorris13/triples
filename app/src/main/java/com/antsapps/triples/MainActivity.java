@@ -87,15 +87,19 @@ public class MainActivity extends BaseTriplesActivity {
             showSplitMenu(
                 v,
                 () -> {
-                  ArcadeGame current = Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
-                  startNewArcadeGame(current != null ? current.getStyle() : ArcadeGame.ArcadeStyle.FIXED);
+                  ArcadeGame current =
+                      Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
+                  startNewArcadeGame(
+                      current != null ? current.getStyle() : ArcadeGame.ArcadeStyle.FIXED);
                 }));
 
     mArcadeNewGameContainer = findViewById(R.id.arcade_new_game_container);
     mArcadeNewGameFixedButton = findViewById(R.id.arcade_new_game_fixed_button);
-    mArcadeNewGameFixedButton.setOnClickListener(v -> startNewArcadeGame(ArcadeGame.ArcadeStyle.FIXED));
+    mArcadeNewGameFixedButton.setOnClickListener(
+        v -> startNewArcadeGame(ArcadeGame.ArcadeStyle.FIXED));
     mArcadeNewGameBonusButton = findViewById(R.id.arcade_new_game_bonus_button);
-    mArcadeNewGameBonusButton.setOnClickListener(v -> startNewArcadeGame(ArcadeGame.ArcadeStyle.BONUS));
+    mArcadeNewGameBonusButton.setOnClickListener(
+        v -> startNewArcadeGame(ArcadeGame.ArcadeStyle.BONUS));
 
     mArcadeStatisticsButton = findViewById(R.id.arcade_statistics_button);
     mArcadeStatisticsButton.setOnClickListener(v -> showStatistics("Arcade"));
@@ -247,7 +251,8 @@ public class MainActivity extends BaseTriplesActivity {
     intent.putExtra(Game.ID_TAG, game.getId());
     launchGame(
         intent,
-        ArcadeGame.GAME_TYPE_FOR_ANALYTICS + (style == ArcadeGame.ArcadeStyle.BONUS ? "_bonus" : ""),
+        ArcadeGame.GAME_TYPE_FOR_ANALYTICS
+            + (style == ArcadeGame.ArcadeStyle.BONUS ? "_bonus" : ""),
         AnalyticsConstants.Event.NEW_GAME);
   }
 

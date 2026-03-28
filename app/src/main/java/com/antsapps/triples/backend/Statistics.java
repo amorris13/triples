@@ -11,17 +11,8 @@ public class Statistics {
   private List<TripleAnalysis> mAnalysis;
 
   Statistics(Iterable<? extends Game> iterable, Period period, boolean includeHinted) {
-    List<Game> games = Lists.newArrayList();
-    for (Game g : iterable) {
-      if ((includeHinted || !g.areHintsUsed()) && shouldInclude(g)) {
-        games.add(g);
-      }
-    }
-    mGamesInPeriod = period.filter(games);
-  }
-
-  protected boolean shouldInclude(Game game) {
-    return true;
+    mGamesInPeriod =
+        period.filter(Iterables.filter(iterable, g -> includeHinted || !g.areHintsUsed()));
   }
 
   public int getNumGames() {

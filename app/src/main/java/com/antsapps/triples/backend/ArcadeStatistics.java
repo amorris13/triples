@@ -22,15 +22,13 @@ public class ArcadeStatistics extends Statistics {
       Iterable<? extends ArcadeGame> iterable,
       Period period,
       boolean includeHinted,
-      ArcadeGame.ArcadeStyle style) {
-    super(iterable, period, includeHinted);
+      final ArcadeGame.ArcadeStyle style) {
+    super(
+        com.google.common.collect.Iterables.filter(iterable, g -> g.getStyle() == style),
+        period,
+        includeHinted);
     mStyle = style;
     precalcStatistics();
-  }
-
-  @Override
-  protected boolean shouldInclude(Game game) {
-    return ((ArcadeGame) game).getStyle() == mStyle;
   }
 
   private void precalcStatistics() {
