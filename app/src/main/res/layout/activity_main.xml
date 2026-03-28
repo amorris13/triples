@@ -119,13 +119,32 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/arcade_new_game_button"
-                        style="@style/Widget.Material3.Button"
+                    <LinearLayout
+                        android:id="@+id/arcade_new_game_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/new_game"
-                        android:theme="@style/ArcadeButtonTheme" />
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/arcade_new_game_fixed_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:text="Fixed"
+                            android:theme="@style/ArcadeButtonTheme" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/arcade_new_game_bonus_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:text="Bonus"
+                            android:theme="@style/ArcadeButtonTheme" />
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/arcade_split_button_group"

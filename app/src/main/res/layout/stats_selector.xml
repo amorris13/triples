@@ -85,7 +85,6 @@
             android:id="@+id/hints_chip_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
             app:selectionRequired="true"
             app:singleSelection="true">
 
@@ -104,6 +103,43 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="Include Hinted" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:id="@+id/style_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="STYLE"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_secondary"
+            android:visibility="gone" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/style_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_style_fixed"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Fixed" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_style_bonus"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Bonus" />
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 

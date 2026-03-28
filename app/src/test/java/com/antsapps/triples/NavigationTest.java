@@ -139,14 +139,14 @@ public class NavigationTest extends BaseRobolectricTest {
   }
 
   @Test
-  public void testNavigateToNewArcadeGame() {
+  public void testNavigateToNewArcadeFixedGame() {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       scenario.onActivity(
           activity -> {
             FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
             activity.mFirebaseAnalytics = mockAnalytics;
 
-            Button newGameButton = activity.findViewById(R.id.arcade_new_game_button);
+            Button newGameButton = activity.findViewById(R.id.arcade_new_game_fixed_button);
             assertThat(newGameButton).isNotNull();
 
             newGameButton.performClick();
@@ -161,6 +161,33 @@ public class NavigationTest extends BaseRobolectricTest {
                 .logEvent(eq(AnalyticsConstants.Event.NEW_GAME), bundleCaptor.capture());
             assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
                 .isEqualTo(ArcadeGame.GAME_TYPE_FOR_ANALYTICS);
+          });
+    }
+  }
+
+  @Test
+  public void testNavigateToNewArcadeBonusGame() {
+    try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+      scenario.onActivity(
+          activity -> {
+            FirebaseAnalytics mockAnalytics = mock(FirebaseAnalytics.class);
+            activity.mFirebaseAnalytics = mockAnalytics;
+
+            Button newGameButton = activity.findViewById(R.id.arcade_new_game_bonus_button);
+            assertThat(newGameButton).isNotNull();
+
+            newGameButton.performClick();
+
+            ShadowActivity shadowActivity = shadowOf(activity);
+            Intent nextIntent = shadowActivity.getNextStartedActivity();
+            assertThat(nextIntent.getComponent().getClassName())
+                .isEqualTo(ArcadeGameActivity.class.getName());
+
+            ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+            verify(mockAnalytics)
+                .logEvent(eq(AnalyticsConstants.Event.NEW_GAME), bundleCaptor.capture());
+            assertThat(bundleCaptor.getValue().getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ArcadeGame.GAME_TYPE_FOR_ANALYTICS + "_bonus");
           });
     }
   }

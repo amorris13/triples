@@ -26,7 +26,9 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mClassicResumeButton;
   private MaterialButton mArcadeResumeButton;
   private MaterialButton mClassicNewGameButton;
-  private MaterialButton mArcadeNewGameButton;
+  private View mArcadeNewGameContainer;
+  private MaterialButton mArcadeNewGameFixedButton;
+  private MaterialButton mArcadeNewGameBonusButton;
   private com.google.android.material.button.MaterialButtonToggleGroup mClassicSplitButtonGroup;
   private com.google.android.material.button.MaterialButtonToggleGroup mArcadeSplitButtonGroup;
   private MaterialButton mClassicDropdownButton;
@@ -80,10 +82,20 @@ public class MainActivity extends BaseTriplesActivity {
                 ArcadeGame.GAME_TYPE_FOR_ANALYTICS));
 
     mArcadeDropdownButton = findViewById(R.id.arcade_dropdown_button);
-    mArcadeDropdownButton.setOnClickListener(v -> showSplitMenu(v, this::startNewArcadeGame));
+    mArcadeDropdownButton.setOnClickListener(
+        v ->
+            showSplitMenu(
+                v,
+                () -> {
+                  ArcadeGame current = Iterables.getFirst(mApplication.getCurrentArcadeGames(), null);
+                  startNewArcadeGame(current != null ? current.getStyle() : ArcadeGame.ArcadeStyle.FIXED);
+                }));
 
-    mArcadeNewGameButton = findViewById(R.id.arcade_new_game_button);
-    mArcadeNewGameButton.setOnClickListener(v -> startNewArcadeGame());
+    mArcadeNewGameContainer = findViewById(R.id.arcade_new_game_container);
+    mArcadeNewGameFixedButton = findViewById(R.id.arcade_new_game_fixed_button);
+    mArcadeNewGameFixedButton.setOnClickListener(v -> startNewArcadeGame(ArcadeGame.ArcadeStyle.FIXED));
+    mArcadeNewGameBonusButton = findViewById(R.id.arcade_new_game_bonus_button);
+    mArcadeNewGameBonusButton.setOnClickListener(v -> startNewArcadeGame(ArcadeGame.ArcadeStyle.BONUS));
 
     mArcadeStatisticsButton = findViewById(R.id.arcade_statistics_button);
     mArcadeStatisticsButton.setOnClickListener(v -> showStatistics("Arcade"));
@@ -154,13 +166,15 @@ public class MainActivity extends BaseTriplesActivity {
             state -> {
               if (state.visible) {
                 mArcadeSplitButtonGroup.setVisibility(View.VISIBLE);
-                mArcadeNewGameButton.setVisibility(View.GONE);
+                mArcadeNewGameContainer.setVisibility(View.GONE);
                 mArcadeResumeButton.setText(
-                    getString(R.string.resume_game_arcade_format, state.triplesFound));
+                    getString(
+                        R.string.resume_game_arcade_format,
+                        state.triplesFound,
+                        state.style == ArcadeGame.ArcadeStyle.BONUS ? "Bonus" : "Fixed"));
               } else {
                 mArcadeSplitButtonGroup.setVisibility(View.GONE);
-                mArcadeNewGameButton.setVisibility(View.VISIBLE);
-                mArcadeNewGameButton.setText(R.string.new_game);
+                mArcadeNewGameContainer.setVisibility(View.VISIBLE);
               }
             });
 
@@ -222,15 +236,19 @@ public class MainActivity extends BaseTriplesActivity {
     launchGame(intent, DailyGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.NEW_GAME);
   }
 
-  private void startNewArcadeGame() {
+  private void startNewArcadeGame(ArcadeGame.ArcadeStyle style) {
     for (ArcadeGame game : Lists.newArrayList(mApplication.getCurrentArcadeGames())) {
       mApplication.deleteArcadeGame(game);
     }
-    ArcadeGame game = ArcadeGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
+    ArcadeGame game =
+        ArcadeGame.createFromSeed(Application.getTimeProvider().currentTimeMillis(), style);
     mApplication.addArcadeGame(game);
     Intent intent = new Intent(this, ArcadeGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
-    launchGame(intent, ArcadeGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.NEW_GAME);
+    launchGame(
+        intent,
+        ArcadeGame.GAME_TYPE_FOR_ANALYTICS + (style == ArcadeGame.ArcadeStyle.BONUS ? "_bonus" : ""),
+        AnalyticsConstants.Event.NEW_GAME);
   }
 
   private void showSplitMenu(View v, Runnable onStartAgain) {

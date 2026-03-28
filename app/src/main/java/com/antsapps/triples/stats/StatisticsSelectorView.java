@@ -28,17 +28,25 @@ class StatisticsSelectorView extends FrameLayout {
     void onIncludeHintedChange(boolean includeHinted);
   }
 
+  interface OnArcadeStyleChangeListener {
+    void onArcadeStyleChange(com.antsapps.triples.backend.ArcadeGame.ArcadeStyle style);
+  }
+
   private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
   private final Map<String, Period> mPeriods = Maps.newLinkedHashMap();
   private ChipGroup mPeriodChipGroup;
   private ChipGroup mHintsChipGroup;
+  private ChipGroup mStyleChipGroup;
   private ChipGroup mSummaryChipGroup;
   private Period mCurrentPeriod = Period.ALL_TIME;
   private boolean mIncludeHinted = false;
+  private com.antsapps.triples.backend.ArcadeGame.ArcadeStyle mStyle =
+      com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.FIXED;
 
   private OnPeriodChangeListener mOnPeriodChangeListener;
   private OnIncludeHintedChangeListener mOnIncludeHintedChangeListener;
+  private OnArcadeStyleChangeListener mOnArcadeStyleChangeListener;
 
   private LinearLayout mOptionsContainer;
   private ImageView mExpandIcon;
@@ -113,6 +121,21 @@ class StatisticsSelectorView extends FrameLayout {
             mOnIncludeHintedChangeListener.onIncludeHintedChange(mIncludeHinted);
           }
         });
+
+    mStyleChipGroup = findViewById(R.id.style_chip_group);
+    mStyleChipGroup.check(R.id.chip_style_fixed);
+    mStyleChipGroup.setOnCheckedStateChangeListener(
+        (group, checkedIds) -> {
+          if (checkedIds.contains(R.id.chip_style_bonus)) {
+            mStyle = com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.BONUS;
+          } else {
+            mStyle = com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.FIXED;
+          }
+          updateSummary();
+          if (mOnArcadeStyleChangeListener != null) {
+            mOnArcadeStyleChangeListener.onArcadeStyleChange(mStyle);
+          }
+        });
   }
 
   private void initPeriodsMap() {
@@ -150,6 +173,12 @@ class StatisticsSelectorView extends FrameLayout {
 
     // Hints Chip
     addSummaryChip(mIncludeHinted ? "Incl. Hints" : "No Hints");
+
+    // Style Chip
+    if (mStyleChipGroup.getVisibility() == View.VISIBLE) {
+      addSummaryChip(
+          mStyle == com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.BONUS ? "Bonus" : "Fixed");
+    }
   }
 
   private void addSummaryChip(String text) {
@@ -172,6 +201,21 @@ class StatisticsSelectorView extends FrameLayout {
 
   public void setOnIncludeHintedChangeListener(OnIncludeHintedChangeListener listener) {
     mOnIncludeHintedChangeListener = listener;
+  }
+
+  public void setOnArcadeStyleChangeListener(OnArcadeStyleChangeListener listener) {
+    mOnArcadeStyleChangeListener = listener;
+  }
+
+  public void showArcadeStyleSelector(com.antsapps.triples.backend.ArcadeGame.ArcadeStyle style) {
+    findViewById(R.id.style_label).setVisibility(View.VISIBLE);
+    mStyleChipGroup.setVisibility(View.VISIBLE);
+    mStyle = style;
+    mStyleChipGroup.check(
+        style == com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.BONUS
+            ? R.id.chip_style_bonus
+            : R.id.chip_style_fixed);
+    updateSummary();
   }
 
   protected void setAccentColor(int accentColor) {

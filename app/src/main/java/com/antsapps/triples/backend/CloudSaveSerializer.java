@@ -54,6 +54,7 @@ public class CloudSaveSerializer {
               .setDateStartedMillis(g.getDateStarted().getTime())
               .setNumTriplesFound(g.getNumTriplesFound())
               .setHintsUsed(g.areHintsUsed())
+              .setStyle(toArcadeStyleProto(g.getStyle()))
               .build());
     }
     return builder.build().toByteArray();
@@ -76,7 +77,8 @@ public class CloudSaveSerializer {
               Game.GameState.COMPLETED,
               summary.getNumTriplesFound(),
               summary.getHintsUsed(),
-              Collections.<Set<Card>>emptyList()));
+              Collections.<Set<Card>>emptyList(),
+              fromArcadeStyleProto(summary.getStyle())));
     }
     return games;
   }
@@ -165,6 +167,7 @@ public class CloudSaveSerializer {
         .setNumTriplesFound(game.getNumTriplesFound())
         .setHintsUsed(game.areHintsUsed())
         .setFoundTriples(ByteString.copyFrom(Utils.triplesListToByteArray(game.getFoundTriples())))
+        .setStyle(toArcadeStyleProto(game.getStyle()))
         .build()
         .toByteArray();
   }
@@ -182,7 +185,8 @@ public class CloudSaveSerializer {
         fromGameStateProto(state.getGameState()),
         state.getNumTriplesFound(),
         state.getHintsUsed(),
-        Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()));
+        Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()),
+        fromArcadeStyleProto(state.getStyle()));
   }
 
   public static byte[] serializeDailyGameState(DailyGame game) {
@@ -244,6 +248,28 @@ public class CloudSaveSerializer {
         return Game.GameState.COMPLETED;
       default:
         return Game.GameState.STARTING;
+    }
+  }
+
+  private static ArcadeStyleProto toArcadeStyleProto(ArcadeGame.ArcadeStyle style) {
+    switch (style) {
+      case FIXED:
+        return ArcadeStyleProto.FIXED;
+      case BONUS:
+        return ArcadeStyleProto.BONUS;
+      default:
+        return ArcadeStyleProto.FIXED;
+    }
+  }
+
+  private static ArcadeGame.ArcadeStyle fromArcadeStyleProto(ArcadeStyleProto style) {
+    switch (style) {
+      case FIXED:
+        return ArcadeGame.ArcadeStyle.FIXED;
+      case BONUS:
+        return ArcadeGame.ArcadeStyle.BONUS;
+      default:
+        return ArcadeGame.ArcadeStyle.FIXED;
     }
   }
 

@@ -16,9 +16,21 @@ public class ArcadeStatistics extends Statistics {
   private long mP75;
   private long mP95;
 
-  ArcadeStatistics(Iterable<? extends ArcadeGame> iterable, Period period, boolean includeHinted) {
+  private final ArcadeGame.ArcadeStyle mStyle;
+
+  ArcadeStatistics(
+      Iterable<? extends ArcadeGame> iterable,
+      Period period,
+      boolean includeHinted,
+      ArcadeGame.ArcadeStyle style) {
     super(iterable, period, includeHinted);
+    mStyle = style;
     precalcStatistics();
+  }
+
+  @Override
+  protected boolean shouldInclude(Game game) {
+    return ((ArcadeGame) game).getStyle() == mStyle;
   }
 
   private void precalcStatistics() {

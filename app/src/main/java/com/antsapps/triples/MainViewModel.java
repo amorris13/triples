@@ -28,10 +28,12 @@ public class MainViewModel extends ViewModel {
   public static class ArcadeResumeState {
     public final boolean visible;
     public final int triplesFound;
+    public final ArcadeGame.ArcadeStyle style;
 
-    public ArcadeResumeState(boolean visible, int triplesFound) {
+    public ArcadeResumeState(boolean visible, int triplesFound, ArcadeGame.ArcadeStyle style) {
       this.visible = visible;
       this.triplesFound = triplesFound;
+      this.style = style;
     }
   }
 
@@ -98,9 +100,9 @@ public class MainViewModel extends ViewModel {
                   null);
           if (arcadeGame != null && !arcadeGame.getTripleFindTimes().isEmpty()) {
             mArcadeResumeState.setValue(
-                new ArcadeResumeState(true, arcadeGame.getNumTriplesFound()));
+                new ArcadeResumeState(true, arcadeGame.getNumTriplesFound(), arcadeGame.getStyle()));
           } else {
-            mArcadeResumeState.setValue(new ArcadeResumeState(false, 0));
+            mArcadeResumeState.setValue(new ArcadeResumeState(false, 0, null));
           }
         });
 

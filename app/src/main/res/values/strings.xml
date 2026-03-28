@@ -11,7 +11,7 @@
   <string name="new_game">New Game</string>
   <string name="resume_game">Resume</string>
   <string name="resume_game_classic_format">Resume (%1$d left)</string>
-  <string name="resume_game_arcade_format">Resume (%1$d found)</string>
+  <string name="resume_game_arcade_format">Resume %2$s (%1$d found)</string>
   <string name="start_again">Start Again</string>
   <string name="no_current_games">No Current Games.\nTo start a new game, click +.</string>
   <string name="current">CURRENT</string>
