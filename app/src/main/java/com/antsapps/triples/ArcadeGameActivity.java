@@ -99,7 +99,8 @@ public class ArcadeGameActivity extends BaseGameActivity
 
   @Override
   protected void awardAchievements() {
-    AchievementManager.awardArcadeAchievements(this, mGame.getNumTriplesFound());
+    AchievementManager.awardArcadeAchievements(
+        this, mGame.getNumTriplesFound(), mGame.getStyle() == ArcadeGame.ArcadeStyle.BONUS);
   }
 
   @Override
@@ -142,8 +143,12 @@ public class ArcadeGameActivity extends BaseGameActivity
       return;
     }
 
-    PlayGames.getLeaderboardsClient(this)
-        .submitScore(getString(R.string.leaderboard_arcade_game), mGame.getNumTriplesFound());
+    String leaderboardId =
+        mGame.getStyle() == ArcadeGame.ArcadeStyle.BONUS
+            ? getString(R.string.leaderboard_arcade_bonus_game)
+            : getString(R.string.leaderboard_arcade_game);
+
+    PlayGames.getLeaderboardsClient(this).submitScore(leaderboardId, mGame.getNumTriplesFound());
   }
 
   @Override
