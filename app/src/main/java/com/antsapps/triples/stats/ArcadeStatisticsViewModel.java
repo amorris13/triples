@@ -24,10 +24,12 @@ public class ArcadeStatisticsViewModel extends ViewModel {
     }
     mInitialized = true;
 
-    ArcadeGame lastPlayed =
-        com.google.common.collect.Iterables.getLast(application.getCompletedArcadeGames(), null);
-    if (lastPlayed != null) {
-      mStyle.setValue(lastPlayed.getStyle());
+    Iterable<ArcadeGame> completedGames = application.getCompletedArcadeGames();
+    if (!com.google.common.collect.Iterables.isEmpty(completedGames)) {
+      ArcadeGame lastPlayed = com.google.common.collect.Iterables.getLast(completedGames);
+      if (lastPlayed != null) {
+        mStyle.setValue(lastPlayed.getStyle());
+      }
     }
 
     mStatistics.addSource(application.getArcadeGamesLiveData(), games -> update(application));

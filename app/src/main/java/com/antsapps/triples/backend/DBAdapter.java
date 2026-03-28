@@ -60,9 +60,7 @@ public class DBAdapter extends SQLiteOpenHelper {
           + COLUMN_HINTS_USED
           + " INTEGER, " //
           + COLUMN_FOUND_TRIPLES
-          + " BLOB, " //
-          + COLUMN_ARCADE_STYLE
-          + " TEXT)";
+          + " BLOB)";
   private static final String CREATE_DAILY_GAMES =
       "CREATE TABLE "
           + TABLE_DAILY_GAMES
