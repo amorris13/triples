@@ -61,9 +61,11 @@
                             style="@style/Widget.Material3.Button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="2dp"
                             android:layout_weight="1"
                             android:text="@string/resume_game"
-                            android:theme="@style/ClassicButtonTheme" />
+                            android:theme="@style/ClassicButtonTheme"
+                            app:shapeAppearanceOverlay="@style/SplitButtonLeft" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/classic_dropdown_button"
@@ -76,7 +78,8 @@
                             android:theme="@style/ClassicButtonTheme"
                             app:icon="@drawable/ic_expand_more"
                             app:iconGravity="textStart"
-                            app:iconPadding="0dp" />
+                            app:iconPadding="0dp"
+                            app:shapeAppearanceOverlay="@style/SplitButtonRight" />
 
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </FrameLayout>
@@ -136,9 +139,11 @@
                             style="@style/Widget.Material3.Button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="2dp"
                             android:layout_weight="1"
                             android:text="@string/resume_game"
-                            android:theme="@style/ArcadeButtonTheme" />
+                            android:theme="@style/ArcadeButtonTheme"
+                            app:shapeAppearanceOverlay="@style/SplitButtonLeft" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/arcade_dropdown_button"
@@ -151,7 +156,8 @@
                             android:theme="@style/ArcadeButtonTheme"
                             app:icon="@drawable/ic_expand_more"
                             app:iconGravity="textStart"
-                            app:iconPadding="0dp" />
+                            app:iconPadding="0dp"
+                            app:shapeAppearanceOverlay="@style/SplitButtonRight" />
 
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </FrameLayout>
