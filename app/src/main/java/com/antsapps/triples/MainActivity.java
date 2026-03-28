@@ -170,15 +170,15 @@ public class MainActivity extends BaseTriplesActivity {
             state -> {
               if (state.visible) {
                 mArcadeSplitButtonGroup.setVisibility(View.VISIBLE);
-                mArcadeNewGameContainer.setVisibility(View.GONE);
                 mArcadeResumeButton.setText(
                     getString(
                         R.string.resume_game_arcade_format,
                         state.triplesFound,
-                        state.style == ArcadeGame.ArcadeStyle.BONUS ? "Bonus" : "Fixed"));
+                        state.style == ArcadeGame.ArcadeStyle.BONUS
+                            ? getString(R.string.arcade_style_bonus)
+                            : getString(R.string.arcade_style_fixed)));
               } else {
                 mArcadeSplitButtonGroup.setVisibility(View.GONE);
-                mArcadeNewGameContainer.setVisibility(View.VISIBLE);
               }
             });
 

@@ -79,6 +79,8 @@
   <string name="drawer_close">Close navigation drawer</string>
   <string name="game_modes_title">GAME MODES</string>
   <string name="arcade_label">Arcade</string>
+  <string name="arcade_style_fixed">Fixed</string>
+  <string name="arcade_style_bonus">Bonus</string>
   <string name="classic_label">Classic</string>
   <string name="daily_label">Daily Puzzle</string>
   <string name="zen_label">Zen</string>

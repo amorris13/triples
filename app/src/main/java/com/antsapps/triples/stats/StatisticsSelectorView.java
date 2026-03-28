@@ -177,7 +177,9 @@ class StatisticsSelectorView extends FrameLayout {
     // Style Chip
     if (mStyleChipGroup.getVisibility() == View.VISIBLE) {
       addSummaryChip(
-          mStyle == com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.BONUS ? "Bonus" : "Fixed");
+          mStyle == com.antsapps.triples.backend.ArcadeGame.ArcadeStyle.BONUS
+              ? getContext().getString(R.string.arcade_style_bonus)
+              : getContext().getString(R.string.arcade_style_fixed));
     }
   }
 
