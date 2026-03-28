@@ -263,8 +263,11 @@ public class NavigationTest extends BaseRobolectricTest {
     try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
       scenario.onActivity(
           activity -> {
+            android.view.View splitGroup = activity.findViewById(R.id.classic_split_button_group);
+            Button newGameButton = activity.findViewById(R.id.classic_new_game_button);
             Button resumeButton = activity.findViewById(R.id.classic_resume_button);
-            assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.GONE);
+            assertThat(splitGroup.getVisibility()).isEqualTo(android.view.View.GONE);
+            assertThat(newGameButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
 
             // Add a game in progress reactively
             ClassicGame game = ClassicGame.createFromSeed(12345L);
@@ -277,7 +280,8 @@ public class NavigationTest extends BaseRobolectricTest {
             org.robolectric.shadows.ShadowLooper.idleMainLooper();
 
             // Button should now be visible without activity restart/onResume
-            assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+            assertThat(splitGroup.getVisibility()).isEqualTo(android.view.View.VISIBLE);
+            assertThat(newGameButton.getVisibility()).isEqualTo(android.view.View.GONE);
             assertThat(resumeButton.getText().toString())
                 .contains(String.valueOf(game.getCardsRemaining()));
 
@@ -297,7 +301,8 @@ public class NavigationTest extends BaseRobolectricTest {
             org.robolectric.shadows.ShadowLooper.idleMainLooper();
 
             // Button should disappear
-            assertThat(resumeButton.getVisibility()).isEqualTo(android.view.View.GONE);
+            assertThat(splitGroup.getVisibility()).isEqualTo(android.view.View.GONE);
+            assertThat(newGameButton.getVisibility()).isEqualTo(android.view.View.VISIBLE);
           });
     }
   }

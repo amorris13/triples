@@ -27,6 +27,10 @@ public class MainActivity extends BaseTriplesActivity {
   private MaterialButton mArcadeResumeButton;
   private MaterialButton mClassicNewGameButton;
   private MaterialButton mArcadeNewGameButton;
+  private com.google.android.material.button.MaterialButtonToggleGroup mClassicSplitButtonGroup;
+  private com.google.android.material.button.MaterialButtonToggleGroup mArcadeSplitButtonGroup;
+  private MaterialButton mClassicDropdownButton;
+  private MaterialButton mArcadeDropdownButton;
   private MaterialButton mDailyPlayButton;
   private MaterialButton mDailyStatisticsButton;
   private android.widget.TextView mDailyCompletedText;
@@ -48,6 +52,7 @@ public class MainActivity extends BaseTriplesActivity {
     mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
     mViewModel.init(mApplication);
 
+    mClassicSplitButtonGroup = findViewById(R.id.classic_split_button_group);
     mClassicResumeButton = findViewById(R.id.classic_resume_button);
     mClassicResumeButton.setOnClickListener(
         v ->
@@ -56,12 +61,16 @@ public class MainActivity extends BaseTriplesActivity {
                 ClassicGameActivity.class,
                 ClassicGame.GAME_TYPE_FOR_ANALYTICS));
 
+    mClassicDropdownButton = findViewById(R.id.classic_dropdown_button);
+    mClassicDropdownButton.setOnClickListener(v -> showSplitMenu(v, this::startNewClassicGame));
+
     mClassicNewGameButton = findViewById(R.id.classic_new_game_button);
     mClassicNewGameButton.setOnClickListener(v -> startNewClassicGame());
 
     mClassicStatisticsButton = findViewById(R.id.classic_statistics_button);
     mClassicStatisticsButton.setOnClickListener(v -> showStatistics("Classic"));
 
+    mArcadeSplitButtonGroup = findViewById(R.id.arcade_split_button_group);
     mArcadeResumeButton = findViewById(R.id.arcade_resume_button);
     mArcadeResumeButton.setOnClickListener(
         v ->
@@ -69,6 +78,9 @@ public class MainActivity extends BaseTriplesActivity {
                 mApplication.getCurrentArcadeGames(),
                 ArcadeGameActivity.class,
                 ArcadeGame.GAME_TYPE_FOR_ANALYTICS));
+
+    mArcadeDropdownButton = findViewById(R.id.arcade_dropdown_button);
+    mArcadeDropdownButton.setOnClickListener(v -> showSplitMenu(v, this::startNewArcadeGame));
 
     mArcadeNewGameButton = findViewById(R.id.arcade_new_game_button);
     mArcadeNewGameButton.setOnClickListener(v -> startNewArcadeGame());
@@ -124,12 +136,13 @@ public class MainActivity extends BaseTriplesActivity {
             this,
             state -> {
               if (state.visible) {
-                mClassicResumeButton.setVisibility(View.VISIBLE);
+                mClassicSplitButtonGroup.setVisibility(View.VISIBLE);
+                mClassicNewGameButton.setVisibility(View.GONE);
                 mClassicResumeButton.setText(
                     getString(R.string.resume_game_classic_format, state.cardsRemaining));
-                mClassicNewGameButton.setText(R.string.start_again);
               } else {
-                mClassicResumeButton.setVisibility(View.GONE);
+                mClassicSplitButtonGroup.setVisibility(View.GONE);
+                mClassicNewGameButton.setVisibility(View.VISIBLE);
                 mClassicNewGameButton.setText(R.string.new_game);
               }
             });
@@ -140,12 +153,13 @@ public class MainActivity extends BaseTriplesActivity {
             this,
             state -> {
               if (state.visible) {
-                mArcadeResumeButton.setVisibility(View.VISIBLE);
+                mArcadeSplitButtonGroup.setVisibility(View.VISIBLE);
+                mArcadeNewGameButton.setVisibility(View.GONE);
                 mArcadeResumeButton.setText(
                     getString(R.string.resume_game_arcade_format, state.triplesFound));
-                mArcadeNewGameButton.setText(R.string.start_again);
               } else {
-                mArcadeResumeButton.setVisibility(View.GONE);
+                mArcadeSplitButtonGroup.setVisibility(View.GONE);
+                mArcadeNewGameButton.setVisibility(View.VISIBLE);
                 mArcadeNewGameButton.setText(R.string.new_game);
               }
             });
@@ -217,6 +231,21 @@ public class MainActivity extends BaseTriplesActivity {
     Intent intent = new Intent(this, ArcadeGameActivity.class);
     intent.putExtra(Game.ID_TAG, game.getId());
     launchGame(intent, ArcadeGame.GAME_TYPE_FOR_ANALYTICS, AnalyticsConstants.Event.NEW_GAME);
+  }
+
+  private void showSplitMenu(View v, Runnable onStartAgain) {
+    androidx.appcompat.widget.PopupMenu popup =
+        new androidx.appcompat.widget.PopupMenu(this, v, android.view.Gravity.END);
+    popup.getMenuInflater().inflate(R.menu.split_button_dropdown, popup.getMenu());
+    popup.setOnMenuItemClickListener(
+        item -> {
+          if (item.getItemId() == R.id.start_again) {
+            onStartAgain.run();
+            return true;
+          }
+          return false;
+        });
+    popup.show();
   }
 
   private void showStatistics(String gameType) {
