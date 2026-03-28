@@ -447,7 +447,8 @@ public class ScreenshotTest extends BaseRobolectricTest {
               GameState.COMPLETED,
               numFound,
               false,
-              Lists.newArrayList());
+              Lists.newArrayList(),
+              ArcadeGame.ArcadeStyle.FIXED);
       app.addArcadeGame(game);
     } else {
       ArcadeGame game = ArcadeGame.createFromSeed(12345L);

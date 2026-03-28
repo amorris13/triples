@@ -51,30 +51,57 @@ public class AchievementManager {
     awardDailyStreakAchievements(context, dailyStatistics.longestStreak);
   }
 
-  public static void awardArcadeAchievements(Context context, int triplesFound) {
-    if (triplesFound >= 25) {
-      PlayGames.getAchievementsClient((Activity) context)
-          .unlock(context.getString(R.string.achievement_arcade_25_triples));
-    }
-    if (triplesFound >= 20) {
-      PlayGames.getAchievementsClient((Activity) context)
-          .unlock(context.getString(R.string.achievement_arcade_20_triples));
-    }
-    if (triplesFound >= 15) {
-      PlayGames.getAchievementsClient((Activity) context)
-          .unlock(context.getString(R.string.achievement_arcade_15_triples));
-    }
-    if (triplesFound >= 10) {
-      PlayGames.getAchievementsClient((Activity) context)
-          .unlock(context.getString(R.string.achievement_arcade_10_triples));
-    }
-    if (triplesFound >= 5) {
-      PlayGames.getAchievementsClient((Activity) context)
-          .unlock(context.getString(R.string.achievement_arcade_5_triples));
-    }
-    if (triplesFound >= 2) {
-      PlayGames.getAchievementsClient((Activity) context)
-          .unlock(context.getString(R.string.achievement_arcade_2_triples));
+  public static void awardArcadeAchievements(Context context, int triplesFound, boolean isBonus) {
+    if (!isBonus) {
+      if (triplesFound >= 25) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_25_triples));
+      }
+      if (triplesFound >= 20) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_20_triples));
+      }
+      if (triplesFound >= 15) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_15_triples));
+      }
+      if (triplesFound >= 10) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_10_triples));
+      }
+      if (triplesFound >= 5) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_5_triples));
+      }
+      if (triplesFound >= 2) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_2_triples));
+      }
+    } else {
+      if (triplesFound >= 100) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_bonus_100_triples));
+      }
+      if (triplesFound >= 75) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_bonus_75_triples));
+      }
+      if (triplesFound >= 50) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_bonus_50_triples));
+      }
+      if (triplesFound >= 25) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_bonus_25_triples));
+      }
+      if (triplesFound >= 10) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_bonus_10_triples));
+      }
+      if (triplesFound >= 5) {
+        PlayGames.getAchievementsClient((Activity) context)
+            .unlock(context.getString(R.string.achievement_arcade_bonus_5_triples));
+      }
     }
   }
 
@@ -94,15 +121,25 @@ public class AchievementManager {
 
     int completedArcadeGames = 0;
     int maxArcadeTriples = 0;
+    int completedArcadeBonusGames = 0;
+    int maxArcadeBonusTriples = 0;
     for (ArcadeGame game : application.getCompletedArcadeGames()) {
       if (!game.areHintsUsed()) {
-        completedArcadeGames++;
-        maxArcadeTriples = Math.max(maxArcadeTriples, game.getNumTriplesFound());
+        if (game.getStyle() == ArcadeGame.ArcadeStyle.BONUS) {
+          completedArcadeBonusGames++;
+          maxArcadeBonusTriples = Math.max(maxArcadeBonusTriples, game.getNumTriplesFound());
+        } else {
+          completedArcadeGames++;
+          maxArcadeTriples = Math.max(maxArcadeTriples, game.getNumTriplesFound());
+        }
       }
     }
     if (completedArcadeGames > 0) {
-      awardArcadeAchievements(context, maxArcadeTriples);
+      awardArcadeAchievements(context, maxArcadeTriples, false);
       awardArcadeCountAchievements(context, completedArcadeGames);
+    }
+    if (completedArcadeBonusGames > 0) {
+      awardArcadeAchievements(context, maxArcadeBonusTriples, true);
     }
 
     awardDailyAchievements(context, application);

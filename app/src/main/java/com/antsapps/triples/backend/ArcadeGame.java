@@ -11,7 +11,18 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   public static final long TIME_LIMIT_MS = 1 * 60 * 1000;
   public static final String GAME_TYPE_FOR_ANALYTICS = "arcade";
 
+  public enum ArcadeStyle {
+    FIXED,
+    BONUS
+  }
+
+  private final ArcadeStyle mStyle;
+
   public static ArcadeGame createFromSeed(long seed) {
+    return createFromSeed(seed, ArcadeStyle.FIXED);
+  }
+
+  public static ArcadeGame createFromSeed(long seed, ArcadeStyle style) {
     ArcadeGame game =
         new ArcadeGame(
             -1,
@@ -24,7 +35,8 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
             GameState.STARTING,
             0,
             false,
-            Collections.<Set<Card>>emptyList());
+            Collections.<Set<Card>>emptyList(),
+            style);
     game.init();
     return game;
   }
@@ -41,6 +53,34 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
       int numTriplesFound,
       boolean hintsUsed,
       List<Set<Card>> foundTriples) {
+    this(
+        id,
+        seed,
+        cardsInPlay,
+        tripleFindTimes,
+        cardsInDeck,
+        timeElapsed,
+        dateStarted,
+        gameState,
+        numTriplesFound,
+        hintsUsed,
+        foundTriples,
+        ArcadeStyle.FIXED);
+  }
+
+  public ArcadeGame(
+      long id,
+      long seed,
+      List<Card> cardsInPlay,
+      List<Long> tripleFindTimes,
+      Deck cardsInDeck,
+      long timeElapsed,
+      Date dateStarted,
+      GameState gameState,
+      int numTriplesFound,
+      boolean hintsUsed,
+      List<Set<Card>> foundTriples,
+      ArcadeStyle style) {
     super(
         id,
         seed,
@@ -53,6 +93,7 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
         hintsUsed,
         foundTriples);
     mNumTriplesFound = numTriplesFound;
+    mStyle = style;
     mTimer.addOnTimerTickListener(this);
   }
 
@@ -79,15 +120,25 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   }
 
   @Override
+  protected void recordFoundTriple(Card... cards) {
+    super.recordFoundTriple(cards);
+    if (mStyle == ArcadeStyle.BONUS) {
+      int bonusSeconds = Math.max(1, 6 - ((mNumTriplesFound - 1) / 5 + 1));
+      mTimer.modifyTime(-bonusSeconds * 1000);
+    }
+  }
+
+  @Override
   protected void updateBoard(
       List<Card> cardsInPlay, Deck deck, Set<Card> foundTriple, Random random) {
     super.updateBoard(cardsInPlay, deck, foundTriple, random);
     deck.readdCards(foundTriple.toArray(new Card[0]));
+    deck.shuffle(random);
   }
 
   @Override
   public String getGameTypeForAnalytics() {
-    return GAME_TYPE_FOR_ANALYTICS;
+    return GAME_TYPE_FOR_ANALYTICS + (mStyle == ArcadeStyle.BONUS ? "_bonus" : "");
   }
 
   @Override
@@ -100,5 +151,9 @@ public class ArcadeGame extends Game implements OnTimerTickListener {
   @Override
   public boolean isNumTriplesFoundRelevant() {
     return true;
+  }
+
+  public ArcadeStyle getStyle() {
+    return mStyle;
   }
 }

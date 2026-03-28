@@ -231,7 +231,12 @@ public class Application extends OnStateChangedReporter {
   }
 
   public ArcadeStatistics getArcadeStatistics(Period period, boolean includeHinted) {
-    return new ArcadeStatistics(getCompletedArcadeGames(), period, includeHinted);
+    return getArcadeStatistics(period, includeHinted, ArcadeGame.ArcadeStyle.FIXED);
+  }
+
+  public ArcadeStatistics getArcadeStatistics(
+      Period period, boolean includeHinted, ArcadeGame.ArcadeStyle style) {
+    return new ArcadeStatistics(getCompletedArcadeGames(), period, includeHinted, style);
   }
 
   public ZenGame getZenGame(boolean isBeginner) {

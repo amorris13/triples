@@ -11,7 +11,7 @@
   <string name="new_game">New Game</string>
   <string name="resume_game">Resume</string>
   <string name="resume_game_classic_format">Resume (%1$d left)</string>
-  <string name="resume_game_arcade_format">Resume (%1$d found)</string>
+  <string name="resume_game_arcade_format">Resume %2$s (%1$d found)</string>
   <string name="start_again">Start Again</string>
   <string name="no_current_games">No Current Games.\nTo start a new game, click +.</string>
   <string name="current">CURRENT</string>
@@ -71,6 +71,7 @@
   <string name="sign_in_why">Sign in with Google to share your scores with your friends.</string>
   <string name="leaderboards">Leaderboards</string>
   <string name="achievements">Achievements</string>
+
   <string name="signout">Sign Out</string>
   <string name="time_remaining">TIME REMAINING</string>
   <string name="triples_found">TRIPLES FOUND</string>
@@ -78,6 +79,8 @@
   <string name="drawer_close">Close navigation drawer</string>
   <string name="game_modes_title">GAME MODES</string>
   <string name="arcade_label">Arcade</string>
+  <string name="arcade_style_fixed">Fixed</string>
+  <string name="arcade_style_bonus">Bonus</string>
   <string name="classic_label">Classic</string>
   <string name="daily_label">Daily Puzzle</string>
   <string name="zen_label">Zen</string>
