@@ -1,7 +1,11 @@
 package com.antsapps.triples;
 
+import android.Manifest;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -29,11 +33,14 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -44,6 +51,7 @@ import com.antsapps.triples.util.CsvExportable;
 import com.antsapps.triples.util.CsvUtil;
 import com.antsapps.triples.util.ShareUtil;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,6 +83,31 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
   private TextView mDetailTriples;
   private TextView mDetailTime;
   private int mLastPosition = -1;
+
+  private MaterialSwitch mNotificationSwitch;
+  private View mNotificationTimeContainer;
+  private TextView mNotificationTimeTv;
+
+  private ActivityResultLauncher<String> mRequestPermissionLauncher;
+
+  @Override
+  public void onAttach(@NonNull Context context) {
+    super.onAttach(context);
+    mRequestPermissionLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+              if (isGranted) {
+                PreferenceManager.getDefaultSharedPreferences(getContext())
+                    .edit()
+                    .putBoolean(NotificationUtils.PREF_DAILY_NOTIFICATION_ENABLED, true)
+                    .apply();
+                NotificationUtils.scheduleDailyNotification(getContext(), true);
+              } else {
+                mNotificationSwitch.setChecked(false);
+              }
+            });
+  }
 
   @Override
   public View onCreateView(
@@ -122,6 +155,12 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     mDetailResultsContainer = view.findViewById(R.id.detail_results_container);
     mDetailTriples = view.findViewById(R.id.detail_triples);
     mDetailTime = view.findViewById(R.id.detail_time);
+
+    mNotificationSwitch = view.findViewById(R.id.notification_switch);
+    mNotificationTimeContainer = view.findViewById(R.id.notification_time_container);
+    mNotificationTimeTv = view.findViewById(R.id.notification_time_tv);
+
+    setupNotificationSettings();
 
     mSelectedDay = DailyGame.Day.forToday();
 
@@ -176,6 +215,88 @@ public class DailyStatisticsFragment extends Fragment implements CsvExportable {
     updateDetailSection();
 
     return view;
+  }
+
+  private void setupNotificationSettings() {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    mNotificationSwitch.setChecked(
+        prefs.getBoolean(NotificationUtils.PREF_DAILY_NOTIFICATION_ENABLED, false));
+
+    mNotificationSwitch.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> {
+          if (isChecked) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+              if (ContextCompat.checkSelfPermission(
+                      getContext(), Manifest.permission.POST_NOTIFICATIONS)
+                  == PackageManager.PERMISSION_GRANTED) {
+                prefs
+                    .edit()
+                    .putBoolean(NotificationUtils.PREF_DAILY_NOTIFICATION_ENABLED, true)
+                    .apply();
+                NotificationUtils.scheduleDailyNotification(getContext(), true);
+              } else {
+                mRequestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+              }
+            } else {
+              prefs
+                  .edit()
+                  .putBoolean(NotificationUtils.PREF_DAILY_NOTIFICATION_ENABLED, true)
+                  .apply();
+              NotificationUtils.scheduleDailyNotification(getContext(), true);
+            }
+          } else {
+            prefs
+                .edit()
+                .putBoolean(NotificationUtils.PREF_DAILY_NOTIFICATION_ENABLED, false)
+                .apply();
+            NotificationUtils.cancelDailyNotification(getContext());
+          }
+          updateNotificationTimeVisibility();
+        });
+
+    updateNotificationTimeTv();
+    updateNotificationTimeVisibility();
+
+    mNotificationTimeContainer.setOnClickListener(
+        v -> {
+          int hour = prefs.getInt(NotificationUtils.PREF_DAILY_NOTIFICATION_HOUR, 20);
+          int minute = prefs.getInt(NotificationUtils.PREF_DAILY_NOTIFICATION_MINUTE, 0);
+
+          TimePickerDialog timePickerDialog =
+              new TimePickerDialog(
+                  getContext(),
+                  (view, hourOfDay, minuteOfHour) -> {
+                    prefs
+                        .edit()
+                        .putInt(NotificationUtils.PREF_DAILY_NOTIFICATION_HOUR, hourOfDay)
+                        .putInt(NotificationUtils.PREF_DAILY_NOTIFICATION_MINUTE, minuteOfHour)
+                        .apply();
+                    updateNotificationTimeTv();
+                    NotificationUtils.scheduleDailyNotification(getContext());
+                  },
+                  hour,
+                  minute,
+                  android.text.format.DateFormat.is24HourFormat(getContext()));
+          timePickerDialog.show();
+        });
+  }
+
+  private void updateNotificationTimeTv() {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    int hour = prefs.getInt(NotificationUtils.PREF_DAILY_NOTIFICATION_HOUR, 20);
+    int minute = prefs.getInt(NotificationUtils.PREF_DAILY_NOTIFICATION_MINUTE, 0);
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.HOUR_OF_DAY, hour);
+    calendar.set(Calendar.MINUTE, minute);
+
+    java.text.DateFormat dateFormat = android.text.format.DateFormat.getTimeFormat(getContext());
+    mNotificationTimeTv.setText(dateFormat.format(calendar.getTime()));
+  }
+
+  private void updateNotificationTimeVisibility() {
+    mNotificationTimeContainer.setVisibility(
+        mNotificationSwitch.isChecked() ? View.VISIBLE : View.GONE);
   }
 
   private void refreshVisibleCalendars() {

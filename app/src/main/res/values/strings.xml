@@ -219,6 +219,16 @@
   <string name="analysis_partial_data_warning">Analysis data is only available for %1$d out of %2$d games in this period.</string>
   <string name="analysis_info_content_description">Show explanation for this table</string>
 
+  <string name="daily_notification_title">Daily Puzzle</string>
+  <string name="daily_notification_text">The new daily puzzle is available! Have you solved it yet?</string>
+  <string name="pref_daily_notification_enabled_title">Daily Puzzle Notification</string>
+  <string name="pref_daily_notification_enabled_summary">Get a daily reminder to solve the puzzle</string>
+  <string name="pref_daily_notification_time_title">Notification Time</string>
+  <string name="pref_daily_notification_time_summary">Remind me at %1$s</string>
+  <string name="daily_notification_channel_name">Daily Puzzle Reminder</string>
+  <string name="daily_notification_channel_description">Daily reminders to solve the puzzle</string>
+  <string name="daily_notification_settings_title">NOTIFICATION</string>
+
   <string name="pref_about_title">About</string>
   <string name="pref_version_title">Version</string>
   <string name="version_format">%1$s (%2$d)</string>

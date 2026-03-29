@@ -52,6 +52,8 @@ public class MainActivity extends BaseTriplesActivity {
     mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
     mViewModel.init(mApplication);
 
+    NotificationUtils.scheduleDailyNotification(this);
+
     mClassicSplitButtonGroup = findViewById(R.id.classic_split_button_group);
     mClassicResumeButton = findViewById(R.id.classic_resume_button);
     mClassicResumeButton.setOnClickListener(
