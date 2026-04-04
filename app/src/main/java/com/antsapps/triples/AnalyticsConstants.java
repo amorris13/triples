@@ -14,6 +14,8 @@ public class AnalyticsConstants {
     public static final String TRIGGER_SOURCE_MENU = "menu";
     public static final String TRIGGER_SOURCE_SNACKBAR = "snackbar";
     public static final String TRIGGER_SOURCE_AUTO = "auto";
+    public static final String DURATION = "duration";
+    public static final String TRIPLES_FOUND = "triples_found";
 
     private Param() {}
     ;
