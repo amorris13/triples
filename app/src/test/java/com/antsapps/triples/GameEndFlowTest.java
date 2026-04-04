@@ -1,9 +1,13 @@
 package com.antsapps.triples;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ViewAnimator;
 import androidx.test.core.app.ActivityScenario;
@@ -89,6 +93,18 @@ public class GameEndFlowTest extends BaseRobolectricTest {
 
             View statsButton = activity.findViewById(R.id.statistics_button);
             assertThat(statsButton.getVisibility()).isEqualTo(View.VISIBLE);
+
+            // Verify finish game analytics
+            org.mockito.ArgumentCaptor<Bundle> bundleCaptor =
+                org.mockito.ArgumentCaptor.forClass(Bundle.class);
+            verify(mockFirebaseAnalytics, atLeastOnce())
+                .logEvent(eq(AnalyticsConstants.Event.FINISH_GAME), bundleCaptor.capture());
+
+            Bundle capturedBundle = bundleCaptor.getValue();
+            assertThat(capturedBundle.getString(AnalyticsConstants.Param.GAME_TYPE))
+                .isEqualTo(ClassicGame.GAME_TYPE_FOR_ANALYTICS);
+            assertThat(capturedBundle.containsKey(AnalyticsConstants.Param.DURATION)).isTrue();
+            assertThat(capturedBundle.containsKey(AnalyticsConstants.Param.TRIPLES_FOUND)).isTrue();
           });
     }
   }

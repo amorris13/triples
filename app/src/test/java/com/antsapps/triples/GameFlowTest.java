@@ -71,6 +71,7 @@ public class GameFlowTest extends BaseRobolectricTest {
             assertThat(capturedBundle.getString(AnalyticsConstants.Param.GAME_TYPE))
                 .isEqualTo(ClassicGame.GAME_TYPE_FOR_ANALYTICS);
             assertThat(capturedBundle.getBoolean(AnalyticsConstants.Param.HINT_USED)).isFalse();
+            assertThat(capturedBundle.containsKey(AnalyticsConstants.Param.DURATION)).isTrue();
 
             // Verify remaining count decreased
             TextView remainingText = activity.findViewById(R.id.cards_remaining_text);

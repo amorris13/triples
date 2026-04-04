@@ -222,9 +222,17 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   }
 
   protected void logTripleFoundEvent(boolean hintUsed) {
+    List<Long> findTimes = getGame().getTripleFindTimes();
+    long duration = 0;
+    if (!findTimes.isEmpty()) {
+      long lastTime = findTimes.size() > 1 ? findTimes.get(findTimes.size() - 2) : 0;
+      duration = findTimes.get(findTimes.size() - 1) - lastTime;
+    }
+
     Bundle bundle = new Bundle();
     bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
     bundle.putBoolean(AnalyticsConstants.Param.HINT_USED, hintUsed);
+    bundle.putLong(AnalyticsConstants.Param.DURATION, duration);
     mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.FIND_TRIPLE, bundle);
   }
 
@@ -354,7 +362,11 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
   public void gameFinished() {
     Log.i("BaseGameActivity", "game finished");
     updateViewSwitcher();
-    logGameEvent(AnalyticsConstants.Event.FINISH_GAME);
+    Bundle bundle = new Bundle();
+    bundle.putString(AnalyticsConstants.Param.GAME_TYPE, getGame().getGameTypeForAnalytics());
+    bundle.putLong(AnalyticsConstants.Param.DURATION, getGame().getTimeElapsed());
+    bundle.putLong(AnalyticsConstants.Param.TRIPLES_FOUND, getGame().getNumTriplesFound());
+    mFirebaseAnalytics.logEvent(AnalyticsConstants.Event.FINISH_GAME, bundle);
     if (isSignedIn()) {
       submitScore();
       if (!getGame().areHintsUsed()) {
