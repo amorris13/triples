@@ -87,4 +87,11 @@
   <string name="leaderboard_classic_game" translatable="false">CgkI3f-DytEMEAIQBw</string>
   <!--leaderboard Arcade Game-->
   <string name="leaderboard_arcade_game" translatable="false">CgkI3f-DytEMEAIQEA</string>
+  <string name="achievement_arcade_bonus_5_triples" translatable="false">placeholder_bonus_5</string>
+  <string name="achievement_arcade_bonus_10_triples" translatable="false">placeholder_bonus_10</string>
+  <string name="achievement_arcade_bonus_25_triples" translatable="false">placeholder_bonus_25</string>
+  <string name="achievement_arcade_bonus_50_triples" translatable="false">placeholder_bonus_50</string>
+  <string name="achievement_arcade_bonus_75_triples" translatable="false">placeholder_bonus_75</string>
+  <string name="achievement_arcade_bonus_100_triples" translatable="false">placeholder_bonus_100</string>
+  <string name="leaderboard_arcade_bonus_game" translatable="false">placeholder_bonus_leaderboard</string>
 </resources>

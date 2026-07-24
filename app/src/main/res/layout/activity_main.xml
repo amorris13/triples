@@ -114,23 +114,17 @@
                     android:text="@string/arcade_label"
                     android:textColor="@color/arcade_accent" />
 
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/arcade_new_game_button"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/new_game"
-                        android:theme="@style/ArcadeButtonTheme" />
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/arcade_split_button_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:visibility="gone"
                         app:singleSelection="true">
 
@@ -160,7 +154,34 @@
                             app:shapeAppearanceOverlay="@style/SplitButtonRight" />
 
                     </com.google.android.material.button.MaterialButtonToggleGroup>
-                </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/arcade_new_game_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/arcade_new_game_fixed_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:text="@string/arcade_style_fixed"
+                            android:theme="@style/ArcadeButtonTheme" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/arcade_new_game_bonus_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:text="@string/arcade_style_bonus"
+                            android:theme="@style/ArcadeButtonTheme" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/arcade_statistics_button"

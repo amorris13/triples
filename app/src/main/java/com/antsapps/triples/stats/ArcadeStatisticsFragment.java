@@ -17,7 +17,8 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
+public class ArcadeStatisticsFragment extends BaseStatisticsFragment
+    implements StatisticsSelectorView.OnArcadeStyleChangeListener {
 
   private ArcadeStatisticsViewModel mViewModel;
 
@@ -54,6 +55,11 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
   @Override
   public void onIncludeHintedChange(boolean includeHinted) {
     mViewModel.setIncludeHinted(includeHinted);
+  }
+
+  @Override
+  public void onArcadeStyleChange(ArcadeGame.ArcadeStyle style) {
+    mViewModel.setStyle(style);
   }
 
   @Override
@@ -99,6 +105,8 @@ public class ArcadeStatisticsFragment extends BaseStatisticsFragment {
     mViewModel = new ViewModelProvider(this).get(ArcadeStatisticsViewModel.class);
     mViewModel.init(mApplication);
     mViewModel.getStatistics().observe(getViewLifecycleOwner(), this::onStatisticsChange);
+    mSelectorView.setOnArcadeStyleChangeListener(this);
+    mSelectorView.showArcadeStyleSelector(mViewModel.getStyle());
   }
 
   @Override

@@ -12,6 +12,11 @@ enum GameStateProto {
   COMPLETED = 3;
 }
 
+enum ArcadeStyleProto {
+  FIXED = 0;
+  BONUS = 1;
+}
+
 message ClassicGameSummary {
   int64 date_started_millis = 1;
   int64 time_elapsed_millis = 2;
@@ -22,6 +27,7 @@ message ArcadeGameSummary {
   int64 date_started_millis = 1;
   int32 num_triples_found = 2;
   bool hints_used = 3;
+  ArcadeStyleProto style = 4;
 }
 
 message DailyGameSummary {
@@ -65,6 +71,7 @@ message ArcadeGameState {
   int32 num_triples_found = 7;
   bool hints_used = 8;
   bytes found_triples = 9;
+  ArcadeStyleProto style = 10;
 }
 
 message DailyGameState {

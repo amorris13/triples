@@ -60,8 +60,6 @@ public abstract class BaseStatisticsFragment extends Fragment
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.stats_tabbed_fragment, container, false);
 
-    initViewModel();
-
     StatisticsGamesServicesView gameServicesView =
         view.findViewById(R.id.game_services_view_container);
     gameServicesView.setLeaderboardId(getLeaderboardId());
@@ -72,6 +70,8 @@ public abstract class BaseStatisticsFragment extends Fragment
     mSelectorView.setOnPeriodChangeListener(this);
     mSelectorView.setOnIncludeHintedChangeListener(this);
     mSelectorView.setAccentColor(getAccentColor());
+
+    initViewModel();
 
     ViewPager2 viewPager = view.findViewById(R.id.view_pager);
     TabLayout tabLayout = view.findViewById(R.id.tabs);

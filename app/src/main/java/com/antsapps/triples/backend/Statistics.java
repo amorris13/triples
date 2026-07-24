@@ -12,7 +12,7 @@ public class Statistics {
 
   Statistics(Iterable<? extends Game> iterable, Period period, boolean includeHinted) {
     mGamesInPeriod =
-        period.filter(Iterables.filter(iterable, g -> includeHinted ? true : !g.areHintsUsed()));
+        period.filter(Iterables.filter(iterable, g -> includeHinted || !g.areHintsUsed()));
   }
 
   public int getNumGames() {

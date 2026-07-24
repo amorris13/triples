@@ -59,30 +59,35 @@ public class ArcadeGameActivity extends BaseGameActivity
   @Override
   protected void updatePerformanceDescriptionInternal(TextView performanceTv) {
     Application app = Application.getInstance(this);
-    ArcadeStatistics allTimeStats = app.getArcadeStatistics(Period.ALL_TIME, true);
+    ArcadeStatistics allTimeStats =
+        app.getArcadeStatistics(Period.ALL_TIME, true, mGame.getStyle());
     if (allTimeStats.getNumGames() <= 1) {
       performanceTv.setText(R.string.performance_first_game);
       return;
     }
 
     int currentFound = mGame.getNumTriplesFound();
-    allTimeStats = app.getArcadeStatistics(Period.ALL_TIME, false);
+    allTimeStats = app.getArcadeStatistics(Period.ALL_TIME, false, mGame.getStyle());
     if (currentFound >= allTimeStats.getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_new_best);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)), false)
+        >= app.getArcadeStatistics(
+                DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(365)), false, mGame.getStyle())
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_year);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)), false)
+        >= app.getArcadeStatistics(
+                DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(30)), false, mGame.getStyle())
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_month);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)), false)
+        >= app.getArcadeStatistics(
+                DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(7)), false, mGame.getStyle())
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_week);
     } else if (currentFound
-        >= app.getArcadeStatistics(DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)), false)
+        >= app.getArcadeStatistics(
+                DatePeriod.fromTimePeriod(TimeUnit.DAYS.toMillis(1)), false, mGame.getStyle())
             .getMostFound()) {
       performanceTv.setText(R.string.performance_arcade_best_day);
     } else if (currentFound > allTimeStats.getAverageFound()) {
@@ -99,7 +104,8 @@ public class ArcadeGameActivity extends BaseGameActivity
 
   @Override
   protected void awardAchievements() {
-    AchievementManager.awardArcadeAchievements(this, mGame.getNumTriplesFound());
+    AchievementManager.awardArcadeAchievements(
+        this, mGame.getNumTriplesFound(), mGame.getStyle() == ArcadeGame.ArcadeStyle.BONUS);
   }
 
   @Override
@@ -142,13 +148,19 @@ public class ArcadeGameActivity extends BaseGameActivity
       return;
     }
 
-    PlayGames.getLeaderboardsClient(this)
-        .submitScore(getString(R.string.leaderboard_arcade_game), mGame.getNumTriplesFound());
+    String leaderboardId =
+        mGame.getStyle() == ArcadeGame.ArcadeStyle.BONUS
+            ? getString(R.string.leaderboard_arcade_bonus_game)
+            : getString(R.string.leaderboard_arcade_game);
+
+    PlayGames.getLeaderboardsClient(this).submitScore(leaderboardId, mGame.getNumTriplesFound());
   }
 
   @Override
   protected Intent createNewGame() {
-    ArcadeGame game = ArcadeGame.createFromSeed(Application.getTimeProvider().currentTimeMillis());
+    ArcadeGame game =
+        ArcadeGame.createFromSeed(
+            Application.getTimeProvider().currentTimeMillis(), mGame.getStyle());
     mApplication.addArcadeGame(game);
     Intent newGameIntent = new Intent(getBaseContext(), ArcadeGameActivity.class);
     newGameIntent.putExtra(Game.ID_TAG, game.getId());

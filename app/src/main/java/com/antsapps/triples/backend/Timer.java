@@ -67,6 +67,11 @@ class Timer {
             : 0);
   }
 
+  void modifyTime(long deltaMs) {
+    mTimeElapsedWhenLastResumed += deltaMs;
+    dispatchTimerTick();
+  }
+
   private boolean isActive() {
     return (mTimeOfLastResume != -1);
   }
