@@ -46,8 +46,15 @@ public class DailyGame extends Game {
     }
 
     public static Day fromString(String string) {
-      int dateInt = Integer.parseInt(string);
-      return new Day(dateInt / 10000, (dateInt / 100) % 100, dateInt % 100);
+      if (string == null || string.isEmpty()) {
+        throw new IllegalArgumentException("String is null or empty");
+      }
+      try {
+        int dateInt = Integer.parseInt(string);
+        return new Day(dateInt / 10000, (dateInt / 100) % 100, dateInt % 100);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Invalid date string: " + string, e);
+      }
     }
 
     public static Day forToday() {

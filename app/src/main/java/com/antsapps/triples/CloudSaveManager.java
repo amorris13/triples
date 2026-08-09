@@ -266,13 +266,22 @@ public class CloudSaveManager {
 
                                 @Override
                                 public byte[] serializeMerged() {
-                                  DailyGame.Day gameDay =
-                                      DailyGame.Day.fromString(
-                                          name.substring(DAILY_CURRENT_PREFIX.length()));
-                                  DailyGame g = application.getDailyGameByGameDay(gameDay);
-                                  return (g != null && g.getGameState() != Game.GameState.COMPLETED)
-                                      ? CloudSaveSerializer.serializeDailyGameState(g)
-                                      : null;
+                                  try {
+                                    DailyGame.Day gameDay =
+                                        DailyGame.Day.fromString(
+                                            name.substring(DAILY_CURRENT_PREFIX.length()));
+                                    DailyGame g = application.getDailyGameByGameDay(gameDay);
+                                    return (g != null
+                                            && g.getGameState() != Game.GameState.COMPLETED)
+                                        ? CloudSaveSerializer.serializeDailyGameState(g)
+                                        : null;
+                                  } catch (IllegalArgumentException e) {
+                                    Log.e(
+                                        TAG,
+                                        "Error parsing daily game day from snapshot name: " + name,
+                                        e);
+                                    return null;
+                                  }
                                 }
                               }));
                     }
