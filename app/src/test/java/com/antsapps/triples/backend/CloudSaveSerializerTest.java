@@ -210,4 +210,37 @@ public class CloudSaveSerializerTest {
     assertThat(deserialized.getFoundTriples()).hasSize(1);
     assertThat(deserialized.getDateCompleted()).isNull();
   }
+
+  @Test(expected = IOException.class)
+  public void testDeserializeDailyCompleted_withMalformedGameDay_throwsIOException()
+      throws IOException {
+    DailyCompletedData.Builder builder = DailyCompletedData.newBuilder();
+    builder.addDailyGames(
+        DailyGameSummary.newBuilder()
+            .setGameDay("") // empty game day!
+            .setTimeElapsedMillis(60000)
+            .setHintsUsed(false)
+            .setDateCompletedMillis(2000000)
+            .setNumTriplesFound(1)
+            .build());
+    byte[] data = builder.build().toByteArray();
+    CloudSaveSerializer.deserializeDailyCompleted(data);
+  }
+
+  @Test(expected = IOException.class)
+  public void testDeserializeDailyGameState_withMalformedGameDay_throwsIOException()
+      throws IOException {
+    DailyGameState.Builder builder =
+        DailyGameState.newBuilder()
+            .setSeed(123)
+            .setGameDay("") // empty game day!
+            .setCardsInPlay(com.google.protobuf.ByteString.EMPTY)
+            .setTripleFindTimes(com.google.protobuf.ByteString.EMPTY)
+            .setTimeElapsedMillis(5000L)
+            .setGameState(GameStateProto.ACTIVE)
+            .setHintsUsed(false)
+            .setFoundTriples(com.google.protobuf.ByteString.EMPTY);
+    byte[] data = builder.build().toByteArray();
+    CloudSaveSerializer.deserializeDailyGameState(data);
+  }
 }

@@ -474,21 +474,25 @@ public class DBAdapter extends SQLiteOpenHelper {
                 null);
     dailyGamesCursor.moveToFirst();
     while (!dailyGamesCursor.isAfterLast()) {
-      DailyGame game =
-          new DailyGame(
-              dailyGamesCursor.getLong(0),
-              dailyGamesCursor.getLong(2),
-              Utils.cardListFromByteArray(dailyGamesCursor.getBlob(3)),
-              Utils.longListFromByteArray(dailyGamesCursor.getBlob(8)),
-              new Deck(Collections.<Card>emptyList()),
-              dailyGamesCursor.getLong(4),
-              new Date(dailyGamesCursor.getLong(5)),
-              DailyGame.Day.fromString(dailyGamesCursor.getString(6)),
-              GameState.valueOf(dailyGamesCursor.getString(1)),
-              dailyGamesCursor.getInt(9) != 0,
-              Utils.triplesListFromByteArray(dailyGamesCursor.getBlob(7)),
-              dailyGamesCursor.isNull(10) ? null : new Date(dailyGamesCursor.getLong(10)));
-      dailyGames.add(game);
+      try {
+        DailyGame game =
+            new DailyGame(
+                dailyGamesCursor.getLong(0),
+                dailyGamesCursor.getLong(2),
+                Utils.cardListFromByteArray(dailyGamesCursor.getBlob(3)),
+                Utils.longListFromByteArray(dailyGamesCursor.getBlob(8)),
+                new Deck(Collections.<Card>emptyList()),
+                dailyGamesCursor.getLong(4),
+                new Date(dailyGamesCursor.getLong(5)),
+                DailyGame.Day.fromString(dailyGamesCursor.getString(6)),
+                GameState.valueOf(dailyGamesCursor.getString(1)),
+                dailyGamesCursor.getInt(9) != 0,
+                Utils.triplesListFromByteArray(dailyGamesCursor.getBlob(7)),
+                dailyGamesCursor.isNull(10) ? null : new Date(dailyGamesCursor.getLong(10)));
+        dailyGames.add(game);
+      } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Failed to load daily game from database due to invalid format", e);
+      }
       dailyGamesCursor.moveToNext();
     }
     dailyGamesCursor.close();

@@ -99,28 +99,33 @@ public class CloudSaveSerializer {
 
   public static List<DailyGame> deserializeDailyCompleted(byte[] data) throws IOException {
     if (data == null || data.length == 0) return Collections.emptyList();
-    DailyCompletedData completedData = DailyCompletedData.parseFrom(data);
-    List<DailyGame> games = new ArrayList<>(completedData.getDailyGamesCount());
-    for (DailyGameSummary summary : completedData.getDailyGamesList()) {
-      DailyGame.Day gameDay = DailyGame.Day.fromString(summary.getGameDay());
-      games.add(
-          new DailyGame(
-              -1,
-              gameDay.getSeed(),
-              createFakeCardsInPlay(),
-              Collections.<Long>emptyList(),
-              new Deck(Collections.<Card>emptyList()),
-              summary.getTimeElapsedMillis(),
-              gameDay.getCalendar().getTime(),
-              gameDay,
-              Game.GameState.COMPLETED,
-              summary.getHintsUsed(),
-              Collections.<Set<Card>>emptyList(),
-              summary.getDateCompletedMillis() != 0
-                  ? new Date(summary.getDateCompletedMillis())
-                  : null));
+    try {
+      DailyCompletedData completedData = DailyCompletedData.parseFrom(data);
+      List<DailyGame> games = new ArrayList<>(completedData.getDailyGamesCount());
+      for (DailyGameSummary summary : completedData.getDailyGamesList()) {
+        DailyGame.Day gameDay = DailyGame.Day.fromString(summary.getGameDay());
+        games.add(
+            new DailyGame(
+                -1,
+                gameDay.getSeed(),
+                createFakeCardsInPlay(),
+                Collections.<Long>emptyList(),
+                new Deck(Collections.<Card>emptyList()),
+                summary.getTimeElapsedMillis(),
+                gameDay.getCalendar().getTime(),
+                gameDay,
+                Game.GameState.COMPLETED,
+                summary.getHintsUsed(),
+                Collections.<Set<Card>>emptyList(),
+                summary.getDateCompletedMillis() != 0
+                    ? new Date(summary.getDateCompletedMillis())
+                    : null));
+      }
+      return games;
+    } catch (IllegalArgumentException e) {
+      throw new IOException(
+          "Failed to deserialize DailyCompletedData due to invalid day format", e);
     }
-    return games;
   }
 
   public static byte[] serializeClassicGameState(ClassicGame game) {
@@ -201,20 +206,24 @@ public class CloudSaveSerializer {
   }
 
   public static DailyGame deserializeDailyGameState(byte[] data) throws IOException {
-    DailyGameState state = DailyGameState.parseFrom(data);
-    return new DailyGame(
-        -1,
-        state.getSeed(),
-        Utils.cardListFromByteArray(state.getCardsInPlay().toByteArray()),
-        Utils.longListFromByteArray(state.getTripleFindTimes().toByteArray()),
-        new Deck(Collections.<Card>emptyList()),
-        state.getTimeElapsedMillis(),
-        new Date(state.getSeed()),
-        DailyGame.Day.fromString(state.getGameDay()),
-        fromGameStateProto(state.getGameState()),
-        state.getHintsUsed(),
-        Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()),
-        null);
+    try {
+      DailyGameState state = DailyGameState.parseFrom(data);
+      return new DailyGame(
+          -1,
+          state.getSeed(),
+          Utils.cardListFromByteArray(state.getCardsInPlay().toByteArray()),
+          Utils.longListFromByteArray(state.getTripleFindTimes().toByteArray()),
+          new Deck(Collections.<Card>emptyList()),
+          state.getTimeElapsedMillis(),
+          new Date(state.getSeed()),
+          DailyGame.Day.fromString(state.getGameDay()),
+          fromGameStateProto(state.getGameState()),
+          state.getHintsUsed(),
+          Utils.triplesListFromByteArray(state.getFoundTriples().toByteArray()),
+          null);
+    } catch (IllegalArgumentException e) {
+      throw new IOException("Failed to deserialize DailyGameState due to invalid day format", e);
+    }
   }
 
   private static GameStateProto toGameStateProto(Game.GameState state) {
