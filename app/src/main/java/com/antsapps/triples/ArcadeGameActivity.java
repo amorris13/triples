@@ -39,6 +39,12 @@ public class ArcadeGameActivity extends BaseGameActivity
       throw new IllegalArgumentException("No savedInstanceState or intent containing key");
     }
 
+    if (mGame == null) {
+      android.util.Log.e("ArcadeGameActivity", "ArcadeGame not found");
+      finish();
+      return;
+    }
+
     ViewStub stub = (ViewStub) findViewById(R.id.status_bar);
     stub.setLayoutResource(R.layout.arcade_statusbar);
     stub.inflate();

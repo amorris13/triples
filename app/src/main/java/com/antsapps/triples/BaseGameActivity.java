@@ -72,6 +72,10 @@ public abstract class BaseGameActivity extends BaseTriplesActivity
 
     init(savedInstanceState);
 
+    if (getGame() == null) {
+      return;
+    }
+
     getGame().addOnUpdateGameStateListener(this);
     GameState originalGameState = getGame().getGameState();
 
